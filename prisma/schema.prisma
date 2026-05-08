@@ -1,0 +1,530 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Site {
+  id                  String                   @id @default(cuid())
+  code                String                   @unique
+  name                String
+  brandName           String
+  status              String                   @default("active")
+  defaultLanguage     String                   @default("th")
+  currency            String                   @default("THB")
+  timezone            String                   @default("Asia/Bangkok")
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+  domains             SiteDomain[]
+  setting             SiteSetting?
+  theme               SiteTheme?
+  bankAccounts        SiteBankAccount[]
+  paymentConfigs      SitePaymentConfig[]
+  gameProviderConfigs SiteGameProviderConfig[]
+  adminAccesses       AdminSiteAccess[]
+  users               User[]
+  userBankAccounts    UserBankAccount[]
+  walletAccounts      WalletAccount[]
+  walletLedgers       WalletLedger[]
+  deposits            DepositTransaction[]
+  withdrawals         WithdrawTransaction[]
+  promotions          Promotion[]
+  promotionClaims     PromotionClaim[]
+  turnoverRequirements TurnoverRequirement[]
+  pointLedgers        PointLedger[]
+  gameSessions        GameSession[]
+  gameTransfers       GameTransfer[]
+  gameBetHistoryMocks GameBetHistoryMock[]
+  adminLogs           AdminLog[]
+
+  @@map("sites")
+}
+
+model SiteDomain {
+  id        String   @id @default(cuid())
+  siteId    String
+  domain    String   @unique
+  isPrimary Boolean  @default(false)
+  status    String   @default("active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  site      Site     @relation(fields: [siteId], references: [id])
+
+  @@index([siteId])
+  @@map("site_domains")
+}
+
+model SiteSetting {
+  id                 String   @id @default(cuid())
+  siteId             String   @unique
+  lineUrl            String?
+  telegramUrl        String?
+  customerServiceUrl String?
+  announcement       String?
+  maintenanceMode    Boolean  @default(false)
+  metadata           Json?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  site               Site     @relation(fields: [siteId], references: [id])
+
+  @@map("site_settings")
+}
+
+model SiteTheme {
+  id              String   @id @default(cuid())
+  siteId          String   @unique
+  logoUrl         String?
+  faviconUrl      String?
+  primaryColor    String   @default("#ff5aa5")
+  secondaryColor  String   @default("#54c7ff")
+  backgroundColor String   @default("#fff5fb")
+  layoutMode      String   @default("default")
+  customCss       Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  site            Site     @relation(fields: [siteId], references: [id])
+
+  @@map("site_themes")
+}
+
+model SiteBankAccount {
+  id            String   @id @default(cuid())
+  siteId        String
+  type          String
+  bankCode      String
+  bankName      String
+  accountName   String
+  accountNumber String
+  phone         String?
+  status        String   @default("active")
+  isDefault     Boolean  @default(false)
+  metadata      Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  site          Site     @relation(fields: [siteId], references: [id])
+
+  @@index([siteId])
+  @@map("site_bank_accounts")
+}
+
+model SitePaymentConfig {
+  id              String   @id @default(cuid())
+  siteId          String
+  providerCode    String
+  displayName     String
+  status          String   @default("inactive")
+  merchantId      String?
+  apiBaseUrl      String?
+  apiKeyEncrypted String?
+  secretEncrypted String?
+  callbackPath    String?
+  metadata        Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  site            Site     @relation(fields: [siteId], references: [id])
+
+  @@unique([siteId, providerCode])
+  @@index([siteId])
+  @@map("site_payment_configs")
+}
+
+model SiteGameProviderConfig {
+  id              String   @id @default(cuid())
+  siteId          String
+  providerCode    String
+  displayName     String
+  status          String   @default("active")
+  agentCode       String?
+  apiBaseUrl      String?
+  apiKeyEncrypted String?
+  secretEncrypted String?
+  callbackPath    String?
+  walletMode      String   @default("transfer")
+  metadata        Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  site            Site     @relation(fields: [siteId], references: [id])
+
+  @@unique([siteId, providerCode])
+  @@index([siteId])
+  @@map("site_game_provider_configs")
+}
+
+model User {
+  id                   String                @id @default(cuid())
+  siteId               String
+  username             String?
+  phone                String
+  passwordHash         String
+  referralSource       String?
+  acceptBonus          Boolean               @default(false)
+  acceptTerms          Boolean               @default(false)
+  status               String                @default("active")
+  rank                 String?
+  points               Decimal               @default(0.00) @db.Decimal(18, 2)
+  lastLoginAt          DateTime?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  site                 Site                  @relation(fields: [siteId], references: [id])
+  bankAccounts         UserBankAccount[]
+  walletAccount        WalletAccount?
+  walletLedgers        WalletLedger[]
+  deposits             DepositTransaction[]
+  withdrawals          WithdrawTransaction[]
+  promotionClaims      PromotionClaim[]
+  turnoverRequirements TurnoverRequirement[]
+  pointLedgers         PointLedger[]
+  gameSessions         GameSession[]
+  gameTransfers        GameTransfer[]
+  gameBetHistoryMocks  GameBetHistoryMock[]
+
+  @@unique([siteId, phone])
+  @@unique([siteId, username])
+  @@index([siteId])
+  @@map("users")
+}
+
+model UserBankAccount {
+  id            String                @id @default(cuid())
+  siteId        String
+  userId        String
+  bankCode      String
+  accountNumber String
+  accountName   String
+  status        String                @default("pending")
+  rejectReason  String?
+  approvedById  String?
+  approvedAt    DateTime?
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+  site          Site                  @relation(fields: [siteId], references: [id])
+  user          User                  @relation(fields: [userId], references: [id])
+  deposits      DepositTransaction[]
+  withdrawals   WithdrawTransaction[]
+
+  @@index([siteId])
+  @@index([userId])
+  @@map("user_bank_accounts")
+}
+
+model Admin {
+  id           String            @id @default(cuid())
+  username     String            @unique
+  passwordHash String
+  role         String            @default("viewer")
+  status       String            @default("active")
+  lastLoginAt  DateTime?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  logs         AdminLog[]
+  siteAccesses AdminSiteAccess[]
+
+  @@map("admins")
+}
+
+model AdminSiteAccess {
+  id          String   @id @default(cuid())
+  adminId     String
+  siteId      String
+  role        String   @default("site_admin")
+  permissions Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  admin       Admin    @relation(fields: [adminId], references: [id])
+  site        Site     @relation(fields: [siteId], references: [id])
+
+  @@unique([adminId, siteId])
+  @@index([siteId])
+  @@map("admin_site_accesses")
+}
+
+model AdminLog {
+  id         String   @id @default(cuid())
+  siteId     String   @map("site_id")
+  adminId    String   @map("admin_id")
+  action     String
+  targetType String   @map("target_type")
+  targetId   String   @map("target_id")
+  metadata   Json?
+  beforeJson Json?    @map("before_json")
+  afterJson  Json?    @map("after_json")
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent")
+  createdAt  DateTime @default(now()) @map("created_at")
+  site       Site     @relation(fields: [siteId], references: [id])
+  admin      Admin    @relation(fields: [adminId], references: [id])
+
+  @@index([siteId])
+  @@index([adminId])
+  @@index([action])
+  @@map("admin_logs")
+}
+
+model WalletAccount {
+  id        String   @id @default(cuid())
+  siteId    String
+  userId    String   @unique
+  balance   Decimal  @default(0.00) @db.Decimal(18, 2)
+  currency  String   @default("THB")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  site      Site     @relation(fields: [siteId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([siteId])
+  @@map("wallet_accounts")
+}
+
+model WalletLedger {
+  id              String   @id @default(cuid())
+  siteId          String   @map("site_id")
+  transactionId   String   @unique @map("transaction_id")
+  userId          String   @map("user_id")
+  type            String
+  amount          Decimal  @db.Decimal(18, 2)
+  balanceBefore   Decimal  @map("before_balance") @db.Decimal(18, 2)
+  balanceAfter    Decimal  @map("after_balance") @db.Decimal(18, 2)
+  referenceType   String   @map("reference_type")
+  referenceId     String   @map("reference_id")
+  createdByType   String   @map("created_by_type")
+  createdById     String?  @map("created_by_id")
+  note            String?
+  createdAt       DateTime @default(now()) @map("created_at")
+  site            Site     @relation(fields: [siteId], references: [id])
+  user            User     @relation(fields: [userId], references: [id])
+
+  @@index([siteId])
+  @@index([userId])
+  @@index([type])
+  @@index([referenceType, referenceId])
+  @@map("wallet_ledgers")
+}
+
+model DepositTransaction {
+  id             String           @id @default(cuid())
+  siteId         String           @map("site_id")
+  transactionId  String           @unique @map("transaction_id")
+  userId         String           @map("user_id")
+  amount         Decimal          @db.Decimal(18, 2)
+  channel        String
+  bankAccountId  String?          @map("bank_account_id")
+  promotionId    String?          @map("promotion_id")
+  slipFileUrl    String?          @map("slip_file_url")
+  note           String?
+  status         String           @default("pending")
+  rejectReason   String?          @map("reject_reason")
+  approvedById   String?          @map("approved_by_id")
+  approvedAt     DateTime?        @map("approved_at")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  site           Site             @relation(fields: [siteId], references: [id])
+  user           User             @relation(fields: [userId], references: [id])
+  bankAccount    UserBankAccount? @relation(fields: [bankAccountId], references: [id])
+  promotion      Promotion?       @relation(fields: [promotionId], references: [id])
+
+  @@index([siteId])
+  @@index([userId])
+  @@index([status])
+  @@map("deposit_transactions")
+}
+
+model WithdrawTransaction {
+  id                String          @id @default(cuid())
+  siteId            String          @map("site_id")
+  transactionId     String          @unique @map("transaction_id")
+  userId            String          @map("user_id")
+  userBankAccountId String          @map("user_bank_account_id")
+  amount            Decimal         @db.Decimal(18, 2)
+  note              String?
+  status            String          @default("pending")
+  rejectReason      String?         @map("reject_reason")
+  approvedById      String?         @map("approved_by_id")
+  paidById          String?         @map("paid_by_id")
+  approvedAt        DateTime?       @map("approved_at")
+  paidAt            DateTime?       @map("paid_at")
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+  site              Site            @relation(fields: [siteId], references: [id])
+  user              User            @relation(fields: [userId], references: [id])
+  userBankAccount   UserBankAccount @relation(fields: [userBankAccountId], references: [id])
+
+  @@index([siteId])
+  @@index([userId])
+  @@index([status])
+  @@map("withdraw_transactions")
+}
+
+model Promotion {
+  id                   String                @id @default(cuid())
+  siteId               String
+  title                String
+  type                 String
+  minDeposit           Decimal?              @db.Decimal(18, 2)
+  maxDeposit           Decimal?              @db.Decimal(18, 2)
+  bonusType            String?
+  bonusValue           Decimal?              @db.Decimal(18, 2)
+  turnoverMultiplier   Decimal               @default(0.00) @db.Decimal(18, 2)
+  maxWithdraw          Decimal?              @db.Decimal(18, 2)
+  status               String                @default("active")
+  startAt              DateTime?
+  endAt                DateTime?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  site                 Site                  @relation(fields: [siteId], references: [id])
+  deposits             DepositTransaction[]
+  promotionClaims      PromotionClaim[]
+  turnoverRequirements TurnoverRequirement[]
+
+  @@index([siteId])
+  @@map("promotions")
+}
+
+model PromotionClaim {
+  id            String     @id @default(cuid())
+  siteId        String
+  userId        String
+  promotionId   String
+  bonusAmount   Decimal    @default(0.00) @db.Decimal(18, 2)
+  status        String     @default("claimed")
+  createdAt     DateTime   @default(now())
+  site          Site       @relation(fields: [siteId], references: [id])
+  user          User       @relation(fields: [userId], references: [id])
+  promotion     Promotion  @relation(fields: [promotionId], references: [id])
+  turnoverRules TurnoverRequirement[]
+
+  @@index([siteId])
+  @@index([userId])
+  @@index([promotionId])
+  @@map("promotion_claims")
+}
+
+model TurnoverRequirement {
+  id               String          @id @default(cuid())
+  siteId           String
+  userId           String
+  promotionId      String?
+  promotionClaimId String?
+  requiredAmount   Decimal         @default(0.00) @db.Decimal(18, 2)
+  currentAmount    Decimal         @default(0.00) @db.Decimal(18, 2)
+  status           String          @default("active")
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  site             Site            @relation(fields: [siteId], references: [id])
+  user             User            @relation(fields: [userId], references: [id])
+  promotion        Promotion?      @relation(fields: [promotionId], references: [id])
+  promotionClaim   PromotionClaim? @relation(fields: [promotionClaimId], references: [id])
+
+  @@index([siteId])
+  @@index([userId])
+  @@map("turnover_requirements")
+}
+
+model PointLedger {
+  id            String   @id @default(cuid())
+  siteId        String   @map("site_id")
+  userId        String   @map("user_id")
+  before        Decimal  @db.Decimal(18, 2)
+  amount        Decimal  @db.Decimal(18, 2)
+  after         Decimal  @db.Decimal(18, 2)
+  reason        String
+  referenceType String   @map("reference_type")
+  referenceId   String   @map("reference_id")
+  createdByType String   @map("created_by_type")
+  createdById   String?  @map("created_by_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+  site          Site     @relation(fields: [siteId], references: [id])
+  user          User     @relation(fields: [userId], references: [id])
+
+  @@index([siteId])
+  @@index([userId])
+  @@map("point_ledgers")
+}
+
+model GameProvider {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  name      String
+  status    String   @default("active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  games     Game[]
+
+  @@map("game_providers")
+}
+
+model Game {
+  id           String        @id @default(cuid())
+  providerId   String
+  providerCode String
+  code         String
+  name         String
+  category     String        @default("slot")
+  status       String        @default("active")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  provider     GameProvider  @relation(fields: [providerId], references: [id])
+  sessions     GameSession[]
+
+  @@unique([providerCode, code])
+  @@index([providerId])
+  @@map("games")
+}
+
+model GameSession {
+  id        String   @id @default(cuid())
+  siteId    String
+  userId    String
+  provider  String
+  gameCode  String
+  launchUrl String
+  status    String   @default("active")
+  createdAt DateTime @default(now())
+  site      Site     @relation(fields: [siteId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  game      Game?    @relation(fields: [provider, gameCode], references: [providerCode, code])
+
+  @@index([siteId])
+  @@index([userId])
+  @@map("game_sessions")
+}
+
+model GameTransfer {
+  id             String   @id @default(cuid())
+  siteId         String
+  transactionId  String   @unique
+  userId         String
+  provider       String
+  type           String
+  amount         Decimal  @db.Decimal(18, 2)
+  walletLedgerId String?
+  status         String   @default("success")
+  createdAt      DateTime @default(now())
+  site           Site     @relation(fields: [siteId], references: [id])
+  user           User     @relation(fields: [userId], references: [id])
+
+  @@index([siteId])
+  @@index([userId])
+  @@map("game_transfers")
+}
+
+model GameBetHistoryMock {
+  id           String   @id @default(cuid())
+  siteId       String
+  userId       String
+  provider     String
+  gameCode     String
+  betAmount    Decimal  @db.Decimal(18, 2)
+  winAmount    Decimal  @db.Decimal(18, 2)
+  profitAmount Decimal  @db.Decimal(18, 2)
+  roundId      String
+  playedAt     DateTime @default(now())
+  site         Site     @relation(fields: [siteId], references: [id])
+  user         User     @relation(fields: [userId], references: [id])
+
+  @@index([siteId])
+  @@index([userId])
+  @@map("game_bet_history_mock")
+}
