@@ -3,3 +3,8 @@ node_modules
 dist
 .DS_Store
 .server.*.log
+
+.env
+node_modules
+dist
+.server.*.log
