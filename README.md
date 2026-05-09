@@ -50,6 +50,14 @@ npm run prisma:migrate
 
 Do not run migrations against production unless the target database, migration plan, backup, and rollback path have been verified.
 
+For staging/test deploy migrations, do not run `npx prisma migrate deploy` directly. Use the guarded script only:
+
+```bash
+npm run db:migrate:staging
+```
+
+`db:migrate:staging` runs `src/db-safety-tests/dbSafetyGuard.js` before Prisma can deploy migrations. The guard must pass first, `DATABASE_URL` must target staging/test PostgreSQL only, and all provider modes must be `mock` or `sandbox`. Never use this command with a production database and never print `DATABASE_URL`, JWT secrets, API keys, tokens, provider secrets, or passwords.
+
 Seed demo data:
 
 ```bash
@@ -113,6 +121,36 @@ Syntax check:
 ```bash
 npm run check
 ```
+
+## Local Money-Flow Smoke Test
+
+The local money-flow smoke test exercises the manual admin approval path against a local, staging, or test PostgreSQL database only. It blocks production-like database targets, production-like API bases, and real provider modes before touching Prisma.
+
+Run the backend first with the same safe `.env` or shell environment loaded:
+
+```bash
+npm run dev
+```
+
+In another shell, set a safe environment. Use your own local/staging/test values and do not print real secrets:
+
+```powershell
+$env:NODE_ENV = "development-local"
+$env:DATABASE_URL = "<LOCAL_TEST_DATABASE_URL>"
+$env:JWT_SECRET = "local-test-jwt-secret"
+$env:LOCAL_ADMIN_PASSWORD = "local-admin-password"
+$env:PUBLIC_API_BASE_URL = "http://localhost:4000"
+```
+
+Provider, payment, bank, SMS, and slip OCR modes must be unset, `mock`, or `sandbox`. They must never point at real provider, payment, bank, SMS, or slip OCR APIs for this smoke test.
+
+Run the smoke test:
+
+```bash
+npm run test:local:money-flow
+```
+
+The script creates local-only fixtures for the `PG77` site and a `local_money_flow_admin` admin, registers a mock member, approves the member bank account, approves a 100.00 deposit, approves and marks paid a 10.00 withdrawal, checks the wallet final balance is 90.00, checks the two ledger rows, and verifies duplicate approval/mark-paid attempts are blocked without adding ledger rows.
 
 ## Demo Accounts
 
@@ -516,6 +554,7 @@ Rules:
 - Never print `DATABASE_URL`, JWT secrets, API keys, tokens, provider secrets, passwords, or raw provider payloads.
 - Provider modes must be `mock` or `sandbox` for game, payment, bank statement, SMS, and Slip OCR integrations.
 - Do not run production migrations or production seed from a local checkout.
+- Do not run raw `npx prisma migrate deploy`; use `npm run db:migrate:staging` for staging/test so `dbSafetyGuard` runs first.
 - Do not connect real payment, provider, game, bank, SMS, or Slip OCR APIs from this suite.
 
 Dry-run the plan without touching a database:
