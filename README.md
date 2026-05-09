@@ -505,9 +505,18 @@ Coverage:
 
 These tests are a backend safety baseline, not production deploy readiness. Staging still needs a separate PostgreSQL test database, migration verification, end-to-end admin approval tests, provider sandbox callback checks, and rollback validation before any production deploy.
 
-## DB-backed Financial Safety Plan
+## Guarded DB-backed Safety Suite
 
-DB-backed financial safety tests are planned but disabled by default. They must run only against a confirmed staging/test PostgreSQL database. Do not run them against production.
+DB-backed financial safety tests are guarded and disabled for real database execution unless the target is explicitly confirmed as staging/test PostgreSQL. Production DBs are strictly forbidden.
+
+Rules:
+
+- Use this suite only with a confirmed staging/test PostgreSQL database.
+- Never use a production database, production clone, production read replica, or production-like target.
+- Never print `DATABASE_URL`, JWT secrets, API keys, tokens, provider secrets, passwords, or raw provider payloads.
+- Provider modes must be `mock` or `sandbox` for game, payment, bank statement, SMS, and Slip OCR integrations.
+- Do not run production migrations or production seed from a local checkout.
+- Do not connect real payment, provider, game, bank, SMS, or Slip OCR APIs from this suite.
 
 Dry-run the plan without touching a database:
 
@@ -515,13 +524,17 @@ Dry-run the plan without touching a database:
 npm run test:db:safety:dry-run
 ```
 
+The dry-run validates the planned cases and guard behavior with fake env values only. It does not import Prisma, open `.env`, connect to PostgreSQL, run migrations, run seed, or call providers.
+
 The real DB-backed runner is guarded:
 
 ```bash
 npm run test:db:safety
 ```
 
-It intentionally refuses to run until a staging/test database has been confirmed. When enabled later, the DB-backed suite must cover:
+`test:db:safety` always runs `src/db-safety-tests/dbSafetyGuard.js` first and fails immediately if the guard blocks. The guard reads only the already-provided process environment; it does not load `.env` and it does not print the database URL or secret values.
+
+Current DB-backed test coverage plan:
 
 - Deposit approve concurrent double request: one status transition, one ledger row, one credit.
 - Withdraw approve concurrent double request: one status transition, one ledger row, one debit.
@@ -529,7 +542,7 @@ It intentionally refuses to run until a staging/test database has been confirmed
 - Provider callback duplicate reference concurrent: duplicate references do not credit twice.
 - Wallet ledger transaction rollback: failed operations roll back wallet balance, ledger rows, and audit rows.
 
-Before enabling the DB-backed runner, verify the target `DATABASE_URL` is staging/test only without printing the value.
+Before enabling real DB assertions, verify the target `DATABASE_URL` is staging/test only without printing the value. If a staging/test DB is not confirmed, run only the dry-run.
 
 ### Before Adding Real Provider
 
