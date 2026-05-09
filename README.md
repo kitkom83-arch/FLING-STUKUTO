@@ -26,18 +26,13 @@ npm install
 
 ## Environment
 
-Create `.env` from `.env.example`.
+Create `.env` from `.env.example`. The real `.env` file must stay local and must never be committed.
 
 ```bash
 cp .env.example .env
 ```
 
-Set a real PostgreSQL URL and a long random JWT secret.
-
-```env
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/pg77_real_core?schema=public
-JWT_SECRET=replace-with-a-long-random-secret
-```
+Set PostgreSQL, JWT, CORS, and provider configuration through environment variables. Keep real values out of source control, logs, issue trackers, and chat output.
 
 ## Prisma
 
@@ -53,11 +48,51 @@ Run migration when PostgreSQL is available:
 npm run prisma:migrate
 ```
 
+Do not run migrations against production unless the target database, migration plan, backup, and rollback path have been verified.
+
 Seed demo data:
 
 ```bash
 npm run seed
 ```
+
+Do not run seed against production.
+
+Prisma technical debt: `package.json#prisma` is deprecated for Prisma 7. Migrate this to a Prisma config file before upgrading Prisma major versions.
+
+## Deployment Safety
+
+This project is a backend API, not a static demo. Do not deploy it to Netlify as a static site.
+
+Use backend hosting that can run a Node.js process, such as Render, Railway, or a VPS. The API requires PostgreSQL and environment variables for database, auth, CORS, and provider settings.
+
+Staging must use mock or sandbox provider modes for game, payment, bank statement, SMS, and Slip OCR integrations. Do not connect real provider credentials until sandbox callbacks, verification, IP allowlists, rollback, and audit logging are confirmed.
+
+Do not commit local runtime files:
+
+- `.env`
+- `.server.err.log`
+- `.server.out.log`
+- `*.log`
+
+Do not run `prisma migrate`, `prisma db seed`, or any real provider/payment/game/bank integration command against production from a local checkout.
+
+## Staging Readiness
+
+PG77-real-core is an Express backend API with Prisma and PostgreSQL. It is not a frontend bundle and must not be deployed to Netlify as a static site.
+
+Staging must run on backend hosting that supports a long-running Node.js process, such as Render, Railway, or a VPS. Staging must use a PostgreSQL database that is separate from production.
+
+Use `.env.staging.example` as the placeholder template for staging configuration. Never copy production secrets into staging, never commit real `.env` files, and never print database URLs, JWT secrets, provider API keys, tokens, or callback secrets.
+
+Provider modes for staging must remain `mock` or sandbox until each real provider has signed sandbox credentials, callback verification, IP allowlists, timeout/retry rules, audit logging, and rollback instructions.
+
+Production migration and seed commands must not be run from a local checkout:
+
+- Do not run `prisma migrate deploy` against production from local.
+- Do not run `prisma migrate dev` against production.
+- Do not run `npm run seed` against production.
+- Do not run DB-backed safety tests against production.
 
 ## Run
 
@@ -401,6 +436,130 @@ All callback handlers must return the standard response format and must not alte
 - Verify response normalization into existing `{ success, data }` / `{ success, message, errors }` shape.
 - Verify no raw secret or provider token appears in API responses or admin logs.
 - Verify money values remain strings with two decimals.
+
+## Integration Sandbox Harness
+
+The manual integration harness lives in `src/integration-tests/`. It validates adapter method contracts with in-memory sandbox adapters only. It does not call external networks, does not use real API credentials, does not write wallet ledgers, and does not change the PostgreSQL provider or seed data.
+
+The harness is safe for staging readiness checks because it does not import Prisma, does not read `.env`, and does not call payment, bank, SMS, Slip OCR, or game provider networks.
+
+### How to Run Integration Harness
+
+Run individual harness checks:
+
+```bash
+npm run test:integration:payment
+npm run test:integration:bank
+npm run test:integration:sms
+npm run test:integration:slip-ocr
+npm run test:integration:game
+```
+
+Run the full harness:
+
+```bash
+npm run test:integration:all
+```
+
+Each command prints a short PASS/FAIL line only. Do not dump provider payloads, `.env`, headers, tokens, API keys, passwords, or secrets in test output.
+
+### Adapter Test Checklist
+
+- Payment: `createDepositOrder`, `getDepositStatus`, `verifyCallback`, and `normalizeCallback` must return a stable reference, Decimal-safe amount strings, valid status values, and duplicate callback normalization without applying credit.
+- Bank: `listTransactions`, `matchDeposit`, and `normalizeTransaction` must return `amount`, `date`, `reference`, and `account`, with explicit `match` or `no-match` results and no `NaN` amounts.
+- SMS: `sendSms`, `getBalance`, and `normalizeResult` must return clear delivery status, safe numeric balance, and masked phone output when logging is needed.
+- Slip OCR: `verifySlip` and `normalizeResult` must return normalized `bank`, `account`, `amount`, `date`, and `reference`, plus a common error shape for invalid slips.
+- Game: provider/game listing, player creation, balance, transfer in/out, launch, and bet history must require transfer references, return mock launch URLs, and keep all amounts non-NaN.
+
+## Financial Safety Tests
+
+The financial safety harness lives in `src/safety-tests/`. It uses in-memory state only and does not import Prisma, read `.env`, connect to PostgreSQL, call provider networks, or touch real wallet balances.
+
+Run all financial safety checks:
+
+```bash
+npm run test:safety:all
+```
+
+Individual checks:
+
+```bash
+npm run test:safety:wallet
+npm run test:safety:deposit
+npm run test:safety:withdraw
+npm run test:safety:admin-credit
+npm run test:safety:provider-callback
+```
+
+Coverage:
+
+- Deposit approve cannot run twice.
+- Deposit reject after approve is blocked.
+- Deposit approve after reject is blocked.
+- Withdraw approve cannot run twice.
+- Withdraw reject after approve is blocked.
+- Withdraw mark-paid cannot run twice.
+- Wallet movements must produce ledger rows with before and after balances.
+- Admin add/remove credit must write audit rows.
+- Duplicate provider callback references must not credit balance twice.
+
+These tests are a backend safety baseline, not production deploy readiness. Staging still needs a separate PostgreSQL test database, migration verification, end-to-end admin approval tests, provider sandbox callback checks, and rollback validation before any production deploy.
+
+## DB-backed Financial Safety Plan
+
+DB-backed financial safety tests are planned but disabled by default. They must run only against a confirmed staging/test PostgreSQL database. Do not run them against production.
+
+Dry-run the plan without touching a database:
+
+```bash
+npm run test:db:safety:dry-run
+```
+
+The real DB-backed runner is guarded:
+
+```bash
+npm run test:db:safety
+```
+
+It intentionally refuses to run until a staging/test database has been confirmed. When enabled later, the DB-backed suite must cover:
+
+- Deposit approve concurrent double request: one status transition, one ledger row, one credit.
+- Withdraw approve concurrent double request: one status transition, one ledger row, one debit.
+- Withdraw mark-paid concurrent double request: one paid transition and no extra ledger rows.
+- Provider callback duplicate reference concurrent: duplicate references do not credit twice.
+- Wallet ledger transaction rollback: failed operations roll back wallet balance, ledger rows, and audit rows.
+
+Before enabling the DB-backed runner, verify the target `DATABASE_URL` is staging/test only without printing the value.
+
+### Before Adding Real Provider
+
+- Keep provider mode as `mock` or sandbox until provider documents are reviewed.
+- Add real adapter code behind the existing skeleton contract without changing frontend or backoffice response contracts.
+- Verify callback signature, idempotency, timeout, retry, status mapping, decimal handling, and timezone handling against provider examples.
+- Route wallet, deposit, withdraw, and point changes through existing services only. Never update balances directly from an adapter.
+- Confirm the harness passes before enabling any real sandbox credential.
+
+### Provider Credential Checklist
+
+- Store credentials in `.env` or encrypted database config only.
+- Use sandbox credentials first; never commit real API keys, tokens, passwords, merchant secrets, or callback secrets.
+- Mask any value whose key contains `password`, `token`, `secret`, `apiKey`, `api_key`, `apikey`, or `authorization`.
+- Never log a full `.env` object or raw request headers.
+- Rotate sandbox credentials before production handoff and document who owns provider dashboard access.
+
+### Sandbox Test Result Format
+
+Use this result format when reporting a harness run:
+
+```text
+Integration harness result:
+- Payment: PASS/FAIL - note
+- Bank: PASS/FAIL - note
+- SMS: PASS/FAIL - note
+- Slip OCR: PASS/FAIL - note
+- Game: PASS/FAIL - note
+- Secret leak check: PASS/FAIL - note
+```
 
 ### Production Go-live Checklist
 

@@ -2,9 +2,7 @@
 node_modules
 dist
 .DS_Store
+.server.err.log
+.server.out.log
 .server.*.log
-
-.env
-node_modules
-dist
-.server.*.log
+*.log
