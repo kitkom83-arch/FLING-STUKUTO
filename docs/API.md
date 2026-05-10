@@ -82,7 +82,7 @@ Serialization rules from `cleanData`:
 | --- | --- | --- | --- | --- | --- | --- |
 | GET | `/health` | None | API health check. Mounted before site resolver. | None | `200`, `data.status`, `data.version`, `data.timestamp` | Standard error envelope if unexpected server error occurs |
 
-Smoke coverage: `smoke:money-flow`, `smoke:core-api`, and `smoke:financial-negative`.
+Smoke coverage: `smoke:money-flow`, `smoke:core-api`, `smoke:financial-negative`, `smoke:promotion-claim`, `smoke:game-transfer`, and `smoke:admin-reports-config`.
 
 ## 5. Member API
 
@@ -96,7 +96,7 @@ Smoke coverage: `smoke:money-flow`, `smoke:core-api`, and `smoke:financial-negat
 | GET | `/points` | Member | None | None | point `balance` and latest point ledgers | `401` unauth | `coreApiSmoke` |
 | GET | `/bank-accounts` | Member | None | None | member bank accounts | `401` unauth | `moneyFlowSmoke` |
 | POST | `/bank-accounts` | Member | `bank_code`, `bank_account_number`, `bank_account_name` | None | `201`, pending member bank account | `400` validation, `401` unauth | Not directly covered by current smoke |
-| GET | `/site/config` | No site auth, site resolver required | None | None | public site config, theme, contact, feature flags, active provider config summaries | `404` site not found | ต้องตรวจเพิ่มจาก route/controller |
+| GET | `/site/config` | No site auth, site resolver required | None | None | public site config, theme, contact, feature flags, active provider config summaries | `404` site not found | `adminReportsConfigSmoke` |
 
 ## 6. Admin API
 
@@ -166,6 +166,7 @@ Smoke coverage:
 - `coreApiSmoke`: admin login, admin me, logs, members, deposits, withdrawals.
 - `moneyFlowSmoke`: bank account approval, deposit approval, withdrawal approval, mark-paid, admin log checks.
 - `financialNegativeSmoke`: duplicate approval guards, invalid amounts, over-balance withdrawal, admin log checks.
+- `adminReportsConfigSmoke`: read-only coverage for `/admin/reports/summary`, `/admin/reports/deposits`, `/admin/reports/withdrawals`, `/admin/reports/wallet-ledger`, `/site/config`, `/admin/sites`, `/admin/sites/current/config`, `/admin/sites/:id`, `/admin/sites/:id/bank-accounts`, `/admin/sites/:id/game-providers`, and `/admin/sites/:id/payment-configs`; includes admin auth negative checks and response leak scan.
 
 ## 7. Deposit API
 
@@ -242,16 +243,16 @@ Safety behavior verified by smoke tests:
 
 ## 9. Game API
 
-All game endpoints require member auth and use `MockGameProviderAdapter`. No real provider API is called.
+All game endpoints require member auth and use `MockGameProviderAdapter`. Current smoke coverage is mock/sandbox/local provider only. No real provider API is called.
 
 | Method | Path | Auth | Body/query | Response summary | Error cases | Smoke script |
 | --- | --- | --- | --- | --- | --- | --- |
 | GET | `/game/providers` | Member | None | Active site game provider configs merged with mock provider names | `401` unauth | `coreApiSmoke` |
 | GET | `/game/providers/:provider/games` | Member | route `provider` | Mock games for provider | `403` if provider is not active for site | `coreApiSmoke` |
 | POST | `/game/launch/mock` | Member | `provider` string default `PG`, `game_code` required | `launch_url` and `session` | `400` validation, `403` inactive provider, possible DB FK failure if game missing | `coreApiSmoke` |
-| POST | `/game/transfer-in/mock` | Member | `provider` string default `PG`, `amount` | transfer, wallet, ledger; debits wallet using `game_debit_mock` | `400` invalid amount or insufficient balance, `403` inactive provider | Not directly covered by current smoke |
-| POST | `/game/transfer-out/mock` | Member | `provider` string default `PG`, `amount` | transfer, wallet, ledger; credits wallet using `game_credit_mock` | `400` invalid amount, `403` inactive provider | Not directly covered by current smoke |
-| GET | `/game/bet-history/mock` | Member | optional `from`, `to` | existing or generated mock bet history rows | `401` unauth | Not directly covered by current smoke |
+| POST | `/game/transfer-in/mock` | Member | `provider` string default `PG`, `amount` | transfer, wallet, ledger; debits wallet using `game_debit_mock` | `400` invalid amount or insufficient balance, `403` inactive provider | `gameTransferSmoke` |
+| POST | `/game/transfer-out/mock` | Member | `provider` string default `PG`, `amount` | transfer, wallet, ledger; credits wallet using `game_credit_mock` | `400` invalid amount, `403` inactive provider | `gameTransferSmoke` |
+| GET | `/game/bet-history/mock` | Member | optional `from`, `to` | existing or generated mock bet history rows | `401` unauth | `gameTransferSmoke` |
 
 Confirmed launch contract:
 
@@ -266,17 +267,33 @@ Confirmed launch contract:
 - Launch URL is local mock format beginning with `/mock-game`.
 - Do not connect a real provider from this endpoint.
 
+Transfer smoke contract:
+
+- `gameTransferSmoke` covers auth negatives for transfer-in, transfer-out, and bet-history.
+- It creates local mock provider/game fixtures only.
+- Transfer-in verifies wallet debit and a `game_debit_mock` ledger row.
+- Transfer-out verifies wallet credit and a `game_credit_mock` ledger row.
+- Bet-history verifies JSON row shape.
+- Responses are scanned for secret-shaped values and issued auth values.
+- No real provider call is made.
+
 ## 10. Promotions API
 
 | Method | Path | Auth | Body fields | Response summary | Error cases | Smoke script |
 | --- | --- | --- | --- | --- | --- | --- |
 | GET | `/promotions` | No member auth; site resolver required | None | Active promotions for the resolved site, filtered by start/end date | `404` site not found | `coreApiSmoke` |
-| POST | `/promotions/:id/claim` | Member | None | `201`, promotion, claim, turnover, optional wallet/ledger if bonus amount is positive | `404` promotion not found, `400` possible wallet validation errors | Not directly covered by current smoke |
+| POST | `/promotions/:id/claim` | Member | None | `201`, promotion, claim, turnover, optional wallet/ledger if bonus amount is positive | `404` promotion not found, `400` duplicate claim or possible wallet validation errors | `promotionClaimSmoke` |
 
 Smoke contract:
 
 - `coreApiSmoke` verifies `GET /promotions` returns a JSON success envelope and `data` is an array.
 - Empty promotion data is valid if the envelope format is correct.
+- `promotionClaimSmoke` creates a local promotion fixture and verifies successful `POST /promotions/:id/claim`.
+- Duplicate claim is blocked with a safe non-2xx response.
+- Duplicate claim and invalid promotion id attempts do not create extra `PromotionClaim` or `TurnoverRequirement` rows.
+- Invalid promotion id fails safely.
+- Wallet and ledger effects are checked after the first claim and stay stable after duplicate/invalid attempts.
+- Promotion responses are scanned for secret-shaped values and issued auth values.
 
 ## 11. Safety / Negative Contract
 
@@ -303,7 +320,10 @@ Verified by `src/local-smoke-tests/financialNegativeSmoke.js`:
 | `npm run smoke:money-flow` | Health, admin login, member register, bank approval, deposit approve, duplicate deposit guard, withdrawal approve, duplicate withdrawal guard, mark-paid guard, wallet final balance, ledger rows, admin logs | Yes | Yes | Syntax checked only in Safe CI |
 | `npm run smoke:core-api` | Health, auth guards, member register/login/me/wallet/points/ledger, promotions list, game providers/games/mock launch, admin login/me/logs/members/deposits/withdrawals, response leak scan | Yes | Yes | Syntax checked only in Safe CI |
 | `npm run smoke:financial-negative` | Unauth 401s, invalid deposit/withdraw amounts, over-balance withdrawal, duplicate approve/mark-paid guards, ledger safety, admin log checks, response leak scan | Yes | Yes | Syntax checked only in Safe CI |
-| `npm run smoke:all-local` | Guarded sequence: smoke syntax checks, `npm run check`, money-flow, core-api, financial-negative, secret grep, diff whitespace check | Yes | Yes | Not run in Safe CI because it needs a running API and local DB |
+| `npm run smoke:promotion-claim` | Health, unauth promotion claim guard, promotion list, local promotion fixture, successful claim, duplicate claim guard, invalid promotion id guard, `PromotionClaim` and `TurnoverRequirement` count guards, wallet/ledger effect guard, response leak scan | Yes | Yes | Syntax checked only in Safe CI |
+| `npm run smoke:game-transfer` | Health, auth negatives for transfer-in/transfer-out/bet-history, member login, mock provider/game fixtures, transfer-in debit, transfer-out credit, final wallet balance, ledger rows, bet-history row shape, response leak scan | Yes | Yes | Syntax checked only in Safe CI |
+| `npm run smoke:admin-reports-config` | Health, public site config, admin auth negatives, admin login, read-only report endpoints, read-only site/config endpoints, response leak scan | Yes | Yes | Syntax checked only in Safe CI |
+| `npm run smoke:all-local` | Guarded sequence: smoke syntax checks, `npm run check`, promotion-claim, money-flow, core-api, game-transfer, financial-negative, admin-reports-config, secret grep, diff whitespace check | Yes | Yes | Not run in Safe CI because it needs a running API and local DB |
 | GitHub Actions Safe CI | `npm ci`, Prisma validate/generate, `npm run check`, local smoke syntax checks, secret-shaped value scan | No | No real DB connection for smoke | Runs on push and PR |
 
 GitHub Actions does not run DB-backed local smoke flows because those require a running local API and safe local/test PostgreSQL fixture setup.
@@ -365,6 +385,7 @@ Reference:
 - Local money-flow details: `README.md`, section `Local Money-Flow Smoke Test`
 - Core API smoke details: `README.md`, section `Local Core API Smoke Test`
 - Financial negative smoke details: `README.md`, section `Local Financial Negative Smoke Test`
+- Full smoke coverage index: `docs/SMOKE_COVERAGE.md`
 
 Secret rules:
 
@@ -373,9 +394,10 @@ Secret rules:
 - Do not connect real provider/payment/bank systems from local smoke or mock endpoints.
 - Do not run migrations, seed, smoke, or safety tests against production.
 
-## จุดที่ยังต้องตรวจเพิ่ม
+## 16. Known Coverage Gaps
 
-- Transfer-in, transfer-out, and bet-history game endpoints are implemented but not directly exercised by the current local smoke scripts.
-- `POST /promotions/:id/claim` is implemented but not directly exercised by the current local smoke scripts.
-- Admin report endpoints are implemented but not directly exercised by the current local smoke scripts.
-- Admin site/config endpoints are implemented but not directly exercised by the current local smoke scripts.
+- Config POST/PUT endpoints are intentionally not covered by `smoke:admin-reports-config` because that smoke is read-only for config safety.
+- Real provider integrations are not covered.
+- Real payment and bank integrations are not covered.
+- Production deployment smoke is not covered.
+- Full frontend end-to-end coverage is not covered.
