@@ -317,6 +317,7 @@ npm run smoke:all-local
 
 See `docs/SMOKE_COVERAGE.md` for the smoke coverage index.
 See `docs/DEMO_SEED.md` for the demo seed runbook and mock data list.
+See `docs/STAGING_UAT.md` for the staging/UAT boundary guard runbook and controlled-live checklist.
 
 ## Demo Accounts
 
