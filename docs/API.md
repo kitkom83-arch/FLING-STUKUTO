@@ -103,36 +103,77 @@ Smoke coverage: `smoke:money-flow`, `smoke:core-api`, `smoke:financial-negative`
 Admin site access:
 
 - Most business admin endpoints use `protectedSite`: admin token plus site access for the resolved site.
-- `super_admin` can access all sites.
+- `owner` and legacy `super_admin` can access all sites and bypass admin permissions.
 - Non-super admins need `AdminSiteAccess`.
+- Admin permissions are enforced by backend middleware. Frontend menu hiding is advisory only and must not be treated as authorization.
+- RBAC is local/mock/sandbox control for admin API access. It does not enable real providers, real payment rails, real bank rails, or real-money transfer.
+
+Admin role matrix:
+
+| Role | Permissions |
+| --- | --- |
+| `owner` | All permissions, including `admin.manage` |
+| `finance` | `members.view`, `deposits.view`, `deposits.approve`, `withdrawals.view`, `withdrawals.approve`, `bank.view`, `reports.view` |
+| `support` | `members.view`, `members.update`, `deposits.view`, `withdrawals.view`, `bank.view` |
+| `graphic` | `settings.website.view`, `settings.website.update`, `settings.promotion.view`, `assets.upload` |
+| `viewer` | `members.view`, `deposits.view`, `withdrawals.view`, `bank.view`, `reports.view`, `settings.website.view`, `settings.promotion.view` |
+
+Permission catalog:
+
+- `members.view`
+- `members.update`
+- `deposits.view`
+- `deposits.approve`
+- `withdrawals.view`
+- `withdrawals.approve`
+- `bank.view`
+- `bank.update`
+- `reports.view`
+- `settings.website.view`
+- `settings.website.update`
+- `settings.promotion.view`
+- `assets.upload`
+- `admin.manage`
+
+Current implementation uses existing schema:
+
+- `Admin.role` stores the global role.
+- `AdminSiteAccess.permissions` can store a JSON permission override for a site.
+- No new RBAC table or migration is required.
+
+Permission failures return `403` with the standard error envelope and must not return `500`.
 
 | Method | Path | Auth | Required role/access | Body fields | Response summary | Error cases | Admin log action |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | POST | `/admin/auth/login` | No | Active admin | `username`, `password` | token and public admin | `400` invalid credentials, `403` inactive admin | None |
 | GET | `/admin/me` | Admin | Site access | None | public admin | `401`, `403` | None |
-| GET | `/admin/logs` | Admin | Site access | None | admin logs with admin summary | `401`, `403` | None |
-| GET | `/admin/members` | Admin | Site access | None | member list with wallet and bank accounts | `401`, `403` | None |
-| GET | `/admin/members/:id` | Admin | Site access | None | member detail with wallet, bank accounts, recent deposits, recent withdrawals | `404` member not found | None |
-| POST | `/admin/members/:id/block` | Admin | Site access | None | blocked member | `404` member not found | `user.block` |
-| POST | `/admin/members/:id/unblock` | Admin | Site access | None | active member | `404` member not found | `user.unblock` |
-| POST | `/admin/members/:id/credit/add` | Admin | Site access | `amount`, optional `note` | wallet movement and ledger | `400` invalid amount, `404` member not found | `credit.add` |
-| POST | `/admin/members/:id/credit/remove` | Admin | Site access | `amount`, optional `note` | wallet movement and ledger | `400` invalid amount or insufficient balance, `404` member not found | `credit.remove` |
-| POST | `/admin/members/:id/points/add` | Admin | Site access | `amount`, `reason`, optional `reference_type`, `reference_id` | updated user and point ledger | `400` invalid amount, `404` member not found | `points.add` |
-| POST | `/admin/members/:id/points/remove` | Admin | Site access | `amount`, `reason`, optional `reference_type`, `reference_id` | updated user and point ledger | `400` invalid amount or insufficient points, `404` member not found | `points.remove` |
-| GET | `/admin/bank-accounts/pending` | Admin | Site access | None | pending member bank accounts | `401`, `403` | None |
-| POST | `/admin/bank-accounts/:id/approve` | Admin | Site access | None | approved member bank account | `404` not found | `bank_account.approve` |
-| POST | `/admin/bank-accounts/:id/reject` | Admin | Site access | `reject_reason` | rejected member bank account | `400` missing reason, `404` not found | `bank_account.reject` |
-| GET | `/admin/deposits` | Admin | Site access | None | deposit list | `401`, `403` | None |
-| POST | `/admin/deposits/:id/approve` | Admin | Site access | optional `note` | approved deposit, wallet, ledger | `400` not pending, `404` not found | `deposit.approve` |
-| POST | `/admin/deposits/:id/reject` | Admin | Site access | `reject_reason` | rejected deposit | `400` missing reason or not pending, `404` not found | `deposit.reject` |
-| GET | `/admin/withdrawals` | Admin | Site access | None | withdrawal list | `401`, `403` | None |
-| POST | `/admin/withdrawals/:id/approve` | Admin | Site access | optional `note` | approved withdrawal, wallet, ledger | `400` not pending or insufficient balance, `404` not found | `withdraw.approve` |
-| POST | `/admin/withdrawals/:id/reject` | Admin | Site access | `reject_reason` | rejected withdrawal | `400` missing reason or not pending, `404` not found | `withdraw.reject` |
-| POST | `/admin/withdrawals/:id/mark-paid` | Admin | Site access | None | paid withdrawal | `400` not approved, `404` not found | `withdraw.mark_paid` |
-| GET | `/admin/reports/summary` | Admin | Site access | None | counts and decimal totals | `401`, `403` | None |
-| GET | `/admin/reports/deposits` | Admin | Site access | None | deposit report rows | `401`, `403` | None |
-| GET | `/admin/reports/withdrawals` | Admin | Site access | None | withdrawal report rows | `401`, `403` | None |
-| GET | `/admin/reports/wallet-ledger` | Admin | Site access | None | wallet ledger report rows | `401`, `403` | None |
+| GET | `/admin/permissions/me` | Admin | Site access | None | current role, permission list, owner flag, and source | `401`, `403` | None |
+| GET | `/admin/permissions` | Admin | `admin.manage` | None | permission catalog | `401`, `403` | None |
+| GET | `/admin/roles` | Admin | `admin.manage` | None | role catalog and permissions | `401`, `403` | None |
+| PATCH | `/admin/admins/:id/role` | Admin | `admin.manage` | `role`, optional `permissions` array or `null` | assigned admin role and effective permissions | `400`, `401`, `403`, `404` | None |
+| GET | `/admin/logs` | Admin | `reports.view` | None | admin logs with admin summary | `401`, `403` | None |
+| GET | `/admin/members` | Admin | `members.view` | None | member list with wallet and bank accounts | `401`, `403` | None |
+| GET | `/admin/members/:id` | Admin | `members.view` | None | member detail with wallet, bank accounts, recent deposits, recent withdrawals | `403`, `404` member not found | None |
+| POST | `/admin/members/:id/block` | Admin | `members.update` | None | blocked member | `403`, `404` member not found | `user.block` |
+| POST | `/admin/members/:id/unblock` | Admin | `members.update` | None | active member | `403`, `404` member not found | `user.unblock` |
+| POST | `/admin/members/:id/credit/add` | Admin | `members.update` | `amount`, optional `note` | wallet movement and ledger | `400`, `403`, `404` member not found | `credit.add` |
+| POST | `/admin/members/:id/credit/remove` | Admin | `members.update` | `amount`, optional `note` | wallet movement and ledger | `400`, `403`, `404` member not found | `credit.remove` |
+| POST | `/admin/members/:id/points/add` | Admin | `members.update` | `amount`, `reason`, optional `reference_type`, `reference_id` | updated user and point ledger | `400`, `403`, `404` member not found | `points.add` |
+| POST | `/admin/members/:id/points/remove` | Admin | `members.update` | `amount`, `reason`, optional `reference_type`, `reference_id` | updated user and point ledger | `400`, `403`, `404` member not found | `points.remove` |
+| GET | `/admin/bank-accounts/pending` | Admin | `bank.view` | None | pending member bank accounts | `401`, `403` | None |
+| POST | `/admin/bank-accounts/:id/approve` | Admin | `bank.update` | None | approved member bank account | `403`, `404` not found | `bank_account.approve` |
+| POST | `/admin/bank-accounts/:id/reject` | Admin | `bank.update` | `reject_reason` | rejected member bank account | `400`, `403`, `404` not found | `bank_account.reject` |
+| GET | `/admin/deposits` | Admin | `deposits.view` | None | deposit list | `401`, `403` | None |
+| POST | `/admin/deposits/:id/approve` | Admin | `deposits.approve` | optional `note` | approved deposit, wallet, ledger | `400`, `403`, `404` not found | `deposit.approve` |
+| POST | `/admin/deposits/:id/reject` | Admin | `deposits.approve` | `reject_reason` | rejected deposit | `400`, `403`, `404` not found | `deposit.reject` |
+| GET | `/admin/withdrawals` | Admin | `withdrawals.view` | None | withdrawal list | `401`, `403` | None |
+| POST | `/admin/withdrawals/:id/approve` | Admin | `withdrawals.approve` | optional `note` | approved withdrawal, wallet, ledger | `400`, `403`, `404` not found | `withdraw.approve` |
+| POST | `/admin/withdrawals/:id/reject` | Admin | `withdrawals.approve` | `reject_reason` | rejected withdrawal | `400`, `403`, `404` not found | `withdraw.reject` |
+| POST | `/admin/withdrawals/:id/mark-paid` | Admin | `withdrawals.approve` | None | paid withdrawal | `400`, `403`, `404` not found | `withdraw.mark_paid` |
+| GET | `/admin/reports/summary` | Admin | `reports.view` | None | counts and decimal totals | `401`, `403` | None |
+| GET | `/admin/reports/deposits` | Admin | `reports.view` | None | deposit report rows | `401`, `403` | None |
+| GET | `/admin/reports/withdrawals` | Admin | `reports.view` | None | withdrawal report rows | `401`, `403` | None |
+| GET | `/admin/reports/wallet-ledger` | Admin | `reports.view` | None | wallet ledger report rows | `401`, `403` | None |
 
 Common admin query params:
 
@@ -144,23 +185,23 @@ Common admin query params:
 
 Admin site/config endpoints found in routes:
 
-| Method | Path | Auth | Description | Body fields | Admin log action |
-| --- | --- | --- | --- | --- | --- |
-| GET | `/admin/sites` | Admin | List all sites for `super_admin`, otherwise accessible sites | None | None |
-| GET | `/admin/sites/current/config` | Admin + site access | Current resolved site full config | None | None |
-| GET | `/admin/sites/:id` | Admin + target site access in controller | Site detail with domains, setting, theme, bank accounts, provider/payment configs | None | None |
-| POST | `/admin/sites/:id/settings` | Admin + target site access in controller | Upsert site settings | `lineUrl`, `telegramUrl`, `customerServiceUrl`, `announcement`, `maintenanceMode`, `metadata` | `site.settings.update` |
-| POST | `/admin/sites/:id/theme` | Admin + target site access in controller | Upsert site theme | `logoUrl`, `faviconUrl`, `primaryColor`, `secondaryColor`, `backgroundColor`, `layoutMode`, `customCss` | `site.theme.update` |
-| GET | `/admin/sites/:id/bank-accounts` | Admin + target site access in controller | List site bank accounts | None | None |
-| POST | `/admin/sites/:id/bank-accounts` | Admin + target site access in controller | Create site bank account. Mock balance/capital and website visibility are stored in `metadata`. | `type`, `bankCode`, `bankName`, `accountName`, `accountNumber`, optional `phone`, `status`, `isDefault`, `metadata`, `showOnWebsite`, `mockBalance`, `mockCapital` | `site.bank_account.create` |
-| PUT | `/admin/sites/:id/bank-accounts/:bankAccountId` | Admin + target site access in controller | Update site bank account, including open/closed status and show/hide metadata | Partial site bank account fields, optional `showOnWebsite`, `mockBalance`, `mockCapital` | `site.bank_account.update` |
-| DELETE | `/admin/sites/:id/bank-accounts/:bankAccountId` | Admin + target site access in controller | Safe soft-disable site bank account. Does not delete rows or call bank rails. | None | `site.bank_account.disable` |
-| GET | `/admin/sites/:id/game-providers` | Admin + target site access in controller | List game provider configs with secrets masked | None | None |
-| POST | `/admin/sites/:id/game-providers` | Admin + target site access in controller | Create game provider config | `providerCode`, `displayName`, optional config fields | `site.game_provider.create` |
-| PUT | `/admin/sites/:id/game-providers/:configId` | Admin + target site access in controller | Update game provider config | Partial provider config fields | `site.game_provider.update` |
-| GET | `/admin/sites/:id/payment-configs` | Admin + target site access in controller | List payment configs with secrets masked | None | None |
-| POST | `/admin/sites/:id/payment-configs` | Admin + target site access in controller | Create payment config | `providerCode`, `displayName`, optional config fields | `site.payment_config.create` |
-| PUT | `/admin/sites/:id/payment-configs/:configId` | Admin + target site access in controller | Update payment config | Partial payment config fields | `site.payment_config.update` |
+| Method | Path | Auth | Permission | Description | Body fields | Admin log action |
+| --- | --- | --- | --- | --- | --- | --- |
+| GET | `/admin/sites` | Admin + site access | `settings.website.view` | List all sites for `owner`/`super_admin`, otherwise accessible sites | None | None |
+| GET | `/admin/sites/current/config` | Admin + site access | `settings.website.view` | Current resolved site full config | None | None |
+| GET | `/admin/sites/:id` | Admin + target site access in controller | `settings.website.view` | Site detail with domains, setting, theme, bank accounts, provider/payment configs | None | None |
+| POST | `/admin/sites/:id/settings` | Admin + target site access in controller | `settings.website.update` | Upsert site settings | `lineUrl`, `telegramUrl`, `customerServiceUrl`, `announcement`, `maintenanceMode`, `metadata` | `site.settings.update` |
+| POST | `/admin/sites/:id/theme` | Admin + target site access in controller | `settings.website.update` | Upsert site theme/banner-style assets | `logoUrl`, `faviconUrl`, `primaryColor`, `secondaryColor`, `backgroundColor`, `layoutMode`, `customCss` | `site.theme.update` |
+| GET | `/admin/sites/:id/bank-accounts` | Admin + target site access in controller | `bank.view` | List site bank accounts | None | None |
+| POST | `/admin/sites/:id/bank-accounts` | Admin + target site access in controller | `bank.update` | Create site bank account. Mock balance/capital and website visibility are stored in `metadata`. | `type`, `bankCode`, `bankName`, `accountName`, `accountNumber`, optional `phone`, `status`, `isDefault`, `metadata`, `showOnWebsite`, `mockBalance`, `mockCapital` | `site.bank_account.create` |
+| PUT | `/admin/sites/:id/bank-accounts/:bankAccountId` | Admin + target site access in controller | `bank.update` | Update site bank account, including open/closed status and show/hide metadata | Partial site bank account fields, optional `showOnWebsite`, `mockBalance`, `mockCapital` | `site.bank_account.update` |
+| DELETE | `/admin/sites/:id/bank-accounts/:bankAccountId` | Admin + target site access in controller | `bank.update` | Safe soft-disable site bank account. Does not delete rows or call bank rails. | None | `site.bank_account.disable` |
+| GET | `/admin/sites/:id/game-providers` | Admin + target site access in controller | `settings.website.view` | List game provider configs with secrets masked | None | None |
+| POST | `/admin/sites/:id/game-providers` | Admin + target site access in controller | `settings.website.update` | Create game provider config | `providerCode`, `displayName`, optional config fields | `site.game_provider.create` |
+| PUT | `/admin/sites/:id/game-providers/:configId` | Admin + target site access in controller | `settings.website.update` | Update game provider config | Partial provider config fields | `site.game_provider.update` |
+| GET | `/admin/sites/:id/payment-configs` | Admin + target site access in controller | `settings.website.view` | List payment configs with secrets masked | None | None |
+| POST | `/admin/sites/:id/payment-configs` | Admin + target site access in controller | `settings.website.update` | Create payment config | `providerCode`, `displayName`, optional config fields | `site.payment_config.create` |
+| PUT | `/admin/sites/:id/payment-configs/:configId` | Admin + target site access in controller | `settings.website.update` | Update payment config | Partial payment config fields | `site.payment_config.update` |
 
 Smoke coverage:
 
@@ -169,6 +210,7 @@ Smoke coverage:
 - `financialNegativeSmoke`: duplicate approval guards, invalid amounts, over-balance withdrawal, admin log checks.
 - `adminReportsConfigSmoke`: read-only coverage for `/admin/reports/summary`, `/admin/reports/deposits`, `/admin/reports/withdrawals`, `/admin/reports/wallet-ledger`, `/site/config`, `/admin/sites`, `/admin/sites/current/config`, `/admin/sites/:id`, `/admin/sites/:id/bank-accounts`, `/admin/sites/:id/game-providers`, and `/admin/sites/:id/payment-configs`; includes admin auth negative checks and response leak scan.
 - `bankModuleSmoke`: mock-only bank account create/update/soft-disable, mock deposit/withdraw statement lists, mock Slip OCR success/fail, admin auth negative checks, and response leak scan.
+- `adminPermissionSmoke`: owner/finance/support/graphic/viewer/no-permission role checks, admin permission endpoints, backend `403` checks for missing permissions, admin unauth `401`, and response leak scan.
 
 Mock bank module endpoints:
 
@@ -362,6 +404,7 @@ Status codes verified from code:
 - No real provider/payment/bank/SMS/Slip OCR connection is allowed in these local flows.
 - No production DB is allowed.
 - Do not log or document real DB URLs, passwords, tokens, provider secrets, API keys, or raw provider payloads.
+- RBAC controls admin API access only. It does not enable real provider, payment, bank, SMS, Slip OCR, or production credential flows.
 
 ## 15. Developer Notes
 

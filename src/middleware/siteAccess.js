@@ -3,7 +3,7 @@ const { fail } = require("../utils/response");
 
 async function adminCanAccessSite(admin, siteId) {
   if (!admin || !siteId) return false;
-  if (admin.role === "super_admin") return true;
+  if (admin.role === "super_admin" || admin.role === "owner") return true;
   const access = await prisma.adminSiteAccess.findUnique({
     where: { adminId_siteId: { adminId: admin.id, siteId } },
   });

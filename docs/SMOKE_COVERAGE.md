@@ -16,6 +16,7 @@ The smoke suite does not send real money, does not connect real provider/payment
 | `promotionClaimSmoke.js` | `npm run smoke:promotion-claim` | Yes | Yes | No | Syntax check only | Promotion claim fixture, duplicate guard, count guards, and wallet/ledger effects. |
 | `gameTransferSmoke.js` | `npm run smoke:game-transfer` | Yes | Yes | Yes | Syntax check only | Mock transfer-in/out and mock bet-history checks. |
 | `adminReportsConfigSmoke.js` | `npm run smoke:admin-reports-config` | Yes | Yes | Yes | Syntax check only | Admin report endpoints and read-only site/config endpoints. |
+| `adminPermissionSmoke.js` | `npm run smoke:admin-permission` | Yes | Yes | Yes | Syntax check only | Admin RBAC role/permission guard checks for owner, finance, support, graphic, viewer, unauth, and forbidden access. |
 | `runAllLocalSmoke.js` | `npm run smoke:all-local` | Yes | Yes | Yes | Syntax check only | Guarded local runner for syntax, project checks, all local smokes, secret grep, and diff check. |
 
 GitHub Actions also scans `src/local-smoke-tests` for secret-shaped values. It does not run DB-backed smoke commands.
@@ -151,7 +152,22 @@ GitHub Actions also scans `src/local-smoke-tests` for secret-shaped values. It d
 
 All bank module endpoints covered here are mock/sandbox only. The smoke test does not call real bank rails, real OCR, webhooks, or external file services.
 
-## 10. smoke:all-local Coverage
+## 10. smoke:admin-permission Coverage
+
+- Safety guard blocks unsafe environment, production-like DB/API targets, live provider modes, and missing `LOCAL_ADMIN_PASSWORD`.
+- `GET /api/health`.
+- Admin auth negative checks return `401`.
+- Owner role lists roles, lists permissions, reads current permissions, assigns a role to another admin, approves a mock deposit, and updates site settings.
+- Finance role views deposits/withdrawals, approves mock deposit/withdrawal, and is forbidden from settings updates.
+- Support role views and updates members, and is forbidden from deposit approval.
+- Graphic role updates website settings/theme and is forbidden from deposit/withdrawal approval.
+- Viewer role can view allowed data and is forbidden from create/update/approve actions.
+- Site-level empty permission override is forbidden from protected endpoints with `403`.
+- Response leak scan, including DB URL markers, auth values, password/token/secret markers, JWT-like values, and credential-shaped PostgreSQL URLs.
+
+RBAC smoke uses only local/staging/test PostgreSQL fixtures. It does not call real provider, payment, bank, SMS, or Slip OCR services, and it does not run real-money UAT.
+
+## 11. smoke:all-local Coverage
 
 `npm run smoke:all-local` runs a guarded sequence and stops on the first failure:
 
@@ -165,6 +181,7 @@ All bank module endpoints covered here are mock/sandbox only. The smoke test doe
   - `financialNegativeSmoke.js`
   - `adminReportsConfigSmoke.js`
   - `bankModuleSmoke.js`
+  - `adminPermissionSmoke.js`
 - `npm run check`.
 - `npm run smoke:promotion-claim`.
 - `npm run smoke:money-flow`.
@@ -173,11 +190,12 @@ All bank module endpoints covered here are mock/sandbox only. The smoke test doe
 - `npm run smoke:financial-negative`.
 - `npm run smoke:admin-reports-config`.
 - `npm run smoke:bank-module`.
+- `npm run smoke:admin-permission`.
 - Secret grep over package/docs/README/local-smoke related files.
 - `git diff --check`.
 - Final PASS/FAIL summary.
 
-## 11. GitHub Actions Safe CI Coverage
+## 12. GitHub Actions Safe CI Coverage
 
 `.github/workflows/ci.yml` defines Safe CI for `push` and `pull_request`:
 
@@ -194,12 +212,13 @@ All bank module endpoints covered here are mock/sandbox only. The smoke test doe
   - `promotionClaimSmoke.js`
   - `gameTransferSmoke.js`
   - `adminReportsConfigSmoke.js`
+  - `adminPermissionSmoke.js`
   - `runAllLocalSmoke.js`
 - Secret-shaped value scan over `package.json`, `README.md`, `src/local-smoke-tests`, and `.github`.
 
 Safe CI does not run DB-backed smoke commands because those require a running backend, safe local/staging/test PostgreSQL, guarded environment variables, and local fixtures.
 
-## 12. Required Local Runtime
+## 13. Required Local Runtime
 
 To run local smoke commands, prepare:
 
@@ -214,7 +233,7 @@ To run local smoke commands, prepare:
 
 `moneyFlowSmoke.js` also allows `staging` for `NODE_ENV`. Other current smoke scripts shown above allow `development-local` or `test`.
 
-## 13. Safe Commands
+## 14. Safe Commands
 
 Run these only after the backend and safe local/staging/test environment are ready:
 
@@ -226,10 +245,11 @@ npm run smoke:financial-negative
 npm run smoke:promotion-claim
 npm run smoke:game-transfer
 npm run smoke:admin-reports-config
+npm run smoke:admin-permission
 npm run check
 ```
 
-## 14. Mock / Sandbox Boundaries
+## 15. Mock / Sandbox Boundaries
 
 - Game provider coverage uses mock/local fixtures and `MockGameProviderAdapter` behavior.
 - Payment and bank money flow is manual local approval through the API and admin endpoints.
@@ -237,21 +257,23 @@ npm run check
 - No real payment rail or bank rail is used.
 - SMS is a mock placeholder.
 - Slip OCR is a mock placeholder.
+- Admin RBAC smoke uses mock/local admin fixtures and backend permission guards only.
 - Production DB targets are forbidden.
 - Real provider/payment/bank integrations and production credential flows are outside current smoke coverage.
 
-## 15. Known Coverage Gaps
+## 16. Known Coverage Gaps
 
 Confirmed from current docs and scripts:
 
 - Config POST/PUT endpoints are intentionally not covered by `smoke:admin-reports-config` because the smoke is read-only for config safety.
 - Real provider integrations are not covered.
 - Real payment and bank integrations are not covered.
+- Production RBAC integration with an external identity provider is not covered.
 - Production deployment smoke is not covered.
 - Full end-to-end frontend coverage is not covered.
 - docs/API.md still contains older "ต้องตรวจเพิ่ม" notes for some endpoints that are now covered by newer smoke scripts; ต้องตรวจเพิ่ม before using that section as the source of truth.
 
-## 16. How to Add a New Smoke
+## 17. How to Add a New Smoke
 
 1. Add the new smoke script under `src/local-smoke-tests`.
 2. Reuse the existing local safety guard and response leak scan patterns.
