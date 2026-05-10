@@ -17,6 +17,7 @@ const RELATED_FILES = [
   "README.md",
   "src/local-smoke-tests/runAllLocalSmoke.js",
   "src/local-smoke-tests/promotionClaimSmoke.js",
+  "src/local-smoke-tests/gameTransferSmoke.js",
 ];
 const SECRET_GREP_PATTERN = [
   ["postgres", "ql://[^:@]+:[^@]+@"].join(""),
@@ -40,6 +41,7 @@ const summary = [
   { key: "promotion", label: "promotion-claim", status: "PENDING" },
   { key: "money", label: "money-flow", status: "PENDING" },
   { key: "core", label: "core-api", status: "PENDING" },
+  { key: "gameTransfer", label: "game-transfer", status: "PENDING" },
   { key: "financial", label: "financial-negative", status: "PENDING" },
   { key: "responseScan", label: "response leak scan", status: "PENDING" },
   { key: "secretGrep", label: "secret grep", status: "PENDING" },
@@ -63,6 +65,12 @@ const steps = [
     name: "node --check coreApiSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/coreApiSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check gameTransferSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/gameTransferSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -94,6 +102,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:core-api"]),
     summaryKey: "core",
+  },
+  {
+    name: "npm run smoke:game-transfer",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:game-transfer"]),
+    summaryKey: "gameTransfer",
   },
   {
     name: "npm run smoke:financial-negative",

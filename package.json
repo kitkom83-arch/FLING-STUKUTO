@@ -30,6 +30,7 @@
     "smoke:money-flow": "node src/local-smoke-tests/moneyFlowSmoke.js",
     "smoke:promotion-claim": "node src/local-smoke-tests/promotionClaimSmoke.js",
     "smoke:core-api": "node src/local-smoke-tests/coreApiSmoke.js",
+    "smoke:game-transfer": "node src/local-smoke-tests/gameTransferSmoke.js",
     "smoke:financial-negative": "node src/local-smoke-tests/financialNegativeSmoke.js",
     "smoke:all-local": "node src/local-smoke-tests/runAllLocalSmoke.js"
   },

@@ -168,6 +168,7 @@ npx prisma validate
 npx prisma generate
 node --check src/local-smoke-tests/moneyFlowSmoke.js
 node --check src/local-smoke-tests/coreApiSmoke.js
+node --check src/local-smoke-tests/gameTransferSmoke.js
 node --check src/local-smoke-tests/financialNegativeSmoke.js
 node --check src/local-smoke-tests/runAllLocalSmoke.js
 ```
@@ -177,6 +178,7 @@ Run local smoke tests only when the backend is already running and the environme
 ```bash
 npm run smoke:money-flow
 npm run smoke:core-api
+npm run smoke:game-transfer
 npm run smoke:financial-negative
 npm run smoke:all-local
 ```
@@ -245,6 +247,18 @@ npm run smoke:core-api
 
 The script creates or updates a local-only `local_core_api_admin` admin and an active mock `PG` game provider for the configured site code. It registers and logs in a temporary member, checks `/api/health`, `/api/me`, `/api/wallet`, `/api/points`, `/api/wallet/ledger`, `/api/promotions`, mock game provider/game/launch endpoints, `/api/admin/me`, `/api/admin/logs`, `/api/admin/members`, `/api/admin/deposits`, and `/api/admin/withdrawals`. It also confirms selected protected endpoints return JSON `401` responses without tokens and scans responses for unsafe values.
 
+## Local Game Transfer Smoke Test
+
+The local game transfer smoke test covers the mock game transfer endpoints through the real local API only. It blocks unsafe `NODE_ENV`, production-like API/database targets, and non-mock provider modes before creating local fixtures.
+
+Run the backend first with safe local or test environment values, then run:
+
+```bash
+npm run smoke:game-transfer
+```
+
+`BASE_URL` defaults to `http://localhost:4000/api`. The script creates an active local mock `PG` provider/game fixture and a temporary member wallet with local test credit, logs the member in through `/api/auth/login`, verifies unauthenticated transfer-in, transfer-out, and bet-history calls return JSON auth errors without 500s, exercises `/api/game/transfer-in/mock`, `/api/game/transfer-out/mock`, and `/api/game/bet-history/mock`, checks expected wallet and ledger effects, and scans game responses for unsafe secret-shaped values.
+
 ## Local Financial Negative Smoke Test
 
 The local financial negative smoke test checks unsafe deposit, withdrawal, ledger, and admin-log paths against the local API only. It blocks unsafe `NODE_ENV`, production-like API/database targets, and non-mock provider modes before creating local fixtures.
@@ -259,7 +273,7 @@ npm run smoke:financial-negative
 
 ## Local All Smoke Test
 
-The all-local smoke runner executes the local smoke suite in one guarded sequence. It performs syntax checks for the three local smoke files, runs the project check, runs money-flow, core API, and financial-negative smoke tests, scans the related files for secret-shaped values, and checks whitespace errors in the related diff.
+The all-local smoke runner executes the local smoke suite in one guarded sequence. It performs syntax checks for the local smoke files, runs the project check, runs money-flow, core API, game-transfer, and financial-negative smoke tests, scans the related files for secret-shaped values, and checks whitespace errors in the related diff.
 
 Start the backend first with safe local or test environment values:
 
