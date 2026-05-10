@@ -178,6 +178,24 @@ npm run smoke:financial-negative
 
 `BASE_URL` defaults to `http://localhost:4000/api`. The script creates a local-only admin and member fixture, calls the real local API for invalid amounts, insufficient withdrawal balance, duplicate deposit approval, duplicate withdrawal approval, duplicate mark-paid, wallet ledger row counts, and required admin log actions. Every API response read by the script is scanned for unsafe secret markers and credential-shaped values.
 
+## Local All Smoke Test
+
+The all-local smoke runner executes the local smoke suite in one guarded sequence. It performs syntax checks for the three local smoke files, runs the project check, runs money-flow, core API, and financial-negative smoke tests, scans the related files for secret-shaped values, and checks whitespace errors in the related diff.
+
+Start the backend first with safe local or test environment values:
+
+```bash
+node src/server.js
+```
+
+Then run:
+
+```bash
+npm run smoke:all-local
+```
+
+`NODE_ENV` must be `development-local` or `test`, `LOCAL_ADMIN_PASSWORD` and `JWT_SECRET` must be set, the PostgreSQL target must be local/staging/test only, API base URLs must not be production-like, and provider, payment, bank, SMS, and slip OCR modes must remain unset, `mock`, or `sandbox`. The runner stops on the first failure and prints a PASS/FAIL summary without printing raw environment values, database URLs, passwords, tokens, or provider secrets.
+
 ## Demo Accounts
 
 Admin:

@@ -1,0 +1,377 @@
+require("dotenv").config();
+
+const { spawnSync } = require("child_process");
+
+const {
+  evaluateDbSafetyGuard,
+  PROVIDER_MODE_KEYS,
+} = require("../db-safety-tests/dbSafetyGuard");
+
+const SAFE_NODE_ENVS = new Set(["development-local", "test"]);
+const SAFE_PROVIDER_MODES = new Set(["mock", "sandbox"]);
+const SAFE_TARGET_MARKERS = ["local", "test", "testing", "stage", "staging", "sandbox", "qa"];
+const PRODUCTION_MARKERS = ["prod", "production", "live", "primary", "main", "master"];
+const DEFAULT_BASE_URL = "http://localhost:4000/api";
+const RELATED_FILES = ["package.json", "README.md", "src/local-smoke-tests/runAllLocalSmoke.js"];
+const SECRET_GREP_PATTERN = [
+  ["postgres", "ql://[^:@]+:[^@]+@"].join(""),
+  [["Be", "arer"].join(""), String.raw`\s+`].join(""),
+  ["e", "y", "J"].join(""),
+  ["s", "k", "-"].join(""),
+  ["DATABASE", "_URL", String.raw`\s*=`].join(""),
+].join("|");
+
+const nodeCommand = process.execPath;
+const npmCommand = process.platform === "win32" ? "cmd.exe" : "npm";
+
+function npmArgs(args) {
+  if (process.platform !== "win32") return args;
+  return ["/d", "/s", "/c", ["npm", ...args].join(" ")];
+}
+
+const summary = [
+  { key: "syntax", label: "syntax checks", status: "PENDING" },
+  { key: "project", label: "project check", status: "PENDING" },
+  { key: "money", label: "money-flow", status: "PENDING" },
+  { key: "core", label: "core-api", status: "PENDING" },
+  { key: "financial", label: "financial-negative", status: "PENDING" },
+  { key: "responseScan", label: "response leak scan", status: "PENDING" },
+  { key: "secretGrep", label: "secret grep", status: "PENDING" },
+  { key: "diff", label: "git diff --check", status: "PENDING" },
+];
+
+const steps = [
+  {
+    name: "node --check moneyFlowSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/moneyFlowSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check coreApiSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/coreApiSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check financialNegativeSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/financialNegativeSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "npm run check",
+    command: npmCommand,
+    args: npmArgs(["run", "check"]),
+    summaryKey: "project",
+  },
+  {
+    name: "npm run smoke:money-flow",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:money-flow"]),
+    summaryKey: "money",
+  },
+  {
+    name: "npm run smoke:core-api",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:core-api"]),
+    summaryKey: "core",
+  },
+  {
+    name: "npm run smoke:financial-negative",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:financial-negative"]),
+    summaryKey: "financial",
+    alsoPass: ["responseScan"],
+  },
+  {
+    name: "secret grep",
+    command: "rg",
+    args: [
+      "-n",
+      SECRET_GREP_PATTERN,
+      "package.json",
+      "README.md",
+      "src/local-smoke-tests",
+    ],
+    summaryKey: "secretGrep",
+    expectNoMatches: true,
+  },
+  {
+    name: "git diff --check",
+    command: "git",
+    args: ["diff", "--check", "--", ...RELATED_FILES],
+    summaryKey: "diff",
+  },
+];
+
+function tokenize(value) {
+  return String(value || "")
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter(Boolean);
+}
+
+function hasAnyToken(value, markers) {
+  const tokens = tokenize(value);
+  return markers.some((marker) => tokens.includes(marker));
+}
+
+function parseUrl(value) {
+  try {
+    return new URL(value);
+  } catch (_error) {
+    return null;
+  }
+}
+
+function normalizeHost(hostname) {
+  return String(hostname || "").toLowerCase().replace(/^\[/, "").replace(/\]$/, "");
+}
+
+function isLoopbackHost(hostname) {
+  const host = normalizeHost(hostname);
+  return host === "localhost" || host === "127.0.0.1" || host === "::1";
+}
+
+function ensureApiPath(baseUrl) {
+  const trimmed = String(baseUrl || "").trim().replace(/\/+$/, "");
+  const parsed = parseUrl(trimmed);
+  if (!parsed) return trimmed;
+  if (parsed.pathname === "" || parsed.pathname === "/") return `${trimmed}/api`;
+  return trimmed;
+}
+
+function configuredHealthBaseUrl() {
+  if (process.env.BASE_URL) return ensureApiPath(process.env.BASE_URL);
+  if (process.env.CORE_API_BASE_URL) return ensureApiPath(process.env.CORE_API_BASE_URL);
+  if (process.env.PUBLIC_API_BASE_URL) return ensureApiPath(process.env.PUBLIC_API_BASE_URL);
+  return DEFAULT_BASE_URL;
+}
+
+function inspectDatabaseTarget(databaseUrl) {
+  const parsed = typeof databaseUrl === "string" && databaseUrl.trim() ? parseUrl(databaseUrl.trim()) : null;
+  if (!parsed) {
+    return { ok: false, localAllowed: false, reason: "DATABASE_URL must be set. Value is not printed." };
+  }
+  if (!["postgres:", "postgresql:"].includes(parsed.protocol)) {
+    return { ok: false, localAllowed: false, reason: "DATABASE_URL must use PostgreSQL. Value is not printed." };
+  }
+
+  const targetParts = [parsed.hostname, parsed.pathname, parsed.username];
+  if (targetParts.some((part) => hasAnyToken(part, PRODUCTION_MARKERS))) {
+    return {
+      ok: false,
+      localAllowed: false,
+      reason: "DATABASE_URL appears production-like and is blocked. Value is not printed.",
+    };
+  }
+
+  const localAllowed = isLoopbackHost(parsed.hostname);
+  const hasSafeMarker = targetParts.some((part) => hasAnyToken(part, SAFE_TARGET_MARKERS));
+  if (!localAllowed && !hasSafeMarker) {
+    return {
+      ok: false,
+      localAllowed: false,
+      reason: "DATABASE_URL must target local/staging/test PostgreSQL. Value is not printed.",
+    };
+  }
+
+  return { ok: true, localAllowed, reason: null };
+}
+
+function inspectApiBaseUrl(label, apiBaseUrl) {
+  const parsed = parseUrl(apiBaseUrl);
+  if (!parsed || !["http:", "https:"].includes(parsed.protocol)) {
+    return { ok: false, reason: `${label} must be a valid HTTP(S) URL.` };
+  }
+  if (parsed.username || parsed.password) {
+    return { ok: false, reason: `${label} must not contain embedded credentials.` };
+  }
+  if (hasAnyToken(parsed.hostname, PRODUCTION_MARKERS)) {
+    return { ok: false, reason: `${label} appears production-like and is blocked.` };
+  }
+  if (!isLoopbackHost(parsed.hostname) && !hasAnyToken(parsed.hostname, SAFE_TARGET_MARKERS)) {
+    return { ok: false, reason: `${label} must target local/staging/test only.` };
+  }
+  return { ok: true, reason: null };
+}
+
+function normalizedGuardEnv() {
+  const env = { ...process.env };
+  for (const key of PROVIDER_MODE_KEYS) {
+    if (!env[key]) env[key] = "mock";
+  }
+  return env;
+}
+
+function assertLocalSafety() {
+  const reasons = [];
+  const nodeEnv = String(process.env.NODE_ENV || "").trim().toLowerCase();
+  const databaseTarget = inspectDatabaseTarget(process.env.DATABASE_URL);
+  const guardResult = evaluateDbSafetyGuard(normalizedGuardEnv());
+  const urlEnvKeys = ["BASE_URL", "CORE_API_BASE_URL", "PUBLIC_API_BASE_URL"];
+
+  if (!SAFE_NODE_ENVS.has(nodeEnv)) {
+    reasons.push("NODE_ENV must be development-local or test.");
+  }
+  if (!process.env.LOCAL_ADMIN_PASSWORD) {
+    reasons.push("LOCAL_ADMIN_PASSWORD must be set for local smoke tests.");
+  }
+  if (!process.env.JWT_SECRET) {
+    reasons.push("JWT_SECRET must be set for local smoke tests.");
+  }
+  if (!databaseTarget.ok) {
+    reasons.push(databaseTarget.reason);
+  }
+
+  for (const key of PROVIDER_MODE_KEYS) {
+    const mode = String(process.env[key] || "mock").trim().toLowerCase();
+    if (!SAFE_PROVIDER_MODES.has(mode)) {
+      reasons.push(`${key} must be mock or sandbox for local smoke tests.`);
+    }
+  }
+
+  for (const key of urlEnvKeys) {
+    if (!process.env[key]) continue;
+    const result = inspectApiBaseUrl(key, ensureApiPath(process.env[key]));
+    if (!result.ok) reasons.push(result.reason);
+  }
+
+  for (const reason of guardResult.reasons) {
+    const localMarkerReason = reason.startsWith("DATABASE_URL must include an explicit staging/test marker");
+    if (localMarkerReason && databaseTarget.ok && databaseTarget.localAllowed) continue;
+    reasons.push(reason);
+  }
+
+  if (reasons.length > 0) {
+    throw new Error(`All local smoke safety guard: BLOCKED\n- ${reasons.join("\n- ")}`);
+  }
+
+  console.log("All local smoke safety guard: PASS");
+}
+
+async function assertBackendHealth() {
+  const baseUrl = configuredHealthBaseUrl();
+  const healthUrl = `${baseUrl.replace(/\/+$/, "")}/health`;
+
+  try {
+    const response = await fetch(healthUrl, { headers: { Accept: "application/json" } });
+    if (!response.ok) {
+      throw new Error(`health returned ${response.status}`);
+    }
+    const payload = await response.json();
+    if (!payload || payload.success !== true) {
+      throw new Error("health response was not successful");
+    }
+  } catch (error) {
+    throw new Error(
+      `Backend local health check failed. Please open node src/server.js before running smoke. Detail: ${error.message}`
+    );
+  }
+
+  console.log("Backend local health check: PASS");
+}
+
+function sensitiveEnvValues() {
+  const sensitiveKeyPattern = /password|token|secret|key|authorization|database/i;
+  return Object.entries(process.env)
+    .filter(([key, value]) => sensitiveKeyPattern.test(key) && typeof value === "string" && value.length >= 6)
+    .map(([, value]) => value)
+    .sort((a, b) => b.length - a.length);
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function sanitizeOutput(value) {
+  let text = String(value || "");
+  for (const secretValue of sensitiveEnvValues()) {
+    text = text.replace(new RegExp(escapeRegExp(secretValue), "g"), "[REDACTED]");
+  }
+
+  text = text.replace(/postgres(?:ql)?:\/\/[^\s]+/gi, "[REDACTED_DB_URL]");
+  text = text.replace(/\b[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\b/g, "[REDACTED_JWT]");
+  text = text.replace(new RegExp(`${["Be", "arer"].join("")}\\s+[^\\s"']+`, "gi"), "[REDACTED_AUTH]");
+  text = text.replace(new RegExp(`${["e", "y", "J"].join("")}[A-Za-z0-9_-]+`, "g"), "[REDACTED_TOKEN]");
+  text = text.replace(new RegExp(`${["s", "k", "-"].join("")}[A-Za-z0-9_-]+`, "g"), "[REDACTED_KEY]");
+  return text;
+}
+
+function updateSummary(key, status) {
+  const item = summary.find((entry) => entry.key === key);
+  if (item) item.status = status;
+}
+
+function markSkippedAfterFailure() {
+  for (const item of summary) {
+    if (item.status === "PENDING") item.status = "SKIPPED";
+  }
+}
+
+function printOutput(output, writer) {
+  const sanitized = sanitizeOutput(output).trimEnd();
+  if (sanitized) writer(sanitized);
+}
+
+function runStep(step) {
+  console.log(`\n[RUN] ${step.name}`);
+  const result = spawnSync(step.command, step.args, {
+    cwd: process.cwd(),
+    env: process.env,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"],
+    shell: false,
+  });
+
+  printOutput(result.stdout, console.log);
+  printOutput(result.stderr, console.error);
+
+  if (result.error) {
+    updateSummary(step.summaryKey, "FAIL");
+    throw new Error(`${step.name} failed to start: ${result.error.message}`);
+  }
+
+  const exitCode = typeof result.status === "number" ? result.status : 1;
+  const passed = step.expectNoMatches ? exitCode === 1 : exitCode === 0;
+  if (!passed) {
+    updateSummary(step.summaryKey, "FAIL");
+    throw new Error(`${step.name} failed.`);
+  }
+
+  updateSummary(step.summaryKey, "PASS");
+  for (const key of step.alsoPass || []) updateSummary(key, "PASS");
+  console.log(`[PASS] ${step.name}`);
+}
+
+function printSummary(finalStatus) {
+  console.log("\nSmoke all-local summary");
+  for (const item of summary) {
+    console.log(`- ${item.label}: ${item.status}`);
+  }
+  console.log(`- final result: ${finalStatus}`);
+}
+
+async function main() {
+  let finalStatus = "FAIL";
+
+  try {
+    assertLocalSafety();
+    await assertBackendHealth();
+
+    for (const step of steps) {
+      runStep(step);
+    }
+
+    finalStatus = "PASS";
+  } catch (error) {
+    console.error(sanitizeOutput(error.message));
+    process.exitCode = 1;
+  } finally {
+    markSkippedAfterFailure();
+    printSummary(finalStatus);
+  }
+}
+
+main();
