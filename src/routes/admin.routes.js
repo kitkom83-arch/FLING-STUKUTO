@@ -4,6 +4,7 @@ const { siteAccess } = require("../middleware/siteAccess");
 const adminController = require("../controllers/admin.controller");
 const adminSiteController = require("../controllers/adminSite.controller");
 const bankAccountController = require("../controllers/bankAccount.controller");
+const bankMockController = require("../controllers/bankMock.controller");
 const depositController = require("../controllers/deposit.controller");
 const withdrawController = require("../controllers/withdraw.controller");
 const { asyncHandler } = require("../middleware/errorHandler");
@@ -23,6 +24,7 @@ router.post("/sites/:id/theme", adminAuth, asyncHandler(adminSiteController.upda
 router.get("/sites/:id/bank-accounts", adminAuth, asyncHandler(adminSiteController.listBankAccounts));
 router.post("/sites/:id/bank-accounts", adminAuth, asyncHandler(adminSiteController.createBankAccount));
 router.put("/sites/:id/bank-accounts/:bankAccountId", adminAuth, asyncHandler(adminSiteController.updateBankAccount));
+router.delete("/sites/:id/bank-accounts/:bankAccountId", adminAuth, asyncHandler(adminSiteController.disableBankAccount));
 router.get("/sites/:id/game-providers", adminAuth, asyncHandler(adminSiteController.listGameProviders));
 router.post("/sites/:id/game-providers", adminAuth, asyncHandler(adminSiteController.createGameProvider));
 router.put("/sites/:id/game-providers/:configId", adminAuth, asyncHandler(adminSiteController.updateGameProvider));
@@ -42,6 +44,9 @@ router.post("/members/:id/points/remove", protectedSite, asyncHandler(adminContr
 router.get("/bank-accounts/pending", protectedSite, asyncHandler(bankAccountController.pending));
 router.post("/bank-accounts/:id/approve", protectedSite, asyncHandler(bankAccountController.approve));
 router.post("/bank-accounts/:id/reject", protectedSite, asyncHandler(bankAccountController.reject));
+router.get("/bank/mock/statements/deposits", protectedSite, asyncHandler(bankMockController.listDepositStatements));
+router.get("/bank/mock/statements/withdrawals", protectedSite, asyncHandler(bankMockController.listWithdrawStatements));
+router.post("/slip-ocr/mock/verify", protectedSite, asyncHandler(bankMockController.verifySlip));
 
 router.get("/deposits", protectedSite, asyncHandler(depositController.listAdmin));
 router.post("/deposits/:id/approve", protectedSite, asyncHandler(depositController.approve));

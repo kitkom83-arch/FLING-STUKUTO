@@ -152,8 +152,9 @@ Admin site/config endpoints found in routes:
 | POST | `/admin/sites/:id/settings` | Admin + target site access in controller | Upsert site settings | `lineUrl`, `telegramUrl`, `customerServiceUrl`, `announcement`, `maintenanceMode`, `metadata` | `site.settings.update` |
 | POST | `/admin/sites/:id/theme` | Admin + target site access in controller | Upsert site theme | `logoUrl`, `faviconUrl`, `primaryColor`, `secondaryColor`, `backgroundColor`, `layoutMode`, `customCss` | `site.theme.update` |
 | GET | `/admin/sites/:id/bank-accounts` | Admin + target site access in controller | List site bank accounts | None | None |
-| POST | `/admin/sites/:id/bank-accounts` | Admin + target site access in controller | Create site bank account | `type`, `bankCode`, `bankName`, `accountName`, `accountNumber`, optional `phone`, `status`, `isDefault`, `metadata` | `site.bank_account.create` |
-| PUT | `/admin/sites/:id/bank-accounts/:bankAccountId` | Admin + target site access in controller | Update site bank account | Partial site bank account fields | `site.bank_account.update` |
+| POST | `/admin/sites/:id/bank-accounts` | Admin + target site access in controller | Create site bank account. Mock balance/capital and website visibility are stored in `metadata`. | `type`, `bankCode`, `bankName`, `accountName`, `accountNumber`, optional `phone`, `status`, `isDefault`, `metadata`, `showOnWebsite`, `mockBalance`, `mockCapital` | `site.bank_account.create` |
+| PUT | `/admin/sites/:id/bank-accounts/:bankAccountId` | Admin + target site access in controller | Update site bank account, including open/closed status and show/hide metadata | Partial site bank account fields, optional `showOnWebsite`, `mockBalance`, `mockCapital` | `site.bank_account.update` |
+| DELETE | `/admin/sites/:id/bank-accounts/:bankAccountId` | Admin + target site access in controller | Safe soft-disable site bank account. Does not delete rows or call bank rails. | None | `site.bank_account.disable` |
 | GET | `/admin/sites/:id/game-providers` | Admin + target site access in controller | List game provider configs with secrets masked | None | None |
 | POST | `/admin/sites/:id/game-providers` | Admin + target site access in controller | Create game provider config | `providerCode`, `displayName`, optional config fields | `site.game_provider.create` |
 | PUT | `/admin/sites/:id/game-providers/:configId` | Admin + target site access in controller | Update game provider config | Partial provider config fields | `site.game_provider.update` |
@@ -167,6 +168,15 @@ Smoke coverage:
 - `moneyFlowSmoke`: bank account approval, deposit approval, withdrawal approval, mark-paid, admin log checks.
 - `financialNegativeSmoke`: duplicate approval guards, invalid amounts, over-balance withdrawal, admin log checks.
 - `adminReportsConfigSmoke`: read-only coverage for `/admin/reports/summary`, `/admin/reports/deposits`, `/admin/reports/withdrawals`, `/admin/reports/wallet-ledger`, `/site/config`, `/admin/sites`, `/admin/sites/current/config`, `/admin/sites/:id`, `/admin/sites/:id/bank-accounts`, `/admin/sites/:id/game-providers`, and `/admin/sites/:id/payment-configs`; includes admin auth negative checks and response leak scan.
+- `bankModuleSmoke`: mock-only bank account create/update/soft-disable, mock deposit/withdraw statement lists, mock Slip OCR success/fail, admin auth negative checks, and response leak scan.
+
+Mock bank module endpoints:
+
+| Method | Path | Auth | Description | Query/body fields |
+| --- | --- | --- | --- | --- |
+| GET | `/admin/bank/mock/statements/deposits` | Admin + site access | Deposit statement mock list. No bank network call. Empty filters return `[]`. | Query: optional `from`, `to`, `date_from`, `date_to`, `search` |
+| GET | `/admin/bank/mock/statements/withdrawals` | Admin + site access | Withdraw statement mock list. No bank network call. Empty filters return `[]`. | Query: optional `from`, `to`, `date_from`, `date_to`, `search` |
+| POST | `/admin/slip-ocr/mock/verify` | Admin + site access | Slip OCR mock verify. Does not run OCR and does not send files outside the system. | Body: optional `result: "success" \| "fail"`, `invalid`, `amount`, `reference` |
 
 ## 7. Deposit API
 

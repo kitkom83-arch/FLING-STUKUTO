@@ -33,6 +33,9 @@ const siteBankAccountSchema = z.object({
   status: z.string().optional(),
   isDefault: z.boolean().optional(),
   metadata: z.any().optional().nullable(),
+  showOnWebsite: z.boolean().optional(),
+  mockBalance: z.union([z.string(), z.number()]).optional().nullable(),
+  mockCapital: z.union([z.string(), z.number()]).optional().nullable(),
 });
 
 const gameProviderSchema = z.object({
@@ -191,10 +194,42 @@ async function listBankAccounts(req, res) {
   return success(res, await prisma.siteBankAccount.findMany({ where: { siteId: site.id }, orderBy: { createdAt: "asc" } }));
 }
 
+function decimalString(value, fieldName) {
+  if (value === undefined || value === null || value === "") return undefined;
+  const normalized = String(value).trim();
+  if (!/^\d+(\.\d{1,2})?$/.test(normalized) || !Number.isFinite(Number(normalized))) {
+    const error = new Error(`${fieldName} must be a non-negative decimal string`);
+    error.statusCode = 400;
+    throw error;
+  }
+  return Number(normalized).toFixed(2);
+}
+
+function normalizeMetadata(metadata) {
+  return metadata && typeof metadata === "object" && !Array.isArray(metadata) ? { ...metadata } : {};
+}
+
+function buildBankAccountData(data, existingMetadata = {}) {
+  const { showOnWebsite, mockBalance, mockCapital, metadata, ...modelData } = data;
+  const nextMetadata = {
+    ...normalizeMetadata(existingMetadata),
+    ...normalizeMetadata(metadata),
+  };
+
+  if (showOnWebsite !== undefined) nextMetadata.showOnWebsite = showOnWebsite;
+  const balance = decimalString(mockBalance, "mockBalance");
+  const capital = decimalString(mockCapital, "mockCapital");
+  if (balance !== undefined) nextMetadata.mockBalance = balance;
+  if (capital !== undefined) nextMetadata.mockCapital = capital;
+
+  if (Object.keys(nextMetadata).length > 0) modelData.metadata = nextMetadata;
+  return modelData;
+}
+
 async function createBankAccount(req, res) {
   const site = await requireSite(req, req.params.id);
   const data = siteBankAccountSchema.parse(req.body);
-  const after = await prisma.siteBankAccount.create({ data: { siteId: site.id, ...data } });
+  const after = await prisma.siteBankAccount.create({ data: { siteId: site.id, ...buildBankAccountData(data) } });
   await logAdminAction({ admin: req.admin, action: "site.bank_account.create", targetType: "site_bank_account", targetId: after.id, after, req, siteId: site.id });
   return success(res, after, 201);
 }
@@ -204,8 +239,41 @@ async function updateBankAccount(req, res) {
   const data = siteBankAccountSchema.partial().parse(req.body);
   const before = await prisma.siteBankAccount.findFirst({ where: { id: req.params.bankAccountId, siteId: site.id } });
   if (!before) throwNotFound("Site bank account not found");
-  const after = await prisma.siteBankAccount.update({ where: { id: before.id }, data });
+  const after = await prisma.siteBankAccount.update({
+    where: { id: before.id },
+    data: buildBankAccountData(data, before.metadata),
+  });
   await logAdminAction({ admin: req.admin, action: "site.bank_account.update", targetType: "site_bank_account", targetId: after.id, before, after, req, siteId: site.id });
+  return success(res, after);
+}
+
+async function disableBankAccount(req, res) {
+  const site = await requireSite(req, req.params.id);
+  const before = await prisma.siteBankAccount.findFirst({ where: { id: req.params.bankAccountId, siteId: site.id } });
+  if (!before) throwNotFound("Site bank account not found");
+  const after = await prisma.siteBankAccount.update({
+    where: { id: before.id },
+    data: {
+      status: "disabled",
+      isDefault: false,
+      metadata: {
+        ...normalizeMetadata(before.metadata),
+        showOnWebsite: false,
+        disabledAt: new Date().toISOString(),
+        safeDelete: true,
+      },
+    },
+  });
+  await logAdminAction({
+    admin: req.admin,
+    action: "site.bank_account.disable",
+    targetType: "site_bank_account",
+    targetId: after.id,
+    before,
+    after,
+    req,
+    siteId: site.id,
+  });
   return success(res, after);
 }
 
@@ -272,6 +340,7 @@ module.exports = {
   listBankAccounts,
   createBankAccount,
   updateBankAccount,
+  disableBankAccount,
   listGameProviders,
   createGameProvider,
   updateGameProvider,

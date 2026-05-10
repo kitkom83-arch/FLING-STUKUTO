@@ -287,9 +287,19 @@ npm run smoke:admin-reports-config
 
 `BASE_URL` defaults to `http://localhost:4000/api`. The script verifies `/api/health`, `/api/site/config`, unauthenticated admin report/config auth guards, admin login with `LOCAL_ADMIN_PASSWORD`, `/api/admin/reports/summary`, `/api/admin/reports/deposits`, `/api/admin/reports/withdrawals`, `/api/admin/reports/wallet-ledger`, `/api/admin/sites`, `/api/admin/sites/current/config`, `/api/admin/sites/:id`, `/api/admin/sites/:id/bank-accounts`, `/api/admin/sites/:id/game-providers`, and `/api/admin/sites/:id/payment-configs`. It uses GET/read-only endpoint calls for the coverage checks and scans every response it reads for unsafe secret-shaped values.
 
+## Local Bank Module Smoke Test
+
+Run the backend first with safe local or test environment values, then run:
+
+```bash
+npm run smoke:bank-module
+```
+
+`BASE_URL` defaults to `http://localhost:4000/api`. The script blocks production-like DB/API targets and live provider modes, checks `/api/health`, unauthenticated admin bank auth guards, admin login with `LOCAL_ADMIN_PASSWORD`, mock site bank account list/create/update/soft-disable, mock deposit and withdraw statement list filters, mock statement empty state, and mock Slip OCR success/fail responses. It scans responses for unsafe secret-shaped values and does not call real bank rails, OCR services, webhooks, or external file services.
+
 ## Local All Smoke Test
 
-The all-local smoke runner executes the local smoke suite in one guarded sequence. It performs syntax checks for the local smoke files, runs the project check, runs money-flow, core API, game-transfer, financial-negative, and admin reports/config smoke tests, scans the related files for secret-shaped values, and checks whitespace errors in the related diff.
+The all-local smoke runner executes the local smoke suite in one guarded sequence. It performs syntax checks for the local smoke files, runs the project check, runs money-flow, core API, game-transfer, financial-negative, admin reports/config, and bank module smoke tests, scans the related files for secret-shaped values, and checks whitespace errors in the related diff.
 
 Start the backend first with safe local or test environment values:
 
@@ -394,6 +404,13 @@ Admin bank accounts:
 - `GET /api/admin/bank-accounts/pending`
 - `POST /api/admin/bank-accounts/:id/approve`
 - `POST /api/admin/bank-accounts/:id/reject`
+- `GET /api/admin/sites/:id/bank-accounts`
+- `POST /api/admin/sites/:id/bank-accounts`
+- `PUT /api/admin/sites/:id/bank-accounts/:bankAccountId`
+- `DELETE /api/admin/sites/:id/bank-accounts/:bankAccountId`
+- `GET /api/admin/bank/mock/statements/deposits`
+- `GET /api/admin/bank/mock/statements/withdrawals`
+- `POST /api/admin/slip-ocr/mock/verify`
 
 Admin deposits:
 
@@ -513,8 +530,9 @@ Mock game endpoints use `MockGameProviderAdapter` only. They do not call real pr
 
 - Game Provider: `src/adapters/game/GameProviderAdapter.js`, `src/adapters/game/MockGameProviderAdapter.js`
 - Payment/Bank: `src/adapters/payment/MockPaymentAdapter.js` and manual admin approval flows
+- Bank Statement: `src/adapters/bank/MockBankStatementAdapter.js` for local mock statement lists only
 - SMS: mock mode placeholder only, no real SMS API connected
-- Slip OCR: mock mode placeholder only, no real OCR API connected
+- Slip OCR: `src/adapters/slipOcr/MockSlipOcrAdapter.js` for local mock verify success/fail only
 
 ### Ready-to-connect Adapter List
 
