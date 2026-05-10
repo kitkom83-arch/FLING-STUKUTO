@@ -345,6 +345,7 @@ npm run smoke:all-local
 
 See `docs/SMOKE_COVERAGE.md` for the smoke coverage index.
 See `docs/ADMIN_UI_PERMISSIONS.md` for the admin UI permission contract.
+See `docs/ADMIN_ROLE_MANAGEMENT_UI.md` for the admin role-management UI contract.
 See `docs/DEMO_SEED.md` for the demo seed runbook and mock data list.
 See `docs/STAGING_UAT.md` for the staging/UAT boundary guard runbook and controlled-live checklist.
 See `docs/STAGING_DEPLOY.md` and `docs/STAGING_SMOKE.md` for staging deploy preparation, staging env placeholders, smoke boundaries, rollback, logs, and security checklists.
