@@ -166,6 +166,18 @@ npm run smoke:core-api
 
 The script creates or updates a local-only `local_core_api_admin` admin and an active mock `PG` game provider for the configured site code. It registers and logs in a temporary member, checks `/api/health`, `/api/me`, `/api/wallet`, `/api/points`, `/api/wallet/ledger`, `/api/promotions`, mock game provider/game/launch endpoints, `/api/admin/me`, `/api/admin/logs`, `/api/admin/members`, `/api/admin/deposits`, and `/api/admin/withdrawals`. It also confirms selected protected endpoints return JSON `401` responses without tokens and scans responses for unsafe values.
 
+## Local Financial Negative Smoke Test
+
+The local financial negative smoke test checks unsafe deposit, withdrawal, ledger, and admin-log paths against the local API only. It blocks unsafe `NODE_ENV`, production-like API/database targets, and non-mock provider modes before creating local fixtures.
+
+Run the backend first with safe local or test environment values, then run:
+
+```bash
+npm run smoke:financial-negative
+```
+
+`BASE_URL` defaults to `http://localhost:4000/api`. The script creates a local-only admin and member fixture, calls the real local API for invalid amounts, insufficient withdrawal balance, duplicate deposit approval, duplicate withdrawal approval, duplicate mark-paid, wallet ledger row counts, and required admin log actions. Every API response read by the script is scanned for unsafe secret markers and credential-shaped values.
+
 ## Demo Accounts
 
 Admin:
