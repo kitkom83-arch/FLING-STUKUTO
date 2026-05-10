@@ -1,10 +1,85 @@
+require("dotenv").config();
+
 const bcrypt = require("bcrypt");
 const { PrismaClient, Prisma } = require("@prisma/client");
 
 const prisma = new PrismaClient();
 
+const SAFE_TARGET_MARKERS = ["local", "test", "testing", "stage", "staging", "sandbox", "qa"];
+const PRODUCTION_MARKERS = ["prod", "production", "live", "primary", "main", "master"];
+const DEMO_ADMIN_PASSWORD = "admin123456";
+const DEMO_MEMBER_PASSWORD = "123456";
+const MOCK_CONFIG_PLACEHOLDER = "MOCK_ONLY_PLACEHOLDER_NOT_A_CREDENTIAL";
+const LOCAL_PROMOTION_SMOKE_ID = "local_mock_promotion_claim_smoke";
+
 function decimal(value) {
   return new Prisma.Decimal(value);
+}
+
+function demoAccountNumber(siteCode, suffix) {
+  const siteDigits = String(siteCode || "")
+    .replace(/\D/g, "")
+    .padStart(4, "0")
+    .slice(-4);
+  return `0000${siteDigits}${suffix}`;
+}
+
+function mockPlaceholder(siteCode, scope, providerCode) {
+  return `${MOCK_CONFIG_PLACEHOLDER}_${siteCode}_${scope}_${providerCode || "DEMO"}`;
+}
+
+function tokenize(value) {
+  return String(value || "")
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter(Boolean);
+}
+
+function hasAnyToken(value, markers) {
+  const tokens = tokenize(value);
+  return markers.some((marker) => tokens.includes(marker));
+}
+
+function normalizeHost(hostname) {
+  return String(hostname || "").toLowerCase().replace(/^\[/, "").replace(/\]$/, "");
+}
+
+function isLoopbackHost(hostname) {
+  const host = normalizeHost(hostname);
+  return host === "localhost" || host === "127.0.0.1" || host === "::1";
+}
+
+function assertSafeDatabaseTarget() {
+  const rawUrl = process.env.DATABASE_URL;
+  let parsed;
+
+  try {
+    parsed = rawUrl ? new URL(rawUrl) : null;
+  } catch (_error) {
+    parsed = null;
+  }
+
+  if (!parsed) {
+    throw new Error("Seed blocked: DATABASE_URL must be set to a safe local/staging/test PostgreSQL target. Value is not printed.");
+  }
+
+  if (!["postgres:", "postgresql:"].includes(parsed.protocol)) {
+    throw new Error("Seed blocked: DATABASE_URL must use PostgreSQL. Value is not printed.");
+  }
+
+  const targetParts = [parsed.hostname, parsed.pathname, parsed.username];
+  if (targetParts.some((part) => hasAnyToken(part, PRODUCTION_MARKERS))) {
+    throw new Error("Seed blocked: DATABASE_URL appears production-like. Value is not printed.");
+  }
+
+  const hasSafeMarker = targetParts.some((part) => hasAnyToken(part, SAFE_TARGET_MARKERS));
+  if (!isLoopbackHost(parsed.hostname) && !hasSafeMarker) {
+    throw new Error("Seed blocked: DATABASE_URL must target local/staging/test PostgreSQL. Value is not printed.");
+  }
+
+  if (String(process.env.NODE_ENV || "").trim().toLowerCase() === "production") {
+    throw new Error("Seed blocked: NODE_ENV=production is not allowed for demo seed.");
+  }
 }
 
 const SITE_DEFS = [
@@ -178,7 +253,9 @@ async function upsertSiteBankAccounts(site, def) {
       bankCode: "KBANK",
       bankName: "Kasikorn Bank",
       accountName: `${def.brandName} Deposit`,
-      accountNumber: `${site.code}001001`,
+      accountNumber: demoAccountNumber(site.code, "01"),
+      legacyAccountNumber: `${site.code}001001`,
+      phone: "0800000000",
       isDefault: true,
     },
     {
@@ -186,16 +263,24 @@ async function upsertSiteBankAccounts(site, def) {
       bankCode: "SCB",
       bankName: "Siam Commercial Bank",
       accountName: `${def.brandName} Withdraw`,
-      accountNumber: `${site.code}002002`,
+      accountNumber: demoAccountNumber(site.code, "02"),
+      legacyAccountNumber: `${site.code}002002`,
+      phone: "0800000000",
       isDefault: false,
     },
   ];
 
   for (const account of accounts) {
     const existing = await prisma.siteBankAccount.findFirst({
-      where: { siteId: site.id, type: account.type, bankCode: account.bankCode, accountNumber: account.accountNumber },
+      where: {
+        siteId: site.id,
+        type: account.type,
+        bankCode: account.bankCode,
+        OR: [{ accountNumber: account.accountNumber }, { accountNumber: account.legacyAccountNumber }],
+      },
     });
-    const data = { ...account, status: "active", metadata: { seed: true } };
+    const { legacyAccountNumber, ...accountData } = account;
+    const data = { ...accountData, status: "active", metadata: { seed: true, mock: true, manualOnly: true } };
     if (existing) {
       await prisma.siteBankAccount.update({ where: { id: existing.id }, data });
     } else {
@@ -214,11 +299,11 @@ async function upsertSiteGameProviders(site, def) {
         status: providerCode === "PG" || providerCode === "JILI" ? "active" : "inactive",
         agentCode: `${site.code}_${providerCode}_AGENT`,
         apiBaseUrl: "https://mock-game-provider.local/api",
-        apiKeyEncrypted: `dev-mock-key-${site.code}-${providerCode}`,
-        secretEncrypted: `dev-mock-secret-${site.code}-${providerCode}`,
+        apiKeyEncrypted: mockPlaceholder(site.code, "GAME_API_KEY", providerCode),
+        secretEncrypted: mockPlaceholder(site.code, "GAME_SECRET", providerCode),
         callbackPath: `/api/game/callback/${site.code.toLowerCase()}/${providerCode.toLowerCase()}`,
         walletMode: "transfer",
-        metadata: { seed: true, mock: true },
+        metadata: { seed: true, mock: true, mode: "sandbox", callsRealProvider: false },
       },
       create: {
         siteId: site.id,
@@ -227,11 +312,11 @@ async function upsertSiteGameProviders(site, def) {
         status: providerCode === "PG" || providerCode === "JILI" ? "active" : "inactive",
         agentCode: `${site.code}_${providerCode}_AGENT`,
         apiBaseUrl: "https://mock-game-provider.local/api",
-        apiKeyEncrypted: `dev-mock-key-${site.code}-${providerCode}`,
-        secretEncrypted: `dev-mock-secret-${site.code}-${providerCode}`,
+        apiKeyEncrypted: mockPlaceholder(site.code, "GAME_API_KEY", providerCode),
+        secretEncrypted: mockPlaceholder(site.code, "GAME_SECRET", providerCode),
         callbackPath: `/api/game/callback/${site.code.toLowerCase()}/${providerCode.toLowerCase()}`,
         walletMode: "transfer",
-        metadata: { seed: true, mock: true },
+        metadata: { seed: true, mock: true, mode: "sandbox", callsRealProvider: false },
       },
     });
   }
@@ -245,10 +330,10 @@ async function upsertSitePaymentConfig(site) {
       status: "active",
       merchantId: `${site.code}_MOCK_MERCHANT`,
       apiBaseUrl: "https://mock-payment.local/api",
-      apiKeyEncrypted: `dev-mock-payment-key-${site.code}`,
-      secretEncrypted: `dev-mock-payment-secret-${site.code}`,
+      apiKeyEncrypted: mockPlaceholder(site.code, "PAYMENT_API_KEY", "MOCK_PAYMENT"),
+      secretEncrypted: mockPlaceholder(site.code, "PAYMENT_SECRET", "MOCK_PAYMENT"),
       callbackPath: `/api/payment/callback/${site.code.toLowerCase()}/mock`,
-      metadata: { seed: true, mock: true },
+      metadata: { seed: true, mock: true, mode: "sandbox", callsRealProvider: false },
     },
     create: {
       siteId: site.id,
@@ -257,10 +342,10 @@ async function upsertSitePaymentConfig(site) {
       status: "active",
       merchantId: `${site.code}_MOCK_MERCHANT`,
       apiBaseUrl: "https://mock-payment.local/api",
-      apiKeyEncrypted: `dev-mock-payment-key-${site.code}`,
-      secretEncrypted: `dev-mock-payment-secret-${site.code}`,
+      apiKeyEncrypted: mockPlaceholder(site.code, "PAYMENT_API_KEY", "MOCK_PAYMENT"),
+      secretEncrypted: mockPlaceholder(site.code, "PAYMENT_SECRET", "MOCK_PAYMENT"),
       callbackPath: `/api/payment/callback/${site.code.toLowerCase()}/mock`,
-      metadata: { seed: true, mock: true },
+      metadata: { seed: true, mock: true, mode: "sandbox", callsRealProvider: false },
     },
   });
 }
@@ -324,6 +409,85 @@ async function upsertPromotions(site, def) {
       await prisma.promotion.update({ where: { id: existing.id }, data });
     } else {
       await prisma.promotion.create({ data });
+    }
+  }
+}
+
+async function upsertSmokeFixtures(site, member) {
+  if (site.code !== "PG77") return;
+
+  await prisma.promotion.upsert({
+    where: { id: LOCAL_PROMOTION_SMOKE_ID },
+    update: {
+      siteId: site.id,
+      title: "Local Mock Promotion Claim Smoke",
+      type: "local_mock",
+      minDeposit: decimal("100.00"),
+      maxDeposit: decimal("1000.00"),
+      bonusType: "fixed",
+      bonusValue: decimal("25.00"),
+      turnoverMultiplier: decimal("2.00"),
+      maxWithdraw: decimal("500.00"),
+      status: "active",
+      startAt: null,
+      endAt: null,
+    },
+    create: {
+      id: LOCAL_PROMOTION_SMOKE_ID,
+      siteId: site.id,
+      title: "Local Mock Promotion Claim Smoke",
+      type: "local_mock",
+      minDeposit: decimal("100.00"),
+      maxDeposit: decimal("1000.00"),
+      bonusType: "fixed",
+      bonusValue: decimal("25.00"),
+      turnoverMultiplier: decimal("2.00"),
+      maxWithdraw: decimal("500.00"),
+      status: "active",
+      startAt: null,
+      endAt: null,
+    },
+  });
+
+  if (!member) return;
+
+  const rows = [
+    {
+      provider: "PG",
+      gameCode: "fortune_tiger",
+      betAmount: "10.00",
+      winAmount: "15.50",
+      profitAmount: "-5.50",
+      roundId: "DEMO-PG77-PG-001",
+    },
+    {
+      provider: "EVO",
+      gameCode: "baccarat_mock",
+      betAmount: "20.00",
+      winAmount: "0.00",
+      profitAmount: "20.00",
+      roundId: "DEMO-PG77-EVO-001",
+    },
+  ];
+
+  for (const row of rows) {
+    const data = {
+      siteId: site.id,
+      userId: member.id,
+      provider: row.provider,
+      gameCode: row.gameCode,
+      betAmount: decimal(row.betAmount),
+      winAmount: decimal(row.winAmount),
+      profitAmount: decimal(row.profitAmount),
+      roundId: row.roundId,
+    };
+    const existing = await prisma.gameBetHistoryMock.findFirst({
+      where: { siteId: site.id, userId: member.id, roundId: row.roundId },
+    });
+    if (existing) {
+      await prisma.gameBetHistoryMock.update({ where: { id: existing.id }, data });
+    } else {
+      await prisma.gameBetHistoryMock.create({ data });
     }
   }
 }
@@ -403,13 +567,18 @@ async function upsertDemoMember(site, demoMember, admin, passwordHash) {
   });
 
   const accounts = [
-    ["KBANK", "1231231231", `${site.brandName} Demo`],
-    ["SCB", "9992221110", `${site.brandName} Demo Account`],
+    ["KBANK", demoAccountNumber(site.code, "11"), "1231231231", `${site.brandName} Demo`],
+    ["SCB", demoAccountNumber(site.code, "12"), "9992221110", `${site.brandName} Demo Account`],
   ];
 
-  for (const [bankCode, accountNumber, accountName] of accounts) {
+  for (const [bankCode, accountNumber, legacyAccountNumber, accountName] of accounts) {
     const existing = await prisma.userBankAccount.findFirst({
-      where: { siteId: site.id, userId: member.id, bankCode, accountNumber },
+      where: {
+        siteId: site.id,
+        userId: member.id,
+        bankCode,
+        OR: [{ accountNumber }, { accountNumber: legacyAccountNumber }],
+      },
     });
     const data = {
       siteId: site.id,
@@ -458,8 +627,10 @@ async function upsertGlobalGames() {
 }
 
 async function main() {
-  const adminPasswordHash = await bcrypt.hash("admin123456", 12);
-  const memberPasswordHash = await bcrypt.hash("123456", 12);
+  assertSafeDatabaseTarget();
+
+  const adminPasswordHash = await bcrypt.hash(DEMO_ADMIN_PASSWORD, 12);
+  const memberPasswordHash = await bcrypt.hash(DEMO_MEMBER_PASSWORD, 12);
 
   const admin = await prisma.admin.upsert({
     where: { username: "admin" },
@@ -476,7 +647,8 @@ async function main() {
       update: { role: "super_admin", permissions: { all: true } },
       create: { adminId: admin.id, siteId: site.id, role: "super_admin", permissions: { all: true } },
     });
-    await upsertDemoMember(site, def.demoMember, admin, memberPasswordHash);
+    const member = await upsertDemoMember(site, def.demoMember, admin, memberPasswordHash);
+    await upsertSmokeFixtures(site, member);
   }
 
   console.log("Seed completed");

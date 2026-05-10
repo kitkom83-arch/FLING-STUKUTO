@@ -64,7 +64,7 @@ Seed demo data:
 npm run seed
 ```
 
-Do not run seed against production.
+Do not run seed against production. The seed is idempotent and creates mock-only demo data for local/staging/test use. See `docs/DEMO_SEED.md` for the full demo seed runbook, verification checks, safe reset flow, and seeded fixture list.
 
 Prisma technical debt: `package.json#prisma` is deprecated for Prisma 7. Migrate this to a Prisma config file before upgrading Prisma major versions.
 
@@ -147,6 +147,8 @@ Prepare a local or test database only after the target has been verified as non-
 npm run prisma:migrate
 npm run seed
 ```
+
+Demo seed details and safe reset steps are documented in `docs/DEMO_SEED.md`.
 
 Use staging/test guarded migrations only with a confirmed non-production target:
 
@@ -304,6 +306,7 @@ npm run smoke:all-local
 `NODE_ENV` must be `development-local` or `test`, `LOCAL_ADMIN_PASSWORD` and `JWT_SECRET` must be set, the PostgreSQL target must be local/staging/test only, API base URLs must not be production-like, and provider, payment, bank, SMS, and slip OCR modes must remain unset, `mock`, or `sandbox`. The runner stops on the first failure and prints a PASS/FAIL summary without printing raw environment values, database URLs, passwords, tokens, or provider secrets.
 
 See `docs/SMOKE_COVERAGE.md` for the smoke coverage index.
+See `docs/DEMO_SEED.md` for the demo seed runbook and mock data list.
 
 ## Demo Accounts
 
@@ -320,7 +323,7 @@ Member:
 - password: `123456`
 - balance: `11.09`
 - points: `47.00`
-- rank: `นางเงือกสาว`
+- rank: `Mermaid Demo`
 
 ## API Endpoints
 
