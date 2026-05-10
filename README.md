@@ -56,7 +56,7 @@ For staging/test deploy migrations, do not run `npx prisma migrate deploy` direc
 npm run db:migrate:staging
 ```
 
-`db:migrate:staging` runs `src/db-safety-tests/dbSafetyGuard.js` before Prisma can deploy migrations. The guard must pass first, `DATABASE_URL` must target staging/test PostgreSQL only, and all provider modes must be `mock` or `sandbox`. Never use this command with a production database and never print `DATABASE_URL`, JWT secrets, API keys, tokens, provider secrets, or passwords.
+`db:migrate:staging` runs `src/db-safety-tests/dbSafetyGuard.js` before Prisma can deploy migrations. The guard must pass first, `DATABASE_URL` must target staging/test PostgreSQL only, and all provider modes must be `mock`, `sandbox`, or `disabled`. Never use this command with a production database and never print `DATABASE_URL`, JWT secrets, API keys, tokens, provider secrets, or passwords.
 
 Seed demo data:
 
@@ -72,9 +72,9 @@ Prisma technical debt: `package.json#prisma` is deprecated for Prisma 7. Migrate
 
 This project is a backend API, not a static demo. Do not deploy it to Netlify as a static site.
 
-Use backend hosting that can run a Node.js process, such as Render, Railway, or a VPS. The API requires PostgreSQL and environment variables for database, auth, CORS, and provider settings.
+Use backend hosting that can run a Node.js process, such as Render, Railway, Fly.io, or a VPS. The API requires PostgreSQL and environment variables for database, auth, CORS, and provider settings.
 
-Staging must use mock or sandbox provider modes for game, payment, bank statement, SMS, and Slip OCR integrations. Do not connect real provider credentials until sandbox callbacks, verification, IP allowlists, rollback, and audit logging are confirmed.
+Staging must use `mock`, `sandbox`, or `disabled` provider modes for game, payment, bank statement, SMS, and Slip OCR integrations. Do not connect real provider credentials until sandbox callbacks, verification, IP allowlists, rollback, and audit logging are confirmed.
 
 Do not commit local runtime files:
 
@@ -89,7 +89,7 @@ Do not run `prisma migrate`, `prisma db seed`, or any real provider/payment/game
 
 PG77-real-core is an Express backend API with Prisma and PostgreSQL. It is not a frontend bundle and must not be deployed to Netlify as a static site.
 
-Staging must run on backend hosting that supports a long-running Node.js process, such as Render, Railway, or a VPS. Staging must use a PostgreSQL database that is separate from production.
+Staging must run on backend hosting that supports a long-running Node.js process, such as Render, Railway, Fly.io, or a VPS. Staging must use a PostgreSQL database that is separate from production.
 
 Use `.env.staging.example` as the placeholder template for staging configuration. Never copy production secrets into staging, never commit real `.env` files, and never print database URLs, JWT secrets, provider API keys, tokens, or callback secrets.
 
@@ -99,7 +99,17 @@ Staging deploy preparation and smoke boundaries are documented in:
 - `docs/STAGING_SMOKE.md`
 - `.env.staging.example`
 
-Provider modes for staging must remain `mock` or sandbox until each real provider has signed sandbox credentials, callback verification, IP allowlists, timeout/retry rules, audit logging, and rollback instructions.
+Provider modes for staging must remain `mock`, `sandbox`, or `disabled` until each real provider has signed sandbox credentials, callback verification, IP allowlists, timeout/retry rules, audit logging, and rollback instructions.
+
+Staging readiness checklist:
+
+- `NODE_ENV` and `APP_ENV` must be explicit staging/test labels.
+- The database URL must point only at a dedicated staging/test PostgreSQL database.
+- JWT, session, and admin secrets must be set in the platform secret manager.
+- Provider, payment, and bank modes must be `mock`, `sandbox`, or `disabled`.
+- `CORS_ORIGIN` and `PUBLIC_API_BASE_URL` must point at staging frontend/admin/API hosts.
+- `GET /api/health` must return `success: true`, `data.ok: true`, boolean `data.databaseConnected`, and safe external mode labels without secrets.
+- `npm run smoke:staging` must pass before DB-backed staging smoke.
 
 Production migration and seed commands must not be run from a local checkout:
 
@@ -181,6 +191,7 @@ node --check src/local-smoke-tests/financialNegativeSmoke.js
 node --check src/local-smoke-tests/adminReportsConfigSmoke.js
 node --check src/local-smoke-tests/adminPermissionSmoke.js
 node --check src/local-smoke-tests/adminWorkScheduleSmoke.js
+node --check src/local-smoke-tests/stagingSmoke.js
 node --check src/local-smoke-tests/runAllLocalSmoke.js
 ```
 
@@ -194,10 +205,22 @@ npm run smoke:financial-negative
 npm run smoke:admin-reports-config
 npm run smoke:admin-permission
 npm run smoke:admin-work-schedule
+npm run smoke:staging
 npm run smoke:all-local
 ```
 
 If a safe database target is not available, stop after `npm run check`, Prisma validation/generation, and the `node --check` smoke syntax checks.
+
+For hosted staging HTTP-only smoke, set `BASE_URL` to the approved staging API URL and run:
+
+```powershell
+$env:BASE_URL = "https://your-staging-url.example/api"
+npm run smoke:staging
+npm run smoke:core-api
+npm run smoke:admin-work-schedule
+```
+
+Do not run the DB-backed commands until the staging database, platform env values, and mock/sandbox/disabled provider boundaries are confirmed.
 
 DB-backed safety tests are guarded. Prefer the dry-run unless a staging/test database has been explicitly confirmed:
 
@@ -354,6 +377,17 @@ npm run smoke:all-local
 ```
 
 `NODE_ENV` must be `development-local` or `test`, `LOCAL_ADMIN_PASSWORD` and `JWT_SECRET` must be set, the PostgreSQL target must be local/staging/test only, API base URLs must not be production-like, and provider, payment, bank, SMS, and slip OCR modes must remain unset, `mock`, or `sandbox`. The runner stops on the first failure and prints a PASS/FAIL summary without printing raw environment values, database URLs, passwords, tokens, or provider secrets.
+
+## Staging Smoke Test
+
+`npm run smoke:staging` is an HTTP-only safety smoke for a running staging backend. It requires `BASE_URL`, blocks production-like API hosts, checks `/api/health`, verifies `databaseConnected` is a boolean, verifies provider/payment/bank/SMS/Slip OCR health modes are `mock`, `sandbox`, or `disabled`, calls admin auth with invalid credentials as a negative leak check, and scans responses for secret-shaped values.
+
+```powershell
+$env:BASE_URL = "https://your-staging-url.example/api"
+npm run smoke:staging
+```
+
+It does not import Prisma, seed fixtures, run migrations, call real providers, connect bank/payment rails, or move money.
 
 See `docs/SMOKE_COVERAGE.md` for the smoke coverage index.
 See `docs/ADMIN_UI_PERMISSIONS.md` for the admin UI permission contract.

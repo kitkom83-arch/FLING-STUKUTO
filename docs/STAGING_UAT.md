@@ -17,7 +17,7 @@ Never paste real tokens, passwords, API keys, provider secrets, callback secrets
 
 - Local smoke tests are allowed only against `local`, `staging`, or `test` targets.
 - Production databases, production clones, production read replicas, and production-like database names or hosts are forbidden for local smoke, seed, and DB-backed safety flows.
-- Provider live mode is forbidden in smoke. Game, payment, bank statement, SMS, and Slip OCR modes must remain unset, `mock`, or `sandbox`.
+- Provider live mode is forbidden in smoke. Game, payment, bank statement, SMS, and Slip OCR modes must remain unset, `mock`, `sandbox`, or `disabled`.
 - Demo seed is allowed only for local/staging/test use and must never run against production.
 - Production migration, seed, smoke, and provider integration commands must not be run from a local checkout.
 - Auto transfer must stay disabled before any controlled-live test.
@@ -28,18 +28,23 @@ Never paste real tokens, passwords, API keys, provider secrets, callback secrets
 ## Existing Guard Coverage
 
 - `prisma/seed.js` blocks missing or non-PostgreSQL database targets, production-like target markers, non-local targets without local/staging/test markers, and `NODE_ENV=production`.
-- `src/db-safety-tests/dbSafetyGuard.js` blocks `NODE_ENV=production`, production-like database targets, database targets without explicit staging/test markers, and provider modes outside `mock` or `sandbox`.
+- `src/db-safety-tests/dbSafetyGuard.js` blocks `NODE_ENV=production`, production-like database targets, database targets without explicit staging/test markers, and provider modes outside `mock`, `sandbox`, or `disabled`.
+- `src/local-smoke-tests/stagingSmoke.js` requires `BASE_URL`, blocks production-like API hosts, checks `GET /api/health`, verifies external modes are `mock`, `sandbox`, or `disabled`, calls admin auth as a negative leak check, and scans responses for secret-shaped values.
 - `src/local-smoke-tests/runAllLocalSmoke.js` blocks unsafe `NODE_ENV`, missing required local credentials, unsafe database targets, production-like API base URLs, embedded URL credentials, and provider modes outside `mock` or `sandbox` before running the smoke suite.
 - Individual local smoke scripts also perform their own safety checks for production-like database/API targets and non-mock provider modes before creating fixtures or calling API flows.
 
 ## Staging Checklist
 
 - Confirm the target environment is `staging` or `test`, not production.
+- Confirm `NODE_ENV` and `APP_ENV` are explicit staging/test labels.
 - Confirm the database is a dedicated staging/test PostgreSQL instance and not a production clone or read replica.
 - Confirm the database host, database name, or username includes an explicit staging/test marker.
-- Confirm provider modes are unset, `mock`, or `sandbox`.
+- Confirm provider/payment/bank modes are unset, `mock`, `sandbox`, or `disabled`; live is forbidden.
 - Confirm no live provider credentials are present in the staging shell, hosting dashboard, CI variables, or `.env` file.
+- Confirm CORS and public base URL values point only at staging frontend/admin/API hosts.
+- Confirm `GET /api/health` returns `success: true`, `data.ok: true`, boolean `data.databaseConnected`, and safe external mode labels without secrets.
 - Confirm `npm run check` passes before any smoke command.
+- Confirm `BASE_URL` is set to the staging API and `npm run smoke:staging` passes.
 - Confirm `npm run smoke:admin-work-schedule` passes before validating admin schedule UI behavior in staging.
 - Confirm local smoke commands are run only after the backend is pointed at the approved safe target.
 - Confirm logs redact database URLs, JWTs, tokens, API keys, callback secrets, provider payloads, passwords, and raw authorization headers.

@@ -1,4 +1,4 @@
-const SAFE_PROVIDER_MODES = new Set(["mock", "sandbox"]);
+const SAFE_PROVIDER_MODES = new Set(["mock", "sandbox", "disabled"]);
 const SAFE_DATABASE_MARKERS = ["test", "testing", "stage", "staging", "sandbox", "qa"];
 const PRODUCTION_MARKERS = ["prod", "production", "live", "primary", "main", "master"];
 const PROVIDER_MODE_KEYS = [
@@ -81,7 +81,7 @@ function evaluateDbSafetyGuard(env = process.env) {
   for (const key of PROVIDER_MODE_KEYS) {
     const mode = providerMode(env, key);
     if (!SAFE_PROVIDER_MODES.has(mode)) {
-      reasons.push(`${key} must be mock or sandbox before DB-backed safety tests run.`);
+      reasons.push(`${key} must be mock, sandbox, or disabled before DB-backed safety tests run.`);
     }
   }
 

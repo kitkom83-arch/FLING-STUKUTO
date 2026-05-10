@@ -9,11 +9,12 @@ Before running any staging smoke command, confirm all of the following without p
 - `BASE_URL` or `PUBLIC_API_BASE_URL` is the staging API URL, not production.
 - `DATABASE_URL` targets a dedicated staging/test PostgreSQL database.
 - `NODE_ENV` is `staging` for hosted staging.
-- `GAME_PROVIDER_MODE` is `mock` or approved `sandbox`.
-- `PAYMENT_PROVIDER_MODE` is `mock` or approved `sandbox`.
-- `BANK_STATEMENT_MODE` is `mock` or approved `sandbox`.
-- `SMS_PROVIDER_MODE` is `mock` or approved `sandbox`.
-- `SLIP_OCR_MODE` is `mock` or approved `sandbox`.
+- `APP_ENV` is `staging` or another explicit non-production staging/test label.
+- `GAME_PROVIDER_MODE` is `mock`, approved `sandbox`, or `disabled`.
+- `PAYMENT_PROVIDER_MODE` is `mock`, approved `sandbox`, or `disabled`.
+- `BANK_STATEMENT_MODE` is `mock`, approved `sandbox`, or `disabled`.
+- `SMS_PROVIDER_MODE` is `mock`, approved `sandbox`, or `disabled`.
+- `SLIP_OCR_MODE` is `mock`, approved `sandbox`, or `disabled`.
 - `LOCAL_ADMIN_PASSWORD` is set to a staging-only value.
 - No live provider credentials are present.
 
@@ -26,12 +27,16 @@ Start with the lowest-risk checks:
 ```bash
 npm run check
 curl <STAGING_API_BASE_URL>/api/health
+BASE_URL=<STAGING_API_BASE_URL>/api npm run smoke:staging
 ```
 
 Then verify:
 
 - Health response returns HTTP `200`.
 - Health response is JSON.
+- Health response has `success: true`, `data.ok: true`, and boolean `data.databaseConnected`.
+- Health response shows only safe external mode labels: `mock`, `sandbox`, or `disabled`.
+- The staging smoke admin-auth negative check returns a failed JSON payload without leaking secrets.
 - No secret-shaped value appears in response or logs.
 - Staging logs show normal startup without printing env values.
 
@@ -49,7 +54,9 @@ PUBLIC_API_BASE_URL=<STAGING_API_BASE_URL>
 Recommended controlled order:
 
 ```bash
+npm run smoke:staging
 npm run smoke:core-api
+npm run smoke:admin-work-schedule
 npm run smoke:admin-reports-config
 npm run smoke:bank-module
 npm run smoke:promotion-claim
@@ -97,8 +104,10 @@ Use this result format after staging smoke:
 Staging smoke result:
 - Target: staging URL label only
 - Health: PASS/FAIL - note
+- Staging smoke script: PASS/FAIL/SKIPPED - note
 - npm run check: PASS/FAIL - note
 - Core API smoke: PASS/FAIL/SKIPPED - note
+- Admin work schedule smoke: PASS/FAIL/SKIPPED - note
 - Admin reports/config smoke: PASS/FAIL/SKIPPED - note
 - Bank module smoke: PASS/FAIL/SKIPPED - note
 - Promotion smoke: PASS/FAIL/SKIPPED - note

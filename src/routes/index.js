@@ -15,7 +15,7 @@ const { asyncHandler } = require("../middleware/errorHandler");
 
 const router = express.Router();
 
-router.get("/health", healthController.health);
+router.get("/health", asyncHandler(healthController.health));
 router.use(siteResolver);
 router.get("/site/config", asyncHandler(siteController.config));
 router.use("/auth", authRoutes);

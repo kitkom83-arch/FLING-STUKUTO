@@ -23,6 +23,7 @@ const RELATED_FILES = [
   "src/local-smoke-tests/adminPermissionSmoke.js",
   "src/local-smoke-tests/adminRoleManagementSmoke.js",
   "src/local-smoke-tests/adminWorkScheduleSmoke.js",
+  "src/local-smoke-tests/stagingSmoke.js",
 ];
 const SECRET_GREP_PATTERN = [
   ["postgres", "ql://[^:@]+:[^@]+@"].join(""),
@@ -117,6 +118,12 @@ const steps = [
     name: "node --check adminWorkScheduleSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/adminWorkScheduleSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check stagingSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/stagingSmoke.js"],
     summaryKey: "syntax",
   },
   {

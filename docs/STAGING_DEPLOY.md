@@ -42,6 +42,7 @@ Use `.env.staging.example` as the placeholder template. Set real staging values 
 Core keys:
 
 - `NODE_ENV`
+- `APP_ENV`
 - `PORT`
 - `DATABASE_URL`
 - `JWT_SECRET`
@@ -75,12 +76,14 @@ Provider and external boundary keys:
 Required staging values:
 
 - `NODE_ENV` must be `staging`.
+- `APP_ENV` must be `staging` or another explicit non-production staging/test label.
 - `DATABASE_URL` must target a dedicated staging/test PostgreSQL database.
-- `JWT_SECRET` must be a staging-only secret and not the development fallback.
+- `JWT_SECRET`, session secret values, and admin passwords must be generated for staging and set only in the platform secret manager.
 - `CORS_ORIGIN` must be the staging frontend/admin origin list, not `*`.
 - `PUBLIC_API_BASE_URL` must be the staging API base URL.
-- Provider modes must be `mock` or approved `sandbox`.
+- Provider/payment/bank/SMS/Slip OCR modes must be `mock`, approved `sandbox`, or `disabled`.
 - Provider API base URLs and credentials must remain empty in mock mode.
+- No live provider, payment, bank, SMS, or Slip OCR credential may be present in staging preparation.
 
 ## Pre-Deploy Checklist
 
@@ -88,7 +91,9 @@ Required staging values:
 - Confirm the staging PostgreSQL database is not production and not a production clone.
 - Confirm the staging database name, host label, or user label contains a staging/test marker.
 - Confirm no live provider credentials are present in platform env values.
-- Confirm provider modes are `mock` or `sandbox`.
+- Confirm provider/payment/bank/SMS/Slip OCR modes are `mock`, `sandbox`, or `disabled`.
+- Confirm `CORS_ORIGIN` lists only staging frontend/admin origins and `PUBLIC_API_BASE_URL` points at the staging API.
+- Confirm `GET /api/health` returns the safe health contract before any DB-backed smoke.
 - Confirm `npm run check` passes locally before deployment handoff.
 - Confirm `.env`, logs, and real secret files are not staged for commit.
 - Confirm rollback owner and deploy owner are known before any actual deploy.
@@ -106,7 +111,7 @@ Run migrations only after the staging database target has been verified without 
 npm run db:migrate:staging
 ```
 
-Do not run raw `npx prisma migrate deploy` for staging from a local checkout. The guarded command runs `src/db-safety-tests/dbSafetyGuard.js` before Prisma deploys migrations.
+Do not run raw `npx prisma migrate deploy` for staging from a local checkout. The guarded command runs `src/db-safety-tests/dbSafetyGuard.js` before Prisma deploys migrations and accepts only `mock`, `sandbox`, or `disabled` external modes.
 
 Stop immediately if the guard blocks. Do not bypass the guard and do not switch to production database credentials.
 
@@ -132,7 +137,10 @@ Expected result:
 
 - HTTP `200`.
 - JSON response with `success: true`.
-- `data.status` indicates the API is healthy.
+- `data.ok` is `true`.
+- `data.status` is `ok`.
+- `data.databaseConnected` is a boolean.
+- `data.externalModes` shows safe mode labels only: `mock`, `sandbox`, or `disabled`.
 - No database URL, JWT, API key, token, password, provider secret, or raw authorization header appears in the response or logs.
 
 ## Smoke Testing Steps
@@ -143,14 +151,26 @@ Minimum staging smoke order:
 
 1. Confirm `BASE_URL` or `PUBLIC_API_BASE_URL` points to the staging API, not production.
 2. Confirm staging uses a staging/test PostgreSQL database only.
-3. Confirm provider/payment/bank/SMS/Slip OCR modes are `mock` or `sandbox`.
+3. Confirm provider/payment/bank/SMS/Slip OCR modes are `mock`, `sandbox`, or `disabled`.
 4. Run `GET /api/health`.
 5. Run local static checks with `npm run check`.
-6. Run controlled staging smoke only after env values and backend access are approved.
+6. Run `npm run smoke:staging` with `BASE_URL` set to the approved staging API.
+7. Run controlled DB-backed staging smoke only after env values and backend access are approved.
 
 Current DB-backed smoke commands are not run in GitHub Actions because they require a running API, safe PostgreSQL target, and staging/local fixtures.
 
 Do not run real-money UAT as part of staging smoke.
+
+Safe staging command example:
+
+```powershell
+$env:BASE_URL = "https://your-staging-url.example/api"
+npm run smoke:staging
+npm run smoke:core-api
+npm run smoke:admin-work-schedule
+```
+
+Use the same `BASE_URL` only after confirming it is a staging/test URL. Do not paste real secrets into the shell transcript or smoke report.
 
 ## Rollback Checklist
 
