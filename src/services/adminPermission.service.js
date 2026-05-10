@@ -1,4 +1,5 @@
 const prisma = require("../config/prisma");
+const { logAdminAction } = require("./adminLog.service");
 
 const OWNER_ROLES = new Set(["owner", "super_admin"]);
 
@@ -97,6 +98,32 @@ async function resolveAdminPermissions(admin, siteId) {
   };
 }
 
+async function getAdminPermissions({ adminId, siteId }) {
+  const admin = await prisma.admin.findUnique({
+    where: { id: adminId },
+    select: {
+      id: true,
+      username: true,
+      role: true,
+      status: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+  if (!admin) {
+    const error = new Error("Admin not found");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const resolved = await resolveAdminPermissions(admin, siteId);
+  return {
+    admin,
+    siteId,
+    ...resolved,
+  };
+}
+
 async function adminHasPermission(admin, siteId, permission) {
   if (!admin || !permission) return false;
   const resolved = await resolveAdminPermissions(admin, siteId);
@@ -121,7 +148,7 @@ function assertKnownPermissions(permissions) {
   }
 }
 
-async function assignRole({ adminId, siteId, role, permissions = null }) {
+async function assignRole({ adminId, siteId, role, permissions = null, actor = null, req = null }) {
   assertKnownRole(role);
   const normalizedPermissions = permissions === null ? null : normalizePermissionList(permissions);
   if (permissions !== null) assertKnownPermissions(permissions);
@@ -134,6 +161,12 @@ async function assignRole({ adminId, siteId, role, permissions = null }) {
   }
 
   const updated = await prisma.$transaction(async (tx) => {
+    const beforeAccess = siteId
+      ? await tx.adminSiteAccess.findUnique({
+          where: { adminId_siteId: { adminId, siteId } },
+        })
+      : null;
+
     const nextAdmin = await tx.admin.update({
       where: { id: adminId },
       data: { role },
@@ -145,6 +178,30 @@ async function assignRole({ adminId, siteId, role, permissions = null }) {
         where: { adminId_siteId: { adminId, siteId } },
         update: { role, permissions: normalizedPermissions },
         create: { adminId, siteId, role, permissions: normalizedPermissions },
+      });
+    }
+
+    if (actor && siteId) {
+      await logAdminAction({
+        tx,
+        admin: actor,
+        action: "admin.role.update",
+        targetType: "admin",
+        targetId: adminId,
+        before: {
+          adminId,
+          role: admin.role,
+          siteAccessRole: beforeAccess && beforeAccess.role,
+          permissions: beforeAccess && beforeAccess.permissions,
+        },
+        after: {
+          adminId,
+          role,
+          siteAccessRole: role,
+          permissions: normalizedPermissions || ROLE_PERMISSIONS[role],
+        },
+        req,
+        siteId,
       });
     }
 
@@ -165,6 +222,7 @@ module.exports = {
   ROLE_PERMISSIONS,
   isOwnerRole,
   resolveAdminPermissions,
+  getAdminPermissions,
   adminHasPermission,
   assignRole,
 };

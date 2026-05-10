@@ -21,6 +21,7 @@ router.get("/me", protectedSite, asyncHandler(adminController.me));
 router.get("/permissions/me", protectedSite, asyncHandler(adminPermissionController.me));
 router.get("/permissions", protectedSite, can("admin.manage"), asyncHandler(adminPermissionController.listPermissions));
 router.get("/roles", protectedSite, can("admin.manage"), asyncHandler(adminPermissionController.listRoles));
+router.get("/admins/:id/permissions", protectedSite, can("admin.manage"), asyncHandler(adminPermissionController.getAdmin));
 router.patch("/admins/:id/role", protectedSite, can("admin.manage"), asyncHandler(adminPermissionController.assignAdminRole));
 router.get("/logs", protectedSite, can("reports.view"), asyncHandler(adminController.logs));
 

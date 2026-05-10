@@ -40,7 +40,7 @@ These permissions exist in `src/services/adminPermission.service.js` and are enf
 | `settings.website.update` | Update site settings/theme, game provider config, and payment config. | Website, banner/theme, game, and payment setup actions. |
 | `settings.promotion.view` | Role/catalog permission currently available for promotion views. | Promotion settings read views. |
 | `assets.upload` | Role/catalog permission currently available for asset upload UI. | Logo, favicon, banner, and asset upload controls. |
-| `admin.manage` | List roles/permissions and assign admin roles. | Admin and permission management. |
+| `admin.manage` | List roles/permissions, read target admin permissions, and assign admin roles. | Admin and permission management. |
 
 ### Proposed for Frontend Contract
 
@@ -122,6 +122,7 @@ The permissions below are not backend permissions today. Do not send them to the
 - API `403` means show `ไม่มีสิทธิ์ใช้งาน`, keep the user on the current screen when possible, and refresh current permissions if the UI may be stale.
 - API `401` means clear the admin session and return to login.
 - Frontend must call `GET /api/admin/permissions/me` after admin login or site switch and use the returned effective permissions for UI gating.
+- Frontend role-management screens must use `GET /api/admin/permissions`, `GET /api/admin/roles`, `GET /api/admin/admins/:id/permissions`, and `PATCH /api/admin/admins/:id/role`; all require `admin.manage` except current-admin permission read.
 - Frontend must not treat hidden menus as security. Every protected action must still expect backend `401` or `403`.
 
 ## 8. Backend Behavior
@@ -132,7 +133,7 @@ The permissions below are not backend permissions today. Do not send them to the
 - Non-owner roles resolve permissions from role defaults unless a site-level `AdminSiteAccess.permissions` override exists.
 - Permission guard failures use the standard error envelope and include the denied permission; they must not return `500`.
 - Responses must not leak secrets. Existing docs require responses to strip password hashes and encrypted provider/payment secrets, and smoke tests scan for secret-shaped values.
-- Business mutations listed in `docs/API.md` write admin log actions where implemented, such as member block/unblock, credit changes, deposit/withdrawal approvals, bank-account approval, and site/config changes. The read-only contract files do not show a dedicated audit-log row for blocked permission attempts.
+- Business mutations listed in `docs/API.md` write admin log actions where implemented, such as member block/unblock, credit changes, deposit/withdrawal approvals, bank-account approval, site/config changes, and `admin.role.update` for role assignment. The read-only contract files do not show a dedicated audit-log row for blocked permission attempts.
 
 ## 9. Smoke Coverage
 
@@ -147,6 +148,7 @@ The permissions below are not backend permissions today. Do not send them to the
 - No-permission/site override requests returning `403`.
 - Forbidden action checks returning `403`.
 - Response leak scan for DB URL markers, auth values, password/token/secret markers, JWT-like values, and credential-shaped PostgreSQL URLs.
+- `adminRoleManagementSmoke.js` covers owner role-management access, target admin permission reads, non-owner `403` role-update attempts, role assignment to support/graphic/viewer, rollback to the original role, `admin.role.update` audit log presence, and response leak scan.
 
 ## 10. Known Gaps
 

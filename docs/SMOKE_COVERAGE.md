@@ -17,6 +17,7 @@ The smoke suite does not send real money, does not connect real provider/payment
 | `gameTransferSmoke.js` | `npm run smoke:game-transfer` | Yes | Yes | Yes | Syntax check only | Mock transfer-in/out and mock bet-history checks. |
 | `adminReportsConfigSmoke.js` | `npm run smoke:admin-reports-config` | Yes | Yes | Yes | Syntax check only | Admin report endpoints and read-only site/config endpoints. |
 | `adminPermissionSmoke.js` | `npm run smoke:admin-permission` | Yes | Yes | Yes | Syntax check only | Admin RBAC role/permission guard checks for owner, finance, support, graphic, viewer, unauth, and forbidden access. |
+| `adminRoleManagementSmoke.js` | `npm run smoke:admin-role-management` | Yes | Yes | Yes | Syntax check only | Admin role-management checks for permission catalog, role catalog, current/target permissions, owner updates, non-owner `403`, audit log, rollback, and leak scan. |
 | `runAllLocalSmoke.js` | `npm run smoke:all-local` | Yes | Yes | Yes | Syntax check only | Guarded local runner for syntax, project checks, all local smokes, secret grep, and diff check. |
 
 GitHub Actions also scans `src/local-smoke-tests` for secret-shaped values. It does not run DB-backed smoke commands.
@@ -167,7 +168,21 @@ All bank module endpoints covered here are mock/sandbox only. The smoke test doe
 
 RBAC smoke uses only local/staging/test PostgreSQL fixtures. It does not call real provider, payment, bank, SMS, or Slip OCR services, and it does not run real-money UAT.
 
-## 11. smoke:all-local Coverage
+## 11. smoke:admin-role-management Coverage
+
+- Safety guard blocks unsafe environment, production-like DB/API targets, live provider modes, and missing `LOCAL_ADMIN_PASSWORD`.
+- `GET /api/health`.
+- Unauthenticated role-management endpoints return `401`.
+- Owner role lists permissions, lists roles, reads current permissions through `/api/admin/permissions/me`, and reads target admin permissions through `/api/admin/admins/:id/permissions`.
+- Owner role updates a local target admin through `/api/admin/admins/:id/role`.
+- Finance, support, graphic, and viewer are forbidden from role updates with `403`.
+- Role assignment checks update the local target admin to support, graphic, and viewer, then roll back to the original role for idempotency.
+- Audit log check confirms `admin.role.update` is present for the target admin.
+- Response leak scan checks DB URL markers, auth values, password/token/secret markers, JWT-like values, and credential-shaped PostgreSQL URLs.
+
+Role-management smoke uses only local/staging/test PostgreSQL fixtures. It does not call real provider, payment, bank, SMS, or Slip OCR services, and it does not run real-money UAT.
+
+## 12. smoke:all-local Coverage
 
 `npm run smoke:all-local` runs a guarded sequence and stops on the first failure:
 
@@ -182,6 +197,7 @@ RBAC smoke uses only local/staging/test PostgreSQL fixtures. It does not call re
   - `adminReportsConfigSmoke.js`
   - `bankModuleSmoke.js`
   - `adminPermissionSmoke.js`
+  - `adminRoleManagementSmoke.js`
 - `npm run check`.
 - `npm run smoke:promotion-claim`.
 - `npm run smoke:money-flow`.
@@ -191,11 +207,12 @@ RBAC smoke uses only local/staging/test PostgreSQL fixtures. It does not call re
 - `npm run smoke:admin-reports-config`.
 - `npm run smoke:bank-module`.
 - `npm run smoke:admin-permission`.
+- `npm run smoke:admin-role-management`.
 - Secret grep over package/docs/README/local-smoke related files.
 - `git diff --check`.
 - Final PASS/FAIL summary.
 
-## 12. GitHub Actions Safe CI Coverage
+## 13. GitHub Actions Safe CI Coverage
 
 `.github/workflows/ci.yml` defines Safe CI for `push` and `pull_request`:
 
@@ -218,7 +235,7 @@ RBAC smoke uses only local/staging/test PostgreSQL fixtures. It does not call re
 
 Safe CI does not run DB-backed smoke commands because those require a running backend, safe local/staging/test PostgreSQL, guarded environment variables, and local fixtures.
 
-## 13. Required Local Runtime
+## 14. Required Local Runtime
 
 To run local smoke commands, prepare:
 
@@ -233,7 +250,7 @@ To run local smoke commands, prepare:
 
 `moneyFlowSmoke.js` also allows `staging` for `NODE_ENV`. Other current smoke scripts shown above allow `development-local` or `test`.
 
-## 14. Safe Commands
+## 15. Safe Commands
 
 Run these only after the backend and safe local/staging/test environment are ready:
 
@@ -249,7 +266,7 @@ npm run smoke:admin-permission
 npm run check
 ```
 
-## 15. Mock / Sandbox Boundaries
+## 16. Mock / Sandbox Boundaries
 
 - Game provider coverage uses mock/local fixtures and `MockGameProviderAdapter` behavior.
 - Payment and bank money flow is manual local approval through the API and admin endpoints.
@@ -261,7 +278,7 @@ npm run check
 - Production DB targets are forbidden.
 - Real provider/payment/bank integrations and production credential flows are outside current smoke coverage.
 
-## 16. Known Coverage Gaps
+## 17. Known Coverage Gaps
 
 Confirmed from current docs and scripts:
 
@@ -273,7 +290,7 @@ Confirmed from current docs and scripts:
 - Full end-to-end frontend coverage is not covered.
 - docs/API.md still contains older "ต้องตรวจเพิ่ม" notes for some endpoints that are now covered by newer smoke scripts; ต้องตรวจเพิ่ม before using that section as the source of truth.
 
-## 17. How to Add a New Smoke
+## 18. How to Add a New Smoke
 
 1. Add the new smoke script under `src/local-smoke-tests`.
 2. Reuse the existing local safety guard and response leak scan patterns.

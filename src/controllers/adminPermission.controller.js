@@ -4,6 +4,7 @@ const {
   PERMISSIONS,
   ROLES,
   resolveAdminPermissions,
+  getAdminPermissions,
   assignRole,
 } = require("../services/adminPermission.service");
 
@@ -25,6 +26,16 @@ async function me(req, res) {
   return success(res, result);
 }
 
+async function getAdmin(req, res) {
+  return success(
+    res,
+    await getAdminPermissions({
+      adminId: req.params.id,
+      siteId: req.siteId,
+    })
+  );
+}
+
 async function assignAdminRole(req, res) {
   const data = assignRoleSchema.parse(req.body);
   const result = await assignRole({
@@ -32,6 +43,8 @@ async function assignAdminRole(req, res) {
     siteId: req.siteId,
     role: data.role,
     permissions: data.permissions === undefined ? null : data.permissions,
+    actor: req.admin,
+    req,
   });
   return success(res, result);
 }
@@ -40,5 +53,6 @@ module.exports = {
   listRoles,
   listPermissions,
   me,
+  getAdmin,
   assignAdminRole,
 };

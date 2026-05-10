@@ -21,6 +21,7 @@ const RELATED_FILES = [
   "src/local-smoke-tests/adminReportsConfigSmoke.js",
   "src/local-smoke-tests/bankModuleSmoke.js",
   "src/local-smoke-tests/adminPermissionSmoke.js",
+  "src/local-smoke-tests/adminRoleManagementSmoke.js",
 ];
 const SECRET_GREP_PATTERN = [
   ["postgres", "ql://[^:@]+:[^@]+@"].join(""),
@@ -49,6 +50,7 @@ const summary = [
   { key: "adminReportsConfig", label: "admin-reports-config", status: "PENDING" },
   { key: "bankModule", label: "bank-module", status: "PENDING" },
   { key: "adminPermission", label: "admin-permission", status: "PENDING" },
+  { key: "adminRoleManagement", label: "admin-role-management", status: "PENDING" },
   { key: "responseScan", label: "response leak scan", status: "PENDING" },
   { key: "secretGrep", label: "secret grep", status: "PENDING" },
   { key: "diff", label: "git diff --check", status: "PENDING" },
@@ -101,6 +103,12 @@ const steps = [
     name: "node --check adminPermissionSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/adminPermissionSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check adminRoleManagementSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/adminRoleManagementSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -158,6 +166,13 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:admin-permission"]),
     summaryKey: "adminPermission",
+    alsoPass: ["responseScan"],
+  },
+  {
+    name: "npm run smoke:admin-role-management",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:admin-role-management"]),
+    summaryKey: "adminRoleManagement",
     alsoPass: ["responseScan"],
   },
   {

@@ -150,7 +150,8 @@ Permission failures return `403` with the standard error envelope and must not r
 | GET | `/admin/permissions/me` | Admin | Site access | None | current role, permission list, owner flag, and source | `401`, `403` | None |
 | GET | `/admin/permissions` | Admin | `admin.manage` | None | permission catalog | `401`, `403` | None |
 | GET | `/admin/roles` | Admin | `admin.manage` | None | role catalog and permissions | `401`, `403` | None |
-| PATCH | `/admin/admins/:id/role` | Admin | `admin.manage` | `role`, optional `permissions` array or `null` | assigned admin role and effective permissions | `400`, `401`, `403`, `404` | None |
+| GET | `/admin/admins/:id/permissions` | Admin | `admin.manage` | None | target admin public profile, effective role, permission list, owner flag, and source | `401`, `403`, `404` | None |
+| PATCH | `/admin/admins/:id/role` | Admin | `admin.manage` | `role`, optional `permissions` array or `null` | assigned admin role and effective permissions | `400`, `401`, `403`, `404` | `admin.role.update` |
 | GET | `/admin/logs` | Admin | `reports.view` | None | admin logs with admin summary | `401`, `403` | None |
 | GET | `/admin/members` | Admin | `members.view` | None | member list with wallet and bank accounts | `401`, `403` | None |
 | GET | `/admin/members/:id` | Admin | `members.view` | None | member detail with wallet, bank accounts, recent deposits, recent withdrawals | `403`, `404` member not found | None |
@@ -211,6 +212,7 @@ Smoke coverage:
 - `adminReportsConfigSmoke`: read-only coverage for `/admin/reports/summary`, `/admin/reports/deposits`, `/admin/reports/withdrawals`, `/admin/reports/wallet-ledger`, `/site/config`, `/admin/sites`, `/admin/sites/current/config`, `/admin/sites/:id`, `/admin/sites/:id/bank-accounts`, `/admin/sites/:id/game-providers`, and `/admin/sites/:id/payment-configs`; includes admin auth negative checks and response leak scan.
 - `bankModuleSmoke`: mock-only bank account create/update/soft-disable, mock deposit/withdraw statement lists, mock Slip OCR success/fail, admin auth negative checks, and response leak scan.
 - `adminPermissionSmoke`: owner/finance/support/graphic/viewer/no-permission role checks, admin permission endpoints, backend `403` checks for missing permissions, admin unauth `401`, and response leak scan.
+- `adminRoleManagementSmoke`: owner role-management access, target admin permission read, non-owner role-update `403`, role assignment and rollback, `admin.role.update` audit log check, and response leak scan.
 
 Mock bank module endpoints:
 

@@ -305,6 +305,16 @@ npm run smoke:admin-permission
 
 `BASE_URL` defaults to `http://localhost:4000/api`. The script blocks production-like DB/API targets and live provider modes, creates local-only admin role fixtures, verifies owner, finance, support, graphic, viewer, and no-permission access, checks unauthenticated `401` responses, checks missing-permission `403` responses, and scans responses for unsafe secret-shaped values. RBAC is enforced by backend middleware; frontend menu hiding is not authorization. The smoke does not call real provider, payment, bank, SMS, or Slip OCR services and does not run real-money UAT.
 
+## Local Admin Role Management Smoke Test
+
+Run the backend first with safe local or test environment values, then run:
+
+```bash
+npm run smoke:admin-role-management
+```
+
+`BASE_URL` defaults to `http://localhost:4000/api`. The script blocks production-like DB/API targets and live provider modes, creates local-only admin role fixtures, verifies owner access to the permission catalog, role catalog, current permissions, target admin permissions, and role updates, verifies finance/support/graphic/viewer role updates return `403`, rolls the target admin role back for idempotency, checks the `admin.role.update` audit log, and scans responses for unsafe secret-shaped values. The smoke does not call real provider, payment, bank, SMS, or Slip OCR services and does not run real-money UAT.
+
 ## Local Bank Module Smoke Test
 
 Run the backend first with safe local or test environment values, then run:
@@ -317,7 +327,7 @@ npm run smoke:bank-module
 
 ## Local All Smoke Test
 
-The all-local smoke runner executes the local smoke suite in one guarded sequence. It performs syntax checks for the local smoke files, runs the project check, runs money-flow, core API, game-transfer, financial-negative, admin reports/config, bank module, and admin permission smoke tests, scans the related files for secret-shaped values, and checks whitespace errors in the related diff.
+The all-local smoke runner executes the local smoke suite in one guarded sequence. It performs syntax checks for the local smoke files, runs the project check, runs money-flow, core API, game-transfer, financial-negative, admin reports/config, bank module, admin permission, and admin role management smoke tests, scans the related files for secret-shaped values, and checks whitespace errors in the related diff.
 
 Start the backend first with safe local or test environment values:
 
@@ -530,6 +540,7 @@ Validation errors return HTTP 400 with `success: false`, a `message`, and struct
 - `GET /api/admin/permissions/me`
 - `GET /api/admin/permissions`
 - `GET /api/admin/roles`
+- `GET /api/admin/admins/:id/permissions`
 - `PATCH /api/admin/admins/:id/role`
 - `GET /api/admin/logs`
 
