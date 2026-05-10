@@ -334,6 +334,7 @@ npm run smoke:all-local
 `NODE_ENV` must be `development-local` or `test`, `LOCAL_ADMIN_PASSWORD` and `JWT_SECRET` must be set, the PostgreSQL target must be local/staging/test only, API base URLs must not be production-like, and provider, payment, bank, SMS, and slip OCR modes must remain unset, `mock`, or `sandbox`. The runner stops on the first failure and prints a PASS/FAIL summary without printing raw environment values, database URLs, passwords, tokens, or provider secrets.
 
 See `docs/SMOKE_COVERAGE.md` for the smoke coverage index.
+See `docs/ADMIN_UI_PERMISSIONS.md` for the admin UI permission contract.
 See `docs/DEMO_SEED.md` for the demo seed runbook and mock data list.
 See `docs/STAGING_UAT.md` for the staging/UAT boundary guard runbook and controlled-live checklist.
 See `docs/STAGING_DEPLOY.md` and `docs/STAGING_SMOKE.md` for staging deploy preparation, staging env placeholders, smoke boundaries, rollback, logs, and security checklists.
