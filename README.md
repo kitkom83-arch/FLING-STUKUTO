@@ -122,6 +122,85 @@ Syntax check:
 npm run check
 ```
 
+## Dev/Test Runbook
+
+Use this runbook for local development, local PostgreSQL testing, and staging/test verification. It is not a production deployment guide.
+
+Scope and safety rules:
+
+- Use only local, staging, or test PostgreSQL targets.
+- Keep provider, payment, bank statement, SMS, and Slip OCR modes unset, `mock`, or `sandbox`.
+- Never use production database targets, production clones, production read replicas, real provider credentials, or real money rails from this runbook.
+- Never print database URLs, JWT secrets, API keys, tokens, provider secrets, passwords, or raw provider payloads.
+- Keep `.env` local and derive it from `.env.example` or `.env.staging.example`.
+
+First-time setup:
+
+```bash
+npm install
+npm run prisma:validate
+```
+
+Prepare a local or test database only after the target has been verified as non-production:
+
+```bash
+npm run prisma:migrate
+npm run seed
+```
+
+Use staging/test guarded migrations only with a confirmed non-production target:
+
+```bash
+npm run db:migrate:staging
+```
+
+Start the API:
+
+```bash
+npm run dev
+```
+
+Before opening a pull request or handing off a dev/test build, run the static checks:
+
+```bash
+npm run check
+npx prisma validate
+npx prisma generate
+node --check src/local-smoke-tests/moneyFlowSmoke.js
+node --check src/local-smoke-tests/coreApiSmoke.js
+node --check src/local-smoke-tests/financialNegativeSmoke.js
+node --check src/local-smoke-tests/runAllLocalSmoke.js
+```
+
+Run local smoke tests only when the backend is already running and the environment targets a safe local, staging, or test database:
+
+```bash
+npm run smoke:money-flow
+npm run smoke:core-api
+npm run smoke:financial-negative
+npm run smoke:all-local
+```
+
+If a safe database target is not available, stop after `npm run check`, Prisma validation/generation, and the `node --check` smoke syntax checks.
+
+DB-backed safety tests are guarded. Prefer the dry-run unless a staging/test database has been explicitly confirmed:
+
+```bash
+npm run test:db:safety:dry-run
+npm run test:db:safety
+```
+
+Expected dev/test handoff summary:
+
+```text
+Dev/test result:
+- Static check: PASS/FAIL - note
+- Prisma validate/generate: PASS/FAIL - note
+- Local smoke: PASS/FAIL/SKIPPED - note
+- DB-backed safety: PASS/FAIL/SKIPPED - note
+- Secret leak check: PASS/FAIL - note
+```
+
 ## Local Money-Flow Smoke Test
 
 The local money-flow smoke test exercises the manual admin approval path against a local, staging, or test PostgreSQL database only. It blocks production-like database targets, production-like API bases, and real provider modes before touching Prisma.
