@@ -62,6 +62,7 @@ async function listDeposits(query = {}, siteId = null) {
     where.OR = [
       { transactionId: { contains: search, mode: "insensitive" } },
       { channel: { contains: search, mode: "insensitive" } },
+      { userId: { contains: search, mode: "insensitive" } },
       { user: { is: { OR: [
         { username: { contains: search, mode: "insensitive" } },
         { phone: { contains: search, mode: "insensitive" } },
