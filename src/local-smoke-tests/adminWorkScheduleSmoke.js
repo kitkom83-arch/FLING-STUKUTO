@@ -430,11 +430,15 @@ async function ensureLocalFixtures() {
 }
 
 async function runUnauthChecks(baseUrl, targetId) {
-  await expectStatus(baseUrl, `/admin/admins/${encodeURIComponent(targetId)}/work-schedule`, {
+  await expectStatus(baseUrl, "/admin/work-schedules", {
+    status: 401,
+    label: "work schedule list unauth",
+  });
+  await expectStatus(baseUrl, `/admin/work-schedules/${encodeURIComponent(targetId)}`, {
     status: 401,
     label: "work schedule read unauth",
   });
-  await expectStatus(baseUrl, `/admin/admins/${encodeURIComponent(targetId)}/work-schedule`, {
+  await expectStatus(baseUrl, `/admin/work-schedules/${encodeURIComponent(targetId)}`, {
     method: "PATCH",
     status: 401,
     label: "work schedule update unauth",
@@ -444,7 +448,12 @@ async function runUnauthChecks(baseUrl, targetId) {
 }
 
 async function runNonOwnerForbiddenChecks(baseUrl, noPermissionAuth, targetId) {
-  await expectStatus(baseUrl, `/admin/admins/${encodeURIComponent(targetId)}/work-schedule`, {
+  await expectStatus(baseUrl, "/admin/work-schedules", {
+    authValue: noPermissionAuth,
+    status: 403,
+    label: "no permission schedule list forbidden",
+  });
+  await expectStatus(baseUrl, `/admin/work-schedules/${encodeURIComponent(targetId)}`, {
     method: "PATCH",
     authValue: noPermissionAuth,
     status: 403,
@@ -455,7 +464,7 @@ async function runNonOwnerForbiddenChecks(baseUrl, noPermissionAuth, targetId) {
 }
 
 async function updateSchedule(baseUrl, ownerAuth, targetId, body, label) {
-  const result = await apiRequest(baseUrl, `/admin/admins/${encodeURIComponent(targetId)}/work-schedule`, {
+  const result = await apiRequest(baseUrl, `/admin/work-schedules/${encodeURIComponent(targetId)}`, {
     method: "PATCH",
     authValue: ownerAuth,
     label,
@@ -475,7 +484,16 @@ async function runOwnerAccessChecks(baseUrl, ownerAuth, targetId) {
     if (!permissions.data.includes(permission)) throw new Error(`Permission catalog did not include ${permission}.`);
   }
 
-  const read = await apiRequest(baseUrl, `/admin/admins/${encodeURIComponent(targetId)}/work-schedule`, {
+  const list = await apiRequest(baseUrl, "/admin/work-schedules", {
+    authValue: ownerAuth,
+    label: "owner list schedules",
+  });
+  requireArray(list.data, "Work schedule list");
+  if (!list.data.some((row) => row.admin && row.admin.id === targetId && row.schedule)) {
+    throw new Error("Owner schedule list did not include the target admin.");
+  }
+
+  const read = await apiRequest(baseUrl, `/admin/work-schedules/${encodeURIComponent(targetId)}`, {
     authValue: ownerAuth,
     label: "owner read schedule",
   });
@@ -486,7 +504,15 @@ async function runOwnerAccessChecks(baseUrl, ownerAuth, targetId) {
   const schedule = await updateSchedule(baseUrl, ownerAuth, targetId, allowingSchedule(), "owner update schedule");
   if (!schedule.enabled) throw new Error("Owner schedule update did not enable the schedule.");
 
-  const override = await apiRequest(baseUrl, `/admin/admins/${encodeURIComponent(targetId)}/work-schedule/override`, {
+  await expectStatus(baseUrl, `/admin/work-schedules/${encodeURIComponent(targetId)}`, {
+    method: "PATCH",
+    authValue: ownerAuth,
+    status: 400,
+    label: "owner invalid schedule time",
+    body: { startTime: "25:00" },
+  });
+
+  const override = await apiRequest(baseUrl, `/admin/work-schedules/${encodeURIComponent(targetId)}/override`, {
     method: "POST",
     authValue: ownerAuth,
     label: "owner enable override",
@@ -497,7 +523,7 @@ async function runOwnerAccessChecks(baseUrl, ownerAuth, targetId) {
   });
   if (!override.data.schedule.emergencyOverride.enabled) throw new Error("Owner override enable did not activate override.");
 
-  const disabled = await apiRequest(baseUrl, `/admin/admins/${encodeURIComponent(targetId)}/work-schedule/override`, {
+  const disabled = await apiRequest(baseUrl, `/admin/work-schedules/${encodeURIComponent(targetId)}/override`, {
     method: "DELETE",
     authValue: ownerAuth,
     label: "owner disable override",
@@ -509,7 +535,7 @@ async function runOwnerAccessChecks(baseUrl, ownerAuth, targetId) {
 }
 
 async function assertAuditLog(baseUrl, ownerAuth, action, targetId) {
-  const logs = await apiRequest(baseUrl, `/admin/logs?action=${encodeURIComponent(action)}&target_id=${encodeURIComponent(targetId)}&limit=20`, {
+  const logs = await apiRequest(baseUrl, `/admin/work-schedules/${encodeURIComponent(targetId)}/audit-logs?action=${encodeURIComponent(action)}&limit=20`, {
     authValue: ownerAuth,
     label: `${action} audit log`,
   });
@@ -533,7 +559,7 @@ async function runLoginScheduleChecks(baseUrl, ownerAuth, targetAdmin) {
 
 async function runEmergencyOverrideChecks(baseUrl, ownerAuth, targetAdmin) {
   await updateSchedule(baseUrl, ownerAuth, targetAdmin.id, blockingSchedule(), "target block for override");
-  await apiRequest(baseUrl, `/admin/admins/${encodeURIComponent(targetAdmin.id)}/work-schedule/override`, {
+  await apiRequest(baseUrl, `/admin/work-schedules/${encodeURIComponent(targetAdmin.id)}/override`, {
     method: "POST",
     authValue: ownerAuth,
     label: "enable active emergency override",
@@ -544,7 +570,7 @@ async function runEmergencyOverrideChecks(baseUrl, ownerAuth, targetAdmin) {
   });
 
   await loginAdmin(baseUrl, targetAdmin.username);
-  await apiRequest(baseUrl, `/admin/admins/${encodeURIComponent(targetAdmin.id)}/work-schedule/override`, {
+  await apiRequest(baseUrl, `/admin/work-schedules/${encodeURIComponent(targetAdmin.id)}/override`, {
     method: "DELETE",
     authValue: ownerAuth,
     label: "disable active emergency override",

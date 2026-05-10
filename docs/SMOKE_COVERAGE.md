@@ -18,7 +18,7 @@ The smoke suite does not send real money, does not connect real provider/payment
 | `adminReportsConfigSmoke.js` | `npm run smoke:admin-reports-config` | Yes | Yes | Yes | Syntax check only | Admin report endpoints and read-only site/config endpoints. |
 | `adminPermissionSmoke.js` | `npm run smoke:admin-permission` | Yes | Yes | Yes | Syntax check only | Admin RBAC role/permission guard checks for owner, finance, support, graphic, viewer, unauth, and forbidden access. |
 | `adminRoleManagementSmoke.js` | `npm run smoke:admin-role-management` | Yes | Yes | Yes | Syntax check only | Admin role-management checks for permission catalog, role catalog, current/target permissions, owner updates, non-owner `403`, audit log, rollback, and leak scan. |
-| `adminWorkScheduleSmoke.js` | `npm run smoke:admin-work-schedule` | Yes | Yes | Yes | Syntax check only | Admin work schedule backend guard checks for schedule API auth, login block/allow, emergency override, expired override, audit logs, rollback, and leak scan. |
+| `adminWorkScheduleSmoke.js` | `npm run smoke:admin-work-schedule` | Yes | Yes | Yes | Syntax check only | Admin work schedule UI/API checks for schedule list/read/update, permission guards, login block/allow, emergency override, expired override, audit history, rollback, and leak scan. |
 | `runAllLocalSmoke.js` | `npm run smoke:all-local` | Yes | Yes | Yes | Syntax check only | Guarded local runner for syntax, project checks, all local smokes, secret grep, and diff check. |
 
 GitHub Actions also scans `src/local-smoke-tests` for secret-shaped values. It does not run DB-backed smoke commands.
@@ -187,10 +187,12 @@ Role-management smoke uses only local/staging/test PostgreSQL fixtures. It does 
 
 - Safety guard blocks unsafe environment, production-like DB/API targets, live provider modes, and missing `LOCAL_ADMIN_PASSWORD`.
 - `GET /api/health`.
-- Unauthenticated schedule read/update endpoints return `401`.
-- No-permission admin schedule update returns `403`.
-- Owner reads and updates a target admin schedule through `/api/admin/admins/:id/work-schedule`.
-- Owner enables and disables emergency override through `/api/admin/admins/:id/work-schedule/override`.
+- Unauthenticated schedule list/read/update endpoints return `401`.
+- No-permission admin schedule list/update returns `403`.
+- Owner lists schedules through `/api/admin/work-schedules`.
+- Owner reads and updates a target admin schedule through `/api/admin/work-schedules/:adminId`.
+- Invalid schedule time returns `400`.
+- Owner enables and disables emergency override through `/api/admin/work-schedules/:adminId/override`.
 - Login outside an enabled schedule returns `403` and does not issue a token.
 - Login inside an enabled schedule succeeds.
 - Active emergency override allows temporary login while the schedule would otherwise block.
@@ -198,7 +200,7 @@ Role-management smoke uses only local/staging/test PostgreSQL fixtures. It does 
 - Expired override does not allow login.
 - Overnight shift helper coverage verifies a `18:00` to `02:00` window.
 - Cleanup rolls the local target schedule back to disabled so the smoke is idempotent.
-- Audit log checks confirm `admin.schedule.update`, `admin.schedule.enable`, `admin.schedule.disable`, `admin.schedule.override_enable`, `admin.schedule.override_disable`, and `admin.login.blocked_outside_schedule`.
+- Audit history endpoint `/api/admin/work-schedules/:adminId/audit-logs` confirms `admin.schedule.update`, `admin.schedule.enable`, `admin.schedule.disable`, `admin.schedule.override_enable`, `admin.schedule.override_disable`, and `admin.login.blocked_outside_schedule`.
 - Response leak scan checks DB URL markers, auth values, password/token/secret markers, JWT-like values, and credential-shaped PostgreSQL URLs.
 
 Work-schedule smoke uses only local/staging/test PostgreSQL fixtures. It does not call real provider, payment, bank, SMS, or Slip OCR services, and it does not run real-money UAT.

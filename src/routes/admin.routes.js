@@ -36,6 +36,42 @@ router.get("/roles", protectedSite, can("admin.manage"), asyncHandler(adminPermi
 router.get("/admins/:id/permissions", protectedSite, can("admin.manage"), asyncHandler(adminPermissionController.getAdmin));
 router.patch("/admins/:id/role", protectedSite, can("admin.manage"), asyncHandler(adminPermissionController.assignAdminRole));
 router.get(
+  "/work-schedules",
+  protectedSite,
+  canAny(["admin.schedule.view", "admin.manage"]),
+  asyncHandler(adminPermissionController.listWorkSchedules)
+);
+router.get(
+  "/work-schedules/:adminId",
+  protectedSite,
+  canAny(["admin.schedule.view", "admin.manage"]),
+  asyncHandler(adminPermissionController.getWorkSchedule)
+);
+router.patch(
+  "/work-schedules/:adminId",
+  protectedSite,
+  canAny(["admin.schedule.update", "admin.manage"]),
+  asyncHandler(adminPermissionController.patchWorkSchedule)
+);
+router.post(
+  "/work-schedules/:adminId/override",
+  protectedSite,
+  canAny(["admin.schedule.override", "admin.manage"]),
+  asyncHandler(adminPermissionController.postWorkScheduleOverride)
+);
+router.delete(
+  "/work-schedules/:adminId/override",
+  protectedSite,
+  canAny(["admin.schedule.override", "admin.manage"]),
+  asyncHandler(adminPermissionController.deleteWorkScheduleOverride)
+);
+router.get(
+  "/work-schedules/:adminId/audit-logs",
+  protectedSite,
+  canAny(["admin.schedule.view", "admin.manage"]),
+  asyncHandler(adminPermissionController.listWorkScheduleAuditLogs)
+);
+router.get(
   "/admins/:id/work-schedule",
   protectedSite,
   canAny(["admin.schedule.view", "admin.manage"]),

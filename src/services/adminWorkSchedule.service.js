@@ -1,8 +1,17 @@
 const prisma = require("../config/prisma");
 const { logAdminAction } = require("./adminLog.service");
 const { isOwnerRole } = require("./adminPermission.service");
+const { cleanSearch, pagination } = require("../utils/query");
 
 const DAYS = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+const SCHEDULE_AUDIT_ACTIONS = [
+  "admin.schedule.update",
+  "admin.schedule.enable",
+  "admin.schedule.disable",
+  "admin.schedule.override_enable",
+  "admin.schedule.override_disable",
+  "admin.login.blocked_outside_schedule",
+];
 const DEFAULT_SCHEDULE = {
   enabled: false,
   timezone: "Asia/Bangkok",
@@ -105,12 +114,19 @@ function removeScheduleFromPermissions(currentPermissions) {
 
 function summarizeSchedule(schedule) {
   if (!schedule) return null;
+  let overnightShift = false;
+  try {
+    overnightShift = parseTimeToMinutes(schedule.startTime, "startTime") > parseTimeToMinutes(schedule.endTime, "endTime");
+  } catch (_error) {
+    overnightShift = false;
+  }
   return {
     enabled: Boolean(schedule.enabled),
     timezone: schedule.timezone,
     allowedDays: schedule.allowedDays,
     startTime: schedule.startTime,
     endTime: schedule.endTime,
+    overnightShift,
     forceLogoutWhenScheduleEnds: Boolean(schedule.forceLogoutWhenScheduleEnds),
     idleTimeoutMinutes: schedule.idleTimeoutMinutes,
     emergencyOverride: {
@@ -156,6 +172,97 @@ async function getAdminWorkSchedule(adminId, siteId = null) {
     siteId: siteId || (access && access.siteId) || null,
     schedule,
   };
+}
+
+async function listAdminWorkSchedules({ siteId, query = {} }) {
+  if (!siteId) throw error("siteId is required", 500);
+  const { skip, take } = pagination(query, { limit: 100, maxLimit: 200 });
+  const search = cleanSearch(query.search);
+  const where = { siteId };
+  if (search) {
+    where.admin = { username: { contains: search, mode: "insensitive" } };
+  }
+  if (query.role) where.role = String(query.role);
+
+  const rows = await prisma.adminSiteAccess.findMany({
+    where,
+    include: {
+      admin: {
+        select: {
+          id: true,
+          username: true,
+          role: true,
+          status: true,
+          lastLoginAt: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      },
+    },
+    orderBy: { createdAt: "asc" },
+    skip,
+    take,
+  });
+
+  return rows
+    .filter((row) => !query.status || (row.admin && row.admin.status === String(query.status)))
+    .map((row) => {
+      const stored =
+        row.permissions &&
+        typeof row.permissions === "object" &&
+        !Array.isArray(row.permissions) &&
+        row.permissions.adminWorkSchedule
+          ? row.permissions.adminWorkSchedule
+          : null;
+      const schedule = normalizeSchedule(stored || DEFAULT_SCHEDULE);
+      return {
+        admin: row.admin,
+        siteId: row.siteId,
+        siteAccessRole: row.role,
+        schedule,
+        summary: summarizeSchedule(schedule),
+      };
+    });
+}
+
+async function listAdminWorkScheduleAuditLogs({ targetAdminId, siteId, query = {} }) {
+  if (!targetAdminId) throw error("targetAdminId is required", 400);
+  if (!siteId) throw error("siteId is required", 500);
+  await findTargetAdmin(targetAdminId);
+  const { skip, take } = pagination(query, { limit: 50, maxLimit: 100 });
+  const search = cleanSearch(query.search);
+  const where = {
+    siteId,
+    targetType: "admin",
+    targetId: targetAdminId,
+    action: { in: SCHEDULE_AUDIT_ACTIONS },
+  };
+  if (query.action && SCHEDULE_AUDIT_ACTIONS.includes(String(query.action))) {
+    where.action = String(query.action);
+  }
+  if (search) {
+    where.OR = [
+      { action: { contains: search, mode: "insensitive" } },
+      { admin: { is: { username: { contains: search, mode: "insensitive" } } } },
+    ];
+  }
+
+  return prisma.adminLog.findMany({
+    where,
+    include: {
+      admin: {
+        select: {
+          id: true,
+          username: true,
+          role: true,
+          status: true,
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    skip,
+    take,
+  });
 }
 
 function safeActor(actorAdmin) {
@@ -389,7 +496,10 @@ async function auditLoginBlockedOutsideSchedule({ admin, siteId, schedule, req =
 module.exports = {
   DEFAULT_SCHEDULE,
   DAYS,
+  SCHEDULE_AUDIT_ACTIONS,
+  listAdminWorkSchedules,
   getAdminWorkSchedule,
+  listAdminWorkScheduleAuditLogs,
   updateAdminWorkSchedule,
   enableEmergencyOverride,
   disableEmergencyOverride,

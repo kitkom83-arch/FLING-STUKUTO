@@ -8,7 +8,9 @@ const {
   assignRole,
 } = require("../services/adminPermission.service");
 const {
+  listAdminWorkSchedules,
   getAdminWorkSchedule,
+  listAdminWorkScheduleAuditLogs,
   updateAdminWorkSchedule,
   enableEmergencyOverride,
   disableEmergencyOverride,
@@ -81,15 +83,23 @@ async function assignAdminRole(req, res) {
   return success(res, result);
 }
 
+function targetAdminId(req) {
+  return req.params.adminId || req.params.id;
+}
+
+async function listWorkSchedules(req, res) {
+  return success(res, await listAdminWorkSchedules({ siteId: req.siteId, query: req.query }));
+}
+
 async function getWorkSchedule(req, res) {
-  return success(res, await getAdminWorkSchedule(req.params.id, req.siteId));
+  return success(res, await getAdminWorkSchedule(targetAdminId(req), req.siteId));
 }
 
 async function patchWorkSchedule(req, res) {
   const data = workScheduleSchema.parse(req.body);
   return success(
     res,
-    await updateAdminWorkSchedule(req.admin, req.params.id, data, {
+    await updateAdminWorkSchedule(req.admin, targetAdminId(req), data, {
       siteId: req.siteId,
       req,
     })
@@ -100,7 +110,7 @@ async function postWorkScheduleOverride(req, res) {
   const data = overrideSchema.parse(req.body);
   return success(
     res,
-    await enableEmergencyOverride(req.admin, req.params.id, data.expiresAt, data.reason, {
+    await enableEmergencyOverride(req.admin, targetAdminId(req), data.expiresAt, data.reason, {
       siteId: req.siteId,
       req,
     })
@@ -111,9 +121,20 @@ async function deleteWorkScheduleOverride(req, res) {
   const data = disableOverrideSchema.parse(req.body || {});
   return success(
     res,
-    await disableEmergencyOverride(req.admin, req.params.id, data.reason || null, {
+    await disableEmergencyOverride(req.admin, targetAdminId(req), data.reason || null, {
       siteId: req.siteId,
       req,
+    })
+  );
+}
+
+async function listWorkScheduleAuditLogs(req, res) {
+  return success(
+    res,
+    await listAdminWorkScheduleAuditLogs({
+      targetAdminId: targetAdminId(req),
+      siteId: req.siteId,
+      query: req.query,
     })
   );
 }
@@ -124,8 +145,10 @@ module.exports = {
   me,
   getAdmin,
   assignAdminRole,
+  listWorkSchedules,
   getWorkSchedule,
   patchWorkSchedule,
   postWorkScheduleOverride,
   deleteWorkScheduleOverride,
+  listWorkScheduleAuditLogs,
 };

@@ -96,8 +96,8 @@ The permissions below are not backend permissions today. Do not send them to the
 | ตั้งค่าโปรโมชัน | `settings.promotion.view` for read-only; proposed `settings.promotion.update` for future edits | No dedicated admin promotion update route in current route file | Show read-only unless a backend update permission/route is added. |
 | ตั้งค่าเกม | `settings.website.view` for read; `settings.website.update` for create/update | Game provider config endpoints | Disable create/update controls with tooltip. |
 | ตั้งค่าธนาคาร | `bank.view` for read; `bank.update` for create/update/soft-disable | Site bank account endpoints | Disable create/update/delete controls with tooltip. |
-| ตั้งเวลาเข้างานแอดมิน | `admin.schedule.update` or `admin.manage` | `PATCH /admin/admins/:id/work-schedule` | Disable with tooltip. |
-| เปิด emergency override | `admin.schedule.override` or `admin.manage` | `POST /admin/admins/:id/work-schedule/override`, `DELETE /admin/admins/:id/work-schedule/override` | Disable with tooltip. |
+| ตั้งเวลาเข้างานแอดมิน | `admin.schedule.update` or `admin.manage` | `PATCH /admin/work-schedules/:adminId` | Disable with tooltip. |
+| เปิด emergency override | `admin.schedule.override` or `admin.manage` | `POST /admin/work-schedules/:adminId/override`, `DELETE /admin/work-schedules/:adminId/override` | Disable with tooltip. |
 
 ## 6. Role Matrix
 
@@ -132,7 +132,7 @@ The permissions below are not backend permissions today. Do not send them to the
 - API `401` means clear the admin session and return to login.
 - Frontend must call `GET /api/admin/permissions/me` after admin login or site switch and use the returned effective permissions for UI gating.
 - Frontend role-management screens must use `GET /api/admin/permissions`, `GET /api/admin/roles`, `GET /api/admin/admins/:id/permissions`, and `PATCH /api/admin/admins/:id/role`; all require `admin.manage` except current-admin permission read.
-- Frontend work-schedule screens must use `GET /api/admin/admins/:id/work-schedule`, `PATCH /api/admin/admins/:id/work-schedule`, `POST /api/admin/admins/:id/work-schedule/override`, and `DELETE /api/admin/admins/:id/work-schedule/override`; backend accepts the schedule-specific permission or `admin.manage`.
+- Frontend work-schedule screens should use `GET /api/admin/work-schedules`, `GET /api/admin/work-schedules/:adminId`, `PATCH /api/admin/work-schedules/:adminId`, `POST /api/admin/work-schedules/:adminId/override`, `DELETE /api/admin/work-schedules/:adminId/override`, and `GET /api/admin/work-schedules/:adminId/audit-logs`; backend accepts the schedule-specific permission or `admin.manage`.
 - Frontend must not treat hidden menus as security. Every protected action must still expect backend `401` or `403`.
 
 ## 8. Backend Behavior

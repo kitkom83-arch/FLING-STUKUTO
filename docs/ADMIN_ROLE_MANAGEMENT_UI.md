@@ -262,10 +262,12 @@ Implemented API surface:
 
 | Method | Path | Proposed permission | Request body | Success response summary |
 | --- | --- | --- | --- | --- |
-| GET | `/api/admin/admins/:id/work-schedule` | `admin.schedule.view` or `admin.manage` fallback | None | Target admin schedule and emergency override status. |
-| PATCH | `/api/admin/admins/:id/work-schedule` | `admin.schedule.update` or `admin.manage` fallback | Schedule fields listed above. | Updated schedule. |
-| POST | `/api/admin/admins/:id/work-schedule/override` | `admin.schedule.override` or `admin.manage` fallback | `expiresAt`, `reason`. | Emergency override state. |
-| DELETE | `/api/admin/admins/:id/work-schedule/override` | `admin.schedule.override` or `admin.manage` fallback | Optional `reason`. | Disabled override state. |
+| GET | `/api/admin/work-schedules` | `admin.schedule.view` or `admin.manage` fallback | None | List of site admin schedules. |
+| GET | `/api/admin/work-schedules/:adminId` | `admin.schedule.view` or `admin.manage` fallback | None | Target admin schedule and emergency override status. |
+| PATCH | `/api/admin/work-schedules/:adminId` | `admin.schedule.update` or `admin.manage` fallback | Schedule fields listed above. | Updated schedule. |
+| POST | `/api/admin/work-schedules/:adminId/override` | `admin.schedule.override` or `admin.manage` fallback | `expiresAt`, `reason`. | Emergency override state. |
+| DELETE | `/api/admin/work-schedules/:adminId/override` | `admin.schedule.override` or `admin.manage` fallback | Optional `reason`. | Disabled override state. |
+| GET | `/api/admin/work-schedules/:adminId/audit-logs` | `admin.schedule.view` or `admin.manage` fallback | None | Schedule and override audit history. |
 
 ## 12. Admin Work Schedule UI Behavior
 

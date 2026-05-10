@@ -40,6 +40,7 @@ Never paste real tokens, passwords, API keys, provider secrets, callback secrets
 - Confirm provider modes are unset, `mock`, or `sandbox`.
 - Confirm no live provider credentials are present in the staging shell, hosting dashboard, CI variables, or `.env` file.
 - Confirm `npm run check` passes before any smoke command.
+- Confirm `npm run smoke:admin-work-schedule` passes before validating admin schedule UI behavior in staging.
 - Confirm local smoke commands are run only after the backend is pointed at the approved safe target.
 - Confirm logs redact database URLs, JWTs, tokens, API keys, callback secrets, provider payloads, passwords, and raw authorization headers.
 
@@ -76,6 +77,7 @@ Controlled-live testing is not part of local smoke. Use this checklist only afte
 - Record the test amount, currency, and transaction reference.
 - Record member/admin test account identifiers only when they are non-sensitive.
 - Verify admin logs exist for manual deposit, withdrawal, bank account, provider config, and status changes touched by the test.
+- Verify admin work schedule audit history exists for schedule update, enable/disable, emergency override, and schedule-blocked admin login when those controls are touched.
 - Verify provider callbacks or polling results are correlated by reference and are idempotent.
 - Verify logs do not contain raw tokens, passwords, API keys, callback secrets, authorization headers, or real database URLs.
 

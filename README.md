@@ -325,7 +325,7 @@ Run the backend first with safe local or test environment values, then run:
 npm run smoke:admin-work-schedule
 ```
 
-`BASE_URL` defaults to `http://localhost:4000/api`. The script blocks production-like DB/API targets and live provider modes, creates local-only admin work schedule fixtures, verifies unauthenticated `401`, no-permission `403`, owner schedule read/update, emergency override enable/disable, login outside schedule `403` without issuing a token, login inside schedule allow, expired override block, overnight shift helper behavior, rollback to disabled schedule, required audit log actions, and response leak scan. It does not call real provider, payment, bank, SMS, or Slip OCR services and does not run real-money UAT.
+`BASE_URL` defaults to `http://localhost:4000/api`. The script blocks production-like DB/API targets and live provider modes, creates local-only admin work schedule fixtures, verifies unauthenticated `401`, no-permission `403`, owner schedule list/read/update through `/api/admin/work-schedules`, invalid time `400`, emergency override enable/disable, login outside schedule `403` without issuing a token, login inside schedule allow, expired override block, overnight shift helper behavior, audit history through `/api/admin/work-schedules/:adminId/audit-logs`, rollback to disabled schedule, required audit log actions, and response leak scan. It does not call real provider, payment, bank, SMS, or Slip OCR services and does not run real-money UAT.
 
 ## Local Bank Module Smoke Test
 
@@ -555,6 +555,12 @@ Validation errors return HTTP 400 with `success: false`, a `message`, and struct
 - `GET /api/admin/roles`
 - `GET /api/admin/admins/:id/permissions`
 - `PATCH /api/admin/admins/:id/role`
+- `GET /api/admin/work-schedules`
+- `GET /api/admin/work-schedules/:adminId`
+- `PATCH /api/admin/work-schedules/:adminId`
+- `POST /api/admin/work-schedules/:adminId/override`
+- `DELETE /api/admin/work-schedules/:adminId/override`
+- `GET /api/admin/work-schedules/:adminId/audit-logs`
 - `GET /api/admin/admins/:id/work-schedule`
 - `PATCH /api/admin/admins/:id/work-schedule`
 - `POST /api/admin/admins/:id/work-schedule/override`
