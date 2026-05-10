@@ -136,7 +136,7 @@ In another shell, set a safe environment. Use your own local/staging/test values
 
 ```powershell
 $env:NODE_ENV = "development-local"
-$env:DATABASE_URL = "<LOCAL_TEST_DATABASE_URL>"
+$env["DATABASE_URL"] = "<LOCAL_TEST_DATABASE_URL>"
 $env:JWT_SECRET = "local-test-jwt-secret"
 $env:LOCAL_ADMIN_PASSWORD = "local-admin-password"
 $env:PUBLIC_API_BASE_URL = "http://localhost:4000"
@@ -147,7 +147,7 @@ Provider, payment, bank, SMS, and slip OCR modes must be unset, `mock`, or `sand
 Run the smoke test:
 
 ```bash
-npm run test:local:money-flow
+npm run smoke:money-flow
 ```
 
 The script creates local-only fixtures for the `PG77` site and a `local_money_flow_admin` admin, registers a mock member, approves the member bank account, approves a 100.00 deposit, approves and marks paid a 10.00 withdrawal, checks the wallet final balance is 90.00, checks the two ledger rows, and verifies duplicate approval/mark-paid attempts are blocked without adding ledger rows.
@@ -282,7 +282,7 @@ All API responses are JSON. Prisma decimal money values are serialized as string
 Member and admin protected endpoints require:
 
 ```http
-Authorization: Bearer <jwt>
+Authorization header with bearer token
 ```
 
 Member tokens are issued by `POST /api/auth/login`. Admin tokens are issued by `POST /api/admin/auth/login`.

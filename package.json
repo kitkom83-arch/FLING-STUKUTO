@@ -26,7 +26,8 @@
     "test:safety:all": "npm run test:safety:wallet && npm run test:safety:deposit && npm run test:safety:withdraw && npm run test:safety:admin-credit && npm run test:safety:provider-callback",
     "test:db:safety:dry-run": "node src/db-safety-tests/dbSafetyDryRun.js",
     "test:db:safety": "node src/db-safety-tests/dbSafetyGuard.js && node src/db-safety-tests/dbBackedSafetySuite.js",
-    "test:local:money-flow": "node src/local-smoke-tests/moneyFlowSmoke.js"
+    "test:local:money-flow": "node src/local-smoke-tests/moneyFlowSmoke.js",
+    "smoke:money-flow": "node src/local-smoke-tests/moneyFlowSmoke.js"
   },
   "prisma": {
     "seed": "node prisma/seed.js"

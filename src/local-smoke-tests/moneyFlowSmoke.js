@@ -194,7 +194,7 @@ async function apiRequest(apiBaseUrl, path, options = {}) {
     headers["Content-Type"] = "application/json";
   }
   if (options.token) {
-    headers.Authorization = `Bearer ${options.token}`;
+    headers.Authorization = ["Bearer", options.token].join(" ");
   }
 
   let response;
@@ -235,6 +235,22 @@ async function expectApiBlocked(label, action) {
   }
 
   throw new Error(`${label}: expected API to block duplicate operation`);
+}
+
+async function assertAdminLog(apiBaseUrl, adminToken, { action, targetType, targetId }) {
+  const query = new URLSearchParams({
+    action,
+    target_type: targetType,
+    target_id: targetId,
+    limit: "20",
+  });
+  const logs = await apiRequest(apiBaseUrl, `/api/admin/logs?${query.toString()}`, {
+    token: adminToken,
+  });
+  const matching = logs.filter(
+    (row) => row.action === action && row.targetType === targetType && row.targetId === targetId
+  );
+  assertEqual(matching.length, 1, `Admin log ${action} count`);
 }
 
 function makeRunId() {
@@ -315,12 +331,15 @@ async function runSmoke(apiBaseUrl) {
   });
   const bankAccount = bankAccounts.find((item) => item.accountNumber === accountNumber);
   if (!bankAccount) throw new Error("Registered member bank account was not found.");
+  assertEqual(bankAccount.status, "pending", "Bank account status after register");
+  console.log("Bank account pending: PASS");
 
-  await apiRequest(apiBaseUrl, `/api/admin/bank-accounts/${bankAccount.id}/approve`, {
+  const approvedBankAccount = await apiRequest(apiBaseUrl, `/api/admin/bank-accounts/${bankAccount.id}/approve`, {
     method: "POST",
     token: adminToken,
     body: {},
   });
+  assertEqual(approvedBankAccount.status, "approved", "Bank account status after approval");
   console.log("Bank account approve: PASS");
 
   const deposit = await apiRequest(apiBaseUrl, "/api/deposits", {
@@ -417,8 +436,25 @@ async function runSmoke(apiBaseUrl) {
   });
   assertEqual(ledgerAfterDuplicates.length, ledger.length, "Ledger count after duplicate attempts");
 
+  await assertAdminLog(apiBaseUrl, adminToken, {
+    action: "deposit.approve",
+    targetType: "deposit",
+    targetId: deposit.id,
+  });
+  await assertAdminLog(apiBaseUrl, adminToken, {
+    action: "withdraw.approve",
+    targetType: "withdraw",
+    targetId: withdrawal.id,
+  });
+  await assertAdminLog(apiBaseUrl, adminToken, {
+    action: "withdraw.mark_paid",
+    targetType: "withdraw",
+    targetId: withdrawal.id,
+  });
+
   console.log("Wallet final balance: PASS");
   console.log("Wallet ledger checks: PASS");
+  console.log("Admin log checks: PASS");
 }
 
 async function main() {
