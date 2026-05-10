@@ -18,6 +18,7 @@ const RELATED_FILES = [
   "src/local-smoke-tests/runAllLocalSmoke.js",
   "src/local-smoke-tests/promotionClaimSmoke.js",
   "src/local-smoke-tests/gameTransferSmoke.js",
+  "src/local-smoke-tests/adminReportsConfigSmoke.js",
 ];
 const SECRET_GREP_PATTERN = [
   ["postgres", "ql://[^:@]+:[^@]+@"].join(""),
@@ -43,6 +44,7 @@ const summary = [
   { key: "core", label: "core-api", status: "PENDING" },
   { key: "gameTransfer", label: "game-transfer", status: "PENDING" },
   { key: "financial", label: "financial-negative", status: "PENDING" },
+  { key: "adminReportsConfig", label: "admin-reports-config", status: "PENDING" },
   { key: "responseScan", label: "response leak scan", status: "PENDING" },
   { key: "secretGrep", label: "secret grep", status: "PENDING" },
   { key: "diff", label: "git diff --check", status: "PENDING" },
@@ -80,6 +82,12 @@ const steps = [
     summaryKey: "syntax",
   },
   {
+    name: "node --check adminReportsConfigSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/adminReportsConfigSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
     name: "npm run check",
     command: npmCommand,
     args: npmArgs(["run", "check"]),
@@ -114,6 +122,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:financial-negative"]),
     summaryKey: "financial",
+  },
+  {
+    name: "npm run smoke:admin-reports-config",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:admin-reports-config"]),
+    summaryKey: "adminReportsConfig",
     alsoPass: ["responseScan"],
   },
   {
@@ -125,6 +139,8 @@ const steps = [
       "package.json",
       "README.md",
       "src/local-smoke-tests",
+      "docs",
+      ".github",
     ],
     summaryKey: "secretGrep",
     expectNoMatches: true,

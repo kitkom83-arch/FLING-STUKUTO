@@ -170,6 +170,7 @@ node --check src/local-smoke-tests/moneyFlowSmoke.js
 node --check src/local-smoke-tests/coreApiSmoke.js
 node --check src/local-smoke-tests/gameTransferSmoke.js
 node --check src/local-smoke-tests/financialNegativeSmoke.js
+node --check src/local-smoke-tests/adminReportsConfigSmoke.js
 node --check src/local-smoke-tests/runAllLocalSmoke.js
 ```
 
@@ -180,6 +181,7 @@ npm run smoke:money-flow
 npm run smoke:core-api
 npm run smoke:game-transfer
 npm run smoke:financial-negative
+npm run smoke:admin-reports-config
 npm run smoke:all-local
 ```
 
@@ -271,9 +273,21 @@ npm run smoke:financial-negative
 
 `BASE_URL` defaults to `http://localhost:4000/api`. The script creates a local-only admin and member fixture, calls the real local API for invalid amounts, insufficient withdrawal balance, duplicate deposit approval, duplicate withdrawal approval, duplicate mark-paid, wallet ledger row counts, and required admin log actions. Every API response read by the script is scanned for unsafe secret markers and credential-shaped values.
 
+## Local Admin Reports/Config Smoke Test
+
+The local admin reports/config smoke test covers read-only admin report and site/config endpoints through the real local API only. It blocks unsafe `NODE_ENV`, production-like API/database targets, and non-mock provider modes before creating the local smoke admin fixture.
+
+Run the backend first with safe local or test environment values, then run:
+
+```bash
+npm run smoke:admin-reports-config
+```
+
+`BASE_URL` defaults to `http://localhost:4000/api`. The script verifies `/api/health`, `/api/site/config`, unauthenticated admin report/config auth guards, admin login with `LOCAL_ADMIN_PASSWORD`, `/api/admin/reports/summary`, `/api/admin/reports/deposits`, `/api/admin/reports/withdrawals`, `/api/admin/reports/wallet-ledger`, `/api/admin/sites`, `/api/admin/sites/current/config`, `/api/admin/sites/:id`, `/api/admin/sites/:id/bank-accounts`, `/api/admin/sites/:id/game-providers`, and `/api/admin/sites/:id/payment-configs`. It uses GET/read-only endpoint calls for the coverage checks and scans every response it reads for unsafe secret-shaped values.
+
 ## Local All Smoke Test
 
-The all-local smoke runner executes the local smoke suite in one guarded sequence. It performs syntax checks for the local smoke files, runs the project check, runs money-flow, core API, game-transfer, and financial-negative smoke tests, scans the related files for secret-shaped values, and checks whitespace errors in the related diff.
+The all-local smoke runner executes the local smoke suite in one guarded sequence. It performs syntax checks for the local smoke files, runs the project check, runs money-flow, core API, game-transfer, financial-negative, and admin reports/config smoke tests, scans the related files for secret-shaped values, and checks whitespace errors in the related diff.
 
 Start the backend first with safe local or test environment values:
 
