@@ -45,6 +45,9 @@ jobs:
           node --check src/local-smoke-tests/moneyFlowSmoke.js
           node --check src/local-smoke-tests/coreApiSmoke.js
           node --check src/local-smoke-tests/financialNegativeSmoke.js
+          node --check src/local-smoke-tests/promotionClaimSmoke.js
+          node --check src/local-smoke-tests/gameTransferSmoke.js
+          node --check src/local-smoke-tests/adminReportsConfigSmoke.js
           node --check src/local-smoke-tests/runAllLocalSmoke.js
 
       - name: Secret-shaped value scan

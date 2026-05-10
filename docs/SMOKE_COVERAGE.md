@@ -13,9 +13,9 @@ The smoke suite does not send real money, does not connect real provider/payment
 | `moneyFlowSmoke.js` | `npm run smoke:money-flow` | Yes | Yes | Yes | Syntax check only | Manual local money-flow happy path and duplicate approval guards. |
 | `coreApiSmoke.js` | `npm run smoke:core-api` | Yes | Yes | Yes | Syntax check only | Core member, wallet, promotion list, mock game launch, and admin read endpoints. |
 | `financialNegativeSmoke.js` | `npm run smoke:financial-negative` | Yes | Yes | Yes | Syntax check only | Invalid money inputs, duplicate state transitions, ledger safety, and leak scans. |
-| `promotionClaimSmoke.js` | `npm run smoke:promotion-claim` | Yes | Yes | No | No direct syntax check in current CI | Promotion claim fixture, duplicate guard, count guards, and wallet/ledger effects. |
-| `gameTransferSmoke.js` | `npm run smoke:game-transfer` | Yes | Yes | Yes | No direct syntax check in current CI | Mock transfer-in/out and mock bet-history checks. |
-| `adminReportsConfigSmoke.js` | `npm run smoke:admin-reports-config` | Yes | Yes | Yes | No direct syntax check in current CI | Admin report endpoints and read-only site/config endpoints. |
+| `promotionClaimSmoke.js` | `npm run smoke:promotion-claim` | Yes | Yes | No | Syntax check only | Promotion claim fixture, duplicate guard, count guards, and wallet/ledger effects. |
+| `gameTransferSmoke.js` | `npm run smoke:game-transfer` | Yes | Yes | Yes | Syntax check only | Mock transfer-in/out and mock bet-history checks. |
+| `adminReportsConfigSmoke.js` | `npm run smoke:admin-reports-config` | Yes | Yes | Yes | Syntax check only | Admin report endpoints and read-only site/config endpoints. |
 | `runAllLocalSmoke.js` | `npm run smoke:all-local` | Yes | Yes | Yes | Syntax check only | Guarded local runner for syntax, project checks, all local smokes, secret grep, and diff check. |
 
 GitHub Actions also scans `src/local-smoke-tests` for secret-shaped values. It does not run DB-backed smoke commands.
@@ -170,10 +170,13 @@ GitHub Actions also scans `src/local-smoke-tests` for secret-shaped values. It d
   - `moneyFlowSmoke.js`
   - `coreApiSmoke.js`
   - `financialNegativeSmoke.js`
+  - `promotionClaimSmoke.js`
+  - `gameTransferSmoke.js`
+  - `adminReportsConfigSmoke.js`
   - `runAllLocalSmoke.js`
 - Secret-shaped value scan over `package.json`, `README.md`, `src/local-smoke-tests`, and `.github`.
 
-Safe CI does not run DB-backed smoke commands because those require a running backend, safe local/staging/test PostgreSQL, guarded environment variables, and local fixtures. Direct syntax checks for `promotionClaimSmoke.js`, `gameTransferSmoke.js`, and `adminReportsConfigSmoke.js` are not currently listed in the workflow; ต้องตรวจเพิ่ม if direct CI syntax coverage is required for those files.
+Safe CI does not run DB-backed smoke commands because those require a running backend, safe local/staging/test PostgreSQL, guarded environment variables, and local fixtures.
 
 ## 11. Required Local Runtime
 
@@ -225,7 +228,6 @@ Confirmed from current docs and scripts:
 - Real payment and bank integrations are not covered.
 - Production deployment smoke is not covered.
 - Full end-to-end frontend coverage is not covered.
-- Direct Safe CI syntax checks currently omit `promotionClaimSmoke.js`, `gameTransferSmoke.js`, and `adminReportsConfigSmoke.js`; ต้องตรวจเพิ่ม if the workflow should include them directly.
 - docs/API.md still contains older "ต้องตรวจเพิ่ม" notes for some endpoints that are now covered by newer smoke scripts; ต้องตรวจเพิ่ม before using that section as the source of truth.
 
 ## 15. How to Add a New Smoke
