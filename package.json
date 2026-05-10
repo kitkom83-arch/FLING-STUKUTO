@@ -36,6 +36,7 @@
     "smoke:bank-module": "node src/local-smoke-tests/bankModuleSmoke.js",
     "smoke:admin-permission": "node src/local-smoke-tests/adminPermissionSmoke.js",
     "smoke:admin-role-management": "node src/local-smoke-tests/adminRoleManagementSmoke.js",
+    "smoke:admin-work-schedule": "node src/local-smoke-tests/adminWorkScheduleSmoke.js",
     "smoke:all-local": "node src/local-smoke-tests/runAllLocalSmoke.js"
   },
   "prisma": {

@@ -9,12 +9,24 @@ const bankAccountController = require("../controllers/bankAccount.controller");
 const bankMockController = require("../controllers/bankMock.controller");
 const depositController = require("../controllers/deposit.controller");
 const withdrawController = require("../controllers/withdraw.controller");
+const { adminHasPermission } = require("../services/adminPermission.service");
 const { asyncHandler } = require("../middleware/errorHandler");
+const { fail } = require("../utils/response");
 
 const router = express.Router();
 const protectedSite = [adminAuth, siteAccess];
 const can = (permission) => requirePermission(permission);
 const canForSite = (permission) => requirePermission(permission, { siteIdParam: "id" });
+const canAny = (permissions) => async (req, res, next) => {
+  try {
+    for (const permission of permissions) {
+      if (await adminHasPermission(req.admin, req.siteId, permission)) return next();
+    }
+    return fail(res, "Admin permission denied", 403, { permissions });
+  } catch (error) {
+    return next(error);
+  }
+};
 
 router.post("/auth/login", asyncHandler(adminController.login));
 router.get("/me", protectedSite, asyncHandler(adminController.me));
@@ -23,6 +35,30 @@ router.get("/permissions", protectedSite, can("admin.manage"), asyncHandler(admi
 router.get("/roles", protectedSite, can("admin.manage"), asyncHandler(adminPermissionController.listRoles));
 router.get("/admins/:id/permissions", protectedSite, can("admin.manage"), asyncHandler(adminPermissionController.getAdmin));
 router.patch("/admins/:id/role", protectedSite, can("admin.manage"), asyncHandler(adminPermissionController.assignAdminRole));
+router.get(
+  "/admins/:id/work-schedule",
+  protectedSite,
+  canAny(["admin.schedule.view", "admin.manage"]),
+  asyncHandler(adminPermissionController.getWorkSchedule)
+);
+router.patch(
+  "/admins/:id/work-schedule",
+  protectedSite,
+  canAny(["admin.schedule.update", "admin.manage"]),
+  asyncHandler(adminPermissionController.patchWorkSchedule)
+);
+router.post(
+  "/admins/:id/work-schedule/override",
+  protectedSite,
+  canAny(["admin.schedule.override", "admin.manage"]),
+  asyncHandler(adminPermissionController.postWorkScheduleOverride)
+);
+router.delete(
+  "/admins/:id/work-schedule/override",
+  protectedSite,
+  canAny(["admin.schedule.override", "admin.manage"]),
+  asyncHandler(adminPermissionController.deleteWorkScheduleOverride)
+);
 router.get("/logs", protectedSite, can("reports.view"), asyncHandler(adminController.logs));
 
 router.get("/sites", protectedSite, can("settings.website.view"), asyncHandler(adminSiteController.listSites));

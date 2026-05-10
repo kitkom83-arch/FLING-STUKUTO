@@ -41,6 +41,9 @@ These permissions exist in `src/services/adminPermission.service.js` and are enf
 | `settings.promotion.view` | Role/catalog permission currently available for promotion views. | Promotion settings read views. |
 | `assets.upload` | Role/catalog permission currently available for asset upload UI. | Logo, favicon, banner, and asset upload controls. |
 | `admin.manage` | List roles/permissions, read target admin permissions, and assign admin roles. | Admin and permission management. |
+| `admin.schedule.view` | Read a target admin work schedule. `admin.manage` is also accepted by backend. | Admin work schedule detail. |
+| `admin.schedule.update` | Update a target admin work schedule. `admin.manage` is also accepted by backend. | Work from home and shift controls. |
+| `admin.schedule.override` | Enable or disable temporary emergency schedule override. `admin.manage` is also accepted by backend. | Emergency admin access modal. |
 
 ### Proposed for Frontend Contract
 
@@ -74,6 +77,7 @@ The permissions below are not backend permissions today. Do not send them to the
 | ตั้งค่า | Theme / logo / banner | `settings.website.view` | `settings.website.view` | `settings.website.update`, `assets.upload` | `owner`, `graphic`, `viewer` |
 | ตั้งค่า | Promotion settings | `settings.promotion.view` | `settings.promotion.view` | Proposed `settings.promotion.update` only if added later | `owner`, `graphic`, `viewer` |
 | จัดการแอดมิน/สิทธิ์ | Roles, permissions, role assignment | `admin.manage` | `admin.manage` | `admin.manage` | `owner` |
+| จัดการแอดมิน/เวลาเข้างาน | Work schedule and emergency override | `admin.schedule.view` or `admin.manage` | `admin.schedule.view` or `admin.manage` | `admin.schedule.update`, `admin.schedule.override`, or `admin.manage` | `owner` |
 
 ## 5. Button / Action Permission Map
 
@@ -92,6 +96,8 @@ The permissions below are not backend permissions today. Do not send them to the
 | ตั้งค่าโปรโมชัน | `settings.promotion.view` for read-only; proposed `settings.promotion.update` for future edits | No dedicated admin promotion update route in current route file | Show read-only unless a backend update permission/route is added. |
 | ตั้งค่าเกม | `settings.website.view` for read; `settings.website.update` for create/update | Game provider config endpoints | Disable create/update controls with tooltip. |
 | ตั้งค่าธนาคาร | `bank.view` for read; `bank.update` for create/update/soft-disable | Site bank account endpoints | Disable create/update/delete controls with tooltip. |
+| ตั้งเวลาเข้างานแอดมิน | `admin.schedule.update` or `admin.manage` | `PATCH /admin/admins/:id/work-schedule` | Disable with tooltip. |
+| เปิด emergency override | `admin.schedule.override` or `admin.manage` | `POST /admin/admins/:id/work-schedule/override`, `DELETE /admin/admins/:id/work-schedule/override` | Disable with tooltip. |
 
 ## 6. Role Matrix
 
@@ -113,6 +119,9 @@ The permissions below are not backend permissions today. Do not send them to the
 | `settings.promotion.view` | allow | deny | deny | view-only | view-only |
 | `assets.upload` | allow | deny | deny | allow | deny |
 | `admin.manage` | allow | deny | deny | deny | deny |
+| `admin.schedule.view` | allow | deny | deny | deny | deny |
+| `admin.schedule.update` | allow | deny | deny | deny | deny |
+| `admin.schedule.override` | allow | deny | deny | deny | deny |
 
 ## 7. Frontend Behavior
 
@@ -123,6 +132,7 @@ The permissions below are not backend permissions today. Do not send them to the
 - API `401` means clear the admin session and return to login.
 - Frontend must call `GET /api/admin/permissions/me` after admin login or site switch and use the returned effective permissions for UI gating.
 - Frontend role-management screens must use `GET /api/admin/permissions`, `GET /api/admin/roles`, `GET /api/admin/admins/:id/permissions`, and `PATCH /api/admin/admins/:id/role`; all require `admin.manage` except current-admin permission read.
+- Frontend work-schedule screens must use `GET /api/admin/admins/:id/work-schedule`, `PATCH /api/admin/admins/:id/work-schedule`, `POST /api/admin/admins/:id/work-schedule/override`, and `DELETE /api/admin/admins/:id/work-schedule/override`; backend accepts the schedule-specific permission or `admin.manage`.
 - Frontend must not treat hidden menus as security. Every protected action must still expect backend `401` or `403`.
 
 ## 8. Backend Behavior
@@ -132,8 +142,10 @@ The permissions below are not backend permissions today. Do not send them to the
 - `owner` and legacy `super_admin` bypass permission checks and receive the full permission catalog.
 - Non-owner roles resolve permissions from role defaults unless a site-level `AdminSiteAccess.permissions` override exists.
 - Permission guard failures use the standard error envelope and include the denied permission; they must not return `500`.
+- Non-owner admin login is checked against the stored work schedule after username/password validation and before token issuance. Outside schedule returns `403` and writes `admin.login.blocked_outside_schedule`; `owner` and legacy `super_admin` bypass schedule blocking.
+- Active emergency override permits temporary login until `expiresAt`. Expired overrides do not permit login.
 - Responses must not leak secrets. Existing docs require responses to strip password hashes and encrypted provider/payment secrets, and smoke tests scan for secret-shaped values.
-- Business mutations listed in `docs/API.md` write admin log actions where implemented, such as member block/unblock, credit changes, deposit/withdrawal approvals, bank-account approval, site/config changes, and `admin.role.update` for role assignment. The read-only contract files do not show a dedicated audit-log row for blocked permission attempts.
+- Business mutations listed in `docs/API.md` write admin log actions where implemented, such as member block/unblock, credit changes, deposit/withdrawal approvals, bank-account approval, site/config changes, `admin.role.update`, schedule update/enable/disable, override enable/disable, and schedule-blocked login.
 
 ## 9. Smoke Coverage
 
@@ -149,11 +161,13 @@ The permissions below are not backend permissions today. Do not send them to the
 - Forbidden action checks returning `403`.
 - Response leak scan for DB URL markers, auth values, password/token/secret markers, JWT-like values, and credential-shaped PostgreSQL URLs.
 - `adminRoleManagementSmoke.js` covers owner role-management access, target admin permission reads, non-owner `403` role-update attempts, role assignment to support/graphic/viewer, rollback to the original role, `admin.role.update` audit log presence, and response leak scan.
+- `adminWorkScheduleSmoke.js` covers unauthenticated schedule `401`, no-permission `403`, owner schedule read/update, active/disabled emergency override, login outside schedule `403` without token, login inside schedule allow, expired override block, overnight shift helper behavior, schedule rollback, audit log actions, and response leak scan.
 
 ## 10. Known Gaps
 
 - Frontend is not wired to real permissions yet.
 - Menu hiding and disabled buttons are a documentation contract only until implemented in the frontend/backoffice.
 - Role UI management is limited to backend admin permission endpoints; a complete role-management UI remains a later phase if it does not already exist in the frontend.
+- Admin work schedule frontend is not implemented yet; backend API and login guard are available. Force-logout of already-active sessions is not implemented yet.
 - Production/live provider, payment, bank, SMS, Slip OCR, and real-money behavior are out of scope for this contract.
 - Promotion update, report export, and granular game/asset permissions are proposed only and are not backend-enforced today.

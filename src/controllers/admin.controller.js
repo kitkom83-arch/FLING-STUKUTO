@@ -9,6 +9,10 @@ const walletService = require("../services/wallet.service");
 const pointService = require("../services/point.service");
 const reportService = require("../services/report.service");
 const { logAdminAction, listAdminLogs } = require("../services/adminLog.service");
+const {
+  auditLoginBlockedOutsideSchedule,
+  checkAdminLoginSchedule,
+} = require("../services/adminWorkSchedule.service");
 
 const loginSchema = z.object({
   username: z.string().min(1),
@@ -56,6 +60,21 @@ async function login(req, res) {
   }
   if (admin.status !== "active") {
     const error = new Error("Admin is not active");
+    error.statusCode = 403;
+    throw error;
+  }
+
+  const now = new Date();
+  const scheduleCheck = await checkAdminLoginSchedule(admin, now, { siteId: req.siteId });
+  if (!scheduleCheck.allowed) {
+    await auditLoginBlockedOutsideSchedule({
+      admin,
+      siteId: req.siteId,
+      schedule: scheduleCheck.schedule,
+      req,
+      now,
+    });
+    const error = new Error("Admin login is outside allowed work schedule");
     error.statusCode = 403;
     throw error;
   }

@@ -180,6 +180,7 @@ node --check src/local-smoke-tests/gameTransferSmoke.js
 node --check src/local-smoke-tests/financialNegativeSmoke.js
 node --check src/local-smoke-tests/adminReportsConfigSmoke.js
 node --check src/local-smoke-tests/adminPermissionSmoke.js
+node --check src/local-smoke-tests/adminWorkScheduleSmoke.js
 node --check src/local-smoke-tests/runAllLocalSmoke.js
 ```
 
@@ -192,6 +193,7 @@ npm run smoke:game-transfer
 npm run smoke:financial-negative
 npm run smoke:admin-reports-config
 npm run smoke:admin-permission
+npm run smoke:admin-work-schedule
 npm run smoke:all-local
 ```
 
@@ -315,6 +317,16 @@ npm run smoke:admin-role-management
 
 `BASE_URL` defaults to `http://localhost:4000/api`. The script blocks production-like DB/API targets and live provider modes, creates local-only admin role fixtures, verifies owner access to the permission catalog, role catalog, current permissions, target admin permissions, and role updates, verifies finance/support/graphic/viewer role updates return `403`, rolls the target admin role back for idempotency, checks the `admin.role.update` audit log, and scans responses for unsafe secret-shaped values. The smoke does not call real provider, payment, bank, SMS, or Slip OCR services and does not run real-money UAT.
 
+## Local Admin Work Schedule Smoke Test
+
+Run the backend first with safe local or test environment values, then run:
+
+```bash
+npm run smoke:admin-work-schedule
+```
+
+`BASE_URL` defaults to `http://localhost:4000/api`. The script blocks production-like DB/API targets and live provider modes, creates local-only admin work schedule fixtures, verifies unauthenticated `401`, no-permission `403`, owner schedule read/update, emergency override enable/disable, login outside schedule `403` without issuing a token, login inside schedule allow, expired override block, overnight shift helper behavior, rollback to disabled schedule, required audit log actions, and response leak scan. It does not call real provider, payment, bank, SMS, or Slip OCR services and does not run real-money UAT.
+
 ## Local Bank Module Smoke Test
 
 Run the backend first with safe local or test environment values, then run:
@@ -327,7 +339,7 @@ npm run smoke:bank-module
 
 ## Local All Smoke Test
 
-The all-local smoke runner executes the local smoke suite in one guarded sequence. It performs syntax checks for the local smoke files, runs the project check, runs money-flow, core API, game-transfer, financial-negative, admin reports/config, bank module, admin permission, and admin role management smoke tests, scans the related files for secret-shaped values, and checks whitespace errors in the related diff.
+The all-local smoke runner executes the local smoke suite in one guarded sequence. It performs syntax checks for the local smoke files, runs the project check, runs money-flow, core API, game-transfer, financial-negative, admin reports/config, bank module, admin permission, admin role management, and admin work schedule smoke tests, scans the related files for secret-shaped values, and checks whitespace errors in the related diff.
 
 Start the backend first with safe local or test environment values:
 
@@ -543,6 +555,10 @@ Validation errors return HTTP 400 with `success: false`, a `message`, and struct
 - `GET /api/admin/roles`
 - `GET /api/admin/admins/:id/permissions`
 - `PATCH /api/admin/admins/:id/role`
+- `GET /api/admin/admins/:id/work-schedule`
+- `PATCH /api/admin/admins/:id/work-schedule`
+- `POST /api/admin/admins/:id/work-schedule/override`
+- `DELETE /api/admin/admins/:id/work-schedule/override`
 - `GET /api/admin/logs`
 
 Admin list endpoints support safe query parameters without changing the array response shape:

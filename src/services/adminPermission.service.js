@@ -18,6 +18,9 @@ const PERMISSIONS = [
   "settings.promotion.view",
   "assets.upload",
   "admin.manage",
+  "admin.schedule.view",
+  "admin.schedule.update",
+  "admin.schedule.override",
 ];
 
 const ROLE_PERMISSIONS = {
@@ -60,6 +63,22 @@ function normalizePermissionList(value) {
     return normalizePermissionList(value.permissions);
   }
   return null;
+}
+
+function preserveAccessMetadata(nextPermissions, currentPermissions) {
+  const schedule =
+    currentPermissions &&
+    typeof currentPermissions === "object" &&
+    !Array.isArray(currentPermissions) &&
+    currentPermissions.adminWorkSchedule
+      ? currentPermissions.adminWorkSchedule
+      : null;
+
+  if (!schedule) return nextPermissions;
+  if (Array.isArray(nextPermissions)) {
+    return { permissions: nextPermissions, adminWorkSchedule: schedule };
+  }
+  return { adminWorkSchedule: schedule };
 }
 
 function effectiveRole(admin, access) {
@@ -174,9 +193,10 @@ async function assignRole({ adminId, siteId, role, permissions = null, actor = n
     });
 
     if (siteId) {
+      const nextAccessPermissions = preserveAccessMetadata(normalizedPermissions, beforeAccess && beforeAccess.permissions);
       await tx.adminSiteAccess.upsert({
         where: { adminId_siteId: { adminId, siteId } },
-        update: { role, permissions: normalizedPermissions },
+        update: { role, permissions: nextAccessPermissions },
         create: { adminId, siteId, role, permissions: normalizedPermissions },
       });
     }

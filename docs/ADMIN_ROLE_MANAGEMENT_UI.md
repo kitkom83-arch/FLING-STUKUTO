@@ -225,7 +225,7 @@ Future UI enhancement: add a dedicated role-management audit timeline if a narro
 
 Purpose: define when each admin is allowed to log in and keep a session active. This is intended for Work From Home operations and shift-based staff. It lets `owner`/`super_admin` configure allowed days, allowed times, session limits, force-logout behavior, and emergency temporary access for a specific admin.
 
-Current backend status: this is a UI contract only. There is no schema, migration, route, or backend login/session guard for admin work schedules in this phase. Backend enforcement must be added in the next backend phase before this policy can block real logins or force logout sessions.
+Current backend status: the backend login guard and management API are implemented. Schedule data is stored in `AdminSiteAccess.permissions.adminWorkSchedule`, so no schema or migration is added. The guard checks non-owner admin login after username/password validation and before issuing a token. Force-logout for already-active sessions remains a future phase.
 
 Required fields:
 
@@ -258,30 +258,30 @@ Allowed-days picker:
 | Saturday | Saturday |
 | Sunday | Sunday |
 
-Suggested proposed API surface for next backend phase:
+Implemented API surface:
 
 | Method | Path | Proposed permission | Request body | Success response summary |
 | --- | --- | --- | --- | --- |
-| GET | `/api/admin/admins/:id/schedule` | `admin.schedule.view` or `admin.manage` fallback | None | Target admin schedule, emergency override status, updater, and timestamps. |
-| PATCH | `/api/admin/admins/:id/schedule` | `admin.schedule.update` or `admin.manage` fallback | Schedule fields listed above. | Updated schedule and audit metadata. |
-| POST | `/api/admin/admins/:id/schedule/override` | `admin.schedule.override` or `admin.manage` fallback | `enabled`, `expiresAt`, `reason`. | Emergency override state and audit metadata. |
-| DELETE | `/api/admin/admins/:id/schedule/override` | `admin.schedule.override` or `admin.manage` fallback | Optional `reason`. | Disabled override state and audit metadata. |
+| GET | `/api/admin/admins/:id/work-schedule` | `admin.schedule.view` or `admin.manage` fallback | None | Target admin schedule and emergency override status. |
+| PATCH | `/api/admin/admins/:id/work-schedule` | `admin.schedule.update` or `admin.manage` fallback | Schedule fields listed above. | Updated schedule. |
+| POST | `/api/admin/admins/:id/work-schedule/override` | `admin.schedule.override` or `admin.manage` fallback | `expiresAt`, `reason`. | Emergency override state. |
+| DELETE | `/api/admin/admins/:id/work-schedule/override` | `admin.schedule.override` or `admin.manage` fallback | Optional `reason`. | Disabled override state. |
 
 ## 12. Admin Work Schedule UI Behavior
 
 - `owner` and legacy `super_admin` can view and edit schedules.
 - Other roles must not view or edit schedules unless their effective permissions include `admin.manage` today or schedule-specific proposed permissions after the next backend phase.
 - If schedule status is disabled, normal role/permission checks apply.
-- If schedule status is enabled and the current login attempt is outside the allowed time window, login must be blocked after backend enforcement exists.
-- If schedule status is enabled and the current login attempt is outside the allowed day, login must be blocked after backend enforcement exists.
+- If schedule status is enabled and the current login attempt is outside the allowed time window, backend login returns `403` and does not issue a token.
+- If schedule status is enabled and the current login attempt is outside the allowed day, backend login returns `403` and does not issue a token.
 - If an active session reaches the schedule end and `Force logout when schedule ends` is true, the UI should show a warning and then logout after backend session enforcement exists.
-- If an emergency override is enabled and `Override expires at` is still in the future, the admin can temporarily log in within the override window after backend enforcement exists.
+- If an emergency override is enabled and `Override expires at` is still in the future, the admin can temporarily log in within the override window.
 - If an emergency override has expired, it must not permit login.
 - Every schedule action must show a clear toast or status message, such as save success, save failed, override active, override expired, or forced logout warning.
 
 ## 13. Login Behavior Contract
 
-This behavior is proposed for the next backend phase and is not enforced by the current backend.
+This behavior is enforced by the backend login guard for non-owner admins. `owner` and legacy `super_admin` bypass schedule blocking.
 
 | Scenario | Expected behavior |
 | --- | --- |
@@ -427,7 +427,7 @@ Related smoke scripts:
 - Audit history UI may need a dedicated endpoint later; current backend has `GET /api/admin/logs` with `reports.view`.
 - Admin email and display name are proposed UI fields because the current `Admin` schema only includes `username`.
 - Proposed frontend permissions must not be sent to backend until they are added to `PERMISSIONS` and route guards.
-- Admin Work Schedule is a UI contract only in this phase.
-- Backend schedule enforcement must be implemented in a later phase before schedules can block real login or force logout sessions.
+- Admin Work Schedule backend guard and management API are implemented.
+- Force-logout of already-active sessions must be implemented in a later phase.
 - No schema or migration is added in this phase.
-- Schedule, override, and force-logout behavior is not actually enforced until backend guards and session handling are added.
+- Schedule and override login behavior is enforced; force-logout behavior is not enforced until session handling is added.
