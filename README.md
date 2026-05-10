@@ -152,6 +152,20 @@ npm run smoke:money-flow
 
 The script creates local-only fixtures for the `PG77` site and a `local_money_flow_admin` admin, registers a mock member, approves the member bank account, approves a 100.00 deposit, approves and marks paid a 10.00 withdrawal, checks the wallet final balance is 90.00, checks the two ledger rows, and verifies duplicate approval/mark-paid attempts are blocked without adding ledger rows.
 
+## Local Core API Smoke Test
+
+The local core API smoke test verifies the main JSON API surfaces without touching real money or real providers. It blocks unsafe `NODE_ENV`, production-like API/database targets, and non-mock provider modes before creating local-only fixtures.
+
+Run the backend first with safe local or test environment values, then run:
+
+```bash
+npm run smoke:core-api
+```
+
+`BASE_URL` defaults to `http://localhost:4000/api`. `NODE_ENV` must be `development-local` or `test`, `LOCAL_ADMIN_PASSWORD` must be set, and provider, payment, bank, SMS, and slip OCR modes must remain unset, `mock`, or `sandbox`.
+
+The script creates or updates a local-only `local_core_api_admin` admin and an active mock `PG` game provider for the configured site code. It registers and logs in a temporary member, checks `/api/health`, `/api/me`, `/api/wallet`, `/api/points`, `/api/wallet/ledger`, `/api/promotions`, mock game provider/game/launch endpoints, `/api/admin/me`, `/api/admin/logs`, `/api/admin/members`, `/api/admin/deposits`, and `/api/admin/withdrawals`. It also confirms selected protected endpoints return JSON `401` responses without tokens and scans responses for unsafe values.
+
 ## Demo Accounts
 
 Admin:

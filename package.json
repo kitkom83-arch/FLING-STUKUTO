@@ -27,7 +27,8 @@
     "test:db:safety:dry-run": "node src/db-safety-tests/dbSafetyDryRun.js",
     "test:db:safety": "node src/db-safety-tests/dbSafetyGuard.js && node src/db-safety-tests/dbBackedSafetySuite.js",
     "test:local:money-flow": "node src/local-smoke-tests/moneyFlowSmoke.js",
-    "smoke:money-flow": "node src/local-smoke-tests/moneyFlowSmoke.js"
+    "smoke:money-flow": "node src/local-smoke-tests/moneyFlowSmoke.js",
+    "smoke:core-api": "node src/local-smoke-tests/coreApiSmoke.js"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
