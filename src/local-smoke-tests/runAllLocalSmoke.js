@@ -12,7 +12,12 @@ const SAFE_PROVIDER_MODES = new Set(["mock", "sandbox"]);
 const SAFE_TARGET_MARKERS = ["local", "test", "testing", "stage", "staging", "sandbox", "qa"];
 const PRODUCTION_MARKERS = ["prod", "production", "live", "primary", "main", "master"];
 const DEFAULT_BASE_URL = "http://localhost:4000/api";
-const RELATED_FILES = ["package.json", "README.md", "src/local-smoke-tests/runAllLocalSmoke.js"];
+const RELATED_FILES = [
+  "package.json",
+  "README.md",
+  "src/local-smoke-tests/runAllLocalSmoke.js",
+  "src/local-smoke-tests/promotionClaimSmoke.js",
+];
 const SECRET_GREP_PATTERN = [
   ["postgres", "ql://[^:@]+:[^@]+@"].join(""),
   [["Be", "arer"].join(""), String.raw`\s+`].join(""),
@@ -32,6 +37,7 @@ function npmArgs(args) {
 const summary = [
   { key: "syntax", label: "syntax checks", status: "PENDING" },
   { key: "project", label: "project check", status: "PENDING" },
+  { key: "promotion", label: "promotion-claim", status: "PENDING" },
   { key: "money", label: "money-flow", status: "PENDING" },
   { key: "core", label: "core-api", status: "PENDING" },
   { key: "financial", label: "financial-negative", status: "PENDING" },
@@ -41,6 +47,12 @@ const summary = [
 ];
 
 const steps = [
+  {
+    name: "node --check promotionClaimSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/promotionClaimSmoke.js"],
+    summaryKey: "syntax",
+  },
   {
     name: "node --check moneyFlowSmoke",
     command: nodeCommand,
@@ -64,6 +76,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "check"]),
     summaryKey: "project",
+  },
+  {
+    name: "npm run smoke:promotion-claim",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:promotion-claim"]),
+    summaryKey: "promotion",
   },
   {
     name: "npm run smoke:money-flow",

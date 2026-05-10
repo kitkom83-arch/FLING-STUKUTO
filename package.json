@@ -28,6 +28,7 @@
     "test:db:safety": "node src/db-safety-tests/dbSafetyGuard.js && node src/db-safety-tests/dbBackedSafetySuite.js",
     "test:local:money-flow": "node src/local-smoke-tests/moneyFlowSmoke.js",
     "smoke:money-flow": "node src/local-smoke-tests/moneyFlowSmoke.js",
+    "smoke:promotion-claim": "node src/local-smoke-tests/promotionClaimSmoke.js",
     "smoke:core-api": "node src/local-smoke-tests/coreApiSmoke.js",
     "smoke:financial-negative": "node src/local-smoke-tests/financialNegativeSmoke.js",
     "smoke:all-local": "node src/local-smoke-tests/runAllLocalSmoke.js"

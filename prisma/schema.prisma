@@ -398,6 +398,7 @@ model PromotionClaim {
   @@index([siteId])
   @@index([userId])
   @@index([promotionId])
+  @@unique([userId, promotionId], map: "promotion_claims_userId_promotionId_key")
   @@map("promotion_claims")
 }
 
