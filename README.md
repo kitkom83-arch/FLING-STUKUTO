@@ -93,6 +93,12 @@ Staging must run on backend hosting that supports a long-running Node.js process
 
 Use `.env.staging.example` as the placeholder template for staging configuration. Never copy production secrets into staging, never commit real `.env` files, and never print database URLs, JWT secrets, provider API keys, tokens, or callback secrets.
 
+Staging deploy preparation and smoke boundaries are documented in:
+
+- `docs/STAGING_DEPLOY.md`
+- `docs/STAGING_SMOKE.md`
+- `.env.staging.example`
+
 Provider modes for staging must remain `mock` or sandbox until each real provider has signed sandbox credentials, callback verification, IP allowlists, timeout/retry rules, audit logging, and rollback instructions.
 
 Production migration and seed commands must not be run from a local checkout:
@@ -318,6 +324,7 @@ npm run smoke:all-local
 See `docs/SMOKE_COVERAGE.md` for the smoke coverage index.
 See `docs/DEMO_SEED.md` for the demo seed runbook and mock data list.
 See `docs/STAGING_UAT.md` for the staging/UAT boundary guard runbook and controlled-live checklist.
+See `docs/STAGING_DEPLOY.md` and `docs/STAGING_SMOKE.md` for staging deploy preparation, staging env placeholders, smoke boundaries, rollback, logs, and security checklists.
 
 ## Demo Accounts
 
