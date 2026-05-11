@@ -72,7 +72,7 @@ Prisma technical debt: `package.json#prisma` is deprecated for Prisma 7. Migrate
 
 This project is a backend API, not a static demo. Do not deploy it to Netlify as a static site.
 
-Use backend hosting that can run a Node.js process, such as Render, Railway, Fly.io, or a VPS. The API requires PostgreSQL and environment variables for database, auth, CORS, and provider settings.
+Use backend hosting that can run a Node.js process. Render is the recommended first staging target; Railway, Fly.io, and VPS remain backup options. The API requires PostgreSQL and environment variables for database, auth, CORS, and provider settings.
 
 Staging must use `mock`, `sandbox`, or `disabled` provider modes for game, payment, bank statement, SMS, and Slip OCR integrations. Do not connect real provider credentials until sandbox callbacks, verification, IP allowlists, rollback, and audit logging are confirmed.
 
@@ -89,13 +89,25 @@ Do not run `prisma migrate`, `prisma db seed`, or any real provider/payment/game
 
 PG77-real-core is an Express backend API with Prisma and PostgreSQL. It is not a frontend bundle and must not be deployed to Netlify as a static site.
 
-Staging must run on backend hosting that supports a long-running Node.js process, such as Render, Railway, Fly.io, or a VPS. Staging must use a PostgreSQL database that is separate from production.
+Staging must run on backend hosting that supports a long-running Node.js process. Render is the recommended first target as a Web Service using Node.js on branch `main`. Railway, Fly.io, and VPS remain backup options. Staging must use a PostgreSQL database that is separate from production.
+
+Render staging setup summary:
+
+- Service type: Web Service.
+- Runtime: Node.js.
+- Branch: `main`.
+- Build command: `npm ci && npx prisma generate`.
+- Start command: `npm start`.
+- Health check path: `/api/health`.
+- ENV values must be set in Render Environment/Secrets only.
+- Do not commit real `DATABASE_URL`, token, password, API key, provider secret, or admin/session secret values.
 
 Use `.env.staging.example` as the placeholder template for staging configuration. Never copy production secrets into staging, never commit real `.env` files, and never print database URLs, JWT secrets, provider API keys, tokens, or callback secrets.
 
 Staging deploy preparation and smoke boundaries are documented in:
 
 - `docs/STAGING_DEPLOY.md`
+- `docs/STAGING_RENDER.md`
 - `docs/STAGING_SMOKE.md`
 - `docs/STAGING_PLATFORM_CHECKLIST.md`
 - `docs/STAGING_DEPLOY_DECISION.md`
@@ -115,7 +127,7 @@ Staging readiness checklist:
 - `npm run staging:preflight` must pass before deploy handoff. In CI it runs as a local-test dry run without real secrets; against hosted staging, set `BASE_URL` to the staging API.
 - `npm run smoke:staging` must pass before DB-backed staging smoke.
 
-This phase adds platform selection docs, grouped staging ENV mapping, and a deploy decision checklist. No real staging deploy has been performed from this repository state. A platform, staging domain, staging PostgreSQL target, and secret-manager values must still be selected and confirmed before deployment.
+This phase prepares Render staging documentation, grouped staging ENV mapping, and a deploy decision checklist. No real staging deploy has been performed from this repository state. A Render account/service, staging domain, staging PostgreSQL target, and Render Environment/Secrets values must still be selected and confirmed before deployment.
 
 Production migration and seed commands must not be run from a local checkout:
 

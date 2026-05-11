@@ -20,6 +20,13 @@ Do not paste real database URLs, tokens, passwords, API keys, provider secrets, 
 - [ ] No provider/payment/bank/SMS/Slip OCR mode is `live`.
 - [ ] No real-money flow is enabled or tested.
 
+## Current Platform Recommendation
+
+- Recommended first staging target: Render Web Service.
+- Railway, Fly.io, and VPS remain backup options.
+- Final deploy is still blocked until the real platform service, staging domain, dedicated staging DB, and secret-manager values are ready.
+- This decision checklist does not authorize Codex to run a real deploy.
+
 ## Deploy Dry-Run Commands
 
 Run locally before handoff:

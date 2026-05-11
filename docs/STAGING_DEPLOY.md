@@ -8,15 +8,18 @@ Do not paste real database URLs, passwords, tokens, API keys, provider secrets, 
 
 PG77-real-core is a Node.js/Express backend API. It must run on backend hosting that supports a long-running Node.js process and outbound PostgreSQL connectivity.
 
-Supported platform options:
+Recommended first staging target:
 
-- Render web service plus Render PostgreSQL or another dedicated staging PostgreSQL.
+- Render Web Service using Node.js on branch `main`.
+
+Backup platform options:
+
 - Railway service plus Railway PostgreSQL or another dedicated staging PostgreSQL.
 - Fly.io app plus managed PostgreSQL reachable from the app.
 - VPS or VM with Node.js 18.18+ and a dedicated staging PostgreSQL.
 - Docker-ready host if the image runs `npm run start`, has Node.js 18.18+, receives environment variables from a secret store, and connects only to staging PostgreSQL.
 
-Use `docs/STAGING_PLATFORM_CHECKLIST.md` for platform-specific build/start/env/rollback steps. Use `docs/STAGING_DEPLOY_DECISION.md` for go/no-go approval. Use `docs/STAGING_ROLLBACK.md` for the rollback and incident runbook.
+Use `docs/STAGING_RENDER.md` for the recommended Render setup, env checklist, deploy checklist, GO/NO-GO criteria, rollback note, and optional placeholder `render.yaml` template. Use `docs/STAGING_PLATFORM_CHECKLIST.md` for backup platform build/start/env/rollback steps. Use `docs/STAGING_DEPLOY_DECISION.md` for go/no-go approval. Use `docs/STAGING_ROLLBACK.md` for the rollback and incident runbook.
 
 Do not deploy this backend as a static site. Do not use Netlify static hosting for the API process.
 
@@ -28,6 +31,20 @@ Do not deploy this backend as a static site. Do not use Netlify static hosting f
 | Railway | Setup เร็วสำหรับ API + DB ใน project เดียว | Railway service, staging PostgreSQL, public domain, variables | `npm ci && npx prisma generate` | `npm run start` | `/api/health` | Railway Variables | Redeploy previous deployment หรือ pin previous commit | ตรวจ project/env ไม่ reuse production และ domain ไม่ production-like |
 | Fly.io | ต้องการ release rollback และ region control | Fly app, staging DB access, secrets, health check config | `npm ci && npx prisma generate` | `npm run start` | `/api/health` | Fly secrets | Rollback to previous release | ตรวจ DB reachability, region, TLS, และไม่ใส่ live credentials |
 | VPS | ต้องการควบคุม OS/network/process เอง | Node.js 18.18+, process manager, reverse proxy, staging DB, secret store | `npm ci && npx prisma generate` | `npm run start` | `/api/health` | systemd/PM2/vault outside git | Switch release dir/commit and restart | ต้องดูแล patching, firewall, TLS, logs, backup, restart policy เอง |
+
+## Render Staging Quick Setup
+
+| Render setting | Value |
+| --- | --- |
+| Service type | Web Service |
+| Runtime | Node.js |
+| Branch | `main` |
+| Build command | `npm ci && npx prisma generate` |
+| Start command | `npm start` |
+| Health check path | `/api/health` |
+| ENV storage | Render Environment Variables or Environment Group only |
+
+Do not add real secret values to repository files. Render must hold real staging-only values for `DATABASE_URL`, JWT/admin secrets, and any approved sandbox provider credentials.
 
 ## Recommended Architecture
 
@@ -92,7 +109,7 @@ All real values must be set only in the selected platform secret manager or an i
 | --- | --- | --- | --- |
 | App runtime | `NODE_ENV`, `APP_ENV`, `PORT` | `staging`, `staging`, platform port value | Do not use `production` for this staging preparation phase. |
 | Database staging/test only | `DATABASE_URL` | `<staging-database-url>` in secret manager | Must point to dedicated staging/test PostgreSQL, never production or production clone. |
-| Admin/session/auth | `JWT_SECRET`, `JWT_EXPIRES_IN`, `LOCAL_ADMIN_PASSWORD` | `<set-in-platform-secret-manager>`, `7d`, `<set-in-platform-secret-manager>` | Rotate if printed, pasted, committed, screenshotted, or shared outside secret manager. |
+| Admin/session/auth | `JWT_SECRET`, `JWT_EXPIRES_IN`, `LOCAL_ADMIN_PASSWORD` | `<set-in-render-environment>`, `7d`, `<set-in-render-environment>` | Rotate if printed, pasted, committed, screenshotted, or shared outside secret manager. |
 | Provider/game mock/sandbox/disabled | `GAME_PROVIDER_MODE`, `GAME_PROVIDER_API_BASE_URL`, `GAME_PROVIDER_AGENT_CODE`, `GAME_PROVIDER_API_KEY`, `GAME_PROVIDER_SECRET` | `mock`, `sandbox`, or `disabled`; credentials as placeholders only | Keep credentials empty in mock mode; no live provider mode. |
 | Payment mock/sandbox/disabled | `PAYMENT_PROVIDER_MODE`, `PAYMENT_API_BASE_URL`, `PAYMENT_MERCHANT_ID`, `PAYMENT_API_KEY`, `PAYMENT_SECRET` | `mock`, `sandbox`, or `disabled`; credentials as placeholders only | No live payment rails, no real-money transfer. |
 | Bank/statement mock/sandbox/disabled | `BANK_STATEMENT_MODE`, `BANK_API_BASE_URL`, `BANK_API_KEY` | `mock`, `sandbox`, or `disabled`; credentials as placeholders only | No live bank rails or production statement feeds. |
@@ -147,6 +164,59 @@ Values that must be rotated if exposed:
 - Confirm `.env`, logs, and real secret files are not staged for commit.
 - Confirm rollback owner and deploy owner are known before any actual deploy.
 
+Render-specific pre-deploy checks:
+
+- Confirm Render service type is Web Service.
+- Confirm Render runtime is Node.js.
+- Confirm Render branch is `main`.
+- Confirm Render build command is `npm ci && npx prisma generate`.
+- Confirm Render start command is `npm start`.
+- Confirm Render health check path is `/api/health`.
+- Confirm all real ENV values are stored in Render Environment/Secrets only.
+- Confirm no real secret value is committed in repo files.
+
+## Render Deploy Checklist
+
+Before deploy:
+
+- Confirm Render account/service owner, deploy owner, and rollback owner.
+- Confirm staging domain and staging PostgreSQL are ready and non-production.
+- Confirm `DATABASE_URL` is a dedicated staging/test database and exists only in Render Environment/Secrets.
+- Confirm provider/payment/bank/SMS/Slip OCR modes are `mock`, `sandbox`, or `disabled`.
+- Run `npm run check` and `npm run staging:preflight` locally.
+- Run secret scan over changed files before handoff.
+
+During deploy:
+
+- Deploy Render Web Service from branch `main`.
+- Use build command `npm ci && npx prisma generate`.
+- Use start command `npm start`.
+- Use health check path `/api/health`.
+- Do not paste secrets into deploy logs, comments, docs, screenshots, or chat.
+- Do not run live provider/payment/bank/SMS/Slip OCR actions.
+
+After deploy:
+
+- Confirm the Render service reaches healthy state.
+- Confirm `GET /api/health` returns `success: true`, `data.ok: true`, and boolean `data.databaseConnected`.
+- Confirm external mode labels are `mock`, `sandbox`, or `disabled`.
+- Run staging preflight and staging smoke against the Render staging API.
+
+Smoke command template:
+
+```cmd
+set BASE_URL=https://<render-staging-domain>/api
+npm run staging:preflight
+npm run smoke:staging
+```
+
+Rollback:
+
+- Roll back deployment through the Render dashboard.
+- Disable the service immediately if a secret leak is suspected.
+- Rotate any exposed secret.
+- Rerun `/api/health`, `npm run staging:preflight`, and `npm run smoke:staging` after rollback.
+
 ## Staging DB Migration Steps
 
 Run migrations only after the staging database target has been verified without printing the full URL.
@@ -191,6 +261,27 @@ Expected result:
 - `data.databaseConnected` is a boolean.
 - `data.externalModes` shows safe mode labels only: `mock`, `sandbox`, or `disabled`.
 - No database URL, JWT, API key, token, password, provider secret, or raw authorization header appears in the response or logs.
+
+## Render GO / NO-GO Criteria
+
+GO is allowed only when all items are true:
+
+- Staging DB is separate from production.
+- ENV values are stored in Render Environment/Secrets.
+- `/api/health` returns `ok: true`.
+- `databaseConnected` is a boolean.
+- Provider/payment/bank/SMS/Slip OCR modes are not live.
+- `npm run staging:preflight` passes.
+- `npm run smoke:staging` passes.
+
+NO-GO if any item is true:
+
+- Staging uses production DB, a production clone, or a production read replica.
+- Any provider/payment/bank/SMS/Slip OCR mode is live.
+- Any secret leaks in response, log, docs, screenshots, tickets, commits, pull requests, or chat.
+- `/api/health` fails or returns an unsafe contract.
+- `npm run staging:preflight` fails.
+- `npm run smoke:staging` fails.
 
 ## Smoke Testing Steps
 
@@ -245,11 +336,15 @@ Do not run a platform deploy command from this phase. Do not paste actual secret
 ## Rollback Checklist
 
 - Revert the backend service to the previous known-good image, release, or commit.
+- For Render, roll back to the previous successful deployment through the Render dashboard.
+- Disable the Render service if a secret leak is found or suspected.
+- Rotate any secret that leaked before re-enabling the service.
 - Keep the staging database separate from production; do not point staging at production as a rollback shortcut.
 - Revert provider modes to `mock` if any sandbox setting causes unexpected behavior.
 - Stop any worker, cron, webhook replay, or queue consumer that was part of the staging test.
 - Capture failing health check, app log, migration status, and smoke command output without secrets.
 - Confirm no wallet, deposit, withdrawal, or provider data correction is needed.
+- Rerun health and smoke after rollback.
 - Document the rollback decision, owner, timestamp, and final staging state.
 
 ## Logs Checklist
