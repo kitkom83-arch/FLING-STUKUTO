@@ -132,7 +132,7 @@ The permissions below are not backend permissions today. Do not send them to the
 - API `401` means clear the admin session and return to login.
 - Frontend must call `GET /api/admin/permissions/me` after admin login or site switch and use the returned effective permissions for UI gating.
 - Frontend role-management screens must use `GET /api/admin/permissions`, `GET /api/admin/roles`, `GET /api/admin/admins/:id/permissions`, and `PATCH /api/admin/admins/:id/role`; all require `admin.manage` except current-admin permission read.
-- Frontend work-schedule screens should use `GET /api/admin/work-schedules`, `GET /api/admin/work-schedules/:adminId`, `PATCH /api/admin/work-schedules/:adminId`, `POST /api/admin/work-schedules/:adminId/override`, `DELETE /api/admin/work-schedules/:adminId/override`, and `GET /api/admin/work-schedules/:adminId/audit-logs`; backend accepts the schedule-specific permission or `admin.manage`.
+- Frontend work-schedule screen is served at `/admin/work-schedules` and uses `GET /api/admin/work-schedules`, `GET /api/admin/work-schedules/:adminId`, `PATCH /api/admin/work-schedules/:adminId`, `POST /api/admin/work-schedules/:adminId/override`, `DELETE /api/admin/work-schedules/:adminId/override`, and `GET /api/admin/work-schedules/:adminId/audit-logs`; backend accepts the schedule-specific permission or `admin.manage`.
 - Frontend must not treat hidden menus as security. Every protected action must still expect backend `401` or `403`.
 
 ## 8. Backend Behavior
@@ -162,12 +162,13 @@ The permissions below are not backend permissions today. Do not send them to the
 - Response leak scan for DB URL markers, auth values, password/token/secret markers, JWT-like values, and credential-shaped PostgreSQL URLs.
 - `adminRoleManagementSmoke.js` covers owner role-management access, target admin permission reads, non-owner `403` role-update attempts, role assignment to support/graphic/viewer, rollback to the original role, `admin.role.update` audit log presence, and response leak scan.
 - `adminWorkScheduleSmoke.js` covers unauthenticated schedule `401`, no-permission `403`, owner schedule read/update, active/disabled emergency override, login outside schedule `403` without token, login inside schedule allow, expired override block, overnight shift helper behavior, schedule rollback, audit log actions, and response leak scan.
+- `adminWorkScheduleUiSmoke.js` covers the static schedule UI route/assets, owner UI API flow, no-permission block, emergency override flow, masked audit history, and response leak scan.
 
 ## 10. Known Gaps
 
 - Frontend is not wired to real permissions yet.
 - Menu hiding and disabled buttons are a documentation contract only until implemented in the frontend/backoffice.
 - Role UI management is limited to backend admin permission endpoints; a complete role-management UI remains a later phase if it does not already exist in the frontend.
-- Admin work schedule frontend is not implemented yet; backend API and login guard are available. Force-logout of already-active sessions is not implemented yet.
+- Admin work schedule static frontend is implemented at `/admin/work-schedules`; backend API and login guard are available. Force-logout of already-active sessions is not implemented yet.
 - Production/live provider, payment, bank, SMS, Slip OCR, and real-money behavior are out of scope for this contract.
 - Promotion update, report export, and granular game/asset permissions are proposed only and are not backend-enforced today.

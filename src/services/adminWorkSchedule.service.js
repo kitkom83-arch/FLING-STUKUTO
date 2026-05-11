@@ -204,9 +204,9 @@ async function listAdminWorkSchedules({ siteId, query = {} }) {
     take,
   });
 
-  return rows
-    .filter((row) => !query.status || (row.admin && row.admin.status === String(query.status)))
-    .map((row) => {
+  const filteredRows = rows.filter((row) => !query.status || (row.admin && row.admin.status === String(query.status)));
+  return Promise.all(
+    filteredRows.map(async (row) => {
       const stored =
         row.permissions &&
         typeof row.permissions === "object" &&
@@ -215,14 +215,36 @@ async function listAdminWorkSchedules({ siteId, query = {} }) {
           ? row.permissions.adminWorkSchedule
           : null;
       const schedule = normalizeSchedule(stored || DEFAULT_SCHEDULE);
+      const latestAudit = await prisma.adminLog.findFirst({
+        where: {
+          siteId,
+          targetType: "admin",
+          targetId: row.adminId,
+          action: { in: SCHEDULE_AUDIT_ACTIONS },
+        },
+        include: {
+          admin: {
+            select: {
+              id: true,
+              username: true,
+              role: true,
+              status: true,
+            },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+      });
       return {
         admin: row.admin,
         siteId: row.siteId,
         siteAccessRole: row.role,
         schedule,
         summary: summarizeSchedule(schedule),
+        updatedAt: latestAudit ? latestAudit.createdAt : row.updatedAt,
+        updatedBy: latestAudit && latestAudit.admin ? latestAudit.admin.username : null,
       };
-    });
+    })
+  );
 }
 
 async function listAdminWorkScheduleAuditLogs({ targetAdminId, siteId, query = {} }) {
@@ -247,7 +269,7 @@ async function listAdminWorkScheduleAuditLogs({ targetAdminId, siteId, query = {
     ];
   }
 
-  return prisma.adminLog.findMany({
+  const rows = await prisma.adminLog.findMany({
     where,
     include: {
       admin: {
@@ -263,6 +285,29 @@ async function listAdminWorkScheduleAuditLogs({ targetAdminId, siteId, query = {
     skip,
     take,
   });
+  return rows.map((row) => ({
+    id: row.id,
+    siteId: row.siteId,
+    adminId: row.adminId,
+    admin: row.admin,
+    action: row.action,
+    targetType: row.targetType,
+    targetId: row.targetId,
+    metadata: row.metadata,
+    beforeJson: row.beforeJson,
+    afterJson: row.afterJson,
+    ipAddress: maskIp(row.ipAddress),
+    createdAt: row.createdAt,
+  }));
+}
+
+function maskIp(value) {
+  const text = String(value || "").trim();
+  if (!text) return null;
+  if (text.includes(":")) return text.split(":").slice(0, 2).join(":") + ":****";
+  const parts = text.split(".");
+  if (parts.length === 4) return `${parts[0]}.${parts[1]}.***.***`;
+  return "[REDACTED]";
 }
 
 function safeActor(actorAdmin) {

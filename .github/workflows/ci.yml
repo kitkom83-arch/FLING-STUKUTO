@@ -48,6 +48,11 @@ jobs:
           node --check src/local-smoke-tests/promotionClaimSmoke.js
           node --check src/local-smoke-tests/gameTransferSmoke.js
           node --check src/local-smoke-tests/adminReportsConfigSmoke.js
+          node --check src/local-smoke-tests/bankModuleSmoke.js
+          node --check src/local-smoke-tests/adminPermissionSmoke.js
+          node --check src/local-smoke-tests/adminRoleManagementSmoke.js
+          node --check src/local-smoke-tests/adminWorkScheduleSmoke.js
+          node --check src/local-smoke-tests/adminWorkScheduleUiSmoke.js
           node --check src/local-smoke-tests/stagingSmoke.js
           node --check src/local-smoke-tests/runAllLocalSmoke.js
 

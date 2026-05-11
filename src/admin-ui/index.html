@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Work Schedule</title>
+    <link rel="stylesheet" href="/admin/work-schedules/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" data-page="admin-work-schedule">
+      <aside class="sidebar" aria-label="Admin navigation">
+        <div class="brand">
+          <span class="brand-mark">PG</span>
+          <div>
+            <strong>PG77 Admin</strong>
+            <span>Safe staging console</span>
+          </div>
+        </div>
+        <nav class="nav-list">
+          <a href="#schedule" class="nav-link active">Work Schedule</a>
+          <a href="#audit" class="nav-link">Audit History</a>
+          <a href="#permissions" class="nav-link">Permission Guard</a>
+        </nav>
+      </aside>
+
+      <section class="workspace">
+        <header class="topbar">
+          <div>
+            <h1>Admin Work Schedule</h1>
+            <p>Manage admin login windows, emergency access, and schedule audit history.</p>
+          </div>
+          <div class="session-panel">
+            <label for="admin-token">Admin token</label>
+            <div class="token-row">
+              <input id="admin-token" type="password" autocomplete="off" placeholder="Paste token locally" />
+              <button id="save-token" type="button">Use token</button>
+              <button id="clear-token" type="button" class="secondary">Clear</button>
+            </div>
+          </div>
+        </header>
+
+        <section class="guard-panel" id="permissions">
+          <div>
+            <span class="eyebrow">Backend enforced</span>
+            <h2>Permission status</h2>
+          </div>
+          <div id="permission-state" class="permission-state">No session loaded</div>
+        </section>
+
+        <section class="toolbar" aria-label="Schedule filters">
+          <div class="field">
+            <label for="search">Search admin</label>
+            <input id="search" type="search" placeholder="username" />
+          </div>
+          <div class="field">
+            <label for="role-filter">Role</label>
+            <select id="role-filter">
+              <option value="">All roles</option>
+              <option value="owner">owner</option>
+              <option value="super_admin">super_admin</option>
+              <option value="finance">finance</option>
+              <option value="support">support</option>
+              <option value="graphic">graphic</option>
+              <option value="viewer">viewer</option>
+            </select>
+          </div>
+          <button id="refresh" type="button">Refresh</button>
+        </section>
+
+        <section class="table-section" id="schedule">
+          <div class="section-heading">
+            <h2>Admin schedule list</h2>
+            <span id="list-count">0 admins</span>
+          </div>
+          <div id="schedule-empty" class="empty-state hidden">No schedule rows loaded.</div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Admin</th>
+                  <th>Schedule</th>
+                  <th>Working days</th>
+                  <th>Time</th>
+                  <th>Emergency override</th>
+                  <th>Last updated</th>
+                  <th>Updated by</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="schedule-rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="audit-section" id="audit">
+          <div class="section-heading">
+            <h2>Audit history</h2>
+            <span id="audit-count">0 events</span>
+          </div>
+          <div class="toolbar compact">
+            <div class="field">
+              <label for="audit-action">Action</label>
+              <select id="audit-action">
+                <option value="">All actions</option>
+                <option value="admin.schedule.update">schedule_update</option>
+                <option value="admin.schedule.enable">schedule_enable</option>
+                <option value="admin.schedule.disable">schedule_disable</option>
+                <option value="admin.schedule.override_enable">emergency_override_enable</option>
+                <option value="admin.schedule.override_disable">emergency_override_disable</option>
+                <option value="admin.login.blocked_outside_schedule">login_blocked_outside_schedule</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="audit-date">Date</label>
+              <input id="audit-date" type="date" />
+            </div>
+            <button id="load-audit" type="button">Load audit</button>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Action</th>
+                  <th>Actor</th>
+                  <th>Target</th>
+                  <th>IP</th>
+                  <th>Summary</th>
+                </tr>
+              </thead>
+              <tbody id="audit-rows"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <dialog id="schedule-modal">
+      <form method="dialog" class="modal-card" id="schedule-form">
+        <header>
+          <h2>Edit schedule</h2>
+          <button type="button" class="icon-button" data-close-modal aria-label="Close">x</button>
+        </header>
+        <input type="hidden" id="target-admin-id" />
+        <label class="check-row">
+          <input id="schedule-enabled" type="checkbox" />
+          Enable schedule guard
+        </label>
+        <fieldset>
+          <legend>Working days</legend>
+          <div class="day-grid" id="day-grid"></div>
+        </fieldset>
+        <div class="form-grid">
+          <div class="field">
+            <label for="start-time">Start time</label>
+            <input id="start-time" type="time" required />
+          </div>
+          <div class="field">
+            <label for="end-time">End time</label>
+            <input id="end-time" type="time" required />
+          </div>
+          <div class="field">
+            <label for="timezone">Timezone</label>
+            <input id="timezone" type="text" value="Asia/Bangkok" />
+          </div>
+        </div>
+        <p id="overnight-note" class="note hidden">This schedule crosses midnight and will allow login into the next day.</p>
+        <div class="field">
+          <label for="schedule-reason">Reason</label>
+          <textarea id="schedule-reason" rows="3" placeholder="Required for audit context"></textarea>
+        </div>
+        <footer>
+          <button type="button" class="secondary" data-close-modal>Cancel</button>
+          <button id="save-schedule" type="submit">Save schedule</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog id="override-modal">
+      <form method="dialog" class="modal-card" id="override-form">
+        <header>
+          <h2>Emergency override</h2>
+          <button type="button" class="icon-button" data-close-modal aria-label="Close">x</button>
+        </header>
+        <input type="hidden" id="override-admin-id" />
+        <label class="check-row">
+          <input id="override-enabled" type="checkbox" />
+          Enable override
+        </label>
+        <div class="field">
+          <label for="override-expires">Expires at</label>
+          <input id="override-expires" type="datetime-local" />
+        </div>
+        <div class="field">
+          <label for="override-reason">Reason</label>
+          <textarea id="override-reason" rows="3"></textarea>
+        </div>
+        <footer>
+          <button type="button" class="secondary" data-close-modal>Cancel</button>
+          <button id="save-override" type="submit">Save override</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <div id="toast" role="status" aria-live="polite"></div>
+    <script src="/admin/work-schedules/app.js" defer></script>
+  </body>
+</html>

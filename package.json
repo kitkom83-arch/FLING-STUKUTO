@@ -10,7 +10,7 @@
     "prisma:migrate": "prisma migrate dev --name init",
     "db:migrate:staging": "node src/db-safety-tests/dbSafetyGuard.js && prisma migrate deploy",
     "seed": "prisma db seed",
-    "check": "node --check src/server.js && node --check src/app.js && node --check prisma/seed.js && node --check src/integration-tests/payment.mock-test.js && node --check src/integration-tests/bank.mock-test.js && node --check src/integration-tests/sms.mock-test.js && node --check src/integration-tests/slip-ocr.mock-test.js && node --check src/integration-tests/game.mock-test.js && node --check src/local-smoke-tests/stagingSmoke.js && npm run check:safety",
+    "check": "node --check src/server.js && node --check src/app.js && node --check src/admin-ui/app.js && node --check prisma/seed.js && node --check src/integration-tests/payment.mock-test.js && node --check src/integration-tests/bank.mock-test.js && node --check src/integration-tests/sms.mock-test.js && node --check src/integration-tests/slip-ocr.mock-test.js && node --check src/integration-tests/game.mock-test.js && node --check src/local-smoke-tests/stagingSmoke.js && node --check src/local-smoke-tests/adminWorkScheduleUiSmoke.js && npm run check:safety",
     "check:safety": "node --check src/safety-tests/financialSafetyHarness.js && node --check src/safety-tests/wallet.safety-test.js && node --check src/safety-tests/deposit.safety-test.js && node --check src/safety-tests/withdraw.safety-test.js && node --check src/safety-tests/admin-credit.safety-test.js && node --check src/safety-tests/provider-callback.safety-test.js && node --check src/db-safety-tests/dbSafetyPlan.js && node --check src/db-safety-tests/dbSafetyDryRun.js && node --check src/db-safety-tests/dbSafetyGuard.js && node --check src/db-safety-tests/dbBackedSafetySuite.js",
     "test:integration:payment": "node src/integration-tests/payment.mock-test.js",
     "test:integration:bank": "node src/integration-tests/bank.mock-test.js",
@@ -37,6 +37,7 @@
     "smoke:admin-permission": "node src/local-smoke-tests/adminPermissionSmoke.js",
     "smoke:admin-role-management": "node src/local-smoke-tests/adminRoleManagementSmoke.js",
     "smoke:admin-work-schedule": "node src/local-smoke-tests/adminWorkScheduleSmoke.js",
+    "smoke:admin-work-schedule-ui": "node src/local-smoke-tests/adminWorkScheduleUiSmoke.js",
     "smoke:staging": "node src/local-smoke-tests/stagingSmoke.js",
     "smoke:all-local": "node src/local-smoke-tests/runAllLocalSmoke.js"
   },

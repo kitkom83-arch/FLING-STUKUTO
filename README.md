@@ -205,6 +205,7 @@ npm run smoke:financial-negative
 npm run smoke:admin-reports-config
 npm run smoke:admin-permission
 npm run smoke:admin-work-schedule
+npm run smoke:admin-work-schedule-ui
 npm run smoke:staging
 npm run smoke:all-local
 ```
@@ -350,6 +351,18 @@ npm run smoke:admin-work-schedule
 
 `BASE_URL` defaults to `http://localhost:4000/api`. The script blocks production-like DB/API targets and live provider modes, creates local-only admin work schedule fixtures, verifies unauthenticated `401`, no-permission `403`, owner schedule list/read/update through `/api/admin/work-schedules`, invalid time `400`, emergency override enable/disable, login outside schedule `403` without issuing a token, login inside schedule allow, expired override block, overnight shift helper behavior, audit history through `/api/admin/work-schedules/:adminId/audit-logs`, rollback to disabled schedule, required audit log actions, and response leak scan. It does not call real provider, payment, bank, SMS, or Slip OCR services and does not run real-money UAT.
 
+## Admin Work Schedule UI
+
+The static admin work schedule page is served by the backend at `/admin/work-schedules`. It uses the existing admin API only, stores the pasted admin token in browser session storage, and keeps backend `401`/`403` guards as the source of truth.
+
+The page includes the admin schedule table, enabled/disabled status, working days, start/end time, overnight badge, emergency override status, last updated, updated by, edit schedule modal, emergency override modal, and masked audit history view. It does not call provider, payment, bank, SMS, or Slip OCR services.
+
+Run the UI smoke after the backend is running:
+
+```bash
+npm run smoke:admin-work-schedule-ui
+```
+
 ## Local Bank Module Smoke Test
 
 Run the backend first with safe local or test environment values, then run:
@@ -362,7 +375,7 @@ npm run smoke:bank-module
 
 ## Local All Smoke Test
 
-The all-local smoke runner executes the local smoke suite in one guarded sequence. It performs syntax checks for the local smoke files, runs the project check, runs money-flow, core API, game-transfer, financial-negative, admin reports/config, bank module, admin permission, admin role management, and admin work schedule smoke tests, scans the related files for secret-shaped values, and checks whitespace errors in the related diff.
+The all-local smoke runner executes the local smoke suite in one guarded sequence. It performs syntax checks for the local smoke files, runs the project check, runs money-flow, core API, game-transfer, financial-negative, admin reports/config, bank module, admin permission, admin role management, admin work schedule, and admin work schedule UI smoke tests, scans the related files for secret-shaped values, and checks whitespace errors in the related diff.
 
 Start the backend first with safe local or test environment values:
 

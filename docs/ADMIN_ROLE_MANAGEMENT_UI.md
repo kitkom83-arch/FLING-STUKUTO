@@ -225,7 +225,7 @@ Future UI enhancement: add a dedicated role-management audit timeline if a narro
 
 Purpose: define when each admin is allowed to log in and keep a session active. This is intended for Work From Home operations and shift-based staff. It lets `owner`/`super_admin` configure allowed days, allowed times, session limits, force-logout behavior, and emergency temporary access for a specific admin.
 
-Current backend status: the backend login guard and management API are implemented. Schedule data is stored in `AdminSiteAccess.permissions.adminWorkSchedule`, so no schema or migration is added. The guard checks non-owner admin login after username/password validation and before issuing a token. Force-logout for already-active sessions remains a future phase.
+Current backend status: the backend login guard, management API, and static admin schedule page are implemented. Schedule data is stored in `AdminSiteAccess.permissions.adminWorkSchedule`, so no schema or migration is added. The guard checks non-owner admin login after username/password validation and before issuing a token. Force-logout for already-active sessions remains a future phase.
 
 Required fields:
 
@@ -271,6 +271,9 @@ Implemented API surface:
 
 ## 12. Admin Work Schedule UI Behavior
 
+- Static page route: `/admin/work-schedules`.
+- API base used by the page: `/api`.
+- The page stores the pasted admin token in browser session storage only and does not render token values after save.
 - `owner` and legacy `super_admin` can view and edit schedules.
 - Other roles must not view or edit schedules unless their effective permissions include `admin.manage` today or schedule-specific proposed permissions after the next backend phase.
 - If schedule status is disabled, normal role/permission checks apply.
@@ -280,6 +283,7 @@ Implemented API surface:
 - If an emergency override is enabled and `Override expires at` is still in the future, the admin can temporarily log in within the override window.
 - If an emergency override has expired, it must not permit login.
 - Every schedule action must show a clear toast or status message, such as save success, save failed, override active, override expired, or forced logout warning.
+- Audit history must show masked IP only. Raw user-agent strings, authorization headers, tokens, passwords, secrets, and database URLs must not be rendered.
 
 ## 13. Login Behavior Contract
 
@@ -420,6 +424,7 @@ Related smoke scripts:
 
 - `src/local-smoke-tests/adminRoleManagementSmoke.js`
 - `src/local-smoke-tests/adminPermissionSmoke.js`
+- `src/local-smoke-tests/adminWorkScheduleUiSmoke.js`
 
 ## 19. Known Gaps
 
@@ -429,7 +434,7 @@ Related smoke scripts:
 - Audit history UI may need a dedicated endpoint later; current backend has `GET /api/admin/logs` with `reports.view`.
 - Admin email and display name are proposed UI fields because the current `Admin` schema only includes `username`.
 - Proposed frontend permissions must not be sent to backend until they are added to `PERMISSIONS` and route guards.
-- Admin Work Schedule backend guard and management API are implemented.
+- Admin Work Schedule backend guard, management API, and static frontend page are implemented.
 - Force-logout of already-active sessions must be implemented in a later phase.
 - No schema or migration is added in this phase.
 - Schedule and override login behavior is enforced; force-logout behavior is not enforced until session handling is added.

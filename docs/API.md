@@ -155,12 +155,12 @@ Permission failures return `403` with the standard error envelope and must not r
 | GET | `/admin/roles` | Admin | `admin.manage` | None | role catalog and permissions | `401`, `403` | None |
 | GET | `/admin/admins/:id/permissions` | Admin | `admin.manage` | None | target admin public profile, effective role, permission list, owner flag, and source | `401`, `403`, `404` | None |
 | PATCH | `/admin/admins/:id/role` | Admin | `admin.manage` | `role`, optional `permissions` array or `null` | assigned admin role and effective permissions | `400`, `401`, `403`, `404` | `admin.role.update` |
-| GET | `/admin/work-schedules` | Admin | `admin.schedule.view` or `admin.manage` | None | list of site admin schedules with public admin summary, site access role, schedule, and summary | `401`, `403` | None |
+| GET | `/admin/work-schedules` | Admin | `admin.schedule.view` or `admin.manage` | None | list of site admin schedules with public admin summary, site access role, schedule, summary, last schedule audit timestamp, and last schedule audit actor | `401`, `403` | None |
 | GET | `/admin/work-schedules/:adminId` | Admin | `admin.schedule.view` or `admin.manage` | None | target admin public profile, site id, schedule, and emergency override state | `401`, `403`, `404` | None |
 | PATCH | `/admin/work-schedules/:adminId` | Admin | `admin.schedule.update` or `admin.manage` | schedule fields: `enabled`, `timezone`, `allowedDays`, `startTime`, `endTime`, `forceLogoutWhenScheduleEnds`, `idleTimeoutMinutes`, optional `emergencyOverride` | updated schedule | `400`, `401`, `403`, `404` | `admin.schedule.update`; also `admin.schedule.enable` or `admin.schedule.disable` on enabled-state changes |
 | POST | `/admin/work-schedules/:adminId/override` | Admin | `admin.schedule.override` or `admin.manage` | `expiresAt`, `reason` | active emergency override inside schedule response | `400`, `401`, `403`, `404` | `admin.schedule.override_enable` |
 | DELETE | `/admin/work-schedules/:adminId/override` | Admin | `admin.schedule.override` or `admin.manage` | optional `reason` | disabled emergency override inside schedule response | `400`, `401`, `403`, `404` | `admin.schedule.override_disable` |
-| GET | `/admin/work-schedules/:adminId/audit-logs` | Admin | `admin.schedule.view` or `admin.manage` | None | schedule/override/login-block audit history for the target admin | `401`, `403`, `404` | None |
+| GET | `/admin/work-schedules/:adminId/audit-logs` | Admin | `admin.schedule.view` or `admin.manage` | None | schedule/override/login-block audit history for the target admin with masked IP and redacted user-agent | `401`, `403`, `404` | None |
 | GET | `/admin/logs` | Admin | `reports.view` | None | admin logs with admin summary | `401`, `403` | None |
 | GET | `/admin/members` | Admin | `members.view` | None | member list with wallet and bank accounts | `401`, `403` | None |
 | GET | `/admin/members/:id` | Admin | `members.view` | None | member detail with wallet, bank accounts, recent deposits, recent withdrawals | `403`, `404` member not found | None |
@@ -224,6 +224,7 @@ Smoke coverage:
 - `adminPermissionSmoke`: owner/finance/support/graphic/viewer/no-permission role checks, admin permission endpoints, backend `403` checks for missing permissions, admin unauth `401`, and response leak scan.
 - `adminRoleManagementSmoke`: owner role-management access, target admin permission read, non-owner role-update `403`, role assignment and rollback, `admin.role.update` audit log check, and response leak scan.
 - `adminWorkScheduleSmoke`: owner schedule list/read/update/override, unauth `401`, non-owner `403`, invalid time `400`, login outside schedule block with no token, login inside schedule allow, active and expired emergency override behavior, overnight shift helper, schedule rollback, audit history endpoint checks, and response leak scan.
+- `adminWorkScheduleUiSmoke`: static UI route/assets, owner list and schedule UI flow, no-permission API block, emergency override UI flow, masked audit history data, and response leak scan.
 
 Mock bank module endpoints:
 
@@ -389,7 +390,8 @@ Verified by `src/local-smoke-tests/financialNegativeSmoke.js`:
 | `npm run smoke:game-transfer` | Health, auth negatives for transfer-in/transfer-out/bet-history, member login, mock provider/game fixtures, transfer-in debit, transfer-out credit, final wallet balance, ledger rows, bet-history row shape, response leak scan | Yes | Yes | Syntax checked only in Safe CI |
 | `npm run smoke:admin-reports-config` | Health, public site config, admin auth negatives, admin login, read-only report endpoints, read-only site/config endpoints, response leak scan | Yes | Yes | Syntax checked only in Safe CI |
 | `npm run smoke:admin-work-schedule` | Health, schedule auth guards, owner schedule list/update/read/override, invalid time validation, login schedule block/allow, expired override, overnight shift helper, audit logs, response leak scan | Yes | Yes | Syntax checked only in Safe CI |
-| `npm run smoke:all-local` | Guarded sequence: smoke syntax checks, `npm run check`, promotion-claim, money-flow, core-api, game-transfer, financial-negative, admin-reports-config, admin work schedule, secret grep, diff whitespace check | Yes | Yes | Not run in Safe CI because it needs a running API and local DB |
+| `npm run smoke:admin-work-schedule-ui` | Static `/admin/work-schedules` UI route/assets, permission block, owner schedule list/update, override, masked audit history, response leak scan | Yes | Yes | Syntax checked only in Safe CI |
+| `npm run smoke:all-local` | Guarded sequence: smoke syntax checks, `npm run check`, promotion-claim, money-flow, core-api, game-transfer, financial-negative, admin-reports-config, admin work schedule, admin work schedule UI, secret grep, diff whitespace check | Yes | Yes | Not run in Safe CI because it needs a running API and local DB |
 | GitHub Actions Safe CI | `npm ci`, Prisma validate/generate, `npm run check`, local smoke syntax checks, secret-shaped value scan | No | No real DB connection for smoke | Runs on push and PR |
 
 GitHub Actions does not run DB-backed local smoke flows because those require a running local API and safe local/test PostgreSQL fixture setup.
@@ -466,6 +468,6 @@ Secret rules:
 - Config POST/PUT endpoints are intentionally not covered by `smoke:admin-reports-config` because that smoke is read-only for config safety.
 - Real provider integrations are not covered.
 - Real payment and bank integrations are not covered.
-- Admin work schedule frontend and force-logout session handling are not implemented yet; the backend login guard and management API are implemented.
+- Admin work schedule static frontend is implemented at `/admin/work-schedules`; force-logout session handling is not implemented yet.
 - Production deployment smoke is not covered.
 - Full frontend end-to-end coverage is not covered.

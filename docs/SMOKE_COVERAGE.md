@@ -19,6 +19,7 @@ The smoke suite does not send real money, does not connect real provider/payment
 | `adminPermissionSmoke.js` | `npm run smoke:admin-permission` | Yes | Yes | Yes | Syntax check only | Admin RBAC role/permission guard checks for owner, finance, support, graphic, viewer, unauth, and forbidden access. |
 | `adminRoleManagementSmoke.js` | `npm run smoke:admin-role-management` | Yes | Yes | Yes | Syntax check only | Admin role-management checks for permission catalog, role catalog, current/target permissions, owner updates, non-owner `403`, audit log, rollback, and leak scan. |
 | `adminWorkScheduleSmoke.js` | `npm run smoke:admin-work-schedule` | Yes | Yes | Yes | Syntax check only | Admin work schedule UI/API checks for schedule list/read/update, permission guards, login block/allow, emergency override, expired override, audit history, rollback, and leak scan. |
+| `adminWorkScheduleUiSmoke.js` | `npm run smoke:admin-work-schedule-ui` | Yes | Yes | Yes | Syntax check only | Static admin schedule UI route/assets, owner flow, no-permission block, emergency override, masked audit history, and leak scan. |
 | `stagingSmoke.js` | `npm run smoke:staging` | No local Prisma access | Yes | No | Syntax check only | Hosted staging health contract, safe external mode labels, admin auth negative leak check, and response leak scan. |
 | `runAllLocalSmoke.js` | `npm run smoke:all-local` | Yes | Yes | Yes | Syntax check only | Guarded local runner for syntax, project checks, all local smokes, secret grep, and diff check. |
 
@@ -206,7 +207,24 @@ Role-management smoke uses only local/staging/test PostgreSQL fixtures. It does 
 
 Work-schedule smoke uses only local/staging/test PostgreSQL fixtures. It does not call real provider, payment, bank, SMS, or Slip OCR services, and it does not run real-money UAT.
 
-## 13. smoke:staging Coverage
+## 13. smoke:admin-work-schedule-ui Coverage
+
+- Safety guard blocks unsafe environment, production-like DB/API targets, live provider modes, and missing `LOCAL_ADMIN_PASSWORD`.
+- Static route check for `/admin/work-schedules/`.
+- Static asset checks for `app.js` and `styles.css`.
+- UI script contract checks for permission, schedule list, override, and audit endpoints.
+- Owner login through the real local API.
+- No-permission schedule list returns `403`.
+- Owner schedule list includes the target admin.
+- Owner enable/disable schedule flow through `/api/admin/work-schedules/:adminId`.
+- Emergency override enable/disable flow through `/api/admin/work-schedules/:adminId/override`.
+- Audit history contains schedule update, enable, disable, and override actions.
+- Audit response masks IP and redacts user-agent.
+- Response leak scan checks DB URL markers, auth values, password/token/secret markers, JWT-like values, and credential-shaped PostgreSQL URLs.
+
+The UI smoke uses only static frontend assets and local/staging/test PostgreSQL fixtures. It does not call real provider, payment, bank, SMS, or Slip OCR services, and it does not run real-money UAT.
+
+## 14. smoke:staging Coverage
 
 `npm run smoke:staging` is an HTTP-only hosted staging readiness smoke:
 
@@ -219,7 +237,7 @@ Work-schedule smoke uses only local/staging/test PostgreSQL fixtures. It does no
 - Scans health and admin-auth responses for database URLs, JWT-shaped values, authorization headers, token/password/secret keys, API key fields, and sensitive env values.
 - Does not create fixtures, import Prisma, run migrations, seed data, call real providers, or move money.
 
-## 14. smoke:all-local Coverage
+## 15. smoke:all-local Coverage
 
 `npm run smoke:all-local` runs a guarded sequence and stops on the first failure:
 
@@ -236,6 +254,7 @@ Work-schedule smoke uses only local/staging/test PostgreSQL fixtures. It does no
   - `adminPermissionSmoke.js`
   - `adminRoleManagementSmoke.js`
   - `adminWorkScheduleSmoke.js`
+  - `adminWorkScheduleUiSmoke.js`
   - `stagingSmoke.js`
 - `npm run check`.
 - `npm run smoke:promotion-claim`.
@@ -248,11 +267,12 @@ Work-schedule smoke uses only local/staging/test PostgreSQL fixtures. It does no
 - `npm run smoke:admin-permission`.
 - `npm run smoke:admin-role-management`.
 - `npm run smoke:admin-work-schedule`.
+- `npm run smoke:admin-work-schedule-ui`.
 - Secret grep over package/docs/README/local-smoke related files.
 - `git diff --check`.
 - Final PASS/FAIL summary.
 
-## 15. GitHub Actions Safe CI Coverage
+## 16. GitHub Actions Safe CI Coverage
 
 `.github/workflows/ci.yml` defines Safe CI for `push` and `pull_request`:
 
@@ -271,13 +291,14 @@ Work-schedule smoke uses only local/staging/test PostgreSQL fixtures. It does no
   - `adminReportsConfigSmoke.js`
   - `adminPermissionSmoke.js`
   - `adminWorkScheduleSmoke.js`
+  - `adminWorkScheduleUiSmoke.js`
   - `stagingSmoke.js`
   - `runAllLocalSmoke.js`
 - Secret-shaped value scan over `package.json`, `README.md`, `src/local-smoke-tests`, and `.github`.
 
 Safe CI does not run DB-backed smoke commands because those require a running backend, safe local/staging/test PostgreSQL, guarded environment variables, and local fixtures.
 
-## 16. Required Local Runtime
+## 17. Required Local Runtime
 
 To run local smoke commands, prepare:
 
@@ -292,7 +313,7 @@ To run local smoke commands, prepare:
 
 `smoke:staging` requires only `BASE_URL` and a running safe staging/local API. `moneyFlowSmoke.js` also allows `staging` for `NODE_ENV`. Other current DB-backed smoke scripts shown above allow `development-local` or `test`.
 
-## 17. Safe Commands
+## 18. Safe Commands
 
 Run these only after the backend and safe local/staging/test environment are ready:
 
@@ -307,10 +328,11 @@ npm run smoke:game-transfer
 npm run smoke:admin-reports-config
 npm run smoke:admin-permission
 npm run smoke:admin-work-schedule
+npm run smoke:admin-work-schedule-ui
 npm run check
 ```
 
-## 18. Mock / Sandbox Boundaries
+## 19. Mock / Sandbox Boundaries
 
 - Game provider coverage uses mock/local fixtures and `MockGameProviderAdapter` behavior.
 - Payment and bank money flow is manual local approval through the API and admin endpoints.
@@ -320,10 +342,11 @@ npm run check
 - Slip OCR is a mock placeholder.
 - Admin RBAC smoke uses mock/local admin fixtures and backend permission guards only.
 - Admin work schedule smoke uses mock/local admin fixtures and backend login guards only.
+- Admin work schedule UI smoke uses static local frontend assets and mock/local admin fixtures only.
 - Production DB targets are forbidden.
 - Real provider/payment/bank integrations and production credential flows are outside current smoke coverage.
 
-## 19. Known Coverage Gaps
+## 20. Known Coverage Gaps
 
 Confirmed from current docs and scripts:
 
@@ -331,12 +354,13 @@ Confirmed from current docs and scripts:
 - Real provider integrations are not covered.
 - Real payment and bank integrations are not covered.
 - Production RBAC integration with an external identity provider is not covered.
-- Admin work schedule frontend and force-logout of already-active sessions are not covered.
+- Admin work schedule static frontend is covered by local smoke; browser-rendered visual regression is not covered.
+- Force-logout of already-active sessions is not covered.
 - Production deployment smoke is not covered. `smoke:staging` is only for non-production staging/test hosts.
 - Full end-to-end frontend coverage is not covered.
 - docs/API.md still contains older "ต้องตรวจเพิ่ม" notes for some endpoints that are now covered by newer smoke scripts; ต้องตรวจเพิ่ม before using that section as the source of truth.
 
-## 20. How to Add a New Smoke
+## 21. How to Add a New Smoke
 
 1. Add the new smoke script under `src/local-smoke-tests`.
 2. Reuse the existing local safety guard and response leak scan patterns.
