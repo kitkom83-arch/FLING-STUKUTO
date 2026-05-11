@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Audit Security Report</title>
+    <link rel="stylesheet" href="/admin/audit-security/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" data-page="admin-audit-security">
+      <aside class="sidebar">
+        <div>
+          <p class="label">Admin</p>
+          <h1>Audit Security Report</h1>
+          <p class="side-copy">Review sensitive admin activity with masked network data and safe metadata only.</p>
+        </div>
+        <nav class="nav-list" aria-label="Admin report navigation">
+          <a href="#summary" class="nav-link active">Summary</a>
+          <a href="#audit-logs" class="nav-link">Audit Logs</a>
+          <a href="#security-events" class="nav-link">Security Events</a>
+        </nav>
+        <section class="auth-panel">
+          <label for="admin-token">Admin access token</label>
+          <textarea id="admin-token" rows="4" autocomplete="off" spellcheck="false"></textarea>
+          <div class="button-row">
+            <button id="save-token" type="button">Use Token</button>
+            <button id="clear-token" type="button" class="secondary">Clear</button>
+          </div>
+          <p id="permission-status" class="status-text">Permission status not checked.</p>
+        </section>
+      </aside>
+
+      <section class="content">
+        <header class="page-header">
+          <div>
+            <p class="label">Safe admin reporting</p>
+            <h2>Audit and security timeline</h2>
+          </div>
+          <button id="refresh-all" type="button">Refresh</button>
+        </header>
+
+        <section id="summary" class="summary-grid" aria-label="Audit summary">
+          <article class="summary-card">
+            <span>Total events</span>
+            <strong id="summary-total">0</strong>
+          </article>
+          <article class="summary-card">
+            <span>Blocked logins</span>
+            <strong id="summary-blocked">0</strong>
+          </article>
+          <article class="summary-card">
+            <span>Emergency overrides</span>
+            <strong id="summary-overrides">0</strong>
+          </article>
+          <article class="summary-card">
+            <span>High severity</span>
+            <strong id="summary-high">0</strong>
+          </article>
+          <article class="summary-card">
+            <span>Role changes</span>
+            <strong id="summary-role">0</strong>
+          </article>
+          <article class="summary-card">
+            <span>Schedule changes</span>
+            <strong id="summary-schedule">0</strong>
+          </article>
+        </section>
+
+        <section class="filter-bar" aria-label="Audit filters">
+          <label>
+            Action
+            <input id="filter-action" type="text" placeholder="admin.role.update" />
+          </label>
+          <label>
+            Module
+            <select id="filter-module">
+              <option value="">All modules</option>
+              <option value="role">Role</option>
+              <option value="permission">Permission</option>
+              <option value="schedule">Schedule</option>
+              <option value="login">Login</option>
+              <option value="security">Security</option>
+            </select>
+          </label>
+          <label>
+            Result
+            <select id="filter-result">
+              <option value="">All results</option>
+              <option value="success">Success</option>
+              <option value="blocked">Blocked</option>
+              <option value="failed">Failed</option>
+            </select>
+          </label>
+          <label>
+            Severity
+            <select id="filter-severity">
+              <option value="">All severity</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </label>
+          <label>
+            Admin ID
+            <input id="filter-admin" type="text" />
+          </label>
+          <label>
+            Target admin ID
+            <input id="filter-target" type="text" />
+          </label>
+          <label>
+            From
+            <input id="filter-from" type="date" />
+          </label>
+          <label>
+            To
+            <input id="filter-to" type="date" />
+          </label>
+          <button id="apply-filters" type="button">Apply</button>
+        </section>
+
+        <section class="table-section" id="audit-logs">
+          <div class="section-title">
+            <div>
+              <p class="label">Audit log table</p>
+              <h3>Admin audit logs</h3>
+            </div>
+            <span id="audit-count" class="count-pill">0 rows</span>
+          </div>
+          <div id="audit-empty" class="empty-state hidden">No audit logs match the current filters.</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Action</th>
+                  <th>Module</th>
+                  <th>Actor</th>
+                  <th>Target</th>
+                  <th>Result</th>
+                  <th>Severity</th>
+                  <th>Masked IP</th>
+                  <th>Created</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="audit-rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="table-section" id="security-events">
+          <div class="section-title">
+            <div>
+              <p class="label">Security event table</p>
+              <h3>Guard and sensitive-change events</h3>
+            </div>
+            <span id="security-count" class="count-pill">0 rows</span>
+          </div>
+          <div id="security-empty" class="empty-state hidden">No security events match the current filters.</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Action</th>
+                  <th>Module</th>
+                  <th>Actor</th>
+                  <th>Target</th>
+                  <th>Result</th>
+                  <th>Severity</th>
+                  <th>Created</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="security-rows"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <dialog id="detail-modal">
+      <article class="modal-card">
+        <header class="modal-header">
+          <div>
+            <p class="label">Safe action detail</p>
+            <h3 id="detail-title">Audit detail</h3>
+          </div>
+          <button id="close-detail" type="button" class="icon-button" aria-label="Close">x</button>
+        </header>
+        <dl class="detail-grid" id="detail-grid"></dl>
+        <section>
+          <h4>Safe metadata</h4>
+          <pre id="detail-metadata">{}</pre>
+        </section>
+      </article>
+    </dialog>
+
+    <script src="/admin/audit-security/app.js" defer></script>
+  </body>
+</html>

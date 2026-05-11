@@ -35,7 +35,7 @@ These permissions exist in `src/services/adminPermission.service.js` and are enf
 | `withdrawals.approve` | Approve, reject, or mark withdrawals paid. | Withdrawal approval and payout actions. |
 | `bank.view` | View member bank approvals, site bank accounts, mock bank statements, and mock Slip OCR verify endpoint. | Bank menus, account review, statement review. |
 | `bank.update` | Approve/reject member bank accounts; create/update/soft-disable site bank accounts. | Bank setup and bank-account approval actions. |
-| `reports.view` | View admin logs and report endpoints. | Dashboard metrics, reports, audit/history pages. |
+| `reports.view` | View admin logs, report endpoints, and audit/security report endpoints. | Dashboard metrics, reports, audit/history pages, audit security report. |
 | `settings.website.view` | View site list/config/detail, theme, game provider config, and payment config. | Site settings, game/payment config read views. |
 | `settings.website.update` | Update site settings/theme, game provider config, and payment config. | Website, banner/theme, game, and payment setup actions. |
 | `settings.promotion.view` | Role/catalog permission currently available for promotion views. | Promotion settings read views. |
@@ -63,6 +63,7 @@ The permissions below are not backend permissions today. Do not send them to the
 | --- | --- | --- | --- | --- | --- |
 | Dashboard | Summary cards / latest activity | `reports.view` | `reports.view` | None | `owner`, `finance`, `viewer` |
 | รายงาน | Deposit, withdrawal, wallet ledger, admin logs | `reports.view` | `reports.view` | Proposed `reports.export` only if added later | `owner`, `finance`, `viewer` |
+| รายงาน | Audit Security Report | `reports.view` | `reports.view` | None | `owner`, `finance`, `viewer` |
 | จัดการสมาชิก | Member list/detail | `members.view` | `members.view` | `members.update` | `owner`, `finance`, `support`, `viewer` |
 | จัดการสมาชิก | Credit / points / block controls | `members.update` | `members.view` | `members.update` | `owner`, `support` |
 | รายการเดินบัญชี | Deposits | `deposits.view` | `deposits.view` | `deposits.approve` | `owner`, `finance`, `support`, `viewer` |
@@ -98,6 +99,7 @@ The permissions below are not backend permissions today. Do not send them to the
 | ตั้งค่าธนาคาร | `bank.view` for read; `bank.update` for create/update/soft-disable | Site bank account endpoints | Disable create/update/delete controls with tooltip. |
 | ตั้งเวลาเข้างานแอดมิน | `admin.schedule.update` or `admin.manage` | `PATCH /admin/work-schedules/:adminId` | Disable with tooltip. |
 | เปิด emergency override | `admin.schedule.override` or `admin.manage` | `POST /admin/work-schedules/:adminId/override`, `DELETE /admin/work-schedules/:adminId/override` | Disable with tooltip. |
+| ดูรายละเอียด audit/security | `reports.view` | `GET /admin/audit-logs`, `GET /admin/security-events` | Hide page or show backend `403`. |
 
 ## 6. Role Matrix
 
@@ -133,6 +135,8 @@ The permissions below are not backend permissions today. Do not send them to the
 - Frontend must call `GET /api/admin/permissions/me` after admin login or site switch and use the returned effective permissions for UI gating.
 - Frontend role-management screens must use `GET /api/admin/permissions`, `GET /api/admin/roles`, `GET /api/admin/admins/:id/permissions`, and `PATCH /api/admin/admins/:id/role`; all require `admin.manage` except current-admin permission read.
 - Frontend work-schedule screen is served at `/admin/work-schedules` and uses `GET /api/admin/work-schedules`, `GET /api/admin/work-schedules/:adminId`, `PATCH /api/admin/work-schedules/:adminId`, `POST /api/admin/work-schedules/:adminId/override`, `DELETE /api/admin/work-schedules/:adminId/override`, and `GET /api/admin/work-schedules/:adminId/audit-logs`; backend accepts the schedule-specific permission or `admin.manage`.
+- Frontend audit/security screen is served at `/admin/audit-security` and uses `GET /api/admin/permissions/me`, `GET /api/admin/audit-logs`, `GET /api/admin/audit-logs/summary`, `GET /api/admin/security-events`, and `GET /api/admin/security-events/summary`; backend requires `reports.view`.
+- Audit/security detail modals must show only safe metadata, masked IP, actor/target/action/module/result/severity, and created time. They must not render raw user-agent, session payloads, auth values, database URLs, passwords, or secrets.
 - Frontend must not treat hidden menus as security. Every protected action must still expect backend `401` or `403`.
 
 ## 8. Backend Behavior
@@ -144,6 +148,7 @@ The permissions below are not backend permissions today. Do not send them to the
 - Permission guard failures use the standard error envelope and include the denied permission; they must not return `500`.
 - Non-owner admin login is checked against the stored work schedule after username/password validation and before token issuance. Outside schedule returns `403` and writes `admin.login.blocked_outside_schedule`; `owner` and legacy `super_admin` bypass schedule blocking.
 - Active emergency override permits temporary login until `expiresAt`. Expired overrides do not permit login.
+- Audit/security report responses mask IP addresses, omit raw user-agent, classify actions into module/result/severity, and sanitize metadata before returning it.
 - Responses must not leak secrets. Existing docs require responses to strip password hashes and encrypted provider/payment secrets, and smoke tests scan for secret-shaped values.
 - Business mutations listed in `docs/API.md` write admin log actions where implemented, such as member block/unblock, credit changes, deposit/withdrawal approvals, bank-account approval, site/config changes, `admin.role.update`, schedule update/enable/disable, override enable/disable, and schedule-blocked login.
 
@@ -163,12 +168,13 @@ The permissions below are not backend permissions today. Do not send them to the
 - `adminRoleManagementSmoke.js` covers owner role-management access, target admin permission reads, non-owner `403` role-update attempts, role assignment to support/graphic/viewer, rollback to the original role, `admin.role.update` audit log presence, and response leak scan.
 - `adminWorkScheduleSmoke.js` covers unauthenticated schedule `401`, no-permission `403`, owner schedule read/update, active/disabled emergency override, login outside schedule `403` without token, login inside schedule allow, expired override block, overnight shift helper behavior, schedule rollback, audit log actions, and response leak scan.
 - `adminWorkScheduleUiSmoke.js` covers the static schedule UI route/assets, owner UI API flow, no-permission block, emergency override flow, masked audit history, and response leak scan.
+- `adminAuditSecuritySmoke.js` covers the static audit/security UI route/assets, summary endpoints, list endpoints, action/admin/target/date/severity/module/result filters, no-permission `403`, empty response shape, masked IP, raw user-agent omission, and response leak scan.
 
 ## 10. Known Gaps
 
-- Frontend is not wired to real permissions yet.
-- Menu hiding and disabled buttons are a documentation contract only until implemented in the frontend/backoffice.
+- Broader frontend menu hiding and disabled buttons remain a documentation contract outside the static pages implemented in this repo.
 - Role UI management is limited to backend admin permission endpoints; a complete role-management UI remains a later phase if it does not already exist in the frontend.
 - Admin work schedule static frontend is implemented at `/admin/work-schedules`; backend API and login guard are available. Force-logout of already-active sessions is not implemented yet.
+- Admin audit/security static frontend is implemented at `/admin/audit-security`; browser-rendered visual regression is not covered by the local smoke script.
 - Production/live provider, payment, bank, SMS, Slip OCR, and real-money behavior are out of scope for this contract.
 - Promotion update, report export, and granular game/asset permissions are proposed only and are not backend-enforced today.

@@ -3,6 +3,7 @@ const adminAuth = require("../middleware/adminAuth");
 const { siteAccess } = require("../middleware/siteAccess");
 const { requirePermission } = require("../middleware/adminPermission");
 const adminController = require("../controllers/admin.controller");
+const adminAuditController = require("../controllers/adminAudit.controller");
 const adminPermissionController = require("../controllers/adminPermission.controller");
 const adminSiteController = require("../controllers/adminSite.controller");
 const bankAccountController = require("../controllers/bankAccount.controller");
@@ -96,6 +97,15 @@ router.delete(
   asyncHandler(adminPermissionController.deleteWorkScheduleOverride)
 );
 router.get("/logs", protectedSite, can("reports.view"), asyncHandler(adminController.logs));
+router.get("/audit-logs", protectedSite, can("reports.view"), asyncHandler(adminAuditController.auditLogs));
+router.get("/audit-logs/summary", protectedSite, can("reports.view"), asyncHandler(adminAuditController.auditLogsSummary));
+router.get("/security-events", protectedSite, can("reports.view"), asyncHandler(adminAuditController.securityEvents));
+router.get(
+  "/security-events/summary",
+  protectedSite,
+  can("reports.view"),
+  asyncHandler(adminAuditController.securityEventsSummary)
+);
 
 router.get("/sites", protectedSite, can("settings.website.view"), asyncHandler(adminSiteController.listSites));
 router.get("/sites/current/config", protectedSite, can("settings.website.view"), asyncHandler(adminSiteController.currentConfig));

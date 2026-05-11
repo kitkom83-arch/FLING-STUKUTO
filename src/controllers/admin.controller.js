@@ -84,6 +84,23 @@ async function login(req, res) {
     data: { lastLoginAt: new Date() },
   });
 
+  await logAdminAction({
+    admin: updated,
+    action: "admin.login.success",
+    targetType: "admin",
+    targetId: updated.id,
+    before: null,
+    after: {
+      adminId: updated.id,
+      role: updated.role,
+      status: updated.status,
+      result: "success",
+      scheduleResult: scheduleCheck.reason,
+    },
+    req,
+    siteId: req.siteId,
+  });
+
   return success(res, {
     token: signAdminToken(updated),
     admin: publicAdmin(updated),

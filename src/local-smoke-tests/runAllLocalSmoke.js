@@ -24,6 +24,7 @@ const RELATED_FILES = [
   "src/local-smoke-tests/adminRoleManagementSmoke.js",
   "src/local-smoke-tests/adminWorkScheduleSmoke.js",
   "src/local-smoke-tests/adminWorkScheduleUiSmoke.js",
+  "src/local-smoke-tests/adminAuditSecuritySmoke.js",
   "src/local-smoke-tests/stagingSmoke.js",
 ];
 const SECRET_GREP_PATTERN = [
@@ -56,6 +57,7 @@ const summary = [
   { key: "adminRoleManagement", label: "admin-role-management", status: "PENDING" },
   { key: "adminWorkSchedule", label: "admin-work-schedule", status: "PENDING" },
   { key: "adminWorkScheduleUi", label: "admin-work-schedule-ui", status: "PENDING" },
+  { key: "adminAuditSecurity", label: "admin-audit-security", status: "PENDING" },
   { key: "responseScan", label: "response leak scan", status: "PENDING" },
   { key: "secretGrep", label: "secret grep", status: "PENDING" },
   { key: "diff", label: "git diff --check", status: "PENDING" },
@@ -126,6 +128,12 @@ const steps = [
     name: "node --check adminWorkScheduleUiSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/adminWorkScheduleUiSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check adminAuditSecuritySmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/adminAuditSecuritySmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -210,6 +218,13 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:admin-work-schedule-ui"]),
     summaryKey: "adminWorkScheduleUi",
+    alsoPass: ["responseScan"],
+  },
+  {
+    name: "npm run smoke:admin-audit-security",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:admin-audit-security"]),
+    summaryKey: "adminAuditSecurity",
     alsoPass: ["responseScan"],
   },
   {

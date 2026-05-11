@@ -28,6 +28,7 @@ app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/admin/work-schedules", express.static(path.join(__dirname, "admin-ui"), { index: "index.html" }));
+app.use("/admin/audit-security", express.static(path.join(__dirname, "admin-audit-ui"), { index: "index.html" }));
 app.use("/api", routes);
 app.use(notFound);
 app.use(errorHandler);

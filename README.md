@@ -191,6 +191,8 @@ node --check src/local-smoke-tests/financialNegativeSmoke.js
 node --check src/local-smoke-tests/adminReportsConfigSmoke.js
 node --check src/local-smoke-tests/adminPermissionSmoke.js
 node --check src/local-smoke-tests/adminWorkScheduleSmoke.js
+node --check src/local-smoke-tests/adminWorkScheduleUiSmoke.js
+node --check src/local-smoke-tests/adminAuditSecuritySmoke.js
 node --check src/local-smoke-tests/stagingSmoke.js
 node --check src/local-smoke-tests/runAllLocalSmoke.js
 ```
@@ -206,6 +208,7 @@ npm run smoke:admin-reports-config
 npm run smoke:admin-permission
 npm run smoke:admin-work-schedule
 npm run smoke:admin-work-schedule-ui
+npm run smoke:admin-audit-security
 npm run smoke:staging
 npm run smoke:all-local
 ```
@@ -219,6 +222,7 @@ $env:BASE_URL = "https://your-staging-url.example/api"
 npm run smoke:staging
 npm run smoke:core-api
 npm run smoke:admin-work-schedule
+npm run smoke:admin-audit-security
 ```
 
 Do not run the DB-backed commands until the staging database, platform env values, and mock/sandbox/disabled provider boundaries are confirmed.
@@ -363,6 +367,18 @@ Run the UI smoke after the backend is running:
 npm run smoke:admin-work-schedule-ui
 ```
 
+## Admin Audit Security Report
+
+The static admin audit/security report page is served by the backend at `/admin/audit-security`. It uses backend `reports.view` permission as the source of truth and calls only `/api/admin/permissions/me`, `/api/admin/audit-logs`, `/api/admin/audit-logs/summary`, `/api/admin/security-events`, and `/api/admin/security-events/summary`.
+
+The page includes summary cards, action/module/result/severity filters, date filters, audit log table, security event table, severity/module/action badges, empty states, and a safe detail modal. API responses mask IP values, omit raw user-agent, and sanitize metadata before display. It does not call provider, payment, bank, SMS, or Slip OCR services.
+
+Run the report smoke after the backend is running:
+
+```bash
+npm run smoke:admin-audit-security
+```
+
 ## Local Bank Module Smoke Test
 
 Run the backend first with safe local or test environment values, then run:
@@ -375,7 +391,7 @@ npm run smoke:bank-module
 
 ## Local All Smoke Test
 
-The all-local smoke runner executes the local smoke suite in one guarded sequence. It performs syntax checks for the local smoke files, runs the project check, runs money-flow, core API, game-transfer, financial-negative, admin reports/config, bank module, admin permission, admin role management, admin work schedule, and admin work schedule UI smoke tests, scans the related files for secret-shaped values, and checks whitespace errors in the related diff.
+The all-local smoke runner executes the local smoke suite in one guarded sequence. It performs syntax checks for the local smoke files, runs the project check, runs money-flow, core API, game-transfer, financial-negative, admin reports/config, bank module, admin permission, admin role management, admin work schedule, admin work schedule UI, and admin audit/security smoke tests, scans the related files for secret-shaped values, and checks whitespace errors in the related diff.
 
 Start the backend first with safe local or test environment values:
 
@@ -478,6 +494,10 @@ Admin auth:
 - `POST /api/admin/auth/login`
 - `GET /api/admin/me`
 - `GET /api/admin/logs`
+- `GET /api/admin/audit-logs`
+- `GET /api/admin/audit-logs/summary`
+- `GET /api/admin/security-events`
+- `GET /api/admin/security-events/summary`
 
 Admin members:
 
@@ -613,6 +633,10 @@ Validation errors return HTTP 400 with `success: false`, a `message`, and struct
 - `POST /api/admin/admins/:id/work-schedule/override`
 - `DELETE /api/admin/admins/:id/work-schedule/override`
 - `GET /api/admin/logs`
+- `GET /api/admin/audit-logs`
+- `GET /api/admin/audit-logs/summary`
+- `GET /api/admin/security-events`
+- `GET /api/admin/security-events/summary`
 
 Admin list endpoints support safe query parameters without changing the array response shape:
 
@@ -620,6 +644,8 @@ Admin list endpoints support safe query parameters without changing the array re
 - `GET /api/admin/deposits?page=1&limit=100&search=PGD&status=pending`
 - `GET /api/admin/withdrawals?page=1&limit=100&search=PGW&status=pending`
 - `GET /api/admin/logs?page=1&limit=100&search=deposit&status=deposit.approve`
+- `GET /api/admin/audit-logs?page=1&limit=100&module=schedule&result=success`
+- `GET /api/admin/security-events?page=1&limit=100&severity=high`
 
 ### Mock Game API
 
