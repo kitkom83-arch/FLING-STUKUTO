@@ -97,6 +97,8 @@ Staging deploy preparation and smoke boundaries are documented in:
 
 - `docs/STAGING_DEPLOY.md`
 - `docs/STAGING_SMOKE.md`
+- `docs/STAGING_PLATFORM_CHECKLIST.md`
+- `docs/STAGING_ROLLBACK.md`
 - `.env.staging.example`
 
 Provider modes for staging must remain `mock`, `sandbox`, or `disabled` until each real provider has signed sandbox credentials, callback verification, IP allowlists, timeout/retry rules, audit logging, and rollback instructions.
@@ -109,7 +111,10 @@ Staging readiness checklist:
 - Provider, payment, and bank modes must be `mock`, `sandbox`, or `disabled`.
 - `CORS_ORIGIN` and `PUBLIC_API_BASE_URL` must point at staging frontend/admin/API hosts.
 - `GET /api/health` must return `success: true`, `data.ok: true`, boolean `data.databaseConnected`, and safe external mode labels without secrets.
+- `npm run staging:preflight` must pass before deploy handoff. In CI it runs as a local-test dry run without real secrets; against hosted staging, set `BASE_URL` to the staging API.
 - `npm run smoke:staging` must pass before DB-backed staging smoke.
+
+No real staging deploy has been performed from this repository state. A platform, staging domain, staging PostgreSQL target, and secret-manager values must be selected and confirmed before deployment.
 
 Production migration and seed commands must not be run from a local checkout:
 
@@ -136,6 +141,12 @@ Syntax check:
 
 ```bash
 npm run check
+```
+
+Staging preflight:
+
+```bash
+npm run staging:preflight
 ```
 
 ## Dev/Test Runbook
@@ -193,6 +204,7 @@ node --check src/local-smoke-tests/adminPermissionSmoke.js
 node --check src/local-smoke-tests/adminWorkScheduleSmoke.js
 node --check src/local-smoke-tests/adminWorkScheduleUiSmoke.js
 node --check src/local-smoke-tests/adminAuditSecuritySmoke.js
+node --check src/local-smoke-tests/stagingPreflight.js
 node --check src/local-smoke-tests/stagingSmoke.js
 node --check src/local-smoke-tests/runAllLocalSmoke.js
 ```
@@ -219,6 +231,7 @@ For hosted staging HTTP-only smoke, set `BASE_URL` to the approved staging API U
 
 ```powershell
 $env:BASE_URL = "https://your-staging-url.example/api"
+npm run staging:preflight
 npm run smoke:staging
 npm run smoke:core-api
 npm run smoke:admin-work-schedule
@@ -409,10 +422,13 @@ npm run smoke:all-local
 
 ## Staging Smoke Test
 
+`npm run staging:preflight` is the staging readiness guard. It checks `APP_ENV`, `NODE_ENV`, staging/test database boundaries, external modes, the safe health contract, and response leak rules. It can run in CI without real secrets as `APP_ENV=local-test`; when `BASE_URL` is set it verifies the running staging health endpoint.
+
 `npm run smoke:staging` is an HTTP-only safety smoke for a running staging backend. It requires `BASE_URL`, blocks production-like API hosts, checks `/api/health`, verifies `databaseConnected` is a boolean, verifies provider/payment/bank/SMS/Slip OCR health modes are `mock`, `sandbox`, or `disabled`, calls admin auth with invalid credentials as a negative leak check, and scans responses for secret-shaped values.
 
 ```powershell
 $env:BASE_URL = "https://your-staging-url.example/api"
+npm run staging:preflight
 npm run smoke:staging
 ```
 
@@ -423,7 +439,7 @@ See `docs/ADMIN_UI_PERMISSIONS.md` for the admin UI permission contract.
 See `docs/ADMIN_ROLE_MANAGEMENT_UI.md` for the admin role-management UI contract.
 See `docs/DEMO_SEED.md` for the demo seed runbook and mock data list.
 See `docs/STAGING_UAT.md` for the staging/UAT boundary guard runbook and controlled-live checklist.
-See `docs/STAGING_DEPLOY.md` and `docs/STAGING_SMOKE.md` for staging deploy preparation, staging env placeholders, smoke boundaries, rollback, logs, and security checklists.
+See `docs/STAGING_DEPLOY.md`, `docs/STAGING_SMOKE.md`, `docs/STAGING_PLATFORM_CHECKLIST.md`, and `docs/STAGING_ROLLBACK.md` for staging deploy preparation, staging env placeholders, smoke boundaries, rollback, logs, and security checklists.
 
 ## Demo Accounts
 

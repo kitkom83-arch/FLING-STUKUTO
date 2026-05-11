@@ -16,6 +16,8 @@ Supported platform options:
 - VPS or VM with Node.js 18.18+ and a dedicated staging PostgreSQL.
 - Docker-ready host if the image runs `npm run start`, has Node.js 18.18+, receives environment variables from a secret store, and connects only to staging PostgreSQL.
 
+Use `docs/STAGING_PLATFORM_CHECKLIST.md` for platform-specific build/start/env/rollback steps. Use `docs/STAGING_ROLLBACK.md` for the rollback and incident runbook.
+
 Do not deploy this backend as a static site. Do not use Netlify static hosting for the API process.
 
 ## Recommended Architecture
@@ -85,6 +87,27 @@ Required staging values:
 - Provider API base URLs and credentials must remain empty in mock mode.
 - No live provider, payment, bank, SMS, or Slip OCR credential may be present in staging preparation.
 
+Secret manager only values:
+
+- `DATABASE_URL`
+- `JWT_SECRET`
+- `LOCAL_ADMIN_PASSWORD`
+- Provider, payment, bank, SMS, and Slip OCR API keys or secrets when sandbox mode is approved.
+
+Values that may be committed only as placeholders:
+
+- `.env.staging.example` placeholder names.
+- Non-secret command examples.
+- Staging URL placeholders such as `<STAGING_API_BASE_URL>`.
+
+Values that must be rotated if exposed:
+
+- Database URLs.
+- JWT secrets.
+- Admin passwords.
+- Provider, payment, bank, SMS, and Slip OCR API keys or secrets.
+- Callback secrets, bearer tokens, private keys, and any credential copied from a platform dashboard.
+
 ## Pre-Deploy Checklist
 
 - Confirm the target platform and staging domain.
@@ -95,6 +118,7 @@ Required staging values:
 - Confirm `CORS_ORIGIN` lists only staging frontend/admin origins and `PUBLIC_API_BASE_URL` points at the staging API.
 - Confirm `GET /api/health` returns the safe health contract before any DB-backed smoke.
 - Confirm `npm run check` passes locally before deployment handoff.
+- Confirm `npm run staging:preflight` passes before deployment handoff. For real staging this requires `APP_ENV=staging` and a dedicated staging `DATABASE_URL` in the platform secret manager. For CI dry-runs it may run as `APP_ENV=local-test` without real secrets.
 - Confirm `.env`, logs, and real secret files are not staged for commit.
 - Confirm rollback owner and deploy owner are known before any actual deploy.
 
@@ -154,8 +178,9 @@ Minimum staging smoke order:
 3. Confirm provider/payment/bank/SMS/Slip OCR modes are `mock`, `sandbox`, or `disabled`.
 4. Run `GET /api/health`.
 5. Run local static checks with `npm run check`.
-6. Run `npm run smoke:staging` with `BASE_URL` set to the approved staging API.
-7. Run controlled DB-backed staging smoke only after env values and backend access are approved.
+6. Run `npm run staging:preflight`.
+7. Run `npm run smoke:staging` with `BASE_URL` set to the approved staging API.
+8. Run controlled DB-backed staging smoke only after env values and backend access are approved.
 
 Current DB-backed smoke commands are not run in GitHub Actions because they require a running API, safe PostgreSQL target, and staging/local fixtures.
 
@@ -165,6 +190,7 @@ Safe staging command example:
 
 ```powershell
 $env:BASE_URL = "https://your-staging-url.example/api"
+npm run staging:preflight
 npm run smoke:staging
 npm run smoke:core-api
 npm run smoke:admin-work-schedule

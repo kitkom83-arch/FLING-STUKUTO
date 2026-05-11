@@ -15,7 +15,13 @@ jobs:
 
     env:
       NODE_ENV: test
+      APP_ENV: local-test
       DATABASE_URL: postgresql://localhost:5432/pg77_ci?schema=public
+      GAME_PROVIDER_MODE: mock
+      PAYMENT_PROVIDER_MODE: mock
+      BANK_STATEMENT_MODE: mock
+      SMS_PROVIDER_MODE: mock
+      SLIP_OCR_MODE: mock
       PRISMA_HIDE_UPDATE_MESSAGE: "1"
 
     steps:
@@ -40,8 +46,12 @@ jobs:
       - name: Project syntax and safety check
         run: npm run check
 
+      - name: Staging preflight dry run
+        run: npm run staging:preflight
+
       - name: Local smoke syntax check
         run: |
+          node --check src/local-smoke-tests/stagingPreflight.js
           node --check src/local-smoke-tests/moneyFlowSmoke.js
           node --check src/local-smoke-tests/coreApiSmoke.js
           node --check src/local-smoke-tests/financialNegativeSmoke.js
@@ -67,7 +77,7 @@ jobs:
           db_assignment='DATABASE_URL[[:space:]]*='
           pattern="${db_with_password}|Bearer[[:space:]]+|${jwt_prefix}|${api_key_prefix}|${db_assignment}"
 
-          if grep -RInE "$pattern" package.json README.md src/local-smoke-tests .github; then
+          if grep -RInE "$pattern" package.json README.md src/local-smoke-tests .github docs; then
             echo "Secret-shaped value found."
             exit 1
           fi

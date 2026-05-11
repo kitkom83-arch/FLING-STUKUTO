@@ -29,6 +29,7 @@ Never paste real tokens, passwords, API keys, provider secrets, callback secrets
 
 - `prisma/seed.js` blocks missing or non-PostgreSQL database targets, production-like target markers, non-local targets without local/staging/test markers, and `NODE_ENV=production`.
 - `src/db-safety-tests/dbSafetyGuard.js` blocks `NODE_ENV=production`, production-like database targets, database targets without explicit staging/test markers, and provider modes outside `mock`, `sandbox`, or `disabled`.
+- `src/local-smoke-tests/stagingPreflight.js` checks `APP_ENV=staging` or `local-test`, blocks production-like database/API targets, blocks live external modes, validates the safe health contract, and scans health responses or the local dry-run fixture for secret leaks.
 - `src/local-smoke-tests/stagingSmoke.js` requires `BASE_URL`, blocks production-like API hosts, checks `GET /api/health`, verifies external modes are `mock`, `sandbox`, or `disabled`, calls admin auth as a negative leak check, and scans responses for secret-shaped values.
 - `src/local-smoke-tests/adminAuditSecuritySmoke.js` checks the audit/security report UI contract and API responses against local/staging/test targets only, including permission guard, filters, empty responses, masked IP, omitted raw user-agent, and response leak scan.
 - `src/local-smoke-tests/runAllLocalSmoke.js` blocks unsafe `NODE_ENV`, missing required local credentials, unsafe database targets, production-like API base URLs, embedded URL credentials, and provider modes outside `mock` or `sandbox` before running the smoke suite.
@@ -51,6 +52,7 @@ Never paste real tokens, passwords, API keys, provider secrets, callback secrets
 - Confirm `npm run smoke:admin-audit-security` passes before UAT on `/admin/audit-security` when a safe DB-backed staging/local target is available.
 - Confirm local smoke commands are run only after the backend is pointed at the approved safe target.
 - Confirm logs redact database URLs, JWTs, tokens, API keys, callback secrets, provider payloads, passwords, and raw authorization headers.
+- Confirm `npm run staging:preflight` passes before deploy handoff and again after deploy when `BASE_URL` points at staging.
 
 ## Real-Money UAT Checklist
 

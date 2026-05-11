@@ -21,6 +21,7 @@ The smoke suite does not send real money, does not connect real provider/payment
 | `adminWorkScheduleSmoke.js` | `npm run smoke:admin-work-schedule` | Yes | Yes | Yes | Syntax check only | Admin work schedule UI/API checks for schedule list/read/update, permission guards, login block/allow, emergency override, expired override, audit history, rollback, and leak scan. |
 | `adminWorkScheduleUiSmoke.js` | `npm run smoke:admin-work-schedule-ui` | Yes | Yes | Yes | Syntax check only | Static admin schedule UI route/assets, owner flow, no-permission block, emergency override, masked audit history, and leak scan. |
 | `adminAuditSecuritySmoke.js` | `npm run smoke:admin-audit-security` | Yes | Yes | Yes | Syntax check only | Static audit/security UI route/assets, report endpoints, filters, permission block, empty response shape, masked IP, raw user-agent omission, and leak scan. |
+| `stagingPreflight.js` | `npm run staging:preflight` | No local Prisma access | Optional | No | Runs local-test dry run | Staging readiness guard for env boundary, database/API target labels, external modes, health contract, and response leak scan. |
 | `stagingSmoke.js` | `npm run smoke:staging` | No local Prisma access | Yes | No | Syntax check only | Hosted staging health contract, safe external mode labels, admin auth negative leak check, and response leak scan. |
 | `runAllLocalSmoke.js` | `npm run smoke:all-local` | Yes | Yes | Yes | Syntax check only | Guarded local runner for syntax, project checks, all local smokes, secret grep, and diff check. |
 
@@ -243,7 +244,19 @@ The UI smoke uses only static frontend assets and local/staging/test PostgreSQL 
 
 The audit/security smoke uses only static frontend assets and local/staging/test PostgreSQL fixtures. It does not call real provider, payment, bank, SMS, or Slip OCR services, and it does not run real-money UAT.
 
-## 15. smoke:staging Coverage
+## 15. staging:preflight Coverage
+
+`npm run staging:preflight` is a safe deploy readiness guard:
+
+- Requires effective `APP_ENV` to be `staging` or `local-test`.
+- Blocks `NODE_ENV=production` and production-like API/database targets for staging preparation.
+- Allows `DATABASE_URL` to be absent only for local-test/CI dry runs; real staging requires a dedicated staging/test PostgreSQL URL supplied outside git.
+- Requires game, payment, bank statement, SMS, and Slip OCR modes to be `mock`, `sandbox`, or `disabled`.
+- Validates the `/api/health` contract when `BASE_URL` is set.
+- Uses a local health fixture when `BASE_URL` is absent so Safe CI can run without real secrets.
+- Scans health payloads for database URLs, JWT-shaped values, authorization headers, unsafe response keys, and sensitive environment values.
+
+## 16. smoke:staging Coverage
 
 `npm run smoke:staging` is an HTTP-only hosted staging readiness smoke:
 
@@ -256,7 +269,7 @@ The audit/security smoke uses only static frontend assets and local/staging/test
 - Scans health and admin-auth responses for database URLs, JWT-shaped values, authorization headers, token/password/secret keys, API key fields, and sensitive env values.
 - Does not create fixtures, import Prisma, run migrations, seed data, call real providers, or move money.
 
-## 16. smoke:all-local Coverage
+## 17. smoke:all-local Coverage
 
 `npm run smoke:all-local` runs a guarded sequence and stops on the first failure:
 
@@ -275,6 +288,7 @@ The audit/security smoke uses only static frontend assets and local/staging/test
   - `adminWorkScheduleSmoke.js`
   - `adminWorkScheduleUiSmoke.js`
   - `adminAuditSecuritySmoke.js`
+  - `stagingPreflight.js`
   - `stagingSmoke.js`
 - `npm run check`.
 - `npm run smoke:promotion-claim`.
@@ -293,7 +307,7 @@ The audit/security smoke uses only static frontend assets and local/staging/test
 - `git diff --check`.
 - Final PASS/FAIL summary.
 
-## 17. GitHub Actions Safe CI Coverage
+## 18. GitHub Actions Safe CI Coverage
 
 `.github/workflows/ci.yml` defines Safe CI for `push` and `pull_request`:
 
@@ -303,7 +317,9 @@ The audit/security smoke uses only static frontend assets and local/staging/test
 - `npx prisma validate`.
 - `npx prisma generate`.
 - `npm run check`.
+- `npm run staging:preflight` with local-test CI env and no real secrets.
 - Direct smoke syntax checks for:
+  - `stagingPreflight.js`
   - `moneyFlowSmoke.js`
   - `coreApiSmoke.js`
   - `financialNegativeSmoke.js`
@@ -320,7 +336,7 @@ The audit/security smoke uses only static frontend assets and local/staging/test
 
 Safe CI does not run DB-backed smoke commands because those require a running backend, safe local/staging/test PostgreSQL, guarded environment variables, and local fixtures.
 
-## 18. Required Local Runtime
+## 19. Required Local Runtime
 
 To run local smoke commands, prepare:
 
@@ -335,12 +351,13 @@ To run local smoke commands, prepare:
 
 `smoke:staging` requires only `BASE_URL` and a running safe staging/local API. `moneyFlowSmoke.js` also allows `staging` for `NODE_ENV`. Other current DB-backed smoke scripts shown above allow `development-local` or `test`.
 
-## 19. Safe Commands
+## 20. Safe Commands
 
 Run these only after the backend and safe local/staging/test environment are ready:
 
 ```bash
 npm run smoke:all-local
+npm run staging:preflight
 npm run smoke:staging
 npm run smoke:money-flow
 npm run smoke:core-api
@@ -355,7 +372,7 @@ npm run smoke:admin-audit-security
 npm run check
 ```
 
-## 20. Mock / Sandbox Boundaries
+## 21. Mock / Sandbox Boundaries
 
 - Game provider coverage uses mock/local fixtures and `MockGameProviderAdapter` behavior.
 - Payment and bank money flow is manual local approval through the API and admin endpoints.
@@ -370,7 +387,7 @@ npm run check
 - Production DB targets are forbidden.
 - Real provider/payment/bank integrations and production credential flows are outside current smoke coverage.
 
-## 21. Known Coverage Gaps
+## 22. Known Coverage Gaps
 
 Confirmed from current docs and scripts:
 
@@ -385,7 +402,7 @@ Confirmed from current docs and scripts:
 - Full end-to-end frontend coverage is not covered.
 - docs/API.md still contains older "ต้องตรวจเพิ่ม" notes for some endpoints that are now covered by newer smoke scripts; ต้องตรวจเพิ่ม before using that section as the source of truth.
 
-## 22. How to Add a New Smoke
+## 23. How to Add a New Smoke
 
 1. Add the new smoke script under `src/local-smoke-tests`.
 2. Reuse the existing local safety guard and response leak scan patterns.

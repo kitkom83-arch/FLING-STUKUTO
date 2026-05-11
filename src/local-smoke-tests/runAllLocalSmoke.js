@@ -25,6 +25,7 @@ const RELATED_FILES = [
   "src/local-smoke-tests/adminWorkScheduleSmoke.js",
   "src/local-smoke-tests/adminWorkScheduleUiSmoke.js",
   "src/local-smoke-tests/adminAuditSecuritySmoke.js",
+  "src/local-smoke-tests/stagingPreflight.js",
   "src/local-smoke-tests/stagingSmoke.js",
 ];
 const SECRET_GREP_PATTERN = [
@@ -134,6 +135,12 @@ const steps = [
     name: "node --check adminAuditSecuritySmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/adminAuditSecuritySmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check stagingPreflight",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/stagingPreflight.js"],
     summaryKey: "syntax",
   },
   {

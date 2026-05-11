@@ -26,6 +26,7 @@ Start with the lowest-risk checks:
 
 ```bash
 npm run check
+npm run staging:preflight
 curl <STAGING_API_BASE_URL>/api/health
 BASE_URL=<STAGING_API_BASE_URL>/api npm run smoke:staging
 ```
@@ -36,6 +37,7 @@ Then verify:
 - Health response is JSON.
 - Health response has `success: true`, `data.ok: true`, and boolean `data.databaseConnected`.
 - Health response shows only safe external mode labels: `mock`, `sandbox`, or `disabled`.
+- Staging preflight passes without printing raw `DATABASE_URL`, JWT, API keys, tokens, passwords, or provider secrets.
 - The staging smoke admin-auth negative check returns a failed JSON payload without leaking secrets.
 - No secret-shaped value appears in response or logs.
 - Staging logs show normal startup without printing env values.
@@ -54,6 +56,7 @@ PUBLIC_API_BASE_URL=<STAGING_API_BASE_URL>
 Recommended controlled order:
 
 ```bash
+npm run staging:preflight
 npm run smoke:staging
 npm run smoke:core-api
 npm run smoke:admin-work-schedule
@@ -77,6 +80,7 @@ Safe CI coverage remains:
 - `npx prisma validate`
 - `npx prisma generate`
 - `npm run check`
+- `npm run staging:preflight` in `APP_ENV=local-test` dry-run mode
 - direct smoke syntax checks
 - secret-shaped value scan
 
@@ -105,6 +109,7 @@ Staging smoke result:
 - Target: staging URL label only
 - Health: PASS/FAIL - note
 - Staging smoke script: PASS/FAIL/SKIPPED - note
+- Staging preflight: PASS/FAIL/SKIPPED - note
 - npm run check: PASS/FAIL - note
 - Core API smoke: PASS/FAIL/SKIPPED - note
 - Admin work schedule smoke: PASS/FAIL/SKIPPED - note
