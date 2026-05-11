@@ -62,9 +62,11 @@ Seed demo data:
 
 ```bash
 npm run seed
+npm run staging:db:seed
+npm run staging:db:check
 ```
 
-Do not run seed against production. The seed is idempotent and creates mock-only demo data for local/staging/test use. See `docs/DEMO_SEED.md` for the full demo seed runbook, verification checks, safe reset flow, and seeded fixture list.
+Do not run seed against production. The seed is idempotent and creates mock-only demo data for local/staging/test use. Set demo admin/member passwords through env only (`LOCAL_ADMIN_PASSWORD` plus `LOCAL_MEMBER_PASSWORD`, or staging-specific equivalents). For staging, use `staging:db:seed` and keep staging-only demo passwords in Render Environment/Secrets or an ignored shell only. See `docs/DEMO_SEED.md` for the full demo seed runbook, verification checks, safe reset flow, and seeded fixture list.
 
 Prisma technical debt: `package.json#prisma` is deprecated for Prisma 7. Migrate this to a Prisma config file before upgrading Prisma major versions.
 
@@ -160,6 +162,9 @@ Staging preflight:
 
 ```bash
 npm run staging:preflight
+npm run smoke:staging
+npm run staging:db:check
+npm run smoke:staging-uat
 ```
 
 ## Dev/Test Runbook
@@ -246,6 +251,7 @@ For hosted staging HTTP-only smoke, set `BASE_URL` to the approved staging API U
 $env:BASE_URL = "https://your-staging-url.example/api"
 npm run staging:preflight
 npm run smoke:staging
+npm run smoke:staging-uat
 npm run smoke:core-api
 npm run smoke:admin-work-schedule
 npm run smoke:admin-audit-security
@@ -286,8 +292,8 @@ In another shell, set a safe environment. Use your own local/staging/test values
 ```powershell
 $env:NODE_ENV = "development-local"
 $env["DATABASE_URL"] = "<LOCAL_TEST_DATABASE_URL>"
-$env:JWT_SECRET = "local-test-jwt-secret"
-$env:LOCAL_ADMIN_PASSWORD = "local-admin-password"
+$env:JWT_SECRET = "<LOCAL_TEST_JWT_SECRET>"
+$env:LOCAL_ADMIN_PASSWORD = "<LOCAL_TEST_ADMIN_PASSWORD>"
 $env:PUBLIC_API_BASE_URL = "http://localhost:4000"
 ```
 
@@ -459,17 +465,17 @@ See `docs/STAGING_DEPLOY.md`, `docs/STAGING_SMOKE.md`, `docs/STAGING_PLATFORM_CH
 Admin:
 
 - username: `admin`
-- password: `admin123456`
 - role: `super_admin`
+- password: set through a staging/local secret channel only; do not write it into docs, logs, commits, screenshots, or chat
 
 Member:
 
 - username: `ima00180`
 - phone: `0800000000`
-- password: `123456`
 - balance: `11.09`
 - points: `47.00`
 - rank: `Mermaid Demo`
+- password: set through a staging/local secret channel only; do not write it into docs, logs, commits, screenshots, or chat
 
 ## API Endpoints
 

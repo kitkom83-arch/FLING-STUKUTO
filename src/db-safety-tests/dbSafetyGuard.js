@@ -1,4 +1,5 @@
 const SAFE_PROVIDER_MODES = new Set(["mock", "sandbox", "disabled"]);
+const SAFE_APP_ENVS = new Set(["staging", "stage", "test", "testing", "qa", "sandbox", "local-test"]);
 const SAFE_DATABASE_MARKERS = ["test", "testing", "stage", "staging", "sandbox", "qa"];
 const PRODUCTION_MARKERS = ["prod", "production", "live", "primary", "main", "master"];
 const PROVIDER_MODE_KEYS = [
@@ -55,9 +56,20 @@ function providerMode(env, key) {
 function evaluateDbSafetyGuard(env = process.env) {
   const reasons = [];
   const nodeEnv = typeof env.NODE_ENV === "string" ? env.NODE_ENV.trim().toLowerCase() : "";
+  const appEnv = typeof env.APP_ENV === "string" && env.APP_ENV.trim()
+    ? env.APP_ENV.trim().toLowerCase()
+    : "local-test";
 
-  if (nodeEnv === "production") {
-    reasons.push("NODE_ENV=production is blocked for DB-backed safety tests.");
+  if (!SAFE_APP_ENVS.has(appEnv)) {
+    reasons.push("APP_ENV must be an explicit staging/test label for DB-backed safety tests.");
+  }
+
+  if (["prod", "production", "live"].includes(appEnv)) {
+    reasons.push("APP_ENV production/live is blocked for DB-backed safety tests.");
+  }
+
+  if (nodeEnv === "production" && !["staging", "stage", "test", "testing", "qa", "sandbox"].includes(appEnv)) {
+    reasons.push("NODE_ENV=production is allowed only when APP_ENV is an explicit staging/test label.");
   }
 
   const databaseUrl = env.DATABASE_URL;

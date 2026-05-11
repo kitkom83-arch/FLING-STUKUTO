@@ -107,7 +107,7 @@ All real values must be set only in the selected platform secret manager or an i
 
 | Group | ENV keys | Required value style | Notes |
 | --- | --- | --- | --- |
-| App runtime | `NODE_ENV`, `APP_ENV`, `PORT` | `staging`, `staging`, platform port value | Do not use `production` for this staging preparation phase. |
+| App runtime | `NODE_ENV`, `APP_ENV`, `PORT` | Render may use `production`; `APP_ENV` must be `staging`; platform port value | Runtime optimization is separate from environment boundary. Safety checks use `APP_ENV`, DB target markers, and provider modes. |
 | Database staging/test only | `DATABASE_URL` | `<staging-database-url>` in secret manager | Must point to dedicated staging/test PostgreSQL, never production or production clone. |
 | Admin/session/auth | `JWT_SECRET`, `JWT_EXPIRES_IN`, `LOCAL_ADMIN_PASSWORD` | `<set-in-render-environment>`, `7d`, `<set-in-render-environment>` | Rotate if printed, pasted, committed, screenshotted, or shared outside secret manager. |
 | Provider/game mock/sandbox/disabled | `GAME_PROVIDER_MODE`, `GAME_PROVIDER_API_BASE_URL`, `GAME_PROVIDER_AGENT_CODE`, `GAME_PROVIDER_API_KEY`, `GAME_PROVIDER_SECRET` | `mock`, `sandbox`, or `disabled`; credentials as placeholders only | Keep credentials empty in mock mode; no live provider mode. |
@@ -119,7 +119,7 @@ All real values must be set only in the selected platform secret manager or an i
 
 Required staging values:
 
-- `NODE_ENV` must be `staging`.
+- `NODE_ENV` may be `production` on Render, but `APP_ENV` must be `staging`.
 - `APP_ENV` must be `staging` or another explicit non-production staging/test label.
 - `DATABASE_URL` must target a dedicated staging/test PostgreSQL database.
 - `JWT_SECRET`, session secret values, and admin passwords must be generated for staging and set only in the platform secret manager.
@@ -201,6 +201,7 @@ After deploy:
 - Confirm `GET /api/health` returns `success: true`, `data.ok: true`, and boolean `data.databaseConnected`.
 - Confirm external mode labels are `mock`, `sandbox`, or `disabled`.
 - Run staging preflight and staging smoke against the Render staging API.
+- Run guarded DB migration, demo seed if needed, DB check, and UAT smoke before UAT handoff.
 
 Smoke command template:
 
@@ -208,6 +209,8 @@ Smoke command template:
 set BASE_URL=https://<render-staging-domain>/api
 npm run staging:preflight
 npm run smoke:staging
+npm run staging:db:check
+npm run smoke:staging-uat
 ```
 
 Rollback:
@@ -230,7 +233,7 @@ Run migrations only after the staging database target has been verified without 
 npm run db:migrate:staging
 ```
 
-Do not run raw `npx prisma migrate deploy` for staging from a local checkout. The guarded command runs `src/db-safety-tests/dbSafetyGuard.js` before Prisma deploys migrations and accepts only `mock`, `sandbox`, or `disabled` external modes.
+Do not run raw `npx prisma migrate deploy` for staging from a local checkout. The guarded command runs `src/db-safety-tests/dbSafetyGuard.js` before Prisma deploys migrations and accepts only staging/test DB targets and `mock`, `sandbox`, or `disabled` external modes. `NODE_ENV=production` is acceptable on Render only when `APP_ENV=staging` and the DB target is non-production.
 
 Stop immediately if the guard blocks. Do not bypass the guard and do not switch to production database credentials.
 
@@ -239,10 +242,16 @@ Stop immediately if the guard blocks. Do not bypass the guard and do not switch 
 Seed only after migrations pass and the database is confirmed as staging/test.
 
 ```bash
-npm run seed
+npm run staging:db:seed
 ```
 
-The seed is intended for local/staging/test mock data. Do not seed production. See `docs/DEMO_SEED.md` for the seed runbook, verification checks, safe reset rules, and mock data list.
+The seed is intended for local/staging/test mock data. Do not seed production. For `APP_ENV=staging`, set staging-only demo admin/member passwords in the platform secret manager or ignored shell; never write them into docs/log/chat. See `docs/DEMO_SEED.md` for the seed runbook, verification checks, safe reset rules, and mock data list.
+
+After seed, verify readiness:
+
+```bash
+npm run staging:db:check
+```
 
 ## Health Check Steps
 
@@ -273,6 +282,8 @@ GO is allowed only when all items are true:
 - Provider/payment/bank/SMS/Slip OCR modes are not live.
 - `npm run staging:preflight` passes.
 - `npm run smoke:staging` passes.
+- `npm run staging:db:check` passes.
+- `npm run smoke:staging-uat` passes.
 
 NO-GO if any item is true:
 
@@ -282,6 +293,8 @@ NO-GO if any item is true:
 - `/api/health` fails or returns an unsafe contract.
 - `npm run staging:preflight` fails.
 - `npm run smoke:staging` fails.
+- `npm run staging:db:check` fails.
+- `npm run smoke:staging-uat` fails.
 
 ## Smoke Testing Steps
 
@@ -308,6 +321,8 @@ Safe staging command example:
 $env:BASE_URL = "https://your-staging-url.example/api"
 npm run staging:preflight
 npm run smoke:staging
+npm run staging:db:check
+npm run smoke:staging-uat
 npm run smoke:core-api
 npm run smoke:admin-work-schedule
 ```

@@ -7,8 +7,6 @@ const prisma = new PrismaClient();
 
 const SAFE_TARGET_MARKERS = ["local", "test", "testing", "stage", "staging", "sandbox", "qa"];
 const PRODUCTION_MARKERS = ["prod", "production", "live", "primary", "main", "master"];
-const DEMO_ADMIN_PASSWORD = "admin123456";
-const DEMO_MEMBER_PASSWORD = "123456";
 const MOCK_CONFIG_PLACEHOLDER = "MOCK_ONLY_PLACEHOLDER_NOT_A_CREDENTIAL";
 const LOCAL_PROMOTION_SMOKE_ID = "local_mock_promotion_claim_smoke";
 
@@ -51,6 +49,8 @@ function isLoopbackHost(hostname) {
 
 function assertSafeDatabaseTarget() {
   const rawUrl = process.env.DATABASE_URL;
+  const appEnv = String(process.env.APP_ENV || "local-test").trim().toLowerCase();
+  const nodeEnv = String(process.env.NODE_ENV || "").trim().toLowerCase();
   let parsed;
 
   try {
@@ -77,9 +77,25 @@ function assertSafeDatabaseTarget() {
     throw new Error("Seed blocked: DATABASE_URL must target local/staging/test PostgreSQL. Value is not printed.");
   }
 
-  if (String(process.env.NODE_ENV || "").trim().toLowerCase() === "production") {
-    throw new Error("Seed blocked: NODE_ENV=production is not allowed for demo seed.");
+  if (["prod", "production", "live"].includes(appEnv)) {
+    throw new Error("Seed blocked: APP_ENV production/live is not allowed for demo seed.");
   }
+
+  if (nodeEnv === "production" && !["staging", "stage", "test", "testing", "qa", "sandbox"].includes(appEnv)) {
+    throw new Error("Seed blocked: NODE_ENV=production requires APP_ENV to be an explicit staging/test label.");
+  }
+
+  if (appEnv === "staging" && !process.env.LOCAL_ADMIN_PASSWORD && !process.env.STAGING_DEMO_ADMIN_PASSWORD) {
+    throw new Error("Seed blocked: staging demo admin password env must be set. Value is not printed.");
+  }
+}
+
+function requiredPasswordEnv(names, label) {
+  for (const name of names) {
+    const value = process.env[name];
+    if (typeof value === "string" && value.length > 0) return value;
+  }
+  throw new Error(`${label} password env must be set for demo seed. Value is not printed.`);
 }
 
 const SITE_DEFS = [
@@ -629,8 +645,10 @@ async function upsertGlobalGames() {
 async function main() {
   assertSafeDatabaseTarget();
 
-  const adminPasswordHash = await bcrypt.hash(DEMO_ADMIN_PASSWORD, 12);
-  const memberPasswordHash = await bcrypt.hash(DEMO_MEMBER_PASSWORD, 12);
+  const adminPassword = requiredPasswordEnv(["LOCAL_ADMIN_PASSWORD", "STAGING_DEMO_ADMIN_PASSWORD"], "Admin");
+  const memberPassword = requiredPasswordEnv(["LOCAL_MEMBER_PASSWORD", "STAGING_DEMO_MEMBER_PASSWORD"], "Member");
+  const adminPasswordHash = await bcrypt.hash(adminPassword, 12);
+  const memberPasswordHash = await bcrypt.hash(memberPassword, 12);
 
   const admin = await prisma.admin.upsert({
     where: { username: "admin" },
@@ -654,11 +672,21 @@ async function main() {
   console.log("Seed completed");
 }
 
-main()
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+if (require.main === module) {
+  main()
+    .catch((error) => {
+      console.error("Seed failed");
+      console.error(error.message);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+}
+
+module.exports = {
+  main,
+  assertSafeDatabaseTarget,
+  requiredPasswordEnv,
+  disconnect: () => prisma.$disconnect(),
+};

@@ -5,7 +5,7 @@ This runbook prepares a safe local or staging/test database with mock PG77 demo 
 ## Safety Rules
 
 - Run demo seed only against local, staging, test, sandbox, or QA PostgreSQL targets.
-- Do not run demo seed with `NODE_ENV` set to production.
+- `NODE_ENV=production` is allowed only for hosted staging when `APP_ENV=staging`; production/live `APP_ENV` remains blocked.
 - Do not use production clones, production read replicas, real payment rails, real bank rails, or real provider credentials.
 - Keep game, payment, bank statement, SMS, and Slip OCR modes unset, `mock`, or `sandbox`.
 - Do not print database URLs, JWT secrets, tokens, API keys, provider secrets, passwords, or raw provider payloads.
@@ -15,6 +15,12 @@ This runbook prepares a safe local or staging/test database with mock PG77 demo 
 ## Prepare Local DB
 
 Create `.env` from `.env.example`, then set the local PostgreSQL and local auth values in `.env`. Keep `.env` uncommitted.
+Set demo passwords through env only:
+
+- `LOCAL_ADMIN_PASSWORD` or `STAGING_DEMO_ADMIN_PASSWORD`
+- `LOCAL_MEMBER_PASSWORD` or `STAGING_DEMO_MEMBER_PASSWORD`
+
+Do not write these values into docs, logs, commits, screenshots, or chat.
 
 Install dependencies and validate the schema:
 
@@ -103,4 +109,3 @@ Confirm the target database is disposable before running reset. The reset comman
 - Real customer phone numbers.
 - Live provider mode.
 - Real payment, bank, provider, SMS, or Slip OCR connectivity.
-

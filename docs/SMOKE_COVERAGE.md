@@ -23,9 +23,20 @@ The smoke suite does not send real money, does not connect real provider/payment
 | `adminAuditSecuritySmoke.js` | `npm run smoke:admin-audit-security` | Yes | Yes | Yes | Syntax check only | Static audit/security UI route/assets, report endpoints, filters, permission block, empty response shape, masked IP, raw user-agent omission, and leak scan. |
 | `stagingPreflight.js` | `npm run staging:preflight` | No local Prisma access | Optional | No | Runs local-test dry run | Staging readiness guard for env boundary, database/API target labels, external modes, health contract, and response leak scan. |
 | `stagingSmoke.js` | `npm run smoke:staging` | No local Prisma access | Yes | No | Syntax check only | Hosted staging health contract, safe external mode labels, admin auth negative leak check, and response leak scan. |
+| `stagingDbCheck.js` | `npm run staging:db:check` | Staging/test DB | No | No | Syntax check only | Staging DB connection, required tables, demo site/admin/member readiness, fixture counts, and safe output. |
+| `stagingUatSmoke.js` | `npm run smoke:staging-uat` | No local Prisma access | Hosted staging API | Yes | Syntax check only | Render staging health/database/mode contract, admin auth leak checks, admin work schedule read, audit/security read endpoints, and response leak scan. |
 | `runAllLocalSmoke.js` | `npm run smoke:all-local` | Yes | Yes | Yes | Syntax check only | Guarded local runner for syntax, project checks, all local smokes, secret grep, and diff check. |
 
 GitHub Actions also scans `src/local-smoke-tests` for secret-shaped values. It does not run DB-backed smoke commands.
+
+## Staging DB/UAT Coverage
+
+- `staging:db:check` blocks production-like DB targets, live external modes, and unsafe app labels before connecting.
+- It verifies Prisma migration table plus core application tables exist.
+- It verifies the demo site, demo admin, demo member, wallet, bank/account/provider/game/payment/promotion fixtures are present.
+- It prints only safe usernames, roles, site codes, currencies, and counts. It does not print `DATABASE_URL`, tokens, passwords, hashes, provider secrets, or encrypted config fields.
+- `smoke:staging-uat` defaults to `https://fling-stukuto-staging-api.onrender.com/api` when `BASE_URL` is not set.
+- It requires a staging-only demo admin password in env, verifies `/api/health`, confirms `databaseConnected=true`, confirms all external modes are non-live, verifies admin auth negative leak behavior, logs in without printing the token, and reads work schedule/audit/security endpoints.
 
 ## 3. smoke:money-flow Coverage
 

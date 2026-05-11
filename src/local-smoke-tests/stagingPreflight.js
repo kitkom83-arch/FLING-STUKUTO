@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const SAFE_APP_ENVS = new Set(["staging", "local-test"]);
-const SAFE_NODE_ENVS = new Set(["", "staging", "test", "development", "development-local", "local-test"]);
+const SAFE_NODE_ENVS = new Set(["", "production", "staging", "test", "development", "development-local", "local-test"]);
 const SAFE_EXTERNAL_MODES = new Set(["mock", "sandbox", "disabled"]);
 const SAFE_TARGET_MARKERS = ["local", "test", "testing", "stage", "staging", "sandbox", "qa"];
 const PRODUCTION_MARKERS = ["prod", "production", "live", "primary", "main", "master"];
@@ -238,7 +238,10 @@ function assertEnvironment() {
     reasons.push("APP_ENV must be staging or local-test.");
   }
   if (!SAFE_NODE_ENVS.has(nodeEnv)) {
-    reasons.push("NODE_ENV must not force production/live mode for staging preflight.");
+    reasons.push("NODE_ENV must be a safe runtime label for staging preflight.");
+  }
+  if (nodeEnv === "production" && effectiveAppEnv !== "staging") {
+    reasons.push("NODE_ENV=production is allowed only when APP_ENV=staging for staging preflight.");
   }
 
   const database = inspectDatabaseTarget(process.env.DATABASE_URL, effectiveAppEnv);

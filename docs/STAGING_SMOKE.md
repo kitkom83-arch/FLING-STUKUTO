@@ -8,7 +8,7 @@ Before running any staging smoke command, confirm all of the following without p
 
 - `BASE_URL` or `PUBLIC_API_BASE_URL` is the staging API URL, not production.
 - `DATABASE_URL` targets a dedicated staging/test PostgreSQL database.
-- `NODE_ENV` is `staging` for hosted staging.
+- `NODE_ENV` is a safe runtime label. Render may use `production`, but `APP_ENV` must still be `staging`.
 - `APP_ENV` is `staging` or another explicit non-production staging/test label.
 - `GAME_PROVIDER_MODE` is `mock`, approved `sandbox`, or `disabled`.
 - `PAYMENT_PROVIDER_MODE` is `mock`, approved `sandbox`, or `disabled`.
@@ -29,6 +29,7 @@ npm run check
 npm run staging:preflight
 curl <STAGING_API_BASE_URL>/api/health
 BASE_URL=<STAGING_API_BASE_URL>/api npm run smoke:staging
+BASE_URL=<STAGING_API_BASE_URL>/api npm run smoke:staging-uat
 ```
 
 Then verify:
@@ -39,6 +40,7 @@ Then verify:
 - Health response shows only safe external mode labels: `mock`, `sandbox`, or `disabled`.
 - Staging preflight passes without printing raw `DATABASE_URL`, JWT, API keys, tokens, passwords, or provider secrets.
 - The staging smoke admin-auth negative check returns a failed JSON payload without leaking secrets.
+- The staging UAT smoke can authenticate the staging demo admin using env-only credentials and can read admin work schedule, audit, and security endpoints.
 - No secret-shaped value appears in response or logs.
 - Staging logs show normal startup without printing env values.
 
@@ -58,6 +60,8 @@ Recommended controlled order:
 ```bash
 npm run staging:preflight
 npm run smoke:staging
+npm run staging:db:check
+npm run smoke:staging-uat
 npm run smoke:core-api
 npm run smoke:admin-work-schedule
 npm run smoke:admin-reports-config
@@ -109,6 +113,8 @@ Staging smoke result:
 - Target: staging URL label only
 - Health: PASS/FAIL - note
 - Staging smoke script: PASS/FAIL/SKIPPED - note
+- Staging DB check: PASS/FAIL/SKIPPED - note
+- Staging UAT smoke: PASS/FAIL/SKIPPED - note
 - Staging preflight: PASS/FAIL/SKIPPED - note
 - npm run check: PASS/FAIL - note
 - Core API smoke: PASS/FAIL/SKIPPED - note
