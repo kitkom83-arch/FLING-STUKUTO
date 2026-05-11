@@ -18,6 +18,7 @@ const loginSchema = z.object({
   username: z.string().min(1),
   password: z.string().min(1),
 });
+const INVALID_ADMIN_LOGIN_MESSAGE = "Invalid admin credentials";
 
 const amountSchema = z.object({
   amount: z.union([z.string(), z.number()]),
@@ -59,7 +60,7 @@ function safeAdminLoginError(error) {
 }
 
 function invalidAdminLogin(res) {
-  return fail(res, "Invalid username or password", 400);
+  return fail(res, INVALID_ADMIN_LOGIN_MESSAGE, 400);
 }
 
 async function login(req, res) {

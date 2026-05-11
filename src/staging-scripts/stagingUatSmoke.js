@@ -3,6 +3,7 @@ const { SAFE_EXTERNAL_MODES, ensureApiPath, inspectBaseUrl } = require("./stagin
 const DEFAULT_BASE_URL = "https://fling-stukuto-staging-api.onrender.com/api";
 const SITE_CODE = process.env.STAGING_SMOKE_SITE_CODE || "PG77";
 const ADMIN_USERNAME = process.env.STAGING_DEMO_ADMIN_USERNAME || "admin";
+const INVALID_ADMIN_PASSWORD = "staging-uat-invalid-admin-login-check";
 const issuedAuthValues = new Set();
 
 function configuredBaseUrl() {
@@ -112,18 +113,36 @@ function assertHealth(result) {
   }
 }
 
-async function assertNegativeAdminAuth(baseUrl) {
+function assertAdminAuthSafeFailure(label, result) {
+  if (![400, 401, 403].includes(result.status) || !result.payload || result.payload.success !== false) {
+    throw new Error(`${label} returned ${result.status}, expected safe failure.`);
+  }
+}
+
+async function assertUnknownAdminAuthFailure(baseUrl) {
   const result = await apiRequest(baseUrl, "/admin/auth/login", {
     method: "POST",
-    label: "admin auth negative",
+    label: "unknown admin auth negative",
     body: {
       username: "staging_uat_invalid_admin",
-      password: "staging-uat-invalid-password",
+      password: INVALID_ADMIN_PASSWORD,
     },
   });
-  if (![400, 401, 403].includes(result.status) || !result.payload || result.payload.success !== false) {
-    throw new Error(`Admin auth negative returned ${result.status}, expected safe failure.`);
-  }
+  assertAdminAuthSafeFailure("Unknown admin auth negative", result);
+}
+
+async function assertDemoAdminWrongPasswordFailure(baseUrl, realPassword) {
+  const invalidPassword =
+    realPassword === INVALID_ADMIN_PASSWORD ? "staging-uat-invalid-admin-login-check-alt" : INVALID_ADMIN_PASSWORD;
+  const result = await apiRequest(baseUrl, "/admin/auth/login", {
+    method: "POST",
+    label: "demo admin wrong password negative",
+    body: {
+      username: ADMIN_USERNAME,
+      password: invalidPassword,
+    },
+  });
+  assertAdminAuthSafeFailure("Demo admin wrong password negative", result);
 }
 
 async function loginDemoAdmin(baseUrl) {
@@ -208,10 +227,13 @@ async function main() {
     assertHealth(health);
     console.log("Health/database/mode contract: PASS");
 
-    await assertNegativeAdminAuth(baseUrl);
-    console.log("Admin auth negative leak check: PASS");
+    await assertUnknownAdminAuthFailure(baseUrl);
+    console.log("Unknown admin auth negative leak check: PASS");
 
     const authValue = await loginDemoAdmin(baseUrl);
+    const demoAdminPassword = process.env.LOCAL_ADMIN_PASSWORD || process.env.STAGING_DEMO_ADMIN_PASSWORD;
+    await assertDemoAdminWrongPasswordFailure(baseUrl, demoAdminPassword);
+    console.log("Demo admin wrong password negative leak check: PASS");
     await assertAdminEndpoints(baseUrl, authValue);
 
     console.log("Response leak scan: PASS");
