@@ -50,21 +50,43 @@ function signAdminToken(admin) {
   );
 }
 
+function safeAdminLoginError(error) {
+  return {
+    name: error && error.name ? error.name : "Error",
+    code: error && error.code ? error.code : undefined,
+    message: "Admin login credential check failed",
+  };
+}
+
+function invalidAdminLogin(res) {
+  return fail(res, "Invalid username or password", 400);
+}
+
 async function login(req, res) {
   const data = loginSchema.parse(req.body);
-  const admin = await prisma.admin.findUnique({ where: { username: data.username } });
+  let admin = null;
+  try {
+    admin = await prisma.admin.findUnique({ where: { username: data.username } });
+  } catch (error) {
+    console.error({ event: "admin.login.credential_lookup_failed", error: safeAdminLoginError(error) });
+    return invalidAdminLogin(res);
+  }
 
   let passwordMatches = false;
   if (admin) {
     try {
       passwordMatches = await verifyPassword(data.password, admin.passwordHash);
     } catch (_error) {
+      console.error({
+        event: "admin.login.password_verify_failed",
+        error: safeAdminLoginError(_error),
+      });
       passwordMatches = false;
     }
   }
 
   if (!admin || !passwordMatches) {
-    return fail(res, "Invalid username or password", 400);
+    return invalidAdminLogin(res);
   }
   if (admin.status !== "active") {
     const error = new Error("Admin is not active");
