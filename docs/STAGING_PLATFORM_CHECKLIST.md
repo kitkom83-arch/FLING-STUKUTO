@@ -4,6 +4,8 @@ This checklist is for staging preparation only. Do not paste real database URLs,
 
 All values below are placeholders. Put real staging values only in the selected platform secret manager.
 
+Use `docs/STAGING_DEPLOY_DECISION.md` for the final go/no-go checklist before any real staging deploy.
+
 ## Common Rules
 
 - Build command: `npm ci && npx prisma generate`
@@ -14,6 +16,15 @@ All values below are placeholders. Put real staging values only in the selected 
 - Provider/payment/bank/SMS/Slip OCR modes: `mock`, `sandbox`, or `disabled` only.
 - `DATABASE_URL` must target dedicated staging/test PostgreSQL only.
 - Never use production DB, production clone, live provider mode, live bank rails, live payment rails, or real-money flows.
+
+## Platform Selection Matrix
+
+| Platform | เหมาะกับอะไร | สิ่งที่ต้องเตรียม | Build command | Start command | Health check path | ENV secret manager | Rollback method | ข้อควรระวัง |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Render | ทีมที่ต้องการ web service managed ง่ายและ deploy history ชัดเจน | Render Web Service, staging PostgreSQL, staging domain, env group | `npm ci && npx prisma generate` | `npm run start` | `/api/health` | Render Environment Variables หรือ Environment Group | Redeploy previous successful deploy | อย่าใช้ production database add-on หรือ live provider env ใน service เดียวกัน |
+| Railway | ทีมที่ต้องการ setup เร็วและผูก service/database ใน project เดียว | Railway service, staging PostgreSQL, public domain, variables | `npm ci && npx prisma generate` | `npm run start` | `/api/health` | Railway Variables | Redeploy previous deployment หรือ pin previous commit | ตรวจว่า variables ไม่ reuse production project และ domain ไม่ production-like |
+| Fly.io | ทีมที่ต้องการ region control, machine release, และ rollback แบบ release-based | Fly app, staging PostgreSQL reachable from app, secrets, health check | `npm ci && npx prisma generate` | `npm run start` | `/api/health` | Fly secrets | Rollback to previous release | ตรวจ outbound DB access, region latency, และอย่าใส่ live provider secrets |
+| VPS | ทีมที่ต้องการ control OS/network เอง | Node.js 18.18+, process manager, reverse proxy, staging DB, secret store | `npm ci && npx prisma generate` | `npm run start` | `/api/health` | systemd env file, PM2 env, vault, or managed secret store outside git | Switch symlink/release dir or commit and restart service | ต้องดูแล patching, firewall, TLS, log redaction, backup, process restart เอง |
 
 ## Render
 

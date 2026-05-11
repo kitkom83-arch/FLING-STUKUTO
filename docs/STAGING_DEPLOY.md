@@ -16,9 +16,18 @@ Supported platform options:
 - VPS or VM with Node.js 18.18+ and a dedicated staging PostgreSQL.
 - Docker-ready host if the image runs `npm run start`, has Node.js 18.18+, receives environment variables from a secret store, and connects only to staging PostgreSQL.
 
-Use `docs/STAGING_PLATFORM_CHECKLIST.md` for platform-specific build/start/env/rollback steps. Use `docs/STAGING_ROLLBACK.md` for the rollback and incident runbook.
+Use `docs/STAGING_PLATFORM_CHECKLIST.md` for platform-specific build/start/env/rollback steps. Use `docs/STAGING_DEPLOY_DECISION.md` for go/no-go approval. Use `docs/STAGING_ROLLBACK.md` for the rollback and incident runbook.
 
 Do not deploy this backend as a static site. Do not use Netlify static hosting for the API process.
+
+## Platform Selection Summary
+
+| Platform | เหมาะกับอะไร | สิ่งที่ต้องเตรียม | Build command | Start command | Health check path | Env secret manager | Rollback method | ข้อควรระวัง |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Render | Managed web service พร้อม deploy history | Web Service, staging PostgreSQL, staging domain, env variables | `npm ci && npx prisma generate` | `npm run start` | `/api/health` | Render Environment Variables/Environment Group | Redeploy previous successful deploy | ห้ามใช้ production DB หรือ live provider env ร่วมกับ staging service |
+| Railway | Setup เร็วสำหรับ API + DB ใน project เดียว | Railway service, staging PostgreSQL, public domain, variables | `npm ci && npx prisma generate` | `npm run start` | `/api/health` | Railway Variables | Redeploy previous deployment หรือ pin previous commit | ตรวจ project/env ไม่ reuse production และ domain ไม่ production-like |
+| Fly.io | ต้องการ release rollback และ region control | Fly app, staging DB access, secrets, health check config | `npm ci && npx prisma generate` | `npm run start` | `/api/health` | Fly secrets | Rollback to previous release | ตรวจ DB reachability, region, TLS, และไม่ใส่ live credentials |
+| VPS | ต้องการควบคุม OS/network/process เอง | Node.js 18.18+, process manager, reverse proxy, staging DB, secret store | `npm ci && npx prisma generate` | `npm run start` | `/api/health` | systemd/PM2/vault outside git | Switch release dir/commit and restart | ต้องดูแล patching, firewall, TLS, logs, backup, restart policy เอง |
 
 ## Recommended Architecture
 
@@ -74,6 +83,22 @@ Provider and external boundary keys:
 - `SLIP_OCR_MODE`
 - `SLIP_OCR_API_BASE_URL`
 - `SLIP_OCR_API_KEY`
+
+## Staging ENV Mapping
+
+All real values must be set only in the selected platform secret manager or an ignored local `.env` file. The repo may contain placeholders only.
+
+| Group | ENV keys | Required value style | Notes |
+| --- | --- | --- | --- |
+| App runtime | `NODE_ENV`, `APP_ENV`, `PORT` | `staging`, `staging`, platform port value | Do not use `production` for this staging preparation phase. |
+| Database staging/test only | `DATABASE_URL` | `<staging-database-url>` in secret manager | Must point to dedicated staging/test PostgreSQL, never production or production clone. |
+| Admin/session/auth | `JWT_SECRET`, `JWT_EXPIRES_IN`, `LOCAL_ADMIN_PASSWORD` | `<set-in-platform-secret-manager>`, `7d`, `<set-in-platform-secret-manager>` | Rotate if printed, pasted, committed, screenshotted, or shared outside secret manager. |
+| Provider/game mock/sandbox/disabled | `GAME_PROVIDER_MODE`, `GAME_PROVIDER_API_BASE_URL`, `GAME_PROVIDER_AGENT_CODE`, `GAME_PROVIDER_API_KEY`, `GAME_PROVIDER_SECRET` | `mock`, `sandbox`, or `disabled`; credentials as placeholders only | Keep credentials empty in mock mode; no live provider mode. |
+| Payment mock/sandbox/disabled | `PAYMENT_PROVIDER_MODE`, `PAYMENT_API_BASE_URL`, `PAYMENT_MERCHANT_ID`, `PAYMENT_API_KEY`, `PAYMENT_SECRET` | `mock`, `sandbox`, or `disabled`; credentials as placeholders only | No live payment rails, no real-money transfer. |
+| Bank/statement mock/sandbox/disabled | `BANK_STATEMENT_MODE`, `BANK_API_BASE_URL`, `BANK_API_KEY` | `mock`, `sandbox`, or `disabled`; credentials as placeholders only | No live bank rails or production statement feeds. |
+| SMS mock/sandbox/disabled | `SMS_PROVIDER_MODE`, `SMS_API_BASE_URL`, `SMS_API_KEY` | `mock`, `sandbox`, or `disabled`; credentials as placeholders only | No live SMS sending from staging preparation. |
+| Slip OCR mock/sandbox/disabled | `SLIP_OCR_MODE`, `SLIP_OCR_API_BASE_URL`, `SLIP_OCR_API_KEY` | `mock`, `sandbox`, or `disabled`; credentials as placeholders only | No live OCR provider connection in this phase. |
+| CORS/base URL | `CORS_ORIGIN`, `PUBLIC_API_BASE_URL`, `BASE_URL` for smoke runner | `<staging-origin>`, `<staging-domain>`, `https://<staging-domain>/api` | Keep staging/test only and never embed credentials in URLs. |
 
 Required staging values:
 
@@ -197,6 +222,25 @@ npm run smoke:admin-work-schedule
 ```
 
 Use the same `BASE_URL` only after confirming it is a staging/test URL. Do not paste real secrets into the shell transcript or smoke report.
+
+## Deploy Dry-Run Checklist
+
+This phase does not deploy. Use these commands only as a local or staging-readiness checklist:
+
+```bash
+npm run check
+npm run staging:preflight
+```
+
+After a real staging service exists, set a placeholder-form command in the operator runbook and run smoke:
+
+```powershell
+$env:BASE_URL = "https://<staging-domain>/api"
+npm run staging:preflight
+npm run smoke:staging
+```
+
+Do not run a platform deploy command from this phase. Do not paste actual secret values into command history, docs, logs, screenshots, or chat.
 
 ## Rollback Checklist
 

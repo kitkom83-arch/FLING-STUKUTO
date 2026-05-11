@@ -98,6 +98,7 @@ Staging deploy preparation and smoke boundaries are documented in:
 - `docs/STAGING_DEPLOY.md`
 - `docs/STAGING_SMOKE.md`
 - `docs/STAGING_PLATFORM_CHECKLIST.md`
+- `docs/STAGING_DEPLOY_DECISION.md`
 - `docs/STAGING_ROLLBACK.md`
 - `.env.staging.example`
 
@@ -114,7 +115,7 @@ Staging readiness checklist:
 - `npm run staging:preflight` must pass before deploy handoff. In CI it runs as a local-test dry run without real secrets; against hosted staging, set `BASE_URL` to the staging API.
 - `npm run smoke:staging` must pass before DB-backed staging smoke.
 
-No real staging deploy has been performed from this repository state. A platform, staging domain, staging PostgreSQL target, and secret-manager values must be selected and confirmed before deployment.
+This phase adds platform selection docs, grouped staging ENV mapping, and a deploy decision checklist. No real staging deploy has been performed from this repository state. A platform, staging domain, staging PostgreSQL target, and secret-manager values must still be selected and confirmed before deployment.
 
 Production migration and seed commands must not be run from a local checkout:
 
@@ -439,7 +440,7 @@ See `docs/ADMIN_UI_PERMISSIONS.md` for the admin UI permission contract.
 See `docs/ADMIN_ROLE_MANAGEMENT_UI.md` for the admin role-management UI contract.
 See `docs/DEMO_SEED.md` for the demo seed runbook and mock data list.
 See `docs/STAGING_UAT.md` for the staging/UAT boundary guard runbook and controlled-live checklist.
-See `docs/STAGING_DEPLOY.md`, `docs/STAGING_SMOKE.md`, `docs/STAGING_PLATFORM_CHECKLIST.md`, and `docs/STAGING_ROLLBACK.md` for staging deploy preparation, staging env placeholders, smoke boundaries, rollback, logs, and security checklists.
+See `docs/STAGING_DEPLOY.md`, `docs/STAGING_SMOKE.md`, `docs/STAGING_PLATFORM_CHECKLIST.md`, `docs/STAGING_DEPLOY_DECISION.md`, and `docs/STAGING_ROLLBACK.md` for staging deploy preparation, staging env placeholders, smoke boundaries, deploy decision, rollback, logs, and security checklists.
 
 ## Demo Accounts
 
