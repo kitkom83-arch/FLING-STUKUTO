@@ -195,7 +195,7 @@ function assertHealthContract(result) {
 }
 
 function assertAdminAuthContract(result) {
-  if (![400, 401, 403, 500].includes(result.status)) {
+  if (![400, 401, 403].includes(result.status)) {
     throw new Error(`admin auth negative returned ${result.status}, expected a safe error status.`);
   }
   if (!result.payload || result.payload.success !== false) {

@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const { z } = require("zod");
 const prisma = require("../config/prisma");
 const env = require("../config/env");
-const { success } = require("../utils/response");
+const { success, fail } = require("../utils/response");
 const { verifyPassword } = require("../utils/password");
 const memberService = require("../services/member.service");
 const walletService = require("../services/wallet.service");
@@ -53,10 +53,18 @@ function signAdminToken(admin) {
 async function login(req, res) {
   const data = loginSchema.parse(req.body);
   const admin = await prisma.admin.findUnique({ where: { username: data.username } });
-  if (!admin || !(await verifyPassword(data.password, admin.passwordHash))) {
-    const error = new Error("Invalid username or password");
-    error.statusCode = 400;
-    throw error;
+
+  let passwordMatches = false;
+  if (admin) {
+    try {
+      passwordMatches = await verifyPassword(data.password, admin.passwordHash);
+    } catch (_error) {
+      passwordMatches = false;
+    }
+  }
+
+  if (!admin || !passwordMatches) {
+    return fail(res, "Invalid username or password", 400);
   }
   if (admin.status !== "active") {
     const error = new Error("Admin is not active");
