@@ -15,7 +15,7 @@ const {
 } = require("../services/adminWorkSchedule.service");
 
 const loginSchema = z.object({
-  username: z.string().min(1),
+  username: z.string().trim().min(1),
   password: z.string().min(1),
 });
 const INVALID_ADMIN_LOGIN_MESSAGE = "Invalid admin credentials";
@@ -63,8 +63,15 @@ function invalidAdminLogin(res) {
   return fail(res, INVALID_ADMIN_LOGIN_MESSAGE, 400);
 }
 
+function parseAdminLoginBody(body) {
+  const parsed = loginSchema.safeParse(body);
+  return parsed.success ? parsed.data : null;
+}
+
 async function login(req, res) {
-  const data = loginSchema.parse(req.body);
+  const data = parseAdminLoginBody(req.body);
+  if (!data) return invalidAdminLogin(res);
+
   let admin = null;
   try {
     admin = await prisma.admin.findUnique({ where: { username: data.username } });
@@ -74,7 +81,7 @@ async function login(req, res) {
   }
 
   let passwordMatches = false;
-  if (admin) {
+  if (admin && typeof admin.passwordHash === "string" && admin.passwordHash) {
     try {
       passwordMatches = await verifyPassword(data.password, admin.passwordHash);
     } catch (_error) {
