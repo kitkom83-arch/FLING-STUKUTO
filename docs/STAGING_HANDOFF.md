@@ -21,6 +21,27 @@ Never put real passwords, tokens, API keys, provider secrets, callback secrets, 
 - Read-only reports/config visibility that is already covered by smoke scripts.
 - Mock/sandbox deposit, withdrawal, game, payment, bank statement, SMS, and Slip OCR flows only where the staging UI/API exposes them safely.
 
+## Manual Admin UI Test
+
+Use this checklist for manual staging clicks only. Do not use production accounts, do not turn on live provider/payment/bank/SMS/Slip OCR modes, and do not test real-money movement.
+
+- [ ] Open `https://fling-stukuto-staging-api.onrender.com/api/health`.
+- [ ] Confirm health returns HTTP `200`, `databaseConnected=true`, and external modes only as `mock`, `sandbox`, or `disabled`.
+- [ ] Log in with the approved staging demo admin. Get the password only from the secret manager or approved out-of-repo channel.
+- [ ] Open the admin work schedule UI.
+- [ ] Confirm the schedule list loads.
+- [ ] Open or edit a staging demo admin schedule only if the tester role is approved for that action.
+- [ ] Confirm schedule audit history uses masked/safe values and does not show passwords, tokens, database URLs, provider secrets, or authorization headers.
+- [ ] Open audit logs.
+- [ ] Confirm audit log rows, filters, empty states, and detail modal load without showing secrets.
+- [ ] Open security events.
+- [ ] Confirm security event rows, filters, summaries, empty states, and detail modal load without showing secrets.
+- [ ] Test invalid admin login with intentionally wrong credentials.
+- [ ] Confirm invalid login fails closed with a controlled auth failure and does not return `500`.
+- [ ] Test logout if the UI exposes a logout control.
+- [ ] Confirm protected admin pages require login again after logout or session expiry.
+- [ ] Check visible responses, browser network previews, copied logs, and screenshots for secret leaks before attaching anything to a bug report.
+
 ## What Testers Must Not Test
 
 - Production database, production clone, production read replica, or production customer data.
@@ -55,6 +76,27 @@ Include only non-secret evidence:
 
 Do not include passwords, tokens, authorization headers, cookies, database URLs, provider keys, callback secrets, full ENV pages, or raw request payloads that include sensitive values.
 
+## Bug Report Template
+
+```text
+Severity: blocker | major | minor
+Page/endpoint:
+Role used:
+Timestamp and timezone:
+
+Steps:
+1.
+2.
+3.
+
+Expected:
+
+Actual:
+
+Screenshot/log attached: yes/no
+Secret check: confirmed no password, token, authorization header, cookie, DATABASE_URL, API key, provider secret, callback secret, or ENV page is included
+```
+
 ## Safe Log Attachment
 
 Before attaching logs:
@@ -71,11 +113,14 @@ GO only when all items are true:
 
 - `/api/health` passes on Render staging.
 - Staging DB is connected and is a dedicated staging/test database.
+- Admin demo login passes.
 - `npm run staging:db:check` passes.
 - `npm run staging:db:seed` has passed when demo fixtures were required.
 - `npm run smoke:staging` passes.
 - `npm run smoke:staging-uat` passes.
+- No `500` appears in the main manual admin UI flow.
 - Invalid admin login fails closed without `500` and without secrets.
+- No response, screenshot, log, ticket, commit, or chat contains a secret-shaped value.
 - All provider/payment/bank/SMS/Slip OCR modes are `mock`, `sandbox`, or `disabled`.
 - Demo credentials were shared only through a secret manager or other approved out-of-repo channel.
 - Any credential that was exposed has been rotated before handoff.
@@ -83,7 +128,10 @@ GO only when all items are true:
 NO-GO if any item is true:
 
 - Any production database or production customer data is in scope.
+- Health fails or the staging DB is disconnected.
+- Admin demo login fails.
 - Any external mode is `live`.
 - Any health, DB check, seed, smoke, or UAT smoke check fails.
+- Any response contains a password, token, authorization header, cookie, database URL, API key, provider secret, callback secret, or other secret-shaped value.
 - Any secret appears in docs, logs, screenshots, tickets, commits, chat, or smoke output.
 - Testers need real money, real provider callbacks, real bank rails, SMS live sending, or live Slip OCR to complete the requested test.
