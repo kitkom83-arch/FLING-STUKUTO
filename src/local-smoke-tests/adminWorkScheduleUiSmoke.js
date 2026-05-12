@@ -279,6 +279,7 @@ async function assertStaticUi(baseUrl) {
   const webBase = webBaseFromApi(baseUrl);
   const html = await fetchText(`${webBase}/admin/work-schedules/`, "admin work schedule page");
   for (const marker of [
+    "STUDIOKUTO",
     "Admin Work Schedule",
     "Admin schedule list",
     "Emergency override",
@@ -287,8 +288,11 @@ async function assertStaticUi(baseUrl) {
   ]) {
     if (!html.includes(marker)) throw new Error(`Static UI missing marker: ${marker}`);
   }
+  const legacyBranding = ["PG77", "Admin"].join(" ");
+  if (html.includes(legacyBranding)) throw new Error("Static UI must not show legacy admin branding.");
   const js = await fetchText(`${webBase}/admin/work-schedules/app.js`, "admin work schedule app.js");
   for (const endpoint of [
+    "x-site-code",
     "/admin/permissions/me",
     "/admin/work-schedules",
     "/override",

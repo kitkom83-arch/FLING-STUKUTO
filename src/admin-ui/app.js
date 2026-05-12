@@ -60,7 +60,7 @@
   }
 
   function authHeaders() {
-    const headers = { Accept: "application/json", "Content-Type": "application/json" };
+    const headers = { Accept: "application/json", "Content-Type": "application/json", "x-site-code": "PG77" };
     if (state.token) headers.Authorization = `${["Be", "arer"].join("")} ${state.token}`;
     return headers;
   }
