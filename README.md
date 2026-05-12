@@ -109,6 +109,7 @@ Use `.env.staging.example` as the placeholder template for staging configuration
 Staging deploy preparation and smoke boundaries are documented in:
 
 - `docs/STAGING_DEPLOY.md`
+- `docs/STAGING_HANDOFF.md`
 - `docs/STAGING_RENDER.md`
 - `docs/STAGING_SMOKE.md`
 - `docs/STAGING_PLATFORM_CHECKLIST.md`
@@ -129,7 +130,18 @@ Staging readiness checklist:
 - `npm run staging:preflight` must pass before deploy handoff. In CI it runs as a local-test dry run without real secrets; against hosted staging, set `BASE_URL` to the staging API.
 - `npm run smoke:staging` must pass before DB-backed staging smoke.
 
-This phase prepares Render staging documentation, grouped staging ENV mapping, and a deploy decision checklist. No real staging deploy has been performed from this repository state. A Render account/service, staging domain, staging PostgreSQL target, and Render Environment/Secrets values must still be selected and confirmed before deployment.
+Current staging status:
+
+- Render staging deploy has passed.
+- `GET /api/health` passes on staging.
+- Staging database connectivity is confirmed with `databaseConnected=true`.
+- `npm run staging:db:check` and `npm run staging:db:seed` have passed.
+- `npm run smoke:staging` and `npm run smoke:staging-uat` have passed.
+- Invalid admin login fails closed without returning `500`.
+- External modes remain mock/sandbox/disabled.
+- Staging is ready for UAT handoff, but it is not production and must not use production DB, live provider/payment/bank/SMS/Slip OCR modes, or real money.
+
+Demo credentials must be stored in Render Environment/Secrets, a password manager, or another approved secret channel outside the repository. If any credential was printed, committed, screenshotted, pasted into chat, or otherwise exposed, rotate it before handoff. Do not screenshot ENV pages or logs that show raw secret values.
 
 Production migration and seed commands must not be run from a local checkout:
 
@@ -458,6 +470,7 @@ See `docs/ADMIN_UI_PERMISSIONS.md` for the admin UI permission contract.
 See `docs/ADMIN_ROLE_MANAGEMENT_UI.md` for the admin role-management UI contract.
 See `docs/DEMO_SEED.md` for the demo seed runbook and mock data list.
 See `docs/STAGING_UAT.md` for the staging/UAT boundary guard runbook and controlled-live checklist.
+See `docs/STAGING_HANDOFF.md` for the tester handoff checklist, bug-reporting rules, safe log attachment rules, and GO/NO-GO gates.
 See `docs/STAGING_DEPLOY.md`, `docs/STAGING_SMOKE.md`, `docs/STAGING_PLATFORM_CHECKLIST.md`, `docs/STAGING_DEPLOY_DECISION.md`, and `docs/STAGING_ROLLBACK.md` for staging deploy preparation, staging env placeholders, smoke boundaries, deploy decision, rollback, logs, and security checklists.
 
 ## Demo Accounts

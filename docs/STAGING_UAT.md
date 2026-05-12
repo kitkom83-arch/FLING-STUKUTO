@@ -61,6 +61,30 @@ Never paste real tokens, passwords, API keys, provider secrets, callback secrets
 - Confirm `npm run staging:db:check` passes with required schema and demo fixtures.
 - Confirm `npm run smoke:staging-uat` passes against the Render staging API.
 
+## UAT Handoff Checklist
+
+Use this checklist when handing staging to testers. It authorizes staging UAT only, with no production database, no live provider/payment/bank/SMS/Slip OCR mode, and no real-money flow.
+
+- Staging URL: `https://fling-stukuto-staging-api.onrender.com`.
+- API base URL for smoke commands: `https://fling-stukuto-staging-api.onrender.com/api`.
+- Health check path: `GET /api/health`.
+- Health check must show `success: true`, `data.ok: true`, `data.databaseConnected: true`, and external modes only as `mock`, `sandbox`, or `disabled`.
+- Smoke commands before handoff:
+  - `npm run check`
+  - `npm run staging:preflight`
+  - `npm run staging:db:check`
+  - `npm run smoke:staging`
+  - `npm run smoke:staging-uat`
+- Login test scope: staging demo admin/member only, with credentials supplied through the secret manager or another approved out-of-repo channel.
+- Safe negative login test: invalid admin login must return a controlled JSON failure such as `401`/auth failure and must not return `500`, token values, password hints, stack traces, or secret-shaped data.
+- Admin schedule UI scope: testers may verify schedule list/read/update behavior, emergency override behavior, schedule-blocked login behavior, and masked audit history for staging demo admins only.
+- Audit/security UI scope: testers may verify audit log filters, security event filters, summary counts, empty states, masked IP values, and safe detail modals only.
+- Rollback condition: stop handoff and roll back or disable staging access if health fails, DB disconnects, smoke fails, an invalid login returns `500`, any secret-shaped value appears, any external mode is `live`, or any real-money/provider/bank path is reachable.
+- NO live money/provider mode: game provider, payment, bank statement, SMS, and Slip OCR must stay `mock`, `sandbox`, or `disabled`; live mode is not approved for this handoff.
+- Demo credentials must live in Render Environment/Secrets, a password manager, or another approved secret manager only. Do not write them into docs, logs, commits, screenshots, issue trackers, or chat.
+- If any credential was exposed outside the approved secret channel, rotate it before tester handoff.
+- Do not screenshot Render ENV, database settings, shell output, request headers, or any page that shows raw secret values.
+
 ## Staging DB Schema and Demo Seed Verification
 
 This phase is for UAT readiness only. It does not authorize production DB access, live provider mode, live bank/payment rails, SMS sending, Slip OCR live calls, or real-money transactions.

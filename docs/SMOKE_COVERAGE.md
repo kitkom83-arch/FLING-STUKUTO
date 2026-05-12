@@ -6,6 +6,23 @@ This smoke suite is for local and staging/test safety checks of the PG77-real-co
 
 The smoke suite does not send real money, does not connect real provider/payment/bank rails, and does not use production credentials. Game, payment, and bank boundaries are mock, sandbox, or manual local approval only. SMS and Slip OCR remain mock placeholders.
 
+## Current Staging UAT Result
+
+Latest staging handoff status:
+
+- Render staging deploy: PASS.
+- `/api/health`: PASS.
+- Staging DB connected: PASS with `databaseConnected=true`.
+- `npm run staging:db:check`: PASS.
+- `npm run staging:db:seed`: PASS.
+- `npm run smoke:staging`: PASS.
+- `npm run smoke:staging-uat`: PASS.
+- Invalid admin login negative test: PASS, failed closed without returning `500`.
+- External modes: mock/sandbox/disabled only.
+- Production DB/live money/live provider/payment/bank/SMS/Slip OCR: NOT enabled.
+
+Do not paste raw command output if it contains secrets. Demo credentials must stay in the secret manager or an approved out-of-repo channel. Rotate any credential that was exposed before handoff, and do not screenshot ENV pages that show values.
+
 ## 2. Smoke Scripts Summary
 
 | Script | NPM command | Requires local DB? | Requires backend running? | Requires LOCAL_ADMIN_PASSWORD? | Runs in GitHub Actions? | Purpose |
