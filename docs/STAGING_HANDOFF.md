@@ -30,8 +30,17 @@ Use this checklist for manual staging clicks only. Do not use production account
 - [ ] Log in with the approved staging demo admin. Get the password only from the secret manager or approved out-of-repo channel.
 - [ ] Open the admin work schedule UI.
 - [ ] Confirm the schedule list loads.
+- [ ] Confirm the UI branding shows `STUDIOKUTO` and `SK`, not legacy admin branding.
+- [ ] Confirm token clear removes the credential from the input and session state before entering a new credential.
+- [ ] Open a schedule row with `Detail` and confirm the read-only modal shows username, role, status, working days, time, emergency override status, last updated, and updated by with `-` for missing fields.
 - [ ] Open or edit a staging demo admin schedule only if the tester role is approved for that action.
+- [ ] Confirm schedule edit requires a reason, validates enabled schedules for working days and start/end time, shows `Confirm schedule update`, saves, refreshes the list, and shows that reason in audit history.
+- [ ] Confirm enable/disable opens a reason-required confirm modal, writes a schedule audit event with the typed reason, shows the expected success toast, and refreshes the list.
+- [ ] Confirm emergency override requires a reason and an expiration when enabled, rejects overrides without expiration, shows a confirm step, refreshes the list, and shows the reason in audit history.
+- [ ] Confirm the `Audit` button scrolls to audit history, filters/loads the selected admin, and handles `0 events` without a blank page.
+- [ ] Confirm Edit, Enable, Disable, and Override reasons do not disappear after refresh or per-admin audit reload.
 - [ ] Confirm schedule audit history uses masked/safe values and does not show passwords, tokens, database URLs, provider secrets, or authorization headers.
+- [ ] Confirm visible UI, browser network previews, copied logs, and screenshots do not expose passwords, tokens, secrets, raw authorization headers, or database URLs.
 - [ ] Open audit logs.
 - [ ] Confirm audit log rows, filters, empty states, and detail modal load without showing secrets.
 - [ ] Open security events.

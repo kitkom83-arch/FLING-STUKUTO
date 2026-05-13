@@ -322,6 +322,7 @@ async function seedAuditEvents(baseUrl, ownerAuth, targetAdmin) {
       endTime: "23:01",
       forceLogoutWhenScheduleEnds: true,
       idleTimeoutMinutes: 60,
+      reason: "local audit security schedule update",
     },
   });
 
@@ -367,6 +368,9 @@ async function assertAuditEndpoints(baseUrl, ownerAuth, ownerId, targetId) {
   assertRowsShape("audit logs list", list.data);
   for (const action of ["admin.login.success", "admin.role.update", "admin.schedule.update", "admin.schedule.override_enable"]) {
     if (!list.data.rows.some((row) => row.action === action)) throw new Error(`Audit list missing ${action}.`);
+  }
+  if (!list.data.rows.some((row) => row.action === "admin.schedule.update" && row.metadata && row.metadata.reason === "local audit security schedule update")) {
+    throw new Error("Audit list missing schedule update reason metadata.");
   }
   if (!list.data.rows.some((row) => row.ipAddress && !/(?:\d{1,3}\.){3}\d{1,3}/.test(row.ipAddress))) {
     throw new Error("Audit list did not include a masked IP value.");
@@ -454,6 +458,7 @@ async function cleanup(baseUrl, ownerAuth, targetId) {
       endTime: "18:00",
       forceLogoutWhenScheduleEnds: true,
       idleTimeoutMinutes: 60,
+      reason: "local audit security cleanup schedule",
     },
   });
   await apiRequest(baseUrl, `/admin/admins/${encodeURIComponent(targetId)}/role`, {

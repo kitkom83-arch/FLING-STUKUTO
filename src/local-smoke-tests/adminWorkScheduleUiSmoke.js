@@ -221,6 +221,23 @@ async function fetchText(url, label) {
   return text;
 }
 
+function renderedText(html) {
+  return String(html || "")
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function assertNoUnsafeVisibleText(html) {
+  const allowedPhrases = ["Admin token", "Use token"];
+  let visible = renderedText(html);
+  for (const phrase of allowedPhrases) visible = visible.replaceAll(phrase, "");
+  const unsafeMatch = visible.match(/\b(password|token|secret)\b/i);
+  if (unsafeMatch) throw new Error(`Static UI visible text contains unsafe sensitive marker: ${unsafeMatch[0]}.`);
+}
+
 async function loginAdmin(baseUrl, username) {
   const login = await apiRequest(baseUrl, "/admin/auth/login", {
     method: "POST",
@@ -280,19 +297,26 @@ async function assertStaticUi(baseUrl) {
   const html = await fetchText(`${webBase}/admin/work-schedules/`, "admin work schedule page");
   for (const marker of [
     "STUDIOKUTO",
+    "brand-mark\">SK",
     "Admin Work Schedule",
     "Admin schedule list",
+    "Schedule detail",
+    "Edit schedule",
+    "Confirm schedule change",
+    "Confirm action",
     "Emergency override",
     "Audit history",
     "Permission status",
   ]) {
     if (!html.includes(marker)) throw new Error(`Static UI missing marker: ${marker}`);
   }
+  assertNoUnsafeVisibleText(html);
   const legacyBranding = ["PG77", "Admin"].join(" ");
   if (html.includes(legacyBranding)) throw new Error("Static UI must not show legacy admin branding.");
   const js = await fetchText(`${webBase}/admin/work-schedules/app.js`, "admin work schedule app.js");
   for (const endpoint of [
     "x-site-code",
+    "SITE_CODE = \"PG77\"",
     "/admin/permissions/me",
     "/admin/work-schedules",
     "/override",
@@ -300,8 +324,30 @@ async function assertStaticUi(baseUrl) {
   ]) {
     if (!js.includes(endpoint)) throw new Error(`UI script missing endpoint: ${endpoint}`);
   }
+  for (const marker of [
+    "function sanitizeToken",
+    "replace(/[\\x00-\\x1F\\x7F]/g",
+    "openDetail(row)",
+    "openSchedule(row)",
+    "openToggle(row)",
+    "openOverride(row)",
+    "openAuditForAdmin(row)",
+    "Confirm schedule update",
+    "Reason is required",
+    "reason: els.reason.value.trim()",
+    "reason: els.toggleReason.value.trim()",
+    "sessionStorage.removeItem(\"pg77_admin_token\")",
+    "els.token.value = \"\"",
+  ]) {
+    if (!js.includes(marker)) throw new Error(`UI script missing safety/action marker: ${marker}`);
+  }
+  if (js.includes("sessionStorage.setItem") || js.includes("localStorage.setItem")) {
+    throw new Error("UI script must not persist admin credential values in web storage.");
+  }
   const css = await fetchText(`${webBase}/admin/work-schedules/styles.css`, "admin work schedule styles.css");
-  if (!css.includes(".table-section") || !css.includes(".badge")) throw new Error("UI stylesheet missing table or badge styles.");
+  if (!css.includes(".table-section") || !css.includes(".badge") || !css.includes(".detail-grid")) {
+    throw new Error("UI stylesheet missing table, badge, or detail styles.");
+  }
   console.log("Static UI route: PASS");
 }
 
@@ -333,6 +379,7 @@ async function assertOwnerScheduleFlow(baseUrl, ownerAuth, targetId) {
       endTime: "06:00",
       forceLogoutWhenScheduleEnds: true,
       idleTimeoutMinutes: 60,
+      reason: "local UI smoke enable schedule",
     },
   });
   if (!enable.data.schedule.enabled) throw new Error("Schedule enable did not persist.");
@@ -367,6 +414,7 @@ async function assertOwnerScheduleFlow(baseUrl, ownerAuth, targetId) {
       endTime: "18:00",
       forceLogoutWhenScheduleEnds: true,
       idleTimeoutMinutes: 60,
+      reason: "local UI smoke disable schedule",
     },
   });
   if (disable.data.schedule.enabled) throw new Error("Schedule disable did not persist.");
@@ -381,6 +429,11 @@ async function assertAuditHistory(baseUrl, ownerAuth, targetId) {
   if (!Array.isArray(audit.data)) throw new Error("Audit history must be an array.");
   for (const action of ["admin.schedule.update", "admin.schedule.enable", "admin.schedule.disable", "admin.schedule.override_enable"]) {
     if (!audit.data.some((row) => row.action === action)) throw new Error(`Audit history missing ${action}.`);
+  }
+  for (const reason of ["local UI smoke enable schedule", "local UI smoke disable schedule", "local UI smoke override"]) {
+    if (!audit.data.some((row) => row.metadata && row.metadata.reason === reason)) {
+      throw new Error(`Audit history missing reason: ${reason}.`);
+    }
   }
   const serialized = JSON.stringify(audit.data);
   if (/userAgent/i.test(serialized)) throw new Error("Audit history exposed raw user-agent key.");

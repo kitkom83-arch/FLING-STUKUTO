@@ -32,7 +32,7 @@
           <div class="session-panel">
             <label for="admin-token">Admin token</label>
             <div class="token-row">
-              <input id="admin-token" type="password" autocomplete="off" placeholder="Paste token locally" />
+              <input id="admin-token" type="password" autocomplete="off" placeholder="Paste credential locally" />
               <button id="save-token" type="button">Use token</button>
               <button id="clear-token" type="button" class="secondary">Clear</button>
             </div>
@@ -114,8 +114,13 @@
               <label for="audit-date">Date</label>
               <input id="audit-date" type="date" />
             </div>
+            <div class="field">
+              <label for="audit-target">Target admin</label>
+              <input id="audit-target" type="text" readonly placeholder="All loaded admins" />
+            </div>
             <button id="load-audit" type="button">Load audit</button>
           </div>
+          <div id="audit-empty" class="empty-state hidden">No events.</div>
           <div class="table-scroll">
             <table>
               <thead>
@@ -124,6 +129,7 @@
                   <th>Action</th>
                   <th>Actor</th>
                   <th>Target</th>
+                  <th>Reason</th>
                   <th>IP</th>
                   <th>Summary</th>
                 </tr>
@@ -134,6 +140,19 @@
         </section>
       </section>
     </main>
+
+    <dialog id="detail-modal">
+      <div class="modal-card">
+        <header>
+          <h2>Schedule detail</h2>
+          <button type="button" class="icon-button" data-close-modal aria-label="Close">x</button>
+        </header>
+        <dl class="detail-grid" id="detail-grid"></dl>
+        <footer>
+          <button type="button" class="secondary" data-close-modal>Close</button>
+        </footer>
+      </div>
+    </dialog>
 
     <dialog id="schedule-modal">
       <form method="dialog" class="modal-card" id="schedule-form">
@@ -153,11 +172,11 @@
         <div class="form-grid">
           <div class="field">
             <label for="start-time">Start time</label>
-            <input id="start-time" type="time" required />
+            <input id="start-time" type="time" />
           </div>
           <div class="field">
             <label for="end-time">End time</label>
-            <input id="end-time" type="time" required />
+            <input id="end-time" type="time" />
           </div>
           <div class="field">
             <label for="timezone">Timezone</label>
@@ -172,6 +191,26 @@
         <footer>
           <button type="button" class="secondary" data-close-modal>Cancel</button>
           <button id="save-schedule" type="submit">Save schedule</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog id="toggle-modal">
+      <form method="dialog" class="modal-card" id="toggle-form">
+        <header>
+          <h2 id="toggle-title">Confirm schedule change</h2>
+          <button type="button" class="icon-button" data-close-modal aria-label="Close">x</button>
+        </header>
+        <input type="hidden" id="toggle-admin-id" />
+        <input type="hidden" id="toggle-next-enabled" />
+        <p id="toggle-copy" class="note">Confirm this schedule status change.</p>
+        <div class="field">
+          <label for="toggle-reason">Reason</label>
+          <textarea id="toggle-reason" rows="3" placeholder="Required for audit context"></textarea>
+        </div>
+        <footer>
+          <button type="button" class="secondary" data-close-modal>Cancel</button>
+          <button id="confirm-toggle" type="submit">Confirm</button>
         </footer>
       </form>
     </dialog>
@@ -198,6 +237,20 @@
         <footer>
           <button type="button" class="secondary" data-close-modal>Cancel</button>
           <button id="save-override" type="submit">Save override</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog id="confirm-modal">
+      <form method="dialog" class="modal-card" id="confirm-form">
+        <header>
+          <h2 id="confirm-title">Confirm action</h2>
+          <button type="button" class="icon-button" value="cancel" data-close-modal aria-label="Close">x</button>
+        </header>
+        <p id="confirm-message">Confirm action</p>
+        <footer>
+          <button type="button" class="secondary" id="confirm-cancel">Cancel</button>
+          <button id="confirm-ok" type="submit">Confirm</button>
         </footer>
       </form>
     </dialog>

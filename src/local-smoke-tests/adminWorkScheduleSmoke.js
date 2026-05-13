@@ -468,7 +468,10 @@ async function updateSchedule(baseUrl, ownerAuth, targetId, body, label) {
     method: "PATCH",
     authValue: ownerAuth,
     label,
-    body,
+    body: {
+      ...body,
+      reason: body && body.reason ? body.reason : `${label} reason`,
+    },
   });
   if (!result.data || !result.data.schedule) throw new Error(`${label} did not return schedule data.`);
   return result.data.schedule;
@@ -509,7 +512,15 @@ async function runOwnerAccessChecks(baseUrl, ownerAuth, targetId) {
     authValue: ownerAuth,
     status: 400,
     label: "owner invalid schedule time",
-    body: { startTime: "25:00" },
+    body: { startTime: "25:00", reason: "local smoke invalid schedule time" },
+  });
+
+  await expectStatus(baseUrl, `/admin/work-schedules/${encodeURIComponent(targetId)}`, {
+    method: "PATCH",
+    authValue: ownerAuth,
+    status: 400,
+    label: "owner missing schedule reason",
+    body: { ...allowingSchedule(), reason: "   " },
   });
 
   const override = await apiRequest(baseUrl, `/admin/work-schedules/${encodeURIComponent(targetId)}/override`, {
@@ -522,6 +533,14 @@ async function runOwnerAccessChecks(baseUrl, ownerAuth, targetId) {
     },
   });
   if (!override.data.schedule.emergencyOverride.enabled) throw new Error("Owner override enable did not activate override.");
+
+  await expectStatus(baseUrl, `/admin/work-schedules/${encodeURIComponent(targetId)}/override`, {
+    method: "DELETE",
+    authValue: ownerAuth,
+    status: 400,
+    label: "owner missing override disable reason",
+    body: { reason: "   " },
+  });
 
   const disabled = await apiRequest(baseUrl, `/admin/work-schedules/${encodeURIComponent(targetId)}/override`, {
     method: "DELETE",
@@ -545,13 +564,30 @@ async function assertAuditLog(baseUrl, ownerAuth, action, targetId) {
   }
 }
 
+async function assertAuditReason(baseUrl, ownerAuth, targetId, action, reason) {
+  const logs = await apiRequest(baseUrl, `/admin/work-schedules/${encodeURIComponent(targetId)}/audit-logs?action=${encodeURIComponent(action)}&limit=20`, {
+    authValue: ownerAuth,
+    label: `${action} audit reason`,
+  });
+  requireArray(logs.data, `${action} reason logs`);
+  const matched = logs.data.find(
+    (row) => row.action === action && row.targetId === targetId && row.metadata && row.metadata.reason === reason
+  );
+  if (!matched) throw new Error(`${action} audit log did not include the expected reason.`);
+  if (!matched.metadata.targetAdminId || !matched.metadata.targetUsername) {
+    throw new Error(`${action} audit log did not include target admin metadata.`);
+  }
+}
+
 async function runLoginScheduleChecks(baseUrl, ownerAuth, targetAdmin) {
-  await updateSchedule(baseUrl, ownerAuth, targetAdmin.id, blockingSchedule(), "target blocking schedule");
+  await updateSchedule(baseUrl, ownerAuth, targetAdmin.id, { ...blockingSchedule(), reason: "local smoke blocking schedule reason" }, "target blocking schedule");
+  await assertAuditReason(baseUrl, ownerAuth, targetAdmin.id, "admin.schedule.update", "local smoke blocking schedule reason");
+  await assertAuditReason(baseUrl, ownerAuth, targetAdmin.id, "admin.schedule.enable", "local smoke blocking schedule reason");
   await loginAdmin(baseUrl, targetAdmin.username, { expectBlocked: true });
   await assertAuditLog(baseUrl, ownerAuth, "admin.login.blocked_outside_schedule", targetAdmin.id);
   console.log("Login outside schedule block: PASS");
 
-  await updateSchedule(baseUrl, ownerAuth, targetAdmin.id, allowingSchedule(), "target allowing schedule");
+  await updateSchedule(baseUrl, ownerAuth, targetAdmin.id, { ...allowingSchedule(), reason: "local smoke allowing schedule reason" }, "target allowing schedule");
   const targetAuth = await loginAdmin(baseUrl, targetAdmin.username);
   if (!targetAuth) throw new Error("Target login inside schedule did not return an auth value.");
   console.log("Login inside schedule allow: PASS");
@@ -568,6 +604,7 @@ async function runEmergencyOverrideChecks(baseUrl, ownerAuth, targetAdmin) {
       reason: "local smoke emergency access",
     },
   });
+  await assertAuditReason(baseUrl, ownerAuth, targetAdmin.id, "admin.schedule.override_enable", "local smoke emergency access");
 
   await loginAdmin(baseUrl, targetAdmin.username);
   await apiRequest(baseUrl, `/admin/work-schedules/${encodeURIComponent(targetAdmin.id)}/override`, {
@@ -576,6 +613,7 @@ async function runEmergencyOverrideChecks(baseUrl, ownerAuth, targetAdmin) {
     label: "disable active emergency override",
     body: { reason: "local smoke emergency done" },
   });
+  await assertAuditReason(baseUrl, ownerAuth, targetAdmin.id, "admin.schedule.override_disable", "local smoke emergency done");
   await loginAdmin(baseUrl, targetAdmin.username, { expectBlocked: true });
   console.log("Emergency override: PASS");
 }
@@ -655,6 +693,7 @@ async function main() {
     await runExpiredOverrideChecks(baseUrl, ownerAuth, admins.target);
     runOvernightShiftChecks();
     await cleanupSchedule(baseUrl, ownerAuth, admins.target.id);
+    await assertAuditReason(baseUrl, ownerAuth, admins.target.id, "admin.schedule.disable", "target cleanup schedule reason");
 
     for (const action of [
       "admin.schedule.update",

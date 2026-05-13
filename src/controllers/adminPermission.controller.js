@@ -21,6 +21,8 @@ const assignRoleSchema = z.object({
   permissions: z.array(z.string()).optional().nullable(),
 });
 
+const reasonSchema = z.string().trim().min(1).max(500);
+
 const workScheduleSchema = z.object({
   enabled: z.boolean().optional(),
   timezone: z.string().min(1).optional(),
@@ -29,6 +31,7 @@ const workScheduleSchema = z.object({
   endTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/).optional(),
   forceLogoutWhenScheduleEnds: z.boolean().optional(),
   idleTimeoutMinutes: z.number().int().min(1).max(1440).optional(),
+  reason: reasonSchema,
   emergencyOverride: z
     .object({
       enabled: z.boolean().optional(),
@@ -40,11 +43,11 @@ const workScheduleSchema = z.object({
 
 const overrideSchema = z.object({
   expiresAt: z.string().datetime(),
-  reason: z.string().min(1).max(500),
+  reason: reasonSchema,
 });
 
 const disableOverrideSchema = z.object({
-  reason: z.string().max(500).optional(),
+  reason: reasonSchema,
 });
 
 async function listRoles(req, res) {
@@ -121,7 +124,7 @@ async function deleteWorkScheduleOverride(req, res) {
   const data = disableOverrideSchema.parse(req.body || {});
   return success(
     res,
-    await disableEmergencyOverride(req.admin, targetAdminId(req), data.reason || null, {
+    await disableEmergencyOverride(req.admin, targetAdminId(req), data.reason, {
       siteId: req.siteId,
       req,
     })

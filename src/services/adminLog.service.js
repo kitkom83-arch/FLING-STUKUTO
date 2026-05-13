@@ -298,6 +298,7 @@ async function logAdminAction({
   siteId = null,
   before = null,
   after = null,
+  metadata = null,
   req = null,
 }) {
   if (!admin || !admin.id) {
@@ -313,6 +314,11 @@ async function logAdminAction({
 
   const cleanedBefore = before ? sanitizeAdminLogData(before) : null;
   const cleanedAfter = after ? sanitizeAdminLogData(after) : null;
+  const cleanedMetadata = sanitizeAdminLogData({
+    ...(metadata && typeof metadata === "object" && !Array.isArray(metadata) ? metadata : {}),
+    before: cleanedBefore,
+    after: cleanedAfter,
+  });
   const resolvedSiteId = siteId || (req && req.siteId) || (before && before.siteId) || (after && after.siteId);
   if (!resolvedSiteId) {
     const error = new Error("site_id is required for admin_log");
@@ -326,10 +332,7 @@ async function logAdminAction({
       action,
       targetType,
       targetId,
-      metadata: {
-        before: cleanedBefore,
-        after: cleanedAfter,
-      },
+      metadata: cleanedMetadata,
       beforeJson: cleanedBefore,
       afterJson: cleanedAfter,
       ipAddress: req ? req.ip : null,

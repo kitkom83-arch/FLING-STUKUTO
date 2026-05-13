@@ -1,5 +1,5 @@
 const prisma = require("../config/prisma");
-const { logAdminAction } = require("./adminLog.service");
+const { logAdminAction, sanitizeAdminLogData } = require("./adminLog.service");
 const { isOwnerRole } = require("./adminPermission.service");
 const { cleanSearch, pagination } = require("../utils/query");
 
@@ -26,6 +26,12 @@ const DEFAULT_SCHEDULE = {
     reason: null,
   },
 };
+const SENSITIVE_REASON_PATTERNS = [
+  /postgres(?:ql)?:\/\/[^\s"']+/gi,
+  /\b[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\b/g,
+  new RegExp(`${["Be", "arer"].join("")}\\s+[^\\s"']+`, "gi"),
+  /\b(password|token|secret|authorization)\b/gi,
+];
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -36,6 +42,15 @@ function error(message, statusCode = 400, details = null) {
   err.statusCode = statusCode;
   if (details) err.details = details;
   return err;
+}
+
+function normalizeReason(reason) {
+  let value = String(reason || "").trim();
+  if (!value) throw error("reason is required", 400);
+  for (const pattern of SENSITIVE_REASON_PATTERNS) {
+    value = value.replace(pattern, "[REDACTED]");
+  }
+  return value.slice(0, 500);
 }
 
 function parseTimeToMinutes(value, fieldName = "time") {
@@ -293,9 +308,9 @@ async function listAdminWorkScheduleAuditLogs({ targetAdminId, siteId, query = {
     action: row.action,
     targetType: row.targetType,
     targetId: row.targetId,
-    metadata: row.metadata,
-    beforeJson: row.beforeJson,
-    afterJson: row.afterJson,
+    metadata: sanitizeAdminLogData(row.metadata),
+    beforeJson: sanitizeAdminLogData(row.beforeJson),
+    afterJson: sanitizeAdminLogData(row.afterJson),
     ipAddress: maskIp(row.ipAddress),
     createdAt: row.createdAt,
   }));
@@ -314,7 +329,18 @@ function safeActor(actorAdmin) {
   return actorAdmin && actorAdmin.id ? actorAdmin : null;
 }
 
-async function writeSchedule({ actorAdmin, targetAdminId, siteId, nextSchedule, action, beforeSchedule, req, tx = prisma }) {
+async function writeSchedule({
+  actorAdmin,
+  targetAdmin,
+  targetAdminId,
+  siteId,
+  nextSchedule,
+  action,
+  beforeSchedule,
+  reason,
+  req,
+  tx = prisma,
+}) {
   const access = await getScheduleAccess(targetAdminId, siteId, tx);
   if (!access) throw error("Admin site access not found", 404);
   const nextPermissions = nextSchedule
@@ -333,8 +359,21 @@ async function writeSchedule({ actorAdmin, targetAdminId, siteId, nextSchedule, 
       action,
       targetType: "admin",
       targetId: targetAdminId,
-      before: { targetAdminId, schedule: summarizeSchedule(beforeSchedule) },
-      after: { targetAdminId, schedule: summarizeSchedule(nextSchedule) },
+      before: {
+        targetAdminId,
+        targetUsername: targetAdmin && targetAdmin.username ? targetAdmin.username : null,
+        schedule: summarizeSchedule(beforeSchedule),
+      },
+      after: {
+        targetAdminId,
+        targetUsername: targetAdmin && targetAdmin.username ? targetAdmin.username : null,
+        schedule: summarizeSchedule(nextSchedule),
+      },
+      metadata: {
+        reason,
+        targetAdminId,
+        targetUsername: targetAdmin && targetAdmin.username ? targetAdmin.username : null,
+      },
       req,
       siteId,
     });
@@ -346,18 +385,22 @@ async function writeSchedule({ actorAdmin, targetAdminId, siteId, nextSchedule, 
 async function updateAdminWorkSchedule(actorAdmin, targetAdminId, payload, options = {}) {
   const siteId = options.siteId;
   if (!siteId) throw error("siteId is required", 500);
+  const { reason: rawReason, ...schedulePayload } = payload || {};
+  const reason = normalizeReason(rawReason);
   const targetAdmin = await findTargetAdmin(targetAdminId);
   const before = await getAdminWorkSchedule(targetAdminId, siteId);
-  const nextSchedule = normalizeSchedule({ ...before.schedule, ...(payload || {}) });
+  const nextSchedule = normalizeSchedule({ ...before.schedule, ...schedulePayload });
 
   await prisma.$transaction(async (tx) => {
     await writeSchedule({
       actorAdmin,
+      targetAdmin,
       targetAdminId,
       siteId,
       nextSchedule,
       action: "admin.schedule.update",
       beforeSchedule: before.schedule,
+      reason,
       req: options.req,
       tx,
     });
@@ -369,8 +412,21 @@ async function updateAdminWorkSchedule(actorAdmin, targetAdminId, payload, optio
         action: nextSchedule.enabled ? "admin.schedule.enable" : "admin.schedule.disable",
         targetType: "admin",
         targetId: targetAdminId,
-        before: { targetAdminId, schedule: summarizeSchedule(before.schedule) },
-        after: { targetAdminId, schedule: summarizeSchedule(nextSchedule) },
+        before: {
+          targetAdminId,
+          targetUsername: targetAdmin.username,
+          schedule: summarizeSchedule(before.schedule),
+        },
+        after: {
+          targetAdminId,
+          targetUsername: targetAdmin.username,
+          schedule: summarizeSchedule(nextSchedule),
+        },
+        metadata: {
+          reason,
+          targetAdminId,
+          targetUsername: targetAdmin.username,
+        },
         req: options.req,
         siteId,
       });
@@ -390,7 +446,7 @@ async function enableEmergencyOverride(actorAdmin, targetAdminId, expiresAt, rea
   const expires = new Date(expiresAt);
   if (Number.isNaN(expires.getTime())) throw error("expiresAt must be a valid date", 400);
   if (expires.getTime() <= Date.now()) throw error("expiresAt must be in the future", 400);
-  if (!reason || !String(reason).trim()) throw error("reason is required", 400);
+  const auditReason = normalizeReason(reason);
 
   const targetAdmin = await findTargetAdmin(targetAdminId);
   const before = await getAdminWorkSchedule(targetAdminId, siteId);
@@ -399,18 +455,20 @@ async function enableEmergencyOverride(actorAdmin, targetAdminId, expiresAt, rea
     emergencyOverride: {
       enabled: true,
       expiresAt: expires.toISOString(),
-      reason: String(reason).trim().slice(0, 500),
+      reason: auditReason,
     },
   });
 
   await prisma.$transaction(async (tx) => {
     await writeSchedule({
       actorAdmin,
+      targetAdmin,
       targetAdminId,
       siteId,
       nextSchedule,
       action: "admin.schedule.override_enable",
       beforeSchedule: before.schedule,
+      reason: auditReason,
       req: options.req,
       tx,
     });
@@ -426,6 +484,7 @@ async function enableEmergencyOverride(actorAdmin, targetAdminId, expiresAt, rea
 async function disableEmergencyOverride(actorAdmin, targetAdminId, reason = null, options = {}) {
   const siteId = options.siteId;
   if (!siteId) throw error("siteId is required", 500);
+  const auditReason = normalizeReason(reason);
   const targetAdmin = await findTargetAdmin(targetAdminId);
   const before = await getAdminWorkSchedule(targetAdminId, siteId);
   const nextSchedule = normalizeSchedule({
@@ -433,18 +492,20 @@ async function disableEmergencyOverride(actorAdmin, targetAdminId, reason = null
     emergencyOverride: {
       enabled: false,
       expiresAt: null,
-      reason: reason ? String(reason).trim().slice(0, 500) : null,
+      reason: auditReason,
     },
   });
 
   await prisma.$transaction(async (tx) => {
     await writeSchedule({
       actorAdmin,
+      targetAdmin,
       targetAdminId,
       siteId,
       nextSchedule,
       action: "admin.schedule.override_disable",
       beforeSchedule: before.schedule,
+      reason: auditReason,
       req: options.req,
       tx,
     });
