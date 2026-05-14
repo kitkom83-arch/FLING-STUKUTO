@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Lucky Wheel</title>
+    <link rel="stylesheet" href="/admin/lucky-wheel/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" data-page="admin-lucky-wheel">
+      <aside class="sidebar" aria-label="Admin navigation">
+        <div class="brand">
+          <span class="brand-mark">SK</span>
+          <div>
+            <strong>STUDIOKUTO</strong>
+            <span>Safe staging console</span>
+          </div>
+        </div>
+        <nav class="nav-list">
+          <a href="/admin/work-schedules/" class="nav-link">Work Schedule</a>
+          <a href="/admin/audit-security/" class="nav-link">Audit Security</a>
+          <a href="/admin/lucky-wheel/" class="nav-link active">Services / Lucky Wheel</a>
+        </nav>
+      </aside>
+
+      <section class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="label">Admin &gt; Services</p>
+            <h1>Lucky Wheel</h1>
+            <p>Manage staging/mock wheel configuration. The backend remains the only source for prize selection.</p>
+          </div>
+          <div class="session-panel">
+            <label for="admin-token">Admin credential</label>
+            <div class="token-row">
+              <input id="admin-token" type="password" autocomplete="off" placeholder="Paste local/staging credential" />
+              <button id="save-token" type="button">Use credential</button>
+              <button id="clear-token" type="button" class="secondary">Clear</button>
+            </div>
+            <p id="session-state" class="status-text">No session loaded</p>
+          </div>
+        </header>
+
+        <section class="notice safe-boundary">
+          Staging/mock only. No real payout, payment, bank, SMS, Slip OCR, provider, or frontend reward selection is used here.
+        </section>
+
+        <nav class="tab-list" aria-label="Lucky Wheel tabs">
+          <button class="tab-button active" type="button" data-tab="campaign">Campaign settings</button>
+          <button class="tab-button" type="button" data-tab="rewards">Rewards</button>
+          <button class="tab-button" type="button" data-tab="spins">Spin history</button>
+          <button class="tab-button" type="button" data-tab="reports">Reports</button>
+          <button class="tab-button" type="button" data-tab="audit">Audit history</button>
+        </nav>
+
+        <section id="global-error" class="error-state hidden">โหลดข้อมูลไม่สำเร็จ</section>
+
+        <section class="tab-panel active" id="tab-campaign">
+          <form id="campaign-form" class="panel form-panel">
+            <div class="section-heading">
+              <div>
+                <h2>Campaign settings</h2>
+                <p>Loaded from GET /api/admin/wheel/config</p>
+              </div>
+              <button id="save-campaign" type="submit">Save</button>
+            </div>
+            <div class="form-grid">
+              <div class="field">
+                <label for="campaign-status">Status</label>
+                <select id="campaign-status">
+                  <option value="active">active</option>
+                  <option value="inactive">inactive</option>
+                  <option value="draft">draft</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="campaign-name">Campaign name</label>
+                <input id="campaign-name" type="text" maxlength="120" />
+                <p id="campaign-name-error" class="field-error hidden"></p>
+              </div>
+              <div class="field">
+                <label for="campaign-cost-type">Cost type</label>
+                <select id="campaign-cost-type">
+                  <option value="point">point</option>
+                  <option value="ticket">ticket</option>
+                  <option value="mock_credit">mock_credit</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="campaign-cost-amount">Cost amount</label>
+                <input id="campaign-cost-amount" type="number" min="0" step="0.01" />
+                <p id="campaign-cost-error" class="field-error hidden"></p>
+              </div>
+              <div class="field">
+                <label for="campaign-daily-limit">Daily spin limit</label>
+                <input id="campaign-daily-limit" type="number" min="0" step="1" />
+                <p id="campaign-daily-error" class="field-error hidden"></p>
+              </div>
+              <div class="field">
+                <label for="campaign-start">Start date</label>
+                <input id="campaign-start" type="datetime-local" />
+              </div>
+              <div class="field">
+                <label for="campaign-end">End date</label>
+                <input id="campaign-end" type="datetime-local" />
+                <p id="campaign-date-error" class="field-error hidden"></p>
+              </div>
+            </div>
+            <div class="field">
+              <label for="campaign-rules">Rules text</label>
+              <textarea id="campaign-rules" rows="5" maxlength="2000"></textarea>
+            </div>
+            <div class="field">
+              <label for="campaign-reason">Reason</label>
+              <textarea id="campaign-reason" rows="3" maxlength="500" placeholder="Required for audit log"></textarea>
+              <p id="campaign-reason-error" class="field-error hidden"></p>
+            </div>
+          </form>
+        </section>
+
+        <section class="tab-panel" id="tab-rewards">
+          <section class="panel table-section">
+            <div class="section-heading">
+              <div>
+                <h2>Rewards management</h2>
+                <p>Admin configuration only. Spin result fields are never submitted by this page.</p>
+              </div>
+              <div class="button-row">
+                <button id="create-reward" type="button">Create reward</button>
+                <button id="refresh-rewards" type="button" class="secondary">Refresh</button>
+              </div>
+            </div>
+            <div id="rewards-empty" class="empty-state hidden">ไม่พบข้อมูล</div>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Prize index</th>
+                    <th>Label</th>
+                    <th>Reward type</th>
+                    <th>Reward value</th>
+                    <th>Weight</th>
+                    <th>Stock limit</th>
+                    <th>Stock used</th>
+                    <th>Remaining</th>
+                    <th>Segment color</th>
+                    <th>Image</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="reward-rows"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section class="tab-panel" id="tab-spins">
+          <section class="panel table-section">
+            <div class="section-heading">
+              <div>
+                <h2>Spin history</h2>
+                <p>Only sanitized wheel spin fields are rendered.</p>
+              </div>
+              <button id="refresh-spins" type="button">Refresh</button>
+            </div>
+            <div class="filter-bar">
+              <label>Date from <input id="filter-from" type="date" /></label>
+              <label>Date to <input id="filter-to" type="date" /></label>
+              <label>Member <input id="filter-member" type="search" placeholder="username" /></label>
+              <label>Reward type <select id="filter-reward"><option value="">All</option></select></label>
+              <label>Campaign <input id="filter-campaign" type="text" placeholder="wheel_main" /></label>
+              <label>Status <select id="filter-status"><option value="">All</option><option value="pending">pending</option><option value="claimed">claimed</option><option value="expired">expired</option><option value="no_reward">no_reward</option></select></label>
+              <label>Site code <input id="filter-site" type="text" placeholder="PG77" /></label>
+              <button id="apply-spin-filters" type="button">Apply</button>
+            </div>
+            <div id="spins-empty" class="empty-state hidden">ไม่พบข้อมูล</div>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Member</th>
+                    <th>Campaign</th>
+                    <th>Reward</th>
+                    <th>Cost</th>
+                    <th>Prize index</th>
+                    <th>IP masked</th>
+                    <th>Site code</th>
+                    <th>Result</th>
+                    <th>Details</th>
+                  </tr>
+                </thead>
+                <tbody id="spin-rows"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section class="tab-panel" id="tab-reports">
+          <section class="summary-grid" aria-label="Lucky Wheel report summary">
+            <article class="summary-card"><span>Total spins</span><strong id="report-total-spins">0</strong></article>
+            <article class="summary-card"><span>Rewards issued</span><strong id="report-issued">0</strong></article>
+            <article class="summary-card"><span>Stock used</span><strong id="report-stock-used">0</strong></article>
+            <article class="summary-card"><span>Remaining stock</span><strong id="report-stock-remaining">0</strong></article>
+            <article class="summary-card"><span>Top reward</span><strong id="report-top-reward">-</strong></article>
+            <article class="summary-card"><span>Total cost used</span><strong id="report-cost-used">0</strong></article>
+          </section>
+          <section class="report-grid">
+            <article class="panel table-section">
+              <div class="section-heading"><h2>Top rewards</h2></div>
+              <div id="top-rewards-empty" class="empty-state hidden">ไม่พบข้อมูล</div>
+              <div class="table-scroll"><table><thead><tr><th>Reward</th><th>Count</th><th>Percent</th><th>Stock used</th></tr></thead><tbody id="top-reward-rows"></tbody></table></div>
+            </article>
+            <article class="panel table-section">
+              <div class="section-heading"><h2>Reward distribution</h2></div>
+              <div class="table-scroll"><table><thead><tr><th>Reward label</th><th>Probability weight</th><th>Actual issued count</th></tr></thead><tbody id="distribution-rows"></tbody></table></div>
+            </article>
+            <article class="panel table-section">
+              <div class="section-heading"><h2>Stock usage</h2></div>
+              <div class="table-scroll"><table><thead><tr><th>Reward label</th><th>Stock limit</th><th>Stock used</th><th>Remaining</th></tr></thead><tbody id="stock-rows"></tbody></table></div>
+            </article>
+          </section>
+        </section>
+
+        <section class="tab-panel" id="tab-audit">
+          <section class="panel table-section">
+            <div class="section-heading">
+              <div>
+                <h2>Audit history</h2>
+                <p id="audit-help">Loads existing admin audit logs when the report endpoint is available.</p>
+              </div>
+              <button id="refresh-audit" type="button">Refresh</button>
+            </div>
+            <div id="audit-placeholder" class="notice hidden">Audit history จะเชื่อมกับ admin audit log endpoint เมื่อพร้อม</div>
+            <div id="audit-empty" class="empty-state hidden">ไม่พบข้อมูล</div>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Action</th>
+                    <th>Reason</th>
+                    <th>Actor</th>
+                    <th>Site code</th>
+                    <th>Before</th>
+                    <th>After</th>
+                    <th>Details</th>
+                  </tr>
+                </thead>
+                <tbody id="audit-rows"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <dialog id="reward-modal">
+      <form method="dialog" class="modal-card" id="reward-form">
+        <header>
+          <h2 id="reward-modal-title">Create reward</h2>
+          <button type="button" class="icon-button" data-close-modal aria-label="Close">x</button>
+        </header>
+        <input id="reward-id" type="hidden" />
+        <div class="form-grid">
+          <div class="field">
+            <label for="reward-label">Label</label>
+            <input id="reward-label" type="text" maxlength="120" />
+            <p id="reward-label-error" class="field-error hidden"></p>
+          </div>
+          <div class="field">
+            <label for="reward-type">Reward type</label>
+            <select id="reward-type">
+              <option value="credit">credit</option>
+              <option value="point">point</option>
+              <option value="ticket">ticket</option>
+              <option value="item">item</option>
+              <option value="no_reward">no_reward</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="reward-value">Reward value</label>
+            <input id="reward-value" type="number" min="0" step="0.01" />
+          </div>
+          <div class="field">
+            <label for="reward-display">Display value</label>
+            <input id="reward-display" type="text" maxlength="120" />
+          </div>
+          <div class="field">
+            <label for="reward-weight">Probability weight</label>
+            <input id="reward-weight" type="number" min="0" step="1" />
+          </div>
+          <div class="field">
+            <label for="reward-stock">Stock limit</label>
+            <input id="reward-stock" type="number" min="0" step="1" placeholder="Blank for unlimited" />
+          </div>
+          <div class="field">
+            <label for="reward-sort">Sort order</label>
+            <input id="reward-sort" type="number" min="1" step="1" />
+          </div>
+          <div class="field">
+            <label for="reward-color">Segment color</label>
+            <input id="reward-color" type="text" placeholder="#16705d" />
+          </div>
+          <div class="field">
+            <label for="reward-image">Image URL</label>
+            <input id="reward-image" type="url" placeholder="https://example.test/reward.png" />
+          </div>
+          <div class="field">
+            <label for="reward-status">Status</label>
+            <select id="reward-status">
+              <option value="active">active</option>
+              <option value="inactive">inactive</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="reward-reason">Reason</label>
+          <textarea id="reward-reason" rows="3" maxlength="500" placeholder="Required for audit log"></textarea>
+          <p id="reward-reason-error" class="field-error hidden"></p>
+        </div>
+        <p id="reward-form-error" class="field-error hidden"></p>
+        <footer>
+          <button type="button" class="secondary" data-close-modal>Cancel</button>
+          <button id="save-reward" type="submit">Save reward</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog id="detail-modal">
+      <article class="modal-card">
+        <header>
+          <h2 id="detail-title">Details</h2>
+          <button type="button" class="icon-button" data-close-modal aria-label="Close">x</button>
+        </header>
+        <dl class="detail-grid" id="detail-grid"></dl>
+        <pre id="detail-json" class="safe-json">{}</pre>
+      </article>
+    </dialog>
+
+    <div id="toast" role="status" aria-live="polite"></div>
+    <script src="/admin/lucky-wheel/app.js" defer></script>
+  </body>
+</html>

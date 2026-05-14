@@ -367,7 +367,7 @@ Smoke contract:
 - Wallet and ledger effects are checked after the first claim and stay stable after duplicate/invalid attempts.
 - Promotion responses are scanned for secret-shaped values and issued auth values.
 
-## Lucky Wheel API
+## 11. Lucky Wheel API
 
 Lucky Wheel is a staging/mock backend MVP for the future `lucky-wheel-game` Phaser prototype. It does not perform real payout, real wallet payout, live provider calls, live payment calls, bank calls, SMS, or Slip OCR. The backend is the only component allowed to choose the reward result.
 
@@ -400,6 +400,18 @@ Admin endpoints:
 | PATCH | `/admin/wheel/rewards/:id` | Admin + site access | `settings.website.update` | reward fields plus required `reason` | sanitized reward | `wheel.reward.update` |
 | GET | `/admin/wheel/spins` | Admin + site access | `reports.view` | `campaignId`, `memberId`, `username`, `rewardType`, `dateFrom`, `dateTo`, `page`, `limit` | sanitized spin rows with masked IP | None |
 
+Admin Wheel UI API usage:
+
+- Static page: `/admin/lucky-wheel/`.
+- The UI uses only existing wheel/admin APIs listed above plus existing read-only `GET /admin/audit-logs?limit=100` for the Audit history tab when that report endpoint is available.
+- Campaign settings loads `GET /admin/wheel/config` and writes `PATCH /admin/wheel/campaign` with only `status`, `name`, `costType`, `costAmount`, `dailySpinLimit`, `startAt`, `endAt`, `rulesText`, and required `reason`.
+- Rewards management loads rewards from `GET /admin/wheel/config`, creates with `POST /admin/wheel/rewards`, and edits/toggles status with `PATCH /admin/wheel/rewards/:id`. Reward writes send `label`, `rewardType`, `rewardValue`, `displayValue`, `probabilityWeight`, `stockLimit`, `segmentColor`, `imageUrl`, `sortOrder`, `status`, and required `reason`.
+- Spin history uses `GET /admin/wheel/spins` with supported filters only: `campaignId`, `username`, `rewardType`, `dateFrom`, `dateTo`, and `limit`. The UI filters status client-side from the sanitized reward status returned by the endpoint.
+- Reports are frontend summaries derived from `GET /admin/wheel/config` and `GET /admin/wheel/spins`; there is no new report write endpoint.
+- Audit history filters existing admin audit rows client-side to `wheel.campaign.update`, `wheel.reward.create`, `wheel.reward.update`, `wheel.reward.delete`, and `wheel.spin.adjust`. If the report endpoint is unavailable, the tab shows a read-only placeholder.
+- Every write action requires a non-empty `reason` before submit. The UI does not send `stockUsed`, `rewardId`, `prizeIndex`, `probabilityWeight`, or reward value to member spin endpoints. Member spin remains `{ "campaignId": "wheel_main" }` only and backend-selected.
+- The UI redacts secret-shaped values in details/diff displays and must not render raw tokens, passwords, secrets, database URLs, authorization headers, raw internal stack traces, or raw unmasked IPs.
+
 Spin contract for `lucky-wheel-game`:
 
 1. Frontend calls `GET /api/member/wheel/config` to render wheel segments.
@@ -412,7 +424,7 @@ Mock seed: campaign `wheel_main`, name `กงล้อนำโชค`, active,
 
 Smoke coverage: `npm run smoke:wheel` covers the local/staging safety guard, member config, member result field injection rejection, backend-selected spin result, history, my rewards, daily limit, insufficient points, inactive campaign, stock-zero exclusion, admin reason validation, admin audit reason, admin config/spins, and response leak scan.
 
-## 11. Safety / Negative Contract
+## 12. Safety / Negative Contract
 
 Verified by `src/local-smoke-tests/financialNegativeSmoke.js`:
 
@@ -430,7 +442,7 @@ Verified by `src/local-smoke-tests/financialNegativeSmoke.js`:
 - Admin logs exist once for `deposit.approve`, `withdraw.approve`, and `withdraw.mark_paid`.
 - Responses scanned by the script must not expose secret-shaped values, auth values, DB URLs, password/token/secret markers, `undefined`, or `NaN`.
 
-## 12. Smoke Test Coverage Map
+## 13. Smoke Test Coverage Map
 
 | Command | What it checks | Needs running API | Needs local DB | GitHub Actions status |
 | --- | --- | --- | --- | --- |
@@ -443,13 +455,14 @@ Verified by `src/local-smoke-tests/financialNegativeSmoke.js`:
 | `npm run smoke:admin-work-schedule` | Health, schedule auth guards, owner schedule list/update/read/override, invalid time validation, login schedule block/allow, expired override, overnight shift helper, audit logs, response leak scan | Yes | Yes | Syntax checked only in Safe CI |
 | `npm run smoke:admin-work-schedule-ui` | Static `/admin/work-schedules` UI route/assets, permission block, owner schedule list/update, override, masked audit history, response leak scan | Yes | Yes | Syntax checked only in Safe CI |
 | `npm run smoke:admin-audit-security` | Static `/admin/audit-security` UI route/assets, audit/security endpoints, UX markers, filters, permission block, empty state response, masked IP, raw user-agent omission, response leak scan | Yes | Yes | Syntax checked only in Safe CI |
+| `npm run smoke:admin-wheel-ui` | Static `/admin/lucky-wheel` UI source contract, tabs, existing endpoint usage, reason validation before writes, redaction markers, and frontend spin-safety guard | No | No | Runs as static/source smoke |
 | `npm run smoke:wheel` | Lucky Wheel safety guard, member config/spin/history/rewards, backend result selection, admin campaign/reward reason validation, audit reason, stock-zero exclusion, and response leak scan | Yes | Yes | Syntax checked only in Safe CI |
-| `npm run smoke:all-local` | Guarded sequence: smoke syntax checks, `npm run check`, promotion-claim, money-flow, core-api, game-transfer, financial-negative, admin-reports-config, admin work schedule, admin work schedule UI, admin audit/security, wheel, secret grep, diff whitespace check | Yes | Yes | Not run in Safe CI because it needs a running API and local DB |
+| `npm run smoke:all-local` | Guarded sequence: smoke syntax checks, `npm run check`, promotion-claim, money-flow, core-api, game-transfer, financial-negative, admin-reports-config, admin work schedule, admin work schedule UI, admin audit/security, admin wheel UI, wheel, secret grep, diff whitespace check | Yes | Yes | Not run in Safe CI because it needs a running API and local DB |
 | GitHub Actions Safe CI | `npm ci`, Prisma validate/generate, `npm run check`, local smoke syntax checks, secret-shaped value scan | No | No real DB connection for smoke | Runs on push and PR |
 
 GitHub Actions does not run DB-backed local smoke flows because those require a running local API and safe local/test PostgreSQL fixture setup.
 
-## 13. Error Status Contract
+## 14. Error Status Contract
 
 Status codes verified from code:
 
@@ -462,7 +475,7 @@ Status codes verified from code:
 - `409`: no confirmed route currently returns `409`; duplicate/conflict behavior currently maps to `400`.
 - `500`: should not occur for expected validation and negative money-flow cases. Negative smoke treats 5xx as unsafe.
 
-## 14. Mock / Sandbox Boundaries
+## 15. Mock / Sandbox Boundaries
 
 - Game provider uses `MockGameProviderAdapter`.
 - Payment/bank money flow is manual local approval through API and admin actions.
@@ -476,7 +489,7 @@ Status codes verified from code:
 - Do not log or document real DB URLs, passwords, tokens, provider secrets, API keys, or raw provider payloads.
 - RBAC controls admin API access only. It does not enable real provider, payment, bank, SMS, Slip OCR, or production credential flows.
 
-## 15. Developer Notes
+## 16. Developer Notes
 
 Run local API:
 
@@ -523,7 +536,7 @@ Secret rules:
 - Do not connect real provider/payment/bank systems from local smoke or mock endpoints.
 - Do not run migrations, seed, smoke, or safety tests against production.
 
-## 16. Known Coverage Gaps
+## 17. Known Coverage Gaps
 
 - Config POST/PUT endpoints are intentionally not covered by `smoke:admin-reports-config` because that smoke is read-only for config safety.
 - Real provider integrations are not covered.

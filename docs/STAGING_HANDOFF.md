@@ -69,6 +69,12 @@ Use this checklist for manual staging clicks only. Do not use production account
 - [ ] Verify admin `PATCH /api/admin/wheel/campaign` rejects empty `reason`.
 - [ ] Verify admin `POST /api/admin/wheel/rewards` and `PATCH /api/admin/wheel/rewards/:id` reject empty `reason`.
 - [ ] Verify successful admin campaign/reward updates write audit logs with the typed reason and no secret-shaped values.
+- [ ] Open `/admin/lucky-wheel/` with an approved staging/mock admin credential and confirm the Campaign settings, Rewards, Spin history, Reports, and Audit history tabs switch visibly.
+- [ ] Confirm Campaign settings loads `GET /api/admin/wheel/config`, blocks Save without reason, saves with reason only for approved staging/mock data, and shows a safe success or failure notice.
+- [ ] Confirm Rewards opens Create/Edit reward modal, blocks saves without reason, never allows editing `stockUsed`, refreshes config after save, and never displays `NaN` or `undefined`.
+- [ ] Confirm Spin history loads sanitized rows or the `ไม่พบข้อมูล` empty state, shows masked IP only, and opens details without dumping raw JSON or secrets.
+- [ ] Confirm Reports summary and reward tables render zero-safe values without `NaN` or `undefined`.
+- [ ] Confirm Audit history shows existing wheel audit rows or the safe read-only placeholder if the audit endpoint is unavailable.
 - [ ] Confirm Lucky Wheel responses do not expose passwords, tokens, authorization headers, database URLs, provider secrets, stock internals on member endpoints, or raw user-agent.
 - [ ] Final authenticated browser role assignment verification remains blocked unless approved staging credentials are available from the secret manager or approved out-of-repo channel.
 - [ ] Test invalid admin login with intentionally wrong credentials.
