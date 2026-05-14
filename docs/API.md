@@ -424,7 +424,11 @@ Spin contract for `lucky-wheel-game`:
 
 Mock seed: campaign `wheel_main`, name `กงล้อนำโชค`, active, point cost `10`, daily limit `3`, and eight demo segments: Credit 10, Credit 50, Points 20, Ticket 1, No reward, Gold Mystery Box, Jackpot mock, and Try again.
 
-Smoke coverage: `npm run smoke:wheel` covers the local/staging safety guard, member config, member result field injection rejection, backend-selected spin result, history, my rewards, daily limit, insufficient points, inactive campaign, stock-zero exclusion, admin reason validation, admin audit reason, admin config/spins, and response leak scan.
+Smoke coverage:
+
+- `npm run smoke:admin-wheel-ui` covers static Admin Lucky Wheel UI source contract, tabs, existing endpoint usage, reason validation before writes, safe auth/permission messages, report zero guards, redaction markers, masked IP handling, and frontend spin-safety guard.
+- `npm run smoke:admin-wheel-runtime` covers static HTTP route/assets, unauthenticated `401`, no-permission `403`, admin config/spins reads, write-without-reason rejection, write-with-reason success, audit creation/read through the existing audit endpoint, and response leak scan. It skips safely when local admin env is not configured.
+- `npm run smoke:wheel` covers the local/staging safety guard, member config, member result field injection rejection, backend-selected spin result, history, my rewards, daily limit, insufficient points, inactive campaign, stock-zero exclusion, admin reason validation, admin audit reason, admin config/spins, and response leak scan.
 
 ## 12. Safety / Negative Contract
 

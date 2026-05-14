@@ -64,6 +64,7 @@ jobs:
           node --check src/local-smoke-tests/adminWorkScheduleSmoke.js
           node --check src/local-smoke-tests/adminWorkScheduleUiSmoke.js
           node --check src/local-smoke-tests/adminAuditSecuritySmoke.js
+          node --check src/local-smoke-tests/adminWheelRuntimeSmoke.js
           node --check src/local-smoke-tests/stagingSmoke.js
           node --check src/local-smoke-tests/runAllLocalSmoke.js
 

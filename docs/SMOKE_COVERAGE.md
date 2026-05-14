@@ -39,6 +39,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `adminWorkScheduleUiSmoke.js` | `npm run smoke:admin-work-schedule-ui` | Yes | Yes | Yes | Syntax check only | Static admin schedule UI route/assets, owner flow, no-permission block, emergency override, masked audit history, and leak scan. |
 | `adminAuditSecuritySmoke.js` | `npm run smoke:admin-audit-security` | Yes | Yes | Yes | Syntax check only | Static audit/security UI route/assets, UX markers, report endpoints, filters, permission block, empty response shape, masked IP, raw user-agent omission, and leak scan. |
 | `adminWheelUiSmoke.js` | `npm run smoke:admin-wheel-ui` | No | No | No | Syntax check plus static contract | Static Admin Lucky Wheel UI source contract, tabs, endpoint usage, reason validation, 401/403 safe handling, audit placeholder/wiring, report zero guards, redaction markers, masked IP handling, and frontend spin-safety guard. |
+| `adminWheelRuntimeSmoke.js` | `npm run smoke:admin-wheel-runtime` | Yes | Yes | Yes | Syntax check only | Admin Lucky Wheel runtime route/assets, unauth `401`, no-permission `403`, config/spins reads, write reason validation, write audit creation, audit read sanitization, and leak scan. Skips safely when local admin env is not configured. |
 | `wheelSmoke.js` | `npm run smoke:wheel` | Yes | Yes | Yes | Syntax check only | Lucky Wheel mock config/spin/history/rewards, backend result selection, admin reason/audit checks, stock-zero exclusion, and leak scan. |
 | `stagingPreflight.js` | `npm run staging:preflight` | No local Prisma access | Optional | No | Runs local-test dry run | Staging readiness guard for env boundary, database/API target labels, external modes, health contract, and response leak scan. |
 | `stagingSmoke.js` | `npm run smoke:staging` | No local Prisma access | Yes | No | Syntax check only | Hosted staging health contract, safe external mode labels, admin auth negative leak check, and response leak scan. |
@@ -293,7 +294,22 @@ The audit/security smoke uses only static frontend assets and local/staging/test
 
 The Admin Wheel UI smoke is static/source-only. It does not require a database, does not call a backend, does not use production credentials, and does not create real payout.
 
-## 16. smoke:wheel Coverage
+## 16. smoke:admin-wheel-runtime Coverage
+
+- Safety guard blocks production-like DB/API targets and live provider/payment/bank/SMS/Slip OCR modes.
+- Skips safely when local admin env is not configured, without printing env values or failing against a missing local runtime.
+- Static HTTP route check for `/admin/lucky-wheel/`, `/admin/lucky-wheel/app.js`, and `/admin/lucky-wheel/styles.css`.
+- Unauthenticated Admin Wheel API access returns `401`.
+- Authenticated admin with a site access override containing no permissions returns `403`.
+- Owner/super admin reads `GET /api/admin/wheel/config` and `GET /api/admin/wheel/spins`.
+- `PATCH /api/admin/wheel/campaign`, `POST /api/admin/wheel/rewards`, and `PATCH /api/admin/wheel/rewards/:id` reject empty `reason`.
+- Successful campaign/reward writes use local/staging-safe fixtures only and create `wheel.campaign.update`, `wheel.reward.create`, and `wheel.reward.update` audit rows.
+- Audit read uses the existing `/api/admin/audit-logs` endpoint and verifies `reason`, actor, site code, sanitized before/after data, masked IP behavior, and no raw user-agent.
+- Response leak scan checks DB URL markers, auth values, password/token/secret markers, JWT-like values, credential-shaped PostgreSQL URLs, raw user-agent content, and unmasked IPv4 addresses.
+
+The Admin Wheel runtime smoke uses only local/staging/test PostgreSQL fixtures. It does not call real provider, payment, bank, SMS, or Slip OCR services, does not run real-money UAT, and does not create real payout.
+
+## 17. smoke:wheel Coverage
 
 - Safety guard blocks unsafe environment, production-like DB/API targets, live provider modes, and missing `LOCAL_ADMIN_PASSWORD`.
 - Creates local/staging-test only site, admin, member, campaign, and reward fixtures.
@@ -314,7 +330,7 @@ The Admin Wheel UI smoke is static/source-only. It does not require a database, 
 
 Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not call real provider, payment, bank, SMS, or Slip OCR services, does not run real-money UAT, and does not create real payout.
 
-## 17. staging:preflight Coverage
+## 18. staging:preflight Coverage
 
 `npm run staging:preflight` is a safe deploy readiness guard:
 
@@ -326,7 +342,7 @@ Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not 
 - Uses a local health fixture when `BASE_URL` is absent so Safe CI can run without real secrets.
 - Scans health payloads for database URLs, JWT-shaped values, authorization headers, unsafe response keys, and sensitive environment values.
 
-## 18. smoke:staging Coverage
+## 19. smoke:staging Coverage
 
 `npm run smoke:staging` is an HTTP-only hosted staging readiness smoke:
 
@@ -339,7 +355,7 @@ Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not 
 - Scans health and admin-auth responses for database URLs, JWT-shaped values, authorization headers, token/password/secret keys, API key fields, and sensitive env values.
 - Does not create fixtures, import Prisma, run migrations, seed data, call real providers, or move money.
 
-## 19. smoke:all-local Coverage
+## 20. smoke:all-local Coverage
 
 `npm run smoke:all-local` runs a guarded sequence and stops on the first failure:
 
@@ -359,6 +375,7 @@ Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not 
   - `adminWorkScheduleUiSmoke.js`
   - `adminAuditSecuritySmoke.js`
   - `adminWheelUiSmoke.js`
+  - `adminWheelRuntimeSmoke.js`
   - `wheelSmoke.js`
   - `stagingPreflight.js`
   - `stagingSmoke.js`
@@ -375,12 +392,14 @@ Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not 
 - `npm run smoke:admin-work-schedule`.
 - `npm run smoke:admin-work-schedule-ui`.
 - `npm run smoke:admin-audit-security`.
+- `npm run smoke:admin-wheel-ui`.
+- `npm run smoke:admin-wheel-runtime`.
 - `npm run smoke:wheel`.
 - Secret grep over package/docs/README/local-smoke related files.
 - `git diff --check`.
 - Final PASS/FAIL summary.
 
-## 20. GitHub Actions Safe CI Coverage
+## 21. GitHub Actions Safe CI Coverage
 
 `.github/workflows/ci.yml` defines Safe CI for `push` and `pull_request`:
 
@@ -403,6 +422,7 @@ Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not 
   - `adminWorkScheduleSmoke.js`
   - `adminWorkScheduleUiSmoke.js`
   - `adminAuditSecuritySmoke.js`
+  - `adminWheelRuntimeSmoke.js`
   - `wheelSmoke.js`
   - `stagingSmoke.js`
   - `runAllLocalSmoke.js`
@@ -410,7 +430,7 @@ Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not 
 
 Safe CI does not run DB-backed smoke commands because those require a running backend, safe local/staging/test PostgreSQL, guarded environment variables, and local fixtures.
 
-## 21. Required Local Runtime
+## 22. Required Local Runtime
 
 To run local smoke commands, prepare:
 
@@ -425,7 +445,7 @@ To run local smoke commands, prepare:
 
 `smoke:staging` requires only `BASE_URL` and a running safe staging/local API. `moneyFlowSmoke.js` also allows `staging` for `NODE_ENV`. Other current DB-backed smoke scripts shown above allow `development-local` or `test`.
 
-## 22. Safe Commands
+## 23. Safe Commands
 
 Run these only after the backend and safe local/staging/test environment are ready:
 
@@ -444,11 +464,12 @@ npm run smoke:admin-work-schedule
 npm run smoke:admin-work-schedule-ui
 npm run smoke:admin-audit-security
 npm run smoke:admin-wheel-ui
+npm run smoke:admin-wheel-runtime
 npm run smoke:wheel
 npm run check
 ```
 
-## 23. Mock / Sandbox Boundaries
+## 24. Mock / Sandbox Boundaries
 
 - Game provider coverage uses mock/local fixtures and `MockGameProviderAdapter` behavior.
 - Payment and bank money flow is manual local approval through the API and admin endpoints.
@@ -461,11 +482,12 @@ npm run check
 - Admin work schedule UI smoke uses static local frontend assets and mock/local admin fixtures only.
 - Admin audit/security smoke uses static local frontend assets, safe audit rows, and mock/local admin fixtures only.
 - Admin Wheel UI smoke uses static local frontend assets only and does not connect to a database.
+- Admin Wheel runtime smoke uses local/staging/test fixtures only and skips safely when local admin env is not configured.
 - Lucky Wheel smoke uses local/staging mock campaign, reward, spin, and member reward fixtures only. It does not create real payout.
 - Production DB targets are forbidden.
 - Real provider/payment/bank integrations and production credential flows are outside current smoke coverage.
 
-## 24. Known Coverage Gaps
+## 25. Known Coverage Gaps
 
 Confirmed from current docs and scripts:
 
@@ -475,14 +497,14 @@ Confirmed from current docs and scripts:
 - Production RBAC integration with an external identity provider is not covered.
 - Admin work schedule static frontend is covered by local smoke; browser-rendered visual regression is not covered.
 - Admin audit/security static frontend is covered by local smoke; browser-rendered visual regression is not covered.
-- Admin Wheel UI static frontend is covered by local smoke; authenticated browser-rendered visual regression is not covered.
+- Admin Wheel UI static frontend and Admin Wheel API runtime contracts are covered by local smoke; authenticated browser-rendered visual regression is not covered.
 - Force-logout of already-active sessions is not covered.
 - Production deployment smoke is not covered. `smoke:staging` is only for non-production staging/test hosts.
 - Full end-to-end frontend coverage is not covered.
 - Lucky Wheel frontend Phaser integration and real reward claiming are not covered.
 - docs/API.md still contains older "ต้องตรวจเพิ่ม" notes for some endpoints that are now covered by newer smoke scripts; ต้องตรวจเพิ่ม before using that section as the source of truth.
 
-## 25. How to Add a New Smoke
+## 26. How to Add a New Smoke
 
 1. Add the new smoke script under `src/local-smoke-tests`.
 2. Reuse the existing local safety guard and response leak scan patterns.

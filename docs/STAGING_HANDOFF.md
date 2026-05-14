@@ -85,6 +85,21 @@ Use this checklist for manual staging clicks only. Do not use production account
 - [ ] Confirm protected admin pages require login again after logout or session expiry.
 - [ ] Check visible responses, browser network previews, copied logs, and screenshots for secret leaks before attaching anything to a bug report.
 
+## Admin Wheel Runtime Verification
+
+Use this checklist only against local/staging/mock runtime with approved demo admins. Do not use production DB, real credentials, live provider/payment/bank/SMS/Slip OCR, real money, or real payout flows.
+
+1. Open `/admin/lucky-wheel/` and confirm the static page and assets load.
+2. Call `GET /api/admin/wheel/config` without admin auth and confirm safe `401`.
+3. Call the same endpoint with a demo admin that lacks Lucky Wheel permissions and confirm safe `403`, if that role is available.
+4. Call `GET /api/admin/wheel/config` with an approved admin and confirm the response shape is safe.
+5. Call `GET /api/admin/wheel/spins` with an approved admin and confirm rows are sanitized and IP values are masked when present.
+6. Call `PATCH /api/admin/wheel/campaign` without `reason` and confirm it fails.
+7. Call `POST /api/admin/wheel/rewards` and `PATCH /api/admin/wheel/rewards/:id` without `reason` and confirm they fail.
+8. Repeat approved local/staging writes with `reason` and confirm `wheel.campaign.update`, `wheel.reward.create`, and `wheel.reward.update` audit rows are created.
+9. Read existing `/api/admin/audit-logs` and confirm audit rows show reason, actor, site code, sanitized before/after, masked IP only, and no raw user-agent.
+10. Confirm no response, visible UI, browser network preview, copied log, or screenshot includes a password, token, secret, raw authorization header, database URL, stack trace, raw IP, or `NaN`/`undefined`.
+
 ## What Testers Must Not Test
 
 - Production database, production clone, production read replica, or production customer data.
