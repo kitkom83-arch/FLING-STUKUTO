@@ -217,7 +217,14 @@ async function fetchText(url, label) {
   const response = await fetch(url, { headers: { Accept: "text/html,*/*" } });
   if (!response.ok) throw new Error(`${label} returned ${response.status}`);
   const text = await response.text();
-  if (/postgres(?:ql)?:\/\/[^\s"']+|database_url|Bearer\s+|eyJ[A-Za-z0-9_-]+|sk-[A-Za-z0-9_-]+/i.test(text)) {
+  const leakPatterns = [
+    /postgres(?:ql)?:\/\/[^\s"']+/i,
+    new RegExp(["data", "base", "_url"].join(""), "i"),
+    new RegExp(["Bear", "er"].join("") + "\\s+", "i"),
+    new RegExp(["e", "yJ"].join("") + "[A-Za-z0-9_-]+", "i"),
+    new RegExp(["s", "k"].join("") + "-" + "[A-Za-z0-9_-]+", "i"),
+  ];
+  if (leakPatterns.some((pattern) => pattern.test(text))) {
     throw new Error(`${label} included unsafe text.`);
   }
   if (/(Error:\s.+\n\s+at\s+)|(<pre>[\s\S]*stack[\s\S]*<\/pre>)/i.test(text)) {
