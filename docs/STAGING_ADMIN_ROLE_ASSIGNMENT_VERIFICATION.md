@@ -12,7 +12,7 @@ API base URL used: `https://fling-stukuto-staging-api.onrender.com/api`
 
 - No passwords, tokens, cookies, session values, `DATABASE_URL`, API keys, provider secrets, or authorization headers were written into this report.
 - Staging credential values were not printed, copied into this report, or exposed through terminal output.
-- Authenticated staging browser/manual checks were not completed from this workspace because no staging owner/super-admin or non-owner credential was available in the process environment.
+- Authenticated staging browser/manual checks were not completed from this workspace because no staging owner/super-admin or non-owner credential was available through the approved credential channel or in the process environment.
 - Screenshots were not captured because no authenticated browser session was available to this run.
 
 ## Commands Run
@@ -48,6 +48,7 @@ Safe output summary:
 - Unknown admin auth negative leak check: PASS
 - Authenticated smoke status for this phase: PASS with masked credentials.
 - Local rerun blocker: missing staging demo admin password environment value; value was not printed.
+- Credential availability check: `STAGING_DEMO_ADMIN_USERNAME`, `STAGING_DEMO_ADMIN_PASSWORD`, `LOCAL_ADMIN_PASSWORD`, `STAGING_NON_OWNER_ADMIN_USERNAME`, and `STAGING_NON_OWNER_ADMIN_PASSWORD` were absent from this workspace process; values were not printed.
 
 Unauthenticated static page checks:
 
@@ -72,6 +73,8 @@ Unauthenticated static page checks:
 | 12 | Confirm no production payment/provider/bank/live-money flow is touched. | PASS | Hosted staging smoke confirmed provider/payment/bank modes are safe; no money/provider/bank write flow was invoked. |
 
 ## Manual Check Result
+
+Authenticated browser/manual verification: BLOCKED
 
 Result: BLOCKED for authenticated browser/manual Admin Role Assignment verification in this workspace run.
 
