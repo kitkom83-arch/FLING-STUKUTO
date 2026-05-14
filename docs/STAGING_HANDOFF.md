@@ -17,7 +17,8 @@ Never put real passwords, tokens, API keys, provider secrets, callback secrets, 
 - Login/logout with approved staging demo accounts only.
 - Safe invalid admin login behavior. Invalid credentials must fail closed without `500`, token leaks, stack traces, or password hints.
 - Admin schedule UI behavior for staging demo admins, including list/read/update, working days, overnight schedules, emergency override, and schedule-blocked login behavior.
-- Audit/security UI behavior, including filters, summaries, empty states, masked IP values, omitted raw user-agent values, and safe detail modals.
+- Audit/security UI behavior, including role/work-schedule audit review, client-side filters, summary cards, empty states, masked IP values, omitted raw user-agent values, and safe detail modals.
+- Lucky Wheel MVP API contract with staging/mock member/admin accounts only: config, spin, history, my rewards, admin config, admin reason validation, and audit reason visibility.
 - Read-only reports/config visibility that is already covered by smoke scripts.
 - Mock/sandbox deposit, withdrawal, game, payment, bank statement, SMS, and Slip OCR flows only where the staging UI/API exposes them safely.
 
@@ -53,11 +54,22 @@ Use this checklist for manual staging clicks only. Do not use production account
 - [ ] Select the current role as the new role, if selectable, and confirm the UI blocks the update before API submission.
 - [ ] Click Change role on the current logged-in admin and confirm the UI shows `You cannot change your own role in this staging UI.` and does not submit.
 - [ ] For another staging demo admin, select a different role, enter a reason, confirm `Confirm role assignment update`, and verify `Admin role updated`.
-- [ ] Load audit for `admin.role.update` and confirm reason plus before/after role are visible.
+- [ ] Load audit for `admin.role.update` and confirm target username, reason, before/after role, target admin ID, and site code are visible.
+- [ ] Load work schedule audit rows and confirm schedule update, enable/disable, override, expired override, or login-blocked rows show target admin, schedule state, reason, and status.
 - [ ] Open audit logs.
-- [ ] Confirm audit log rows, filters, empty states, and detail modal load without showing secrets.
+- [ ] Confirm audit log summary cards, filters, empty states, role/work-schedule highlights, and detail modal load without showing secrets.
 - [ ] Open security events.
-- [ ] Confirm security event rows, filters, summaries, empty states, and detail modal load without showing secrets.
+- [ ] Confirm security event rows, filters, summaries, empty states, status badges, and detail modal load without showing secrets.
+- [ ] Verify Lucky Wheel member config at `GET /api/member/wheel/config` with a staging/mock member token.
+- [ ] Confirm wheel config returns campaign `wheel_main`, 8 demo rewards, remaining spins, mock balance, rules, and no `probabilityWeight` in the member response.
+- [ ] Verify spin with `POST /api/member/wheel/spin` using only `campaignId`; confirm backend returns `prizeIndex`, reward data, remaining spins, and balance after.
+- [ ] Confirm frontend-style attempts to submit `rewardId` or `prizeIndex` are rejected.
+- [ ] Verify `GET /api/member/wheel/history` shows the spin and `GET /api/member/wheel/my-rewards` shows pending rewards when the result is not `no_reward`.
+- [ ] Verify admin `PATCH /api/admin/wheel/campaign` rejects empty `reason`.
+- [ ] Verify admin `POST /api/admin/wheel/rewards` and `PATCH /api/admin/wheel/rewards/:id` reject empty `reason`.
+- [ ] Verify successful admin campaign/reward updates write audit logs with the typed reason and no secret-shaped values.
+- [ ] Confirm Lucky Wheel responses do not expose passwords, tokens, authorization headers, database URLs, provider secrets, stock internals on member endpoints, or raw user-agent.
+- [ ] Final authenticated browser role assignment verification remains blocked unless approved staging credentials are available from the secret manager or approved out-of-repo channel.
 - [ ] Test invalid admin login with intentionally wrong credentials.
 - [ ] Confirm invalid login fails closed with a controlled auth failure and does not return `500`.
 - [ ] Test logout if the UI exposes a logout control.
@@ -68,6 +80,7 @@ Use this checklist for manual staging clicks only. Do not use production account
 
 - Production database, production clone, production read replica, or production customer data.
 - Real money deposit, withdrawal, transfer, settlement, payout, or reconciliation.
+- Lucky Wheel real payout, real reward settlement, real wallet payout, or frontend-selected reward results.
 - Live game provider, payment provider, bank statement, SMS, or Slip OCR mode.
 - Real provider callbacks, real bank webhooks, real OCR uploads, or real SMS sending.
 - Production credentials, production admin/member accounts, or production settlement accounts.
@@ -81,6 +94,7 @@ Use this checklist for manual staging clicks only. Do not use production account
 - Bank statement mode remains mock/sandbox/disabled.
 - SMS provider mode remains mock/sandbox/disabled.
 - Slip OCR mode remains mock/sandbox/disabled.
+- Lucky Wheel remains staging/mock only. Backend chooses the result; frontend must never submit reward id, prize index, probability, or reward value.
 - Demo fixtures are staging-only and must not be treated as production accounts.
 
 ## How To Report Bugs
@@ -140,6 +154,7 @@ GO only when all items are true:
 - `npm run staging:db:seed` has passed when demo fixtures were required.
 - `npm run smoke:staging` passes.
 - `npm run smoke:staging-uat` passes.
+- Lucky Wheel smoke or manual checklist passes in staging/mock mode when Lucky Wheel is in scope.
 - No `500` appears in the main manual admin UI flow.
 - Invalid admin login fails closed without `500` and without secrets.
 - No response, screenshot, log, ticket, commit, or chat contains a secret-shaped value.
@@ -157,3 +172,4 @@ NO-GO if any item is true:
 - Any response contains a password, token, authorization header, cookie, database URL, API key, provider secret, callback secret, or other secret-shaped value.
 - Any secret appears in docs, logs, screenshots, tickets, commits, chat, or smoke output.
 - Testers need real money, real provider callbacks, real bank rails, SMS live sending, or live Slip OCR to complete the requested test.
+- Testers need Lucky Wheel real payout, real wallet credit settlement, or frontend-side reward randomization to complete the requested test.

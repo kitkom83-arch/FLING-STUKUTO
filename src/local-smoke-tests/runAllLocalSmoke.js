@@ -25,6 +25,7 @@ const RELATED_FILES = [
   "src/local-smoke-tests/adminWorkScheduleSmoke.js",
   "src/local-smoke-tests/adminWorkScheduleUiSmoke.js",
   "src/local-smoke-tests/adminAuditSecuritySmoke.js",
+  "src/local-smoke-tests/wheelSmoke.js",
   "src/local-smoke-tests/stagingPreflight.js",
   "src/local-smoke-tests/stagingSmoke.js",
 ];
@@ -59,6 +60,7 @@ const summary = [
   { key: "adminWorkSchedule", label: "admin-work-schedule", status: "PENDING" },
   { key: "adminWorkScheduleUi", label: "admin-work-schedule-ui", status: "PENDING" },
   { key: "adminAuditSecurity", label: "admin-audit-security", status: "PENDING" },
+  { key: "wheel", label: "wheel", status: "PENDING" },
   { key: "responseScan", label: "response leak scan", status: "PENDING" },
   { key: "secretGrep", label: "secret grep", status: "PENDING" },
   { key: "diff", label: "git diff --check", status: "PENDING" },
@@ -135,6 +137,12 @@ const steps = [
     name: "node --check adminAuditSecuritySmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/adminAuditSecuritySmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check wheelSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/wheelSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -232,6 +240,13 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:admin-audit-security"]),
     summaryKey: "adminAuditSecurity",
+    alsoPass: ["responseScan"],
+  },
+  {
+    name: "npm run smoke:wheel",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:wheel"]),
+    summaryKey: "wheel",
     alsoPass: ["responseScan"],
   },
   {

@@ -8,6 +8,7 @@ const depositRoutes = require("./deposit.routes");
 const withdrawRoutes = require("./withdraw.routes");
 const promotionRoutes = require("./promotion.routes");
 const gameRoutes = require("./game.routes");
+const wheelRoutes = require("./wheel.routes");
 const adminRoutes = require("./admin.routes");
 const siteResolver = require("../middleware/siteResolver");
 const siteController = require("../controllers/site.controller");
@@ -26,6 +27,7 @@ router.use(depositRoutes);
 router.use(withdrawRoutes);
 router.use(promotionRoutes);
 router.use(gameRoutes);
+router.use(wheelRoutes);
 router.use("/admin", adminRoutes);
 
 module.exports = router;

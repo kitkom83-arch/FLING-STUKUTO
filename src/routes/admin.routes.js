@@ -10,6 +10,7 @@ const bankAccountController = require("../controllers/bankAccount.controller");
 const bankMockController = require("../controllers/bankMock.controller");
 const depositController = require("../controllers/deposit.controller");
 const withdrawController = require("../controllers/withdraw.controller");
+const wheelController = require("../controllers/wheel.controller");
 const { adminHasPermission } = require("../services/adminPermission.service");
 const { asyncHandler } = require("../middleware/errorHandler");
 const { fail } = require("../utils/response");
@@ -106,6 +107,12 @@ router.get(
   can("reports.view"),
   asyncHandler(adminAuditController.securityEventsSummary)
 );
+
+router.get("/wheel/config", protectedSite, can("settings.website.view"), asyncHandler(wheelController.adminConfig));
+router.patch("/wheel/campaign", protectedSite, can("settings.website.update"), asyncHandler(wheelController.updateCampaign));
+router.post("/wheel/rewards", protectedSite, can("settings.website.update"), asyncHandler(wheelController.createReward));
+router.patch("/wheel/rewards/:id", protectedSite, can("settings.website.update"), asyncHandler(wheelController.updateReward));
+router.get("/wheel/spins", protectedSite, can("reports.view"), asyncHandler(wheelController.adminSpins));
 
 router.get("/sites", protectedSite, can("settings.website.view"), asyncHandler(adminSiteController.listSites));
 router.get("/sites/current/config", protectedSite, can("settings.website.view"), asyncHandler(adminSiteController.currentConfig));

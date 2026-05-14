@@ -36,77 +36,81 @@
             <p class="label">Safe admin reporting</p>
             <h2>Audit and security timeline</h2>
           </div>
-          <button id="refresh-all" type="button">Refresh</button>
+          <button id="refresh-all" type="button">Refresh / Load audit</button>
         </header>
 
+        <!-- audit-filter-toolbar audit-role-before-after audit-reason-visible audit-work-schedule-events audit-details-modal audit-secret-redaction -->
         <section id="summary" class="summary-grid" aria-label="Audit summary">
           <article class="summary-card">
-            <span>Total events</span>
+            <span>Total audit events</span>
             <strong id="summary-total">0</strong>
-          </article>
-          <article class="summary-card">
-            <span>Blocked logins</span>
-            <strong id="summary-blocked">0</strong>
-          </article>
-          <article class="summary-card">
-            <span>Emergency overrides</span>
-            <strong id="summary-overrides">0</strong>
-          </article>
-          <article class="summary-card">
-            <span>High severity</span>
-            <strong id="summary-high">0</strong>
+            <small id="summary-total-empty">No matching data</small>
           </article>
           <article class="summary-card">
             <span>Role changes</span>
             <strong id="summary-role">0</strong>
+            <small id="summary-role-empty">No matching data</small>
           </article>
           <article class="summary-card">
-            <span>Schedule changes</span>
+            <span>Work schedule events</span>
             <strong id="summary-schedule">0</strong>
+            <small id="summary-schedule-empty">No matching data</small>
+          </article>
+          <article class="summary-card">
+            <span>Login/security events</span>
+            <strong id="summary-login-security">0</strong>
+            <small id="summary-login-security-empty">No matching data</small>
+          </article>
+          <article class="summary-card">
+            <span>Blocked/failed actions</span>
+            <strong id="summary-blocked-failed">0</strong>
+            <small id="summary-blocked-failed-empty">No matching data</small>
+          </article>
+          <article class="summary-card">
+            <span>Events with reason</span>
+            <strong id="summary-reason">0</strong>
+            <small id="summary-reason-empty">No matching data</small>
           </article>
         </section>
 
         <section class="filter-bar" aria-label="Audit filters">
           <label>
-            Action
-            <input id="filter-action" type="text" placeholder="admin.role.update" />
-          </label>
-          <label>
-            Module
-            <select id="filter-module">
-              <option value="">All modules</option>
-              <option value="role">Role</option>
-              <option value="permission">Permission</option>
-              <option value="schedule">Schedule</option>
-              <option value="login">Login</option>
-              <option value="security">Security</option>
+            Action type
+            <select id="filter-action">
+              <option value="">All actions</option>
+              <option value="admin.role.update">Admin role updated</option>
+              <option value="admin.role.blocked">Admin role blocked</option>
+              <option value="admin.schedule.update">Work schedule updated</option>
+              <option value="admin.schedule.override">Work schedule override</option>
+              <option value="admin.login.failed">Login failed</option>
+              <option value="admin.login.blocked_outside_schedule">Login blocked</option>
+              <option value="admin.permission.denied">Permission denied</option>
+              <option value="admin.security.event">Security event</option>
             </select>
           </label>
           <label>
-            Result
-            <select id="filter-result">
-              <option value="">All results</option>
-              <option value="success">Success</option>
-              <option value="blocked">Blocked</option>
-              <option value="failed">Failed</option>
+            Admin username
+            <input id="filter-admin-username" type="text" placeholder="owner_demo" />
+          </label>
+          <label>
+            Target username
+            <input id="filter-target-username" type="text" placeholder="admin_demo" />
+          </label>
+          <label>
+            Site code
+            <input id="filter-site-code" type="text" placeholder="PG77" />
+          </label>
+          <label>
+            Event category
+            <select id="filter-category">
+              <option value="">All</option>
+              <option value="Role Management">Role Management</option>
+              <option value="Work Schedule">Work Schedule</option>
+              <option value="Auth/Login">Auth/Login</option>
+              <option value="Permission">Permission</option>
+              <option value="Security">Security</option>
+              <option value="System">System</option>
             </select>
-          </label>
-          <label>
-            Severity
-            <select id="filter-severity">
-              <option value="">All severity</option>
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-            </select>
-          </label>
-          <label>
-            Admin ID
-            <input id="filter-admin" type="text" />
-          </label>
-          <label>
-            Target admin ID
-            <input id="filter-target" type="text" />
           </label>
           <label>
             From
@@ -117,6 +121,7 @@
             <input id="filter-to" type="date" />
           </label>
           <button id="apply-filters" type="button">Apply</button>
+          <button id="clear-filters" type="button" class="secondary">Clear filters</button>
         </section>
 
         <section class="table-section" id="audit-logs">
@@ -127,20 +132,22 @@
             </div>
             <span id="audit-count" class="count-pill">0 rows</span>
           </div>
-          <div id="audit-empty" class="empty-state hidden">No audit logs match the current filters.</div>
+          <div id="audit-empty" class="empty-state hidden">No audit events found.</div>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
+                  <th>Time</th>
+                  <th>Category</th>
                   <th>Action</th>
-                  <th>Module</th>
-                  <th>Actor</th>
-                  <th>Target</th>
-                  <th>Result</th>
-                  <th>Severity</th>
-                  <th>Masked IP</th>
-                  <th>Created</th>
-                  <th></th>
+                  <th>Actor admin</th>
+                  <th>Target admin/member</th>
+                  <th>Before</th>
+                  <th>After</th>
+                  <th>Reason</th>
+                  <th>Site code</th>
+                  <th>Status</th>
+                  <th>Details</th>
                 </tr>
               </thead>
               <tbody id="audit-rows"></tbody>
@@ -156,19 +163,22 @@
             </div>
             <span id="security-count" class="count-pill">0 rows</span>
           </div>
-          <div id="security-empty" class="empty-state hidden">No security events match the current filters.</div>
+          <div id="security-empty" class="empty-state hidden">No audit events found.</div>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
+                  <th>Time</th>
+                  <th>Category</th>
                   <th>Action</th>
-                  <th>Module</th>
-                  <th>Actor</th>
-                  <th>Target</th>
-                  <th>Result</th>
-                  <th>Severity</th>
-                  <th>Created</th>
-                  <th></th>
+                  <th>Actor admin</th>
+                  <th>Target admin/member</th>
+                  <th>Before</th>
+                  <th>After</th>
+                  <th>Reason</th>
+                  <th>Site code</th>
+                  <th>Status</th>
+                  <th>Details</th>
                 </tr>
               </thead>
               <tbody id="security-rows"></tbody>

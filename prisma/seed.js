@@ -114,8 +114,8 @@ const SITE_DEFS = [
     demoMember: {
       phone: "0800000000",
       username: "ima00180",
-      balance: "11.09",
-      points: "47.00",
+      balance: "180.00",
+      points: "360.00",
       rank: "Mermaid Demo",
     },
   },
@@ -258,6 +258,7 @@ async function upsertSite(def) {
   await upsertSiteGameProviders(site, def);
   await upsertSitePaymentConfig(site, def);
   await upsertPromotions(site, def);
+  await upsertWheelCampaign(site);
 
   return site;
 }
@@ -426,6 +427,92 @@ async function upsertPromotions(site, def) {
     } else {
       await prisma.promotion.create({ data });
     }
+  }
+}
+
+async function upsertWheelCampaign(site) {
+  if (site.code !== "PG77") return;
+
+  await prisma.wheelCampaign.upsert({
+    where: { id: "wheel_main" },
+    update: {
+      siteId: site.id,
+      name: "กงล้อนำโชค",
+      status: "active",
+      costType: "point",
+      costAmount: decimal("10.00"),
+      dailySpinLimit: 3,
+      monthlySpinLimit: null,
+      startAt: null,
+      endAt: null,
+      rulesText: "Demo rewards only. No real payout.",
+      showHistory: true,
+      maxWheelCredit: null,
+      minDepositRequired: null,
+      minTurnoverRequired: null,
+    },
+    create: {
+      id: "wheel_main",
+      siteId: site.id,
+      name: "กงล้อนำโชค",
+      status: "active",
+      costType: "point",
+      costAmount: decimal("10.00"),
+      dailySpinLimit: 3,
+      monthlySpinLimit: null,
+      startAt: null,
+      endAt: null,
+      rulesText: "Demo rewards only. No real payout.",
+      showHistory: true,
+      maxWheelCredit: null,
+      minDepositRequired: null,
+      minTurnoverRequired: null,
+    },
+  });
+
+  const rewards = [
+    ["wheel_reward_1", "Credit 10", "credit", "10.00", "10 credit", 30, "#c41d1d", 1],
+    ["wheel_reward_2", "Credit 50", "credit", "50.00", "50 credit", 10, "#d97706", 2],
+    ["wheel_reward_3", "Points 20", "point", "20.00", "20 points", 20, "#2563eb", 3],
+    ["wheel_reward_4", "Ticket 1", "ticket", "1.00", "1 ticket", 10, "#16a34a", 4],
+    ["wheel_reward_5", "No reward", "no_reward", "0.00", "No reward", 20, "#64748b", 5],
+    ["wheel_reward_6", "Gold Mystery Box", "item", "1.00", "Gold Mystery Box", 5, "#facc15", 6],
+    ["wheel_reward_7", "Jackpot mock", "credit", "500.00", "500 mock credit", 1, "#db2777", 7],
+    ["wheel_reward_8", "Try again", "no_reward", "0.00", "Try again", 14, "#7c3aed", 8],
+  ];
+
+  for (const [id, label, rewardType, rewardValue, displayValue, probabilityWeight, segmentColor, sortOrder] of rewards) {
+    await prisma.wheelReward.upsert({
+      where: { id },
+      update: {
+        campaignId: "wheel_main",
+        label,
+        rewardType,
+        rewardValue: decimal(rewardValue),
+        displayValue,
+        probabilityWeight,
+        stockLimit: null,
+        segmentColor,
+        imageUrl: null,
+        sortOrder,
+        status: "active",
+      },
+      create: {
+        id,
+        campaignId: "wheel_main",
+        label,
+        rewardType,
+        rewardValue: decimal(rewardValue),
+        displayValue,
+        probabilityWeight,
+        stockLimit: null,
+        stockUsed: 0,
+        segmentColor,
+        imageUrl: null,
+        sortOrder,
+        status: "active",
+      },
+    });
   }
 }
 

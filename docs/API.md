@@ -230,7 +230,7 @@ Smoke coverage:
 - `adminRoleManagementSmoke`: owner role-management access, target admin permission read, non-owner role-update `403`, role assignment and rollback, `admin.role.update` audit log check, and response leak scan.
 - `adminWorkScheduleSmoke`: owner schedule list/read/update/override, unauth `401`, non-owner `403`, invalid time `400`, login outside schedule block with no token, login inside schedule allow, active and expired emergency override behavior, overnight shift helper, schedule rollback, audit history endpoint checks, and response leak scan.
 - `adminWorkScheduleUiSmoke`: static UI route/assets, owner list and schedule UI flow, no-permission API block, emergency override UI flow, masked audit history data, and response leak scan.
-- `adminAuditSecuritySmoke`: static `/admin/audit-security` UI route/assets, audit/security summary and list endpoints, action/admin/target/date/severity/module/result filters, no-permission `403`, empty result shape, masked IP, omitted raw user-agent, and response leak scan.
+- `adminAuditSecuritySmoke`: static `/admin/audit-security` UI route/assets, audit/security summary and list endpoints, UX markers for summary cards/filter toolbar/details modal/redaction/role before-after/work-schedule rows, action/admin/target/date/severity/module/result API filters, no-permission `403`, empty result shape, masked IP, omitted raw user-agent, and response leak scan.
 
 Mock bank module endpoints:
 
@@ -367,6 +367,41 @@ Smoke contract:
 - Wallet and ledger effects are checked after the first claim and stay stable after duplicate/invalid attempts.
 - Promotion responses are scanned for secret-shaped values and issued auth values.
 
+## Lucky Wheel API
+
+Lucky Wheel is a staging/mock backend MVP for the future `lucky-wheel-game` Phaser prototype. It does not perform real payout, real wallet payout, live provider calls, live payment calls, bank calls, SMS, or Slip OCR. The backend is the only component allowed to choose the reward result.
+
+Member endpoints:
+
+| Method | Path | Auth | Body/query | Response summary | Safety notes |
+| --- | --- | --- | --- | --- | --- |
+| GET | `/member/wheel/config` | Member | optional query `campaignId` | active campaign, cost, remaining spins, mock balance, public reward segments, rules, server time | Does not expose `probabilityWeight`, stock, or internal metadata |
+| POST | `/member/wheel/spin` | Member | `campaignId` only | backend-selected `spinId`, `rewardId`, `prizeIndex`, reward label/type/amount, remaining spins, balance after | Rejects frontend `rewardId`, `prizeIndex`, `probabilityWeight`, or `rewardValue` |
+| GET | `/member/wheel/history` | Member | `page`, `limit` max 100 | newest spin rows with reward label/type/value/status/prizeIndex | Sanitized history only |
+| GET | `/member/wheel/my-rewards` | Member | `page`, `limit` max 100 | pending/claimed/expired wheel rewards, excluding no-reward results | No real payout or claim payout is implemented |
+
+Admin endpoints:
+
+| Method | Path | Auth | Permission | Body/query | Response summary | Admin log |
+| --- | --- | --- | --- | --- | --- | --- |
+| GET | `/admin/wheel/config` | Admin + site access | `settings.website.view` | None | campaign, rewards with weight/stock fields, summary counts | None |
+| PATCH | `/admin/wheel/campaign` | Admin + site access | `settings.website.update` | allowed campaign fields plus required `reason` | sanitized campaign | `wheel.campaign.update` |
+| POST | `/admin/wheel/rewards` | Admin + site access | `settings.website.update` | reward fields plus required `reason` | sanitized reward | `wheel.reward.create` |
+| PATCH | `/admin/wheel/rewards/:id` | Admin + site access | `settings.website.update` | reward fields plus required `reason` | sanitized reward | `wheel.reward.update` |
+| GET | `/admin/wheel/spins` | Admin + site access | `reports.view` | `campaignId`, `memberId`, `username`, `rewardType`, `dateFrom`, `dateTo`, `page`, `limit` | sanitized spin rows with masked IP | None |
+
+Spin contract for `lucky-wheel-game`:
+
+1. Frontend calls `GET /api/member/wheel/config` to render wheel segments.
+2. Frontend calls `POST /api/member/wheel/spin` with only `{ "campaignId": "wheel_main" }`.
+3. Backend validates campaign, member, mock balance, limits, stock, and chooses the reward with `crypto.randomInt`.
+4. Backend returns `prizeIndex`; frontend animates to that index.
+5. Frontend must not randomize rewards, submit `rewardId`, submit `prizeIndex`, or submit reward value.
+
+Mock seed: campaign `wheel_main`, name `กงล้อนำโชค`, active, point cost `10`, daily limit `3`, and eight demo segments: Credit 10, Credit 50, Points 20, Ticket 1, No reward, Gold Mystery Box, Jackpot mock, and Try again.
+
+Smoke coverage: `npm run smoke:wheel` covers the local/staging safety guard, member config, member result field injection rejection, backend-selected spin result, history, my rewards, daily limit, insufficient points, inactive campaign, stock-zero exclusion, admin reason validation, admin audit reason, admin config/spins, and response leak scan.
+
 ## 11. Safety / Negative Contract
 
 Verified by `src/local-smoke-tests/financialNegativeSmoke.js`:
@@ -397,8 +432,9 @@ Verified by `src/local-smoke-tests/financialNegativeSmoke.js`:
 | `npm run smoke:admin-reports-config` | Health, public site config, admin auth negatives, admin login, read-only report endpoints, read-only site/config endpoints, response leak scan | Yes | Yes | Syntax checked only in Safe CI |
 | `npm run smoke:admin-work-schedule` | Health, schedule auth guards, owner schedule list/update/read/override, invalid time validation, login schedule block/allow, expired override, overnight shift helper, audit logs, response leak scan | Yes | Yes | Syntax checked only in Safe CI |
 | `npm run smoke:admin-work-schedule-ui` | Static `/admin/work-schedules` UI route/assets, permission block, owner schedule list/update, override, masked audit history, response leak scan | Yes | Yes | Syntax checked only in Safe CI |
-| `npm run smoke:admin-audit-security` | Static `/admin/audit-security` UI route/assets, audit/security endpoints, filters, permission block, empty state response, masked IP, raw user-agent omission, response leak scan | Yes | Yes | Syntax checked only in Safe CI |
-| `npm run smoke:all-local` | Guarded sequence: smoke syntax checks, `npm run check`, promotion-claim, money-flow, core-api, game-transfer, financial-negative, admin-reports-config, admin work schedule, admin work schedule UI, admin audit/security, secret grep, diff whitespace check | Yes | Yes | Not run in Safe CI because it needs a running API and local DB |
+| `npm run smoke:admin-audit-security` | Static `/admin/audit-security` UI route/assets, audit/security endpoints, UX markers, filters, permission block, empty state response, masked IP, raw user-agent omission, response leak scan | Yes | Yes | Syntax checked only in Safe CI |
+| `npm run smoke:wheel` | Lucky Wheel safety guard, member config/spin/history/rewards, backend result selection, admin campaign/reward reason validation, audit reason, stock-zero exclusion, and response leak scan | Yes | Yes | Syntax checked only in Safe CI |
+| `npm run smoke:all-local` | Guarded sequence: smoke syntax checks, `npm run check`, promotion-claim, money-flow, core-api, game-transfer, financial-negative, admin-reports-config, admin work schedule, admin work schedule UI, admin audit/security, wheel, secret grep, diff whitespace check | Yes | Yes | Not run in Safe CI because it needs a running API and local DB |
 | GitHub Actions Safe CI | `npm ci`, Prisma validate/generate, `npm run check`, local smoke syntax checks, secret-shaped value scan | No | No real DB connection for smoke | Runs on push and PR |
 
 GitHub Actions does not run DB-backed local smoke flows because those require a running local API and safe local/test PostgreSQL fixture setup.
@@ -424,6 +460,7 @@ Status codes verified from code:
 - Bank statement adapter is mock/skeleton only.
 - SMS is a mock placeholder; no real SMS API is connected.
 - Slip OCR is a mock placeholder; no real OCR API is connected.
+- Lucky Wheel is mock/staging only; it stores demo spin/reward rows and never triggers real payout.
 - No real provider/payment/bank/SMS/Slip OCR connection is allowed in these local flows.
 - No production DB is allowed.
 - Do not log or document real DB URLs, passwords, tokens, provider secrets, API keys, or raw provider payloads.
@@ -455,6 +492,12 @@ Run all guarded local smoke tests after the backend is running and the environme
 npm run smoke:all-local
 ```
 
+Run Lucky Wheel smoke only:
+
+```bash
+npm run smoke:wheel
+```
+
 Reference:
 
 - Main runbook: `README.md`, section `Dev/Test Runbook`
@@ -479,3 +522,4 @@ Secret rules:
 - Admin audit/security static frontend is implemented at `/admin/audit-security`; it is a backend-served static page and uses backend `reports.view` guard as the source of truth.
 - Production deployment smoke is not covered.
 - Full frontend end-to-end coverage is not covered.
+- Lucky Wheel frontend Phaser integration and real reward claiming are not implemented in this MVP.

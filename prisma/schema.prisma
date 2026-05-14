@@ -39,6 +39,9 @@ model Site {
   gameTransfers       GameTransfer[]
   gameBetHistoryMocks GameBetHistoryMock[]
   adminLogs           AdminLog[]
+  wheelCampaigns      WheelCampaign[]
+  wheelSpins          WheelSpin[]
+  memberRewards       MemberReward[]
 
   @@map("sites")
 }
@@ -180,6 +183,8 @@ model User {
   gameSessions         GameSession[]
   gameTransfers        GameTransfer[]
   gameBetHistoryMocks  GameBetHistoryMock[]
+  wheelSpins           WheelSpin[]
+  memberRewards        MemberReward[]
 
   @@unique([siteId, phone])
   @@unique([siteId, username])
@@ -528,4 +533,108 @@ model GameBetHistoryMock {
   @@index([siteId])
   @@index([userId])
   @@map("game_bet_history_mock")
+}
+
+model WheelCampaign {
+  id                  String        @id
+  siteId              String        @map("site_id")
+  name                String
+  status              String        @default("draft")
+  costType            String        @default("point") @map("cost_type")
+  costAmount          Decimal       @default(0.00) @map("cost_amount") @db.Decimal(18, 2)
+  dailySpinLimit      Int           @default(0) @map("daily_spin_limit")
+  monthlySpinLimit    Int?          @map("monthly_spin_limit")
+  startAt             DateTime?     @map("start_at")
+  endAt               DateTime?     @map("end_at")
+  rulesText           String?       @map("rules_text")
+  showHistory         Boolean       @default(true) @map("show_history")
+  maxWheelCredit      Decimal?      @map("max_wheel_credit") @db.Decimal(18, 2)
+  minDepositRequired  Decimal?      @map("min_deposit_required") @db.Decimal(18, 2)
+  minTurnoverRequired Decimal?      @map("min_turnover_required") @db.Decimal(18, 2)
+  createdAt           DateTime      @default(now()) @map("created_at")
+  updatedAt           DateTime      @updatedAt @map("updated_at")
+  site                Site          @relation(fields: [siteId], references: [id])
+  rewards             WheelReward[]
+  spins               WheelSpin[]
+
+  @@index([siteId])
+  @@index([status])
+  @@map("wheel_campaigns")
+}
+
+model WheelReward {
+  id                String         @id
+  campaignId        String         @map("campaign_id")
+  label             String
+  rewardType        String         @map("reward_type")
+  rewardValue       Decimal        @default(0.00) @map("reward_value") @db.Decimal(18, 2)
+  displayValue      String         @map("display_value")
+  probabilityWeight Int            @default(0) @map("probability_weight")
+  stockLimit        Int?           @map("stock_limit")
+  stockUsed         Int            @default(0) @map("stock_used")
+  segmentColor      String         @map("segment_color")
+  imageUrl          String?        @map("image_url")
+  sortOrder         Int            @map("sort_order")
+  status            String         @default("active")
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @updatedAt @map("updated_at")
+  campaign          WheelCampaign  @relation(fields: [campaignId], references: [id])
+  spins             WheelSpin[]
+
+  @@unique([campaignId, sortOrder])
+  @@index([campaignId])
+  @@index([status])
+  @@map("wheel_rewards")
+}
+
+model WheelSpin {
+  id              String         @id @default(cuid())
+  siteId          String         @map("site_id")
+  memberId        String         @map("member_id")
+  campaignId      String         @map("campaign_id")
+  rewardId        String         @map("reward_id")
+  prizeIndex      Int            @map("prize_index")
+  spinCostType    String         @map("spin_cost_type")
+  spinCostAmount  Decimal        @default(0.00) @map("spin_cost_amount") @db.Decimal(18, 2)
+  resultSnapshot  Json           @map("result_snapshot")
+  ipAddressMasked String?        @map("ip_address_masked")
+  userAgentHash   String?        @map("user_agent_hash")
+  createdAt       DateTime       @default(now()) @map("created_at")
+  site            Site           @relation(fields: [siteId], references: [id])
+  member          User           @relation(fields: [memberId], references: [id])
+  campaign        WheelCampaign  @relation(fields: [campaignId], references: [id])
+  reward          WheelReward    @relation(fields: [rewardId], references: [id])
+  memberReward    MemberReward?
+
+  @@index([siteId])
+  @@index([memberId])
+  @@index([campaignId])
+  @@index([rewardId])
+  @@index([createdAt])
+  @@map("wheel_spins")
+}
+
+model MemberReward {
+  id          String     @id @default(cuid())
+  siteId      String     @map("site_id")
+  memberId    String     @map("member_id")
+  source      String
+  sourceId    String     @unique @map("source_id")
+  rewardType  String     @map("reward_type")
+  rewardValue Decimal    @default(0.00) @map("reward_value") @db.Decimal(18, 2)
+  label       String
+  status      String     @default("pending")
+  claimedAt   DateTime?  @map("claimed_at")
+  expiresAt   DateTime?  @map("expires_at")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  site        Site       @relation(fields: [siteId], references: [id])
+  member      User       @relation(fields: [memberId], references: [id])
+  spin        WheelSpin  @relation(fields: [sourceId], references: [id])
+
+  @@index([siteId])
+  @@index([memberId])
+  @@index([source])
+  @@index([status])
+  @@map("member_rewards")
 }

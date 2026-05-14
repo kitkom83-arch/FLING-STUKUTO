@@ -37,7 +37,8 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `adminRoleManagementSmoke.js` | `npm run smoke:admin-role-management` | Yes | Yes | Yes | Syntax check only | Admin role-management checks for permission catalog, role catalog, current/target permissions, owner updates, non-owner `403`, audit log, rollback, and leak scan. |
 | `adminWorkScheduleSmoke.js` | `npm run smoke:admin-work-schedule` | Yes | Yes | Yes | Syntax check only | Admin work schedule UI/API checks for schedule list/read/update, permission guards, login block/allow, emergency override, expired override, audit history, rollback, and leak scan. |
 | `adminWorkScheduleUiSmoke.js` | `npm run smoke:admin-work-schedule-ui` | Yes | Yes | Yes | Syntax check only | Static admin schedule UI route/assets, owner flow, no-permission block, emergency override, masked audit history, and leak scan. |
-| `adminAuditSecuritySmoke.js` | `npm run smoke:admin-audit-security` | Yes | Yes | Yes | Syntax check only | Static audit/security UI route/assets, report endpoints, filters, permission block, empty response shape, masked IP, raw user-agent omission, and leak scan. |
+| `adminAuditSecuritySmoke.js` | `npm run smoke:admin-audit-security` | Yes | Yes | Yes | Syntax check only | Static audit/security UI route/assets, UX markers, report endpoints, filters, permission block, empty response shape, masked IP, raw user-agent omission, and leak scan. |
+| `wheelSmoke.js` | `npm run smoke:wheel` | Yes | Yes | Yes | Syntax check only | Lucky Wheel mock config/spin/history/rewards, backend result selection, admin reason/audit checks, stock-zero exclusion, and leak scan. |
 | `stagingPreflight.js` | `npm run staging:preflight` | No local Prisma access | Optional | No | Runs local-test dry run | Staging readiness guard for env boundary, database/API target labels, external modes, health contract, and response leak scan. |
 | `stagingSmoke.js` | `npm run smoke:staging` | No local Prisma access | Yes | No | Syntax check only | Hosted staging health contract, safe external mode labels, admin auth negative leak check, and response leak scan. |
 | `stagingDbCheck.js` | `npm run staging:db:check` | Staging/test DB | No | No | Syntax check only | Staging DB connection, required tables, demo site/admin/member readiness, fixture counts, and safe output. |
@@ -261,6 +262,11 @@ The UI smoke uses only static frontend assets and local/staging/test PostgreSQL 
 - Static route check for `/admin/audit-security/`.
 - Static asset checks for `app.js` and `styles.css`.
 - UI script contract checks for permission, audit log, audit summary, and security event endpoints.
+- Static UI marker checks cover `audit-filter-toolbar`, `audit-role-before-after`, `audit-reason-visible`, `audit-work-schedule-events`, `audit-details-modal`, and `audit-secret-redaction`.
+- Static UI checks confirm summary cards for total events, role changes, work schedule events, login/security events, blocked/failed actions, and events with reasons.
+- Static UI checks confirm filter controls for action type, admin username, target username, date range, site code, and event category.
+- Static UI checks confirm the audit/security tables expose time, category, action, actor, target, before, after, reason, site code, status, and details columns.
+- Static asset leak checks reject JWT-like static values, credential-shaped PostgreSQL URLs, and configured secret env values if they appear in the rendered UI assets.
 - Owner login through the real local API.
 - No-permission audit report access returns `403`.
 - Owner creates local-only role, schedule, and emergency override audit fixtures through guarded admin APIs.
@@ -268,12 +274,34 @@ The UI smoke uses only static frontend assets and local/staging/test PostgreSQL 
 - `GET /api/admin/audit-logs/summary` returns total, blocked login, emergency override, permission change, role change, schedule change, failed attempt, and high severity counts.
 - `GET /api/admin/security-events` and `/summary` return only security-sensitive actions.
 - Filters are checked for action, admin ID, target admin ID, date range, severity, module, and result.
+- UI-level client filters are statically covered for action type, admin username, target username, date range, site code, and event category.
 - Empty result response returns an empty `rows` array and zero summary.
 - Response leak scan checks DB URL markers, auth values, password/token/secret markers, JWT-like values, credential-shaped PostgreSQL URLs, raw user-agent content, and unmasked IPv4 addresses.
 
 The audit/security smoke uses only static frontend assets and local/staging/test PostgreSQL fixtures. It does not call real provider, payment, bank, SMS, or Slip OCR services, and it does not run real-money UAT.
 
-## 15. staging:preflight Coverage
+## 15. smoke:wheel Coverage
+
+- Safety guard blocks unsafe environment, production-like DB/API targets, live provider modes, and missing `LOCAL_ADMIN_PASSWORD`.
+- Creates local/staging-test only site, admin, member, campaign, and reward fixtures.
+- Verifies `GET /api/member/wheel/config` returns active campaign data and at least 8 public rewards.
+- Confirms member config does not expose `probabilityWeight`.
+- Confirms `POST /api/member/wheel/spin` rejects frontend-submitted `rewardId` and `prizeIndex`.
+- Confirms successful spin returns backend-selected `spinId`, `rewardId`, `prizeIndex`, reward summary, remaining spins, and balance after.
+- Confirms stock-zero reward fixtures are not selected even with high probability weight.
+- Confirms history includes the created spin.
+- Confirms my-rewards includes a pending reward for non-`no_reward` results.
+- Confirms daily spin limit is enforced.
+- Confirms insufficient points are blocked.
+- Confirms inactive campaign is blocked and then restored.
+- Confirms admin campaign/reward updates reject empty reason.
+- Confirms successful admin reward update writes `wheel.reward.update` audit metadata with the reason.
+- Reads admin config and admin spin history.
+- Response leak scan checks DB URL markers, auth values, password/token/secret markers, JWT-like values, and credential-shaped PostgreSQL URLs.
+
+Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not call real provider, payment, bank, SMS, or Slip OCR services, does not run real-money UAT, and does not create real payout.
+
+## 16. staging:preflight Coverage
 
 `npm run staging:preflight` is a safe deploy readiness guard:
 
@@ -285,7 +313,7 @@ The audit/security smoke uses only static frontend assets and local/staging/test
 - Uses a local health fixture when `BASE_URL` is absent so Safe CI can run without real secrets.
 - Scans health payloads for database URLs, JWT-shaped values, authorization headers, unsafe response keys, and sensitive environment values.
 
-## 16. smoke:staging Coverage
+## 17. smoke:staging Coverage
 
 `npm run smoke:staging` is an HTTP-only hosted staging readiness smoke:
 
@@ -298,7 +326,7 @@ The audit/security smoke uses only static frontend assets and local/staging/test
 - Scans health and admin-auth responses for database URLs, JWT-shaped values, authorization headers, token/password/secret keys, API key fields, and sensitive env values.
 - Does not create fixtures, import Prisma, run migrations, seed data, call real providers, or move money.
 
-## 17. smoke:all-local Coverage
+## 18. smoke:all-local Coverage
 
 `npm run smoke:all-local` runs a guarded sequence and stops on the first failure:
 
@@ -317,6 +345,7 @@ The audit/security smoke uses only static frontend assets and local/staging/test
   - `adminWorkScheduleSmoke.js`
   - `adminWorkScheduleUiSmoke.js`
   - `adminAuditSecuritySmoke.js`
+  - `wheelSmoke.js`
   - `stagingPreflight.js`
   - `stagingSmoke.js`
 - `npm run check`.
@@ -332,11 +361,12 @@ The audit/security smoke uses only static frontend assets and local/staging/test
 - `npm run smoke:admin-work-schedule`.
 - `npm run smoke:admin-work-schedule-ui`.
 - `npm run smoke:admin-audit-security`.
+- `npm run smoke:wheel`.
 - Secret grep over package/docs/README/local-smoke related files.
 - `git diff --check`.
 - Final PASS/FAIL summary.
 
-## 18. GitHub Actions Safe CI Coverage
+## 19. GitHub Actions Safe CI Coverage
 
 `.github/workflows/ci.yml` defines Safe CI for `push` and `pull_request`:
 
@@ -359,13 +389,14 @@ The audit/security smoke uses only static frontend assets and local/staging/test
   - `adminWorkScheduleSmoke.js`
   - `adminWorkScheduleUiSmoke.js`
   - `adminAuditSecuritySmoke.js`
+  - `wheelSmoke.js`
   - `stagingSmoke.js`
   - `runAllLocalSmoke.js`
 - Secret-shaped value scan over `package.json`, `README.md`, `src/local-smoke-tests`, and `.github`.
 
 Safe CI does not run DB-backed smoke commands because those require a running backend, safe local/staging/test PostgreSQL, guarded environment variables, and local fixtures.
 
-## 19. Required Local Runtime
+## 20. Required Local Runtime
 
 To run local smoke commands, prepare:
 
@@ -380,7 +411,7 @@ To run local smoke commands, prepare:
 
 `smoke:staging` requires only `BASE_URL` and a running safe staging/local API. `moneyFlowSmoke.js` also allows `staging` for `NODE_ENV`. Other current DB-backed smoke scripts shown above allow `development-local` or `test`.
 
-## 20. Safe Commands
+## 21. Safe Commands
 
 Run these only after the backend and safe local/staging/test environment are ready:
 
@@ -398,10 +429,11 @@ npm run smoke:admin-permission
 npm run smoke:admin-work-schedule
 npm run smoke:admin-work-schedule-ui
 npm run smoke:admin-audit-security
+npm run smoke:wheel
 npm run check
 ```
 
-## 21. Mock / Sandbox Boundaries
+## 22. Mock / Sandbox Boundaries
 
 - Game provider coverage uses mock/local fixtures and `MockGameProviderAdapter` behavior.
 - Payment and bank money flow is manual local approval through the API and admin endpoints.
@@ -413,10 +445,11 @@ npm run check
 - Admin work schedule smoke uses mock/local admin fixtures and backend login guards only.
 - Admin work schedule UI smoke uses static local frontend assets and mock/local admin fixtures only.
 - Admin audit/security smoke uses static local frontend assets, safe audit rows, and mock/local admin fixtures only.
+- Lucky Wheel smoke uses local/staging mock campaign, reward, spin, and member reward fixtures only. It does not create real payout.
 - Production DB targets are forbidden.
 - Real provider/payment/bank integrations and production credential flows are outside current smoke coverage.
 
-## 22. Known Coverage Gaps
+## 23. Known Coverage Gaps
 
 Confirmed from current docs and scripts:
 
@@ -429,9 +462,10 @@ Confirmed from current docs and scripts:
 - Force-logout of already-active sessions is not covered.
 - Production deployment smoke is not covered. `smoke:staging` is only for non-production staging/test hosts.
 - Full end-to-end frontend coverage is not covered.
+- Lucky Wheel frontend Phaser integration and real reward claiming are not covered.
 - docs/API.md still contains older "ต้องตรวจเพิ่ม" notes for some endpoints that are now covered by newer smoke scripts; ต้องตรวจเพิ่ม before using that section as the source of truth.
 
-## 23. How to Add a New Smoke
+## 24. How to Add a New Smoke
 
 1. Add the new smoke script under `src/local-smoke-tests`.
 2. Reuse the existing local safety guard and response leak scan patterns.

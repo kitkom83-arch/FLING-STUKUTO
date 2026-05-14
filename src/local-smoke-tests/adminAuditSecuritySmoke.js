@@ -221,6 +221,20 @@ async function fetchText(url, label) {
   return text;
 }
 
+function assertStaticNoSecretLeak(label, text) {
+  const jwtLike = /\b[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\b/;
+  const postgresWithCredentials = /postgres(?:ql)?:\/\/[^:\s/]+:[^@\s/]+@/i;
+  if (jwtLike.test(text)) throw new Error(`${label} included a JWT-like static value.`);
+  if (postgresWithCredentials.test(text)) throw new Error(`${label} included a PostgreSQL credential URL.`);
+  for (const [name, value] of [
+    ["DATABASE_URL", process.env.DATABASE_URL],
+    ["JWT_SECRET", process.env.JWT_SECRET],
+    ["LOCAL_ADMIN_PASSWORD", process.env.LOCAL_ADMIN_PASSWORD],
+  ]) {
+    if (value && text.includes(value)) throw new Error(`${label} leaked ${name}.`);
+  }
+}
+
 async function loginAdmin(baseUrl, username) {
   const login = await apiRequest(baseUrl, "/admin/auth/login", {
     method: "POST",
@@ -284,9 +298,39 @@ async function assertStaticUi(baseUrl) {
     "Security Events",
     "Safe metadata",
     "Permission status",
+    "Total audit events",
+    "Role changes",
+    "Work schedule events",
+    "Login/security events",
+    "Blocked/failed actions",
+    "Events with reason",
+    "Action type",
+    "Admin username",
+    "Target username",
+    "Site code",
+    "Event category",
+    "Clear filters",
+    "Refresh / Load audit",
+    "Time",
+    "Category",
+    "Actor admin",
+    "Target admin/member",
+    "Before",
+    "After",
+    "Reason",
+    "Status",
+    "Details",
+    "No audit events found",
+    "audit-filter-toolbar",
+    "audit-role-before-after",
+    "audit-reason-visible",
+    "audit-work-schedule-events",
+    "audit-details-modal",
+    "audit-secret-redaction",
   ]) {
     if (!html.includes(marker)) throw new Error(`Static UI missing marker: ${marker}`);
   }
+  assertStaticNoSecretLeak("admin audit security page", html);
   const js = await fetchText(`${webBase}/admin/audit-security/app.js`, "admin audit security app.js");
   for (const endpoint of [
     "/admin/permissions/me",
@@ -297,8 +341,26 @@ async function assertStaticUi(baseUrl) {
   ]) {
     if (!js.includes(endpoint)) throw new Error(`UI script missing endpoint: ${endpoint}`);
   }
+  for (const marker of [
+    "audit-filter-toolbar",
+    "audit-role-before-after",
+    "audit-reason-visible",
+    "audit-work-schedule-events",
+    "audit-details-modal",
+    "audit-secret-redaction",
+    "beforeRole",
+    "afterRole",
+    "reason",
+    "sanitizeValue",
+    "admin.schedule.override_enable",
+    "admin.login.blocked_outside_schedule",
+  ]) {
+    if (!js.includes(marker)) throw new Error(`UI script missing marker: ${marker}`);
+  }
+  assertStaticNoSecretLeak("admin audit security app.js", js);
   const css = await fetchText(`${webBase}/admin/audit-security/styles.css`, "admin audit security styles.css");
   if (!css.includes(".summary-grid") || !css.includes(".badge")) throw new Error("UI stylesheet missing summary or badge styles.");
+  assertStaticNoSecretLeak("admin audit security styles.css", css);
   console.log("Static audit security UI route: PASS");
 }
 
