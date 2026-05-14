@@ -404,11 +404,13 @@ Admin Wheel UI API usage:
 
 - Static page: `/admin/lucky-wheel/`.
 - The UI uses only existing wheel/admin APIs listed above plus existing read-only `GET /admin/audit-logs?limit=100` for the Audit history tab when that report endpoint is available.
+- Permission guard is backend-enforced: config reads require `settings.website.view`, campaign/reward writes require `settings.website.update`, spin history requires `reports.view`, and audit history requires `reports.view` through the existing audit endpoint. UI menu visibility is advisory only.
+- Admin UI maps auth/permission failures to safe messages: `401` shows `กรุณาเข้าสู่ระบบแอดมิน`, `403` shows `ไม่มีสิทธิ์ใช้งานเมนู Lucky Wheel`, `404` shows `ยังไม่พบข้อมูล Lucky Wheel`, and other load failures show `โหลดข้อมูลไม่สำเร็จ`.
 - Campaign settings loads `GET /admin/wheel/config` and writes `PATCH /admin/wheel/campaign` with only `status`, `name`, `costType`, `costAmount`, `dailySpinLimit`, `startAt`, `endAt`, `rulesText`, and required `reason`.
 - Rewards management loads rewards from `GET /admin/wheel/config`, creates with `POST /admin/wheel/rewards`, and edits/toggles status with `PATCH /admin/wheel/rewards/:id`. Reward writes send `label`, `rewardType`, `rewardValue`, `displayValue`, `probabilityWeight`, `stockLimit`, `segmentColor`, `imageUrl`, `sortOrder`, `status`, and required `reason`.
 - Spin history uses `GET /admin/wheel/spins` with supported filters only: `campaignId`, `username`, `rewardType`, `dateFrom`, `dateTo`, and `limit`. The UI filters status client-side from the sanitized reward status returned by the endpoint.
-- Reports are frontend summaries derived from `GET /admin/wheel/config` and `GET /admin/wheel/spins`; there is no new report write endpoint.
-- Audit history filters existing admin audit rows client-side to `wheel.campaign.update`, `wheel.reward.create`, `wheel.reward.update`, `wheel.reward.delete`, and `wheel.spin.adjust`. If the report endpoint is unavailable, the tab shows a read-only placeholder.
+- Reports are frontend summaries derived from `GET /admin/wheel/config` and `GET /admin/wheel/spins`; there is no report endpoint and no report write endpoint. Zero-spin reports must render `0 %`, `0`, `ไม่จำกัด`, or `ไม่พบข้อมูล` instead of `NaN`/`undefined`.
+- Audit history filters existing admin audit rows client-side to `wheel.campaign.update`, `wheel.reward.create`, `wheel.reward.update`, `wheel.reward.delete`, and `wheel.spin.adjust`. If the report endpoint is unavailable, the tab shows a read-only placeholder. If auth/permission fails, it shows the safe 401/403 message instead of fake audit data.
 - Every write action requires a non-empty `reason` before submit. The UI does not send `stockUsed`, `rewardId`, `prizeIndex`, `probabilityWeight`, or reward value to member spin endpoints. Member spin remains `{ "campaignId": "wheel_main" }` only and backend-selected.
 - The UI redacts secret-shaped values in details/diff displays and must not render raw tokens, passwords, secrets, database URLs, authorization headers, raw internal stack traces, or raw unmasked IPs.
 

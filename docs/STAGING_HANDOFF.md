@@ -75,7 +75,9 @@ Use this checklist for manual staging clicks only. Do not use production account
 - [ ] Confirm Spin history loads sanitized rows or the `ไม่พบข้อมูล` empty state, shows masked IP only, and opens details without dumping raw JSON or secrets.
 - [ ] Confirm Reports summary and reward tables render zero-safe values without `NaN` or `undefined`.
 - [ ] Confirm Audit history shows existing wheel audit rows or the safe read-only placeholder if the audit endpoint is unavailable.
+- [ ] Confirm Admin Lucky Wheel uses safe permission messages: `401` shows `กรุณาเข้าสู่ระบบแอดมิน`, `403` shows `ไม่มีสิทธิ์ใช้งานเมนู Lucky Wheel`, and `404` shows `ยังไม่พบข้อมูล Lucky Wheel`.
 - [ ] Confirm Lucky Wheel responses do not expose passwords, tokens, authorization headers, database URLs, provider secrets, stock internals on member endpoints, or raw user-agent.
+- [ ] Confirm the existing member wheel API and local `lucky-wheel-game` bridge still spin with backend-selected `prizeIndex` only and do not accept frontend `rewardId` or `prizeIndex`.
 - [ ] Final authenticated browser role assignment verification remains blocked unless approved staging credentials are available from the secret manager or approved out-of-repo channel.
 - [ ] Test invalid admin login with intentionally wrong credentials.
 - [ ] Confirm invalid login fails closed with a controlled auth failure and does not return `500`.

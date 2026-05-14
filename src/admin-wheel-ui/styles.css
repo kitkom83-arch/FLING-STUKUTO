@@ -331,9 +331,14 @@ td {
   overflow-wrap: anywhere;
 }
 
-.empty-state {
+.empty-state,
+.loading-state {
   padding: 24px 16px;
   color: var(--muted);
+}
+
+.loading-state {
+  font-weight: 700;
 }
 
 .filter-bar {

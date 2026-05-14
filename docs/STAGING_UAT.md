@@ -85,6 +85,22 @@ Use this checklist when handing staging to testers. It authorizes staging UAT on
 - If any credential was exposed outside the approved secret channel, rotate it before tester handoff.
 - Do not screenshot Render ENV, database settings, shell output, request headers, or any page that shows raw secret values.
 
+## Admin Lucky Wheel UAT Checklist
+
+Use this checklist only with approved staging/mock admin and member accounts. Do not use production DB, live provider/payment/bank/SMS/Slip OCR modes, real money, or real payout flows.
+
+- Open `/admin/lucky-wheel/` and confirm the page shows `Staging / Mock Admin Console` and `No real money / no live provider`.
+- Confirm Campaign settings loads through `GET /api/admin/wheel/config` or shows a safe error state.
+- Confirm Save campaign without `reason` fails before API submission.
+- Confirm Save campaign with `reason` uses only approved staging/mock data and writes audit context.
+- Confirm Create/Edit reward opens the modal and rejects empty `reason`.
+- Confirm reward payloads do not include `stockUsed`, `rewardId`, `prizeIndex`, or member spin result fields.
+- Confirm Spin history loads sanitized rows or `ไม่พบข้อมูล`, shows masked IP only, and detail modal does not expose raw IP, user-agent, token, password, secret, authorization header, or database URL.
+- Confirm Reports derive from admin config/spins only and never show `NaN` or `undefined`; zero-spin state must render `0`, `0 %`, `ไม่จำกัด`, or `ไม่พบข้อมูล`.
+- Confirm Audit history shows existing wheel actions from `/api/admin/audit-logs` or the safe placeholder when the audit endpoint is unavailable.
+- Confirm `401`, `403`, and `404` responses show the safe Admin Lucky Wheel messages documented in `docs/API.md`.
+- Confirm the member wheel API and local `lucky-wheel-game` bridge remain backend-selected and reject frontend-submitted reward result fields.
+
 ## Staging DB Schema and Demo Seed Verification
 
 This phase is for UAT readiness only. It does not authorize production DB access, live provider mode, live bank/payment rails, SMS sending, Slip OCR live calls, or real-money transactions.

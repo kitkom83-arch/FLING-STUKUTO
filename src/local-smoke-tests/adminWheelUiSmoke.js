@@ -25,6 +25,17 @@ function assertNoStaticSecret(label, text) {
   if (/DATABASE_URL\s*=|LOCAL_ADMIN_PASSWORD\s*=|JWT_SECRET\s*=/.test(text)) throw new Error(`${label} contains an env assignment marker.`);
 }
 
+function assertNoUnsafeLogging(js) {
+  const logLines = js
+    .split(/\r?\n/)
+    .filter((line) => /\bconsole\.(log|debug|info|warn|error)\b/.test(line));
+  for (const line of logLines) {
+    if (/Authorization|JWT|token|secret|password|session/i.test(line)) {
+      throw new Error("Admin Wheel UI must not log auth/session/secret markers.");
+    }
+  }
+}
+
 function assertReasonBeforeWrite(js, reasonMarker, writeMarker, label) {
   const reasonIndex = js.indexOf(reasonMarker);
   const writeIndex = js.indexOf(writeMarker);
@@ -46,6 +57,14 @@ function assertNoFrontendSpinSelection(js) {
   }
 }
 
+function assertNoFrontendSpinPayload(js) {
+  const spinWritePattern = /fetch\([^)]*\/member\/wheel\/spin|api\([^)]*\/member\/wheel\/spin/;
+  if (spinWritePattern.test(js)) throw new Error("Admin Wheel UI must not call member spin endpoints.");
+  if (/body\s*:\s*\{[^}]*rewardId|body\s*:\s*\{[^}]*prizeIndex/s.test(js)) {
+    throw new Error("Admin Wheel UI must not submit rewardId or prizeIndex in write payloads.");
+  }
+}
+
 function main() {
   const html = read(HTML_PATH);
   const js = read(JS_PATH);
@@ -57,6 +76,8 @@ function main() {
     "Admin Lucky Wheel",
     "Admin &gt; Services",
     "Lucky Wheel",
+    "Staging / Mock Admin Console",
+    "No real money / no live provider",
     "Campaign settings",
     "Rewards",
     "Spin history",
@@ -64,33 +85,64 @@ function main() {
     "Audit history",
     "Reason",
     "Create reward",
+    'id="reward-modal" data-modal="reward" data-testid="reward-modal"',
+    'data-close-modal="reward-modal" data-testid="reward-modal-close"',
     "ไม่พบข้อมูล",
+    "กำลังโหลดข้อมูล",
     "Audit history จะเชื่อมกับ admin audit log endpoint เมื่อพร้อม",
   ]);
   assertIncludes("Admin Wheel JS endpoints", js, [
     "/admin/wheel/config",
     "/admin/wheel/campaign",
     "/admin/wheel/rewards",
+    "encodeURIComponent(state.editingReward.id)",
     "/admin/wheel/spins",
     "/admin/audit-logs?limit=100",
   ]);
   assertIncludes("Admin Wheel JS safety", js, [
     "SENSITIVE_KEY_PATTERN",
+    "IP_KEY_PATTERN",
+    "RAW_IPV4_PATTERN",
+    "maskIp",
     "sanitizeValue",
+    "normalizeConfig",
+    "normalizeReward",
+    "normalizeSpin",
+    "SafeApiError",
+    "กรุณาเข้าสู่ระบบแอดมิน",
+    "ไม่มีสิทธิ์ใช้งานเมนู Lucky Wheel",
+    "ยังไม่พบข้อมูล Lucky Wheel",
     "validateReason",
     "บันทึกการตั้งค่าแคมเปญสำเร็จ",
     "บันทึกไม่สำเร็จ กรุณาตรวจสอบข้อมูลอีกครั้ง",
     "โหลดข้อมูลไม่สำเร็จ",
     "remainingStock",
     "renderReports",
+    "totalSpins > 0",
+    "0 %",
     "openSpinDetail",
     "openAuditDetail",
     "Edit reward",
+    "document.getElementById(button.dataset.closeModal)",
     "WHEEL_AUDIT_ACTIONS",
+    "wheel.campaign.update",
+    "wheel.reward.create",
+    "wheel.reward.update",
+  ]);
+  assertIncludes("Admin Wheel JS validation", js, [
+    "Campaign name is required",
+    "CAMPAIGN_STATUSES.includes",
+    "COST_TYPES.includes",
+    "Display value is required",
+    "Probability weight must be 0 or more",
+    "Stock limit must be blank or 0 or more",
+    "Segment color must be a hex color",
   ]);
   assertReasonBeforeWrite(js, "const reason = validateCampaign();", "/admin/wheel/campaign", "Campaign save");
   assertReasonBeforeWrite(js, "const reason = validateReward();", "/admin/wheel/rewards", "Reward save");
   assertNoFrontendSpinSelection(js);
+  assertNoFrontendSpinPayload(js);
+  assertNoUnsafeLogging(js);
   assertIncludes("Admin Wheel CSS", css, [".tab-button.active", ".summary-grid", ".table-section", ".badge", ".safe-json"]);
   assertNoStaticSecret("Admin Wheel HTML", html);
   assertNoStaticSecret("Admin Wheel JS", js);

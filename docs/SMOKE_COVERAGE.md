@@ -38,7 +38,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `adminWorkScheduleSmoke.js` | `npm run smoke:admin-work-schedule` | Yes | Yes | Yes | Syntax check only | Admin work schedule UI/API checks for schedule list/read/update, permission guards, login block/allow, emergency override, expired override, audit history, rollback, and leak scan. |
 | `adminWorkScheduleUiSmoke.js` | `npm run smoke:admin-work-schedule-ui` | Yes | Yes | Yes | Syntax check only | Static admin schedule UI route/assets, owner flow, no-permission block, emergency override, masked audit history, and leak scan. |
 | `adminAuditSecuritySmoke.js` | `npm run smoke:admin-audit-security` | Yes | Yes | Yes | Syntax check only | Static audit/security UI route/assets, UX markers, report endpoints, filters, permission block, empty response shape, masked IP, raw user-agent omission, and leak scan. |
-| `adminWheelUiSmoke.js` | `npm run smoke:admin-wheel-ui` | No | No | No | Syntax check plus static contract | Static Admin Lucky Wheel UI source contract, tabs, endpoint usage, reason validation, redaction markers, and frontend spin-safety guard. |
+| `adminWheelUiSmoke.js` | `npm run smoke:admin-wheel-ui` | No | No | No | Syntax check plus static contract | Static Admin Lucky Wheel UI source contract, tabs, endpoint usage, reason validation, 401/403 safe handling, audit placeholder/wiring, report zero guards, redaction markers, masked IP handling, and frontend spin-safety guard. |
 | `wheelSmoke.js` | `npm run smoke:wheel` | Yes | Yes | Yes | Syntax check only | Lucky Wheel mock config/spin/history/rewards, backend result selection, admin reason/audit checks, stock-zero exclusion, and leak scan. |
 | `stagingPreflight.js` | `npm run staging:preflight` | No local Prisma access | Optional | No | Runs local-test dry run | Staging readiness guard for env boundary, database/API target labels, external modes, health contract, and response leak scan. |
 | `stagingSmoke.js` | `npm run smoke:staging` | No local Prisma access | Yes | No | Syntax check only | Hosted staging health contract, safe external mode labels, admin auth negative leak check, and response leak scan. |
@@ -284,11 +284,12 @@ The audit/security smoke uses only static frontend assets and local/staging/test
 ## 15. smoke:admin-wheel-ui Coverage
 
 - Static source contract check for `/admin/lucky-wheel/` route mount and `src/admin-wheel-ui` assets.
-- Confirms page markers for Admin > Services > Lucky Wheel, tabs, campaign settings, rewards, spin history, reports, audit history, reason fields, create/edit reward modal, safe empty states, and safe audit placeholder.
+- Confirms page markers for Admin > Services > Lucky Wheel, `Staging / Mock Admin Console`, `No real money / no live provider`, tabs, campaign settings, rewards, spin history, reports, audit history, reason fields, create/edit reward modal, safe loading/empty states, and safe audit placeholder.
 - Confirms UI script references only existing wheel/admin endpoints: `/admin/wheel/config`, `/admin/wheel/campaign`, `/admin/wheel/rewards`, `/admin/wheel/rewards/:id`, `/admin/wheel/spins`, and read-only `/admin/audit-logs`.
 - Confirms campaign/reward writes validate reason before API submission.
+- Confirms source markers for safe `401`, `403`, and `404` handling; config/reward/spin adapters; masked IP handling; audit action filtering; report zero-division guards; and no `NaN`/`undefined` rendering path markers.
 - Confirms frontend script does not include member spin calls, random reward selection, or frontend-submitted spin result fields.
-- Confirms static assets do not contain JWT-like values, PostgreSQL credential URLs, or env assignment markers.
+- Confirms static assets do not contain JWT-like values, PostgreSQL credential URLs, env assignment markers, or auth/session/secret console logging.
 
 The Admin Wheel UI smoke is static/source-only. It does not require a database, does not call a backend, does not use production credentials, and does not create real payout.
 
