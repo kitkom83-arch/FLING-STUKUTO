@@ -396,6 +396,13 @@ fieldset {
   font-size: 13px;
 }
 
+.field-error {
+  margin: 0;
+  color: var(--danger);
+  font-size: 12px;
+  font-weight: 700;
+}
+
 #toast {
   position: fixed;
   right: 18px;

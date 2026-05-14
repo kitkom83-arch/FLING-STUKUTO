@@ -51,6 +51,7 @@
     endTime: document.getElementById("end-time"),
     timezone: document.getElementById("timezone"),
     reason: document.getElementById("schedule-reason"),
+    scheduleReasonError: document.getElementById("schedule-reason-error"),
     overnightNote: document.getElementById("overnight-note"),
     toggleModal: document.getElementById("toggle-modal"),
     toggleForm: document.getElementById("toggle-form"),
@@ -59,6 +60,7 @@
     toggleAdminId: document.getElementById("toggle-admin-id"),
     toggleNextEnabled: document.getElementById("toggle-next-enabled"),
     toggleReason: document.getElementById("toggle-reason"),
+    toggleReasonError: document.getElementById("toggle-reason-error"),
     confirmToggle: document.getElementById("confirm-toggle"),
     overrideModal: document.getElementById("override-modal"),
     overrideForm: document.getElementById("override-form"),
@@ -67,6 +69,7 @@
     overrideEnabled: document.getElementById("override-enabled"),
     overrideExpires: document.getElementById("override-expires"),
     overrideReason: document.getElementById("override-reason"),
+    overrideReasonError: document.getElementById("override-reason-error"),
     confirmModal: document.getElementById("confirm-modal"),
     confirmForm: document.getElementById("confirm-form"),
     confirmTitle: document.getElementById("confirm-title"),
@@ -108,6 +111,29 @@
     els.toast.classList.add("show");
     window.clearTimeout(setToast.timer);
     setToast.timer = window.setTimeout(() => els.toast.classList.remove("show"), 2600);
+  }
+
+  function setFieldError(errorEl, message) {
+    if (!errorEl) return;
+    errorEl.textContent = message || "";
+    errorEl.classList.toggle("hidden", !message);
+  }
+
+  function validateReasonBeforeConfirm(input, errorEl) {
+    const reason = String(input.value || "").trim();
+    input.value = reason;
+    if (!reason) {
+      setFieldError(errorEl, "Reason is required");
+      setToast("Reason is required");
+      return null;
+    }
+    if (reason.length > 500) {
+      setFieldError(errorEl, "Reason must be 500 characters or fewer");
+      setToast("Reason must be 500 characters or fewer");
+      return null;
+    }
+    setFieldError(errorEl, "");
+    return reason;
   }
 
   function authHeaders() {
@@ -347,6 +373,7 @@
     els.endTime.value = schedule.endTime || "18:00";
     els.timezone.value = schedule.timezone || "Asia/Bangkok";
     els.reason.value = "";
+    setFieldError(els.scheduleReasonError, "");
     updateOvernightNote();
     els.scheduleModal.showModal();
   }
@@ -361,6 +388,7 @@
     els.toggleTitle.textContent = nextEnabled ? "Confirm schedule enable" : "Confirm schedule disable";
     els.toggleCopy.textContent = nextEnabled ? "Enable this admin work schedule." : "Disable this admin work schedule.";
     els.confirmToggle.textContent = nextEnabled ? "Enable" : "Disable";
+    setFieldError(els.toggleReasonError, "");
     els.toggleModal.showModal();
   }
 
@@ -371,6 +399,7 @@
     els.overrideEnabled.checked = Boolean(emergency.enabled);
     els.overrideExpires.value = emergency.expiresAt ? emergency.expiresAt.slice(0, 16) : "";
     els.overrideReason.value = "";
+    setFieldError(els.overrideReasonError, "");
     els.overrideModal.showModal();
   }
 
@@ -452,7 +481,8 @@
     if (enabled && (!/^\d{2}:\d{2}$/.test(els.startTime.value) || !/^\d{2}:\d{2}$/.test(els.endTime.value))) {
       return setToast("Start and end time must use HH:mm.");
     }
-    if (!els.reason.value.trim()) return setToast("Reason is required.");
+    const reason = validateReasonBeforeConfirm(els.reason, els.scheduleReasonError);
+    if (!reason) return;
     const confirmed = await confirmAction("Confirm schedule update", "Confirm schedule update");
     if (!confirmed) return;
 
@@ -465,7 +495,7 @@
           startTime: els.startTime.value || schedule.startTime || "09:00",
           endTime: els.endTime.value || schedule.endTime || "18:00",
           timezone: els.timezone.value.trim() || schedule.timezone || "Asia/Bangkok",
-          reason: els.reason.value.trim(),
+          reason,
         },
       });
       els.scheduleModal.close();
@@ -479,7 +509,8 @@
     event.preventDefault();
     const row = state.togglingRow;
     if (!row || !row.admin || !row.admin.id) return setToast("Select an admin row.");
-    if (!els.toggleReason.value.trim()) return setToast("Reason is required.");
+    const reason = validateReasonBeforeConfirm(els.toggleReason, els.toggleReasonError);
+    if (!reason) return;
     const nextEnabled = els.toggleNextEnabled.value === "true";
     const schedule = scheduleFrom(row);
 
@@ -488,7 +519,7 @@
         method: "PATCH",
         body: {
           ...schedulePatchBody(schedule, nextEnabled, schedule.allowedDays),
-          reason: els.toggleReason.value.trim(),
+          reason,
         },
       });
       els.toggleModal.close();
@@ -502,7 +533,8 @@
     event.preventDefault();
     const adminId = els.overrideAdminId.value;
     const enabled = els.overrideEnabled.checked;
-    if (!els.overrideReason.value.trim()) return setToast("Reason is required.");
+    const reason = validateReasonBeforeConfirm(els.overrideReason, els.overrideReasonError);
+    if (!reason) return;
     if (enabled && !els.overrideExpires.value) return setToast("Override expiration is required.");
     const expires = enabled ? new Date(els.overrideExpires.value) : null;
     if (enabled && (!expires || Number.isNaN(expires.getTime()) || expires.getTime() <= Date.now())) {
@@ -515,12 +547,12 @@
       if (enabled) {
         await api(`/admin/work-schedules/${encodeURIComponent(adminId)}/override`, {
           method: "POST",
-          body: { expiresAt: expires.toISOString(), reason: els.overrideReason.value.trim() },
+          body: { expiresAt: expires.toISOString(), reason },
         });
       } else {
         await api(`/admin/work-schedules/${encodeURIComponent(adminId)}/override`, {
           method: "DELETE",
-          body: { reason: els.overrideReason.value.trim() },
+          body: { reason },
         });
       }
       els.overrideModal.close();

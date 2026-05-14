@@ -186,7 +186,8 @@
         <p id="overnight-note" class="note hidden">This schedule crosses midnight and will allow login into the next day.</p>
         <div class="field">
           <label for="schedule-reason">Reason</label>
-          <textarea id="schedule-reason" rows="3" placeholder="Required for audit context"></textarea>
+          <textarea id="schedule-reason" rows="3" maxlength="500" aria-describedby="schedule-reason-error" placeholder="Required for audit context"></textarea>
+          <p id="schedule-reason-error" class="field-error hidden"></p>
         </div>
         <footer>
           <button type="button" class="secondary" data-close-modal>Cancel</button>
@@ -206,7 +207,8 @@
         <p id="toggle-copy" class="note">Confirm this schedule status change.</p>
         <div class="field">
           <label for="toggle-reason">Reason</label>
-          <textarea id="toggle-reason" rows="3" placeholder="Required for audit context"></textarea>
+          <textarea id="toggle-reason" rows="3" maxlength="500" aria-describedby="toggle-reason-error" placeholder="Required for audit context"></textarea>
+          <p id="toggle-reason-error" class="field-error hidden"></p>
         </div>
         <footer>
           <button type="button" class="secondary" data-close-modal>Cancel</button>
@@ -232,7 +234,8 @@
         </div>
         <div class="field">
           <label for="override-reason">Reason</label>
-          <textarea id="override-reason" rows="3"></textarea>
+          <textarea id="override-reason" rows="3" maxlength="500" aria-describedby="override-reason-error"></textarea>
+          <p id="override-reason-error" class="field-error hidden"></p>
         </div>
         <footer>
           <button type="button" class="secondary" data-close-modal>Cancel</button>
