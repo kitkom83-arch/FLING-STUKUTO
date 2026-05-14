@@ -16,12 +16,13 @@ const {
   disableEmergencyOverride,
 } = require("../services/adminWorkSchedule.service");
 
+const reasonSchema = z.string().trim().min(1).max(500);
+
 const assignRoleSchema = z.object({
   role: z.string().min(1),
   permissions: z.array(z.string()).optional().nullable(),
+  reason: reasonSchema,
 });
-
-const reasonSchema = z.string().trim().min(1).max(500);
 
 const workScheduleSchema = z.object({
   enabled: z.boolean().optional(),
@@ -60,7 +61,7 @@ async function listPermissions(req, res) {
 
 async function me(req, res) {
   const result = await resolveAdminPermissions(req.admin, req.siteId);
-  return success(res, result);
+  return success(res, { ...result, siteCode: req.siteCode });
 }
 
 async function getAdmin(req, res) {
@@ -78,8 +79,10 @@ async function assignAdminRole(req, res) {
   const result = await assignRole({
     adminId: req.params.id,
     siteId: req.siteId,
+    siteCode: req.siteCode,
     role: data.role,
     permissions: data.permissions === undefined ? null : data.permissions,
+    reason: data.reason,
     actor: req.admin,
     req,
   });

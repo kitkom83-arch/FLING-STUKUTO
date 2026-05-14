@@ -388,7 +388,7 @@ async function runUnauthChecks(baseUrl, targetId) {
     method: "PATCH",
     status: 401,
     label: "role update unauth",
-    body: { role: "support" },
+    body: { role: "support", reason: "local role smoke unauth" },
   });
   console.log("Unauth 401: PASS");
 }
@@ -436,7 +436,7 @@ async function runNonOwnerForbiddenChecks(baseUrl, authByRole, targetId) {
       authValue: authByRole[role],
       status: 403,
       label: `${role} role update forbidden`,
-      body: { role: "support" },
+      body: { role: "support", reason: `local role smoke ${role} denied` },
     });
   }
   console.log("Non-owner 403: PASS");
@@ -449,12 +449,20 @@ async function runRoleAssignmentChecks(baseUrl, ownerAuth, targetId) {
   });
   const originalRole = original.data.role;
 
+  await expectStatus(baseUrl, `/admin/admins/${encodeURIComponent(targetId)}/role`, {
+    method: "PATCH",
+    authValue: ownerAuth,
+    status: 400,
+    label: "owner missing role update reason",
+    body: { role: "support", reason: "   " },
+  });
+
   for (const role of ["support", "graphic", "viewer"]) {
     const update = await apiRequest(baseUrl, `/admin/admins/${encodeURIComponent(targetId)}/role`, {
       method: "PATCH",
       authValue: ownerAuth,
       label: `owner update target ${role}`,
-      body: { role },
+      body: { role, reason: `local role smoke update ${role}` },
     });
     if (!update.data || update.data.role !== role) throw new Error(`Role update did not return ${role}.`);
 
@@ -469,7 +477,7 @@ async function runRoleAssignmentChecks(baseUrl, ownerAuth, targetId) {
     method: "PATCH",
     authValue: ownerAuth,
     label: "owner rollback target role",
-    body: { role: originalRole },
+    body: { role: originalRole, reason: "local role smoke rollback" },
   });
 
   const rolledBack = await apiRequest(baseUrl, `/admin/admins/${encodeURIComponent(targetId)}/permissions`, {
@@ -487,6 +495,9 @@ async function runRoleAssignmentChecks(baseUrl, ownerAuth, targetId) {
   requireArray(logs.data, "Admin role update logs");
   if (!logs.data.some((row) => row.action === "admin.role.update" && row.targetId === targetId)) {
     throw new Error("Admin role update audit log was not found.");
+  }
+  if (!logs.data.some((row) => row.metadata && row.metadata.reason === "local role smoke rollback")) {
+    throw new Error("Admin role update audit log did not include reason metadata.");
   }
 
   console.log("Role assignment and rollback: PASS");

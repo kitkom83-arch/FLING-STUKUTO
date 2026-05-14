@@ -52,6 +52,12 @@ const ROLES = Object.entries(ROLE_PERMISSIONS).map(([role, permissions]) => ({
   role,
   permissions,
 }));
+const SENSITIVE_REASON_PATTERNS = [
+  /postgres(?:ql)?:\/\/[^\s"']+/gi,
+  /\b[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\b/g,
+  new RegExp(`${["Be", "arer"].join("")}\\s+[^\\s"']+`, "gi"),
+  /\b(password|token|secret|authorization)\b/gi,
+];
 
 function isOwnerRole(role) {
   return OWNER_ROLES.has(String(role || ""));
@@ -97,12 +103,20 @@ async function getSiteAccess(adminId, siteId) {
 async function resolveAdminPermissions(admin, siteId) {
   const role = admin && admin.role ? admin.role : "viewer";
   if (isOwnerRole(role)) {
-    return {
-      role,
-      permissions: [...PERMISSIONS],
-      owner: true,
-      source: "role",
-    };
+  return {
+    role,
+    permissions: [...PERMISSIONS],
+    owner: true,
+    source: "role",
+    admin: admin
+      ? {
+          id: admin.id,
+          username: admin.username,
+          role: admin.role,
+          status: admin.status,
+        }
+      : null,
+  };
   }
 
   const access = await getSiteAccess(admin.id, siteId);
@@ -114,6 +128,14 @@ async function resolveAdminPermissions(admin, siteId) {
     permissions: overridePermissions || ROLE_PERMISSIONS[resolvedRole] || [],
     owner: false,
     source: overridePermissions ? "site_override" : "role",
+    admin: admin
+      ? {
+          id: admin.id,
+          username: admin.username,
+          role: admin.role,
+          status: admin.status,
+        }
+      : null,
   };
 }
 
@@ -167,8 +189,20 @@ function assertKnownPermissions(permissions) {
   }
 }
 
-async function assignRole({ adminId, siteId, role, permissions = null, actor = null, req = null }) {
+function normalizeReason(reason) {
+  let value = String(reason || "").trim();
+  if (!value) {
+    const error = new Error("reason is required");
+    error.statusCode = 400;
+    throw error;
+  }
+  for (const pattern of SENSITIVE_REASON_PATTERNS) value = value.replace(pattern, "[REDACTED]");
+  return value.slice(0, 500);
+}
+
+async function assignRole({ adminId, siteId, siteCode = null, role, permissions = null, reason, actor = null, req = null }) {
   assertKnownRole(role);
+  const auditReason = normalizeReason(reason);
   const normalizedPermissions = permissions === null ? null : normalizePermissionList(permissions);
   if (permissions !== null) assertKnownPermissions(permissions);
 
@@ -208,14 +242,25 @@ async function assignRole({ adminId, siteId, role, permissions = null, actor = n
         action: "admin.role.update",
         targetType: "admin",
         targetId: adminId,
+        metadata: {
+          action: "admin.role.update",
+          actor: actor ? { id: actor.id, username: actor.username, role: actor.role } : null,
+          targetRole: role,
+          targetAdminId: adminId,
+          targetUsername: admin.username,
+          reason: auditReason,
+          siteCode,
+        },
         before: {
           adminId,
+          username: admin.username,
           role: admin.role,
           siteAccessRole: beforeAccess && beforeAccess.role,
           permissions: beforeAccess && beforeAccess.permissions,
         },
         after: {
           adminId,
+          username: admin.username,
           role,
           siteAccessRole: role,
           permissions: normalizedPermissions || ROLE_PERMISSIONS[role],

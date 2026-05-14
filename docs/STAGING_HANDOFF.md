@@ -41,6 +41,13 @@ Use this checklist for manual staging clicks only. Do not use production account
 - [ ] Confirm Edit, Enable, Disable, and Override reasons do not disappear after refresh or per-admin audit reload.
 - [ ] Confirm schedule audit history uses masked/safe values and does not show passwords, tokens, database URLs, provider secrets, or authorization headers.
 - [ ] Confirm visible UI, browser network previews, copied logs, and screenshots do not expose passwords, tokens, secrets, raw authorization headers, or database URLs.
+- [ ] Open Permission Guard, use the approved staging token, and confirm session status, current admin, role, site code, access granted/denied, and permission matrix render without exposing the token.
+- [ ] Confirm Permission Guard requests include the staging site code header and use backend-enforced permission results.
+- [ ] Open Role Management / Admin Permission, select a role, and confirm role detail, permission list, and admin count/read-only fallback render safely.
+- [ ] Open Edit role permissions and confirm reason validation blocks empty reason before any confirm/save path.
+- [ ] Confirm role-definition editing is clearly marked read-only/mock if the staging demo has no role definition update endpoint.
+- [ ] If an admin role/permission assignment is tested through backend write APIs, confirm the typed reason appears in audit history and does not disappear after reload.
+- [ ] Confirm role/permission audit rows show masked IP values and do not show passwords, tokens, secrets, raw authorization headers, or database URLs.
 - [ ] Open audit logs.
 - [ ] Confirm audit log rows, filters, empty states, and detail modal load without showing secrets.
 - [ ] Open security events.

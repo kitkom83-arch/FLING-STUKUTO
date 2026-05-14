@@ -6,10 +6,34 @@
   const DAYS = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
   const SENSITIVE_WORDS = /\b(password|secret|authorization)\b/i;
   const TOKEN_SHAPED_VALUE = /\b[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\b/;
+  const PERMISSION_MATRIX = [
+    ["Work schedule", "admin.schedule.view", "View admin work schedules", "owner / super_admin"],
+    ["Work schedule", "admin.schedule.update", "Update work schedule windows", "owner / super_admin"],
+    ["Work schedule", "admin.schedule.override", "Manage emergency overrides", "owner / super_admin"],
+    ["Work schedule", "admin.schedule.view", "Read schedule audit history", "owner / super_admin"],
+    ["Role management", "admin.manage", "View roles and admin permissions", "owner / super_admin"],
+    ["Role management", "admin.manage", "Update admin role or permissions", "owner / super_admin"],
+    ["Permission guard", "admin.manage", "View permission catalog", "owner / super_admin"],
+    ["Permission guard", "admin.manage", "Update permission overrides", "owner / super_admin"],
+  ];
+  const ROLE_DESCRIPTIONS = {
+    owner: "Full backend access with owner bypass.",
+    super_admin: "Legacy full access role with all permissions.",
+    finance: "Finance operations, deposits, withdrawals, bank visibility, and reports.",
+    support: "Member support and read-heavy operational access.",
+    graphic: "Website, promotion, and asset management.",
+    viewer: "Read-only operational visibility.",
+  };
 
   const state = {
     token: "",
     permissions: [],
+    permissionCatalog: [],
+    roles: [],
+    currentAdmin: null,
+    currentRole: null,
+    currentSource: null,
+    selectedRole: null,
     canView: false,
     canUpdate: false,
     canOverride: false,
@@ -25,6 +49,26 @@
     saveToken: document.getElementById("save-token"),
     clearToken: document.getElementById("clear-token"),
     permissionState: document.getElementById("permission-state"),
+    loadPermissions: document.getElementById("load-permissions"),
+    sessionStatus: document.getElementById("session-status"),
+    sessionRole: document.getElementById("session-role"),
+    currentAdminUsername: document.getElementById("current-admin-username"),
+    currentSiteCode: document.getElementById("current-site-code"),
+    permissionSummary: document.getElementById("permission-summary"),
+    backendEnforced: document.getElementById("backend-enforced"),
+    permissionMatrixRows: document.getElementById("permission-matrix-rows"),
+    permissionMatrixCount: document.getElementById("permission-matrix-count"),
+    roleCount: document.getElementById("role-count"),
+    roleEmpty: document.getElementById("role-empty"),
+    roleList: document.getElementById("role-list"),
+    roleDetailName: document.getElementById("role-detail-name"),
+    roleDescription: document.getElementById("role-description"),
+    rolePermissionCount: document.getElementById("role-permission-count"),
+    roleAdminCount: document.getElementById("role-admin-count"),
+    roleLastUpdated: document.getElementById("role-last-updated"),
+    roleUpdatedBy: document.getElementById("role-updated-by"),
+    rolePermissions: document.getElementById("role-permissions"),
+    editRolePermissions: document.getElementById("edit-role-permissions"),
     search: document.getElementById("search"),
     roleFilter: document.getElementById("role-filter"),
     refresh: document.getElementById("refresh"),
@@ -70,6 +114,13 @@
     overrideExpires: document.getElementById("override-expires"),
     overrideReason: document.getElementById("override-reason"),
     overrideReasonError: document.getElementById("override-reason-error"),
+    roleEditModal: document.getElementById("role-edit-modal"),
+    roleEditForm: document.getElementById("role-edit-form"),
+    roleEditName: document.getElementById("role-edit-name"),
+    roleEditPermissions: document.getElementById("role-edit-permissions"),
+    roleEditReason: document.getElementById("role-edit-reason"),
+    roleEditReasonError: document.getElementById("role-edit-reason-error"),
+    saveRolePermissions: document.getElementById("save-role-permissions"),
     confirmModal: document.getElementById("confirm-modal"),
     confirmForm: document.getElementById("confirm-form"),
     confirmTitle: document.getElementById("confirm-title"),
@@ -173,17 +224,109 @@
 
   function setPermissions(data) {
     state.permissions = Array.isArray(data.permissions) ? data.permissions : [];
+    state.currentAdmin = data.admin || null;
+    state.currentRole = data.role || "-";
+    state.currentSource = data.source || "-";
     state.canView = hasPermission("admin.schedule.view");
     state.canUpdate = hasPermission("admin.schedule.update");
     state.canOverride = hasPermission("admin.schedule.override");
     els.permissionState.textContent = state.canView
       ? `Access granted: ${safeDisplay(data.role || "role")} via ${safeDisplay(data.source || "role")}`
       : "No permission for admin work schedules.";
+    els.sessionStatus.textContent = "Access granted";
+    els.sessionRole.textContent = safeDisplay(data.role || "-");
+    els.currentAdminUsername.textContent = safeDisplay(data.admin && data.admin.username ? data.admin.username : "-");
+    els.currentSiteCode.textContent = safeDisplay(data.siteCode || SITE_CODE);
+    els.permissionSummary.textContent = `${state.permissions.length} granted`;
+    els.backendEnforced.textContent = `Yes / ${SITE_CODE}`;
+    els.loadPermissions.disabled = false;
+    renderPermissionMatrix();
+  }
+
+  function renderPermissionMatrix() {
+    els.permissionMatrixRows.innerHTML = "";
+    els.permissionMatrixCount.textContent = `${PERMISSION_MATRIX.length} checks`;
+    const checkedAt = state.token ? formatDate(new Date().toISOString()) : "-";
+    for (const [module, key, description, requiredRole] of PERMISSION_MATRIX) {
+      const tr = document.createElement("tr");
+      const granted = state.permissions.includes(key) || state.permissions.includes("admin.manage");
+      tr.appendChild(createCell(module));
+      tr.appendChild(createCell(key));
+      tr.appendChild(createCell(description));
+      tr.appendChild(createCell(requiredRole));
+      const access = document.createElement("td");
+      access.appendChild(createBadge(granted ? "Granted" : "Denied", granted ? "ok" : "danger"));
+      tr.appendChild(access);
+      const enforced = document.createElement("td");
+      enforced.appendChild(createBadge("Yes", "ok"));
+      tr.appendChild(enforced);
+      tr.appendChild(createCell(checkedAt));
+      els.permissionMatrixRows.appendChild(tr);
+    }
+  }
+
+  function roleAdminCount(role) {
+    const rows = state.schedules.filter((row) => row.admin && (row.siteAccessRole === role || row.admin.role === role));
+    return state.schedules.length ? String(rows.length) : "-";
+  }
+
+  function renderRoles(roles) {
+    state.roles = Array.isArray(roles) ? roles : [];
+    els.roleList.innerHTML = "";
+    els.roleCount.textContent = `${state.roles.length} roles`;
+    els.roleEmpty.classList.toggle("hidden", state.roles.length > 0);
+    for (const role of state.roles) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = `role-item ${state.selectedRole && state.selectedRole.role === role.role ? "active" : ""}`.trim();
+      button.textContent = role.role;
+      button.addEventListener("click", () => {
+        state.selectedRole = role;
+        renderRoles(state.roles);
+        renderRoleDetail(role);
+      });
+      els.roleList.appendChild(button);
+    }
+    if (!state.selectedRole && state.roles.length > 0) state.selectedRole = state.roles[0];
+    renderRoleDetail(state.selectedRole);
+  }
+
+  function renderRoleDetail(role) {
+    if (!role) {
+      els.roleDetailName.textContent = "Role detail";
+      els.roleDescription.textContent = "-";
+      els.rolePermissionCount.textContent = "-";
+      els.roleAdminCount.textContent = "-";
+      els.rolePermissions.innerHTML = "";
+      els.editRolePermissions.disabled = true;
+      return;
+    }
+    const permissions = Array.isArray(role.permissions) ? role.permissions : [];
+    els.roleDetailName.textContent = safeDisplay(role.role);
+    els.roleDescription.textContent = safeDisplay(ROLE_DESCRIPTIONS[role.role] || "Backend role catalog");
+    els.rolePermissionCount.textContent = String(permissions.length);
+    els.roleAdminCount.textContent = roleAdminCount(role.role);
+    els.roleLastUpdated.textContent = "Read-only catalog";
+    els.roleUpdatedBy.textContent = "Backend role defaults";
+    els.rolePermissions.innerHTML = "";
+    for (const permission of permissions) {
+      const chip = document.createElement("span");
+      chip.className = "permission-chip";
+      chip.textContent = safeDisplay(permission);
+      els.rolePermissions.appendChild(chip);
+    }
+    els.editRolePermissions.disabled = !state.token;
   }
 
   function clearSession() {
     state.token = "";
     state.permissions = [];
+    state.permissionCatalog = [];
+    state.roles = [];
+    state.currentAdmin = null;
+    state.currentRole = null;
+    state.currentSource = null;
+    state.selectedRole = null;
     state.canView = false;
     state.canUpdate = false;
     state.canOverride = false;
@@ -193,8 +336,17 @@
     els.token.value = "";
     els.auditTarget.value = "";
     els.permissionState.textContent = "No session loaded";
+    els.sessionStatus.textContent = "No session loaded";
+    els.sessionRole.textContent = "-";
+    els.currentAdminUsername.textContent = "-";
+    els.currentSiteCode.textContent = SITE_CODE;
+    els.permissionSummary.textContent = "0 granted";
+    els.backendEnforced.textContent = "Yes";
+    els.loadPermissions.disabled = true;
     renderSchedules([]);
     renderAudit([]);
+    renderPermissionMatrix();
+    renderRoles([]);
   }
 
   function formatDate(value) {
@@ -295,6 +447,7 @@
       tr.appendChild(actions);
       els.rows.appendChild(tr);
     }
+    renderRoleDetail(state.selectedRole);
   }
 
   function actionButton(label, handler, enabled) {
@@ -407,6 +560,39 @@
     els.overnightNote.classList.toggle("hidden", !(els.startTime.value && els.endTime.value && els.startTime.value > els.endTime.value));
   }
 
+  function openRoleEdit() {
+    if (!state.token) return setToast("No session loaded");
+    if (!state.selectedRole) return setToast("Select a role");
+    els.roleEditName.value = state.selectedRole.role;
+    els.roleEditPermissions.innerHTML = "";
+    const permissions = Array.isArray(state.selectedRole.permissions) ? state.selectedRole.permissions : [];
+    const catalog = state.permissionCatalog.length ? state.permissionCatalog : permissions;
+    for (const permission of catalog) {
+      const label = document.createElement("label");
+      label.className = "check-row";
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.value = permission;
+      input.checked = permissions.includes(permission);
+      input.disabled = true;
+      label.appendChild(input);
+      label.appendChild(document.createTextNode(` ${permission}`));
+      els.roleEditPermissions.appendChild(label);
+    }
+    els.roleEditReason.value = "";
+    setFieldError(els.roleEditReasonError, "");
+    els.roleEditModal.showModal();
+  }
+
+  async function saveRolePermissions(event) {
+    event.preventDefault();
+    const reason = validateReasonBeforeConfirm(els.roleEditReason, els.roleEditReasonError);
+    if (!reason) return;
+    await withLoading(els.saveRolePermissions, async () => {
+      setToast("Role update endpoint not available in staging demo");
+    });
+  }
+
   function confirmAction(title, message) {
     els.confirmTitle.textContent = title;
     els.confirmMessage.textContent = message;
@@ -440,10 +626,19 @@
   async function loadPermissions() {
     if (!state.token) {
       clearSession();
+      setToast("No session loaded");
       return;
     }
     const data = await api("/admin/permissions/me");
     setPermissions(data);
+    if (hasPermission("admin.manage")) {
+      state.permissionCatalog = await api("/admin/permissions");
+      const roles = await api("/admin/roles");
+      renderRoles(roles);
+    } else {
+      state.permissionCatalog = [];
+      renderRoles([]);
+    }
   }
 
   async function loadSchedules() {
@@ -571,6 +766,22 @@
   }
 
   async function loadAudit(adminId) {
+    if (!state.token) {
+      renderAudit([]);
+      setToast("No session loaded");
+      return;
+    }
+    if (els.auditAction.value === "admin.role.update") {
+      const params = new URLSearchParams({ action: "admin.role.update", limit: "50" });
+      const data = await api(`/admin/audit-logs?${params.toString()}`);
+      const rows = data && Array.isArray(data.rows) ? data.rows : [];
+      const filtered = els.auditDate.value
+        ? rows.filter((row) => String(row.createdAt || "").startsWith(els.auditDate.value))
+        : rows;
+      els.auditTarget.value = "Role / permission changes";
+      renderAudit(filtered);
+      return;
+    }
     const targetAdminId = adminId || state.selectedAdminId || (state.schedules[0] && state.schedules[0].admin && state.schedules[0].admin.id);
     if (!targetAdminId || !state.canView) {
       renderAudit([]);
@@ -592,6 +803,10 @@
 
   function auditSummary(row) {
     const afterSchedule = row.afterJson && row.afterJson.schedule ? row.afterJson.schedule : null;
+    if (!afterSchedule && row.metadata && row.metadata.after) {
+      const after = row.metadata.after;
+      return safeDisplay(`role ${text(after.role || after.siteAccessRole)}; permissions ${Array.isArray(after.permissions) ? after.permissions.length : "-"}`);
+    }
     if (!afterSchedule) return "-";
     const status = afterSchedule.enabled ? "enabled" : "disabled";
     const days = Array.isArray(afterSchedule.allowedDays) ? afterSchedule.allowedDays.join(",") : "-";
@@ -626,6 +841,8 @@
     sessionStorage.removeItem("pg77_admin_token");
     drawDayGrid([]);
     renderAudit([]);
+    renderPermissionMatrix();
+    renderRoles([]);
   }
 
   els.saveToken.addEventListener("click", () =>
@@ -644,6 +861,8 @@
     }).catch((error) => setToast(error.message))
   );
   els.clearToken.addEventListener("click", clearSession);
+  els.loadPermissions.addEventListener("click", () => withLoading(els.loadPermissions, loadPermissions).catch((error) => setToast("Permission request failed")));
+  els.editRolePermissions.addEventListener("click", openRoleEdit);
   els.refresh.addEventListener("click", () => withLoading(els.refresh, loadSchedules).catch((error) => setToast(error.message)));
   els.search.addEventListener("input", () => loadSchedules().catch((error) => setToast(error.message)));
   els.roleFilter.addEventListener("change", () => loadSchedules().catch((error) => setToast(error.message)));
@@ -651,6 +870,7 @@
   els.scheduleForm.addEventListener("submit", (event) => saveSchedule(event).catch((error) => setToast(error.message)));
   els.toggleForm.addEventListener("submit", (event) => toggleSchedule(event).catch((error) => setToast(error.message)));
   els.overrideForm.addEventListener("submit", (event) => saveOverride(event).catch((error) => setToast(error.message)));
+  els.roleEditForm.addEventListener("submit", (event) => saveRolePermissions(event).catch((error) => setToast(error.message)));
   els.startTime.addEventListener("change", updateOvernightNote);
   els.endTime.addEventListener("change", updateOvernightNote);
   document.querySelectorAll("[data-close-modal]").forEach((button) => {

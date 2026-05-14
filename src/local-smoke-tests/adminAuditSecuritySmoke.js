@@ -307,7 +307,7 @@ async function seedAuditEvents(baseUrl, ownerAuth, targetAdmin) {
     method: "PATCH",
     authValue: ownerAuth,
     label: "audit role update",
-    body: { role: "support", permissions: ["members.view", "reports.view"] },
+    body: { role: "support", permissions: ["members.view", "reports.view"], reason: "local audit role update" },
   });
 
   await apiRequest(baseUrl, `/admin/work-schedules/${encodeURIComponent(targetAdmin.id)}`, {
@@ -465,7 +465,7 @@ async function cleanup(baseUrl, ownerAuth, targetId) {
     method: "PATCH",
     authValue: ownerAuth,
     label: "audit role cleanup",
-    body: { role: "viewer", permissions: null },
+    body: { role: "viewer", permissions: null, reason: "local audit role cleanup" },
   });
 }
 

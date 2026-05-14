@@ -463,7 +463,7 @@ async function runOwnerChecks(baseUrl, siteId, ownerAuth, assigneeId, depositId)
     method: "PATCH",
     authValue: ownerAuth,
     label: "owner assign role",
-    body: { role: "finance" },
+    body: { role: "finance", reason: "local permission smoke assign finance" },
   });
 
   await apiRequest(baseUrl, `/admin/deposits/${encodeURIComponent(depositId)}/approve`, {

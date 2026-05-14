@@ -300,6 +300,12 @@ async function assertStaticUi(baseUrl) {
     "brand-mark\">SK",
     "Admin Work Schedule",
     "Admin schedule list",
+    "Permission Guard",
+    "Permission matrix",
+    "Role Management / Admin Permission",
+    "Current admin username",
+    "Current site code",
+    "Edit role permissions",
     "Schedule detail",
     "Edit schedule",
     "Confirm schedule change",
@@ -332,6 +338,11 @@ async function assertStaticUi(baseUrl) {
     "openToggle(row)",
     "openOverride(row)",
     "openAuditForAdmin(row)",
+    "PERMISSION_MATRIX",
+    "renderPermissionMatrix",
+    "renderRoles",
+    "openRoleEdit",
+    "saveRolePermissions",
     "Confirm schedule update",
     "Reason is required",
     "function validateReasonBeforeConfirm",
@@ -339,6 +350,7 @@ async function assertStaticUi(baseUrl) {
     "const reason = validateReasonBeforeConfirm(els.reason, els.scheduleReasonError)",
     "const reason = validateReasonBeforeConfirm(els.toggleReason, els.toggleReasonError)",
     "const reason = validateReasonBeforeConfirm(els.overrideReason, els.overrideReasonError)",
+    "const reason = validateReasonBeforeConfirm(els.roleEditReason, els.roleEditReasonError)",
     "sessionStorage.removeItem(\"pg77_admin_token\")",
     "els.token.value = \"\"",
   ]) {
@@ -358,6 +370,11 @@ async function assertStaticUi(baseUrl) {
   const toggleApiIndex = js.indexOf("schedulePatchBody(schedule, nextEnabled");
   if (toggleReasonIndex === -1 || toggleApiIndex === -1 || toggleReasonIndex > toggleApiIndex) {
     throw new Error("Enable/disable handler must validate reason before API call.");
+  }
+  const roleReasonIndex = js.indexOf("const reason = validateReasonBeforeConfirm(els.roleEditReason, els.roleEditReasonError)");
+  const roleToastIndex = js.indexOf("Role update endpoint not available in staging demo");
+  if (roleReasonIndex === -1 || roleToastIndex === -1 || roleReasonIndex > roleToastIndex) {
+    throw new Error("Role permission edit must validate reason before any save/confirm path.");
   }
   if (js.includes("sessionStorage.setItem") || js.includes("localStorage.setItem")) {
     throw new Error("UI script must not persist admin credential values in web storage.");

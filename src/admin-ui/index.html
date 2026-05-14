@@ -17,9 +17,10 @@
           </div>
         </div>
         <nav class="nav-list">
-          <a href="#schedule" class="nav-link active">Work Schedule</a>
+          <a href="#permissions" class="nav-link active">Permission Guard</a>
+          <a href="#role-management" class="nav-link">Role Management</a>
+          <a href="#schedule" class="nav-link">Work Schedule</a>
           <a href="#audit" class="nav-link">Audit History</a>
-          <a href="#permissions" class="nav-link">Permission Guard</a>
         </nav>
       </aside>
 
@@ -42,9 +43,94 @@
         <section class="guard-panel" id="permissions">
           <div>
             <span class="eyebrow">Backend enforced</span>
-            <h2>Permission status</h2>
+            <h2>Permission Guard</h2>
+            <p>Session role, current admin, site code, and backend permission checks.</p>
           </div>
           <div id="permission-state" class="permission-state">No session loaded</div>
+          <button id="load-permissions" type="button" disabled>Load permissions</button>
+        </section>
+
+        <section class="status-grid" aria-label="Permission status cards">
+          <article class="status-card">
+            <span>Session status</span>
+            <strong id="session-status">No session loaded</strong>
+          </article>
+          <article class="status-card">
+            <span>Role</span>
+            <strong id="session-role">-</strong>
+          </article>
+          <article class="status-card">
+            <span>Current admin username</span>
+            <strong id="current-admin-username">-</strong>
+          </article>
+          <article class="status-card">
+            <span>Current site code</span>
+            <strong id="current-site-code">PG77</strong>
+          </article>
+          <article class="status-card">
+            <span>Permission summary</span>
+            <strong id="permission-summary">0 granted</strong>
+          </article>
+          <article class="status-card">
+            <span>Backend enforced status</span>
+            <strong id="backend-enforced">Yes</strong>
+          </article>
+        </section>
+
+        <section class="table-section" id="permission-matrix">
+          <div class="section-heading">
+            <h2>Permission matrix</h2>
+            <span id="permission-matrix-count">0 checks</span>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Module</th>
+                  <th>Permission key</th>
+                  <th>Description</th>
+                  <th>Required role</th>
+                  <th>Current access</th>
+                  <th>Backend enforced</th>
+                  <th>Last checked</th>
+                </tr>
+              </thead>
+              <tbody id="permission-matrix-rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="table-section" id="role-management">
+          <div class="section-heading">
+            <h2>Role Management / Admin Permission</h2>
+            <span id="role-count">0 roles</span>
+          </div>
+          <div class="role-layout">
+            <div>
+              <div id="role-empty" class="empty-state">No records.</div>
+              <div id="role-list" class="role-list"></div>
+            </div>
+            <div class="role-detail">
+              <div class="section-heading compact-heading">
+                <h2 id="role-detail-name">Role detail</h2>
+                <button id="edit-role-permissions" type="button" disabled>Edit role permissions</button>
+              </div>
+              <dl class="detail-grid">
+                <dt>Description</dt>
+                <dd id="role-description">-</dd>
+                <dt>Permission count</dt>
+                <dd id="role-permission-count">-</dd>
+                <dt>Admin count</dt>
+                <dd id="role-admin-count">-</dd>
+                <dt>Last updated</dt>
+                <dd id="role-last-updated">Read-only catalog</dd>
+                <dt>Updated by</dt>
+                <dd id="role-updated-by">Backend role defaults</dd>
+              </dl>
+              <div class="permission-chip-list" id="role-permissions"></div>
+              <p class="note">Role definition update endpoint is not available in staging demo. Admin role assignment API is audited by backend.</p>
+            </div>
+          </div>
         </section>
 
         <section class="toolbar" aria-label="Schedule filters">
@@ -108,6 +194,7 @@
                 <option value="admin.schedule.override_enable">emergency_override_enable</option>
                 <option value="admin.schedule.override_disable">emergency_override_disable</option>
                 <option value="admin.login.blocked_outside_schedule">login_blocked_outside_schedule</option>
+                <option value="admin.role.update">role_update</option>
               </select>
             </div>
             <div class="field">
@@ -240,6 +327,33 @@
         <footer>
           <button type="button" class="secondary" data-close-modal>Cancel</button>
           <button id="save-override" type="submit">Save override</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog id="role-edit-modal">
+      <form method="dialog" class="modal-card" id="role-edit-form">
+        <header>
+          <h2>Edit role permissions</h2>
+          <button type="button" class="icon-button" data-close-modal aria-label="Close">x</button>
+        </header>
+        <div class="field">
+          <label for="role-edit-name">Role name</label>
+          <input id="role-edit-name" type="text" readonly />
+        </div>
+        <fieldset>
+          <legend>Permission checkboxes</legend>
+          <div class="permission-checkbox-grid" id="role-edit-permissions"></div>
+        </fieldset>
+        <div class="field">
+          <label for="role-edit-reason">Reason</label>
+          <textarea id="role-edit-reason" rows="3" maxlength="500" aria-describedby="role-edit-reason-error" placeholder="Required for audit context"></textarea>
+          <p id="role-edit-reason-error" class="field-error hidden"></p>
+        </div>
+        <p class="note">Role definition update endpoint is not available in staging demo.</p>
+        <footer>
+          <button type="button" class="secondary" data-close-modal>Cancel</button>
+          <button id="save-role-permissions" type="submit">Save role permissions</button>
         </footer>
       </form>
     </dialog>
