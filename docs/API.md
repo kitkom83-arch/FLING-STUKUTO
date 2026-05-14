@@ -375,10 +375,20 @@ Member endpoints:
 
 | Method | Path | Auth | Body/query | Response summary | Safety notes |
 | --- | --- | --- | --- | --- | --- |
-| GET | `/member/wheel/config` | Member | optional query `campaignId` | active campaign, cost, remaining spins, mock balance, public reward segments, rules, server time | Does not expose `probabilityWeight`, stock, or internal metadata |
-| POST | `/member/wheel/spin` | Member | `campaignId` only | backend-selected `spinId`, `rewardId`, `prizeIndex`, reward label/type/amount, remaining spins, balance after | Rejects frontend `rewardId`, `prizeIndex`, `probabilityWeight`, or `rewardValue` |
-| GET | `/member/wheel/history` | Member | `page`, `limit` max 100 | newest spin rows with reward label/type/value/status/prizeIndex | Sanitized history only |
-| GET | `/member/wheel/my-rewards` | Member | `page`, `limit` max 100 | pending/claimed/expired wheel rewards, excluding no-reward results | No real payout or claim payout is implemented |
+| GET | `/member/wheel/config` | Member or local demo header | optional query `campaignId` | active campaign, cost, remaining spins, mock balance, public reward segments, rules, server time | Does not expose `probabilityWeight`, stock, or internal metadata |
+| POST | `/member/wheel/spin` | Member or local demo header | `campaignId` only | backend-selected `spinId`, `rewardId`, `prizeIndex`, reward label/type/amount, remaining spins, balance after | Rejects frontend `rewardId`, `prizeIndex`, `probabilityWeight`, or `rewardValue` |
+| GET | `/member/wheel/history` | Member or local demo header | `page`, `limit` max 100 | newest spin rows with reward label/type/value/status/prizeIndex | Sanitized history only |
+| GET | `/member/wheel/my-rewards` | Member or local demo header | `page`, `limit` max 100 | pending/claimed/expired wheel rewards, excluding no-reward results | No real payout or claim payout is implemented |
+
+Local Lucky Wheel frontend demo bridge:
+
+- Header name: `x-demo-member-id`
+- Header value: `demo_member`
+- Applies only to `GET /member/wheel/config`, `POST /member/wheel/spin`, `GET /member/wheel/history`, and `GET /member/wheel/my-rewards`.
+- Allowed only when `NODE_ENV` is `development-local` or `test`, `APP_ENV` is `local-test`, and all external modes are exactly `mock`.
+- Never use this header in production, staging UAT, or any environment with live/sandbox provider, payment, bank, SMS, or Slip OCR modes.
+- The bridge creates or reuses a local fixture member named `demo_member` with mock points and mock wallet balance. It does not issue a token, expose session data, create real payout, or call live systems.
+- If the header is missing and no normal member bearer token is sent, the endpoint returns `Member session unavailable. Please sign in again.`
 
 Admin endpoints:
 

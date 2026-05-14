@@ -63,6 +63,7 @@ Use this checklist for manual staging clicks only. Do not use production account
 - [ ] Verify Lucky Wheel member config at `GET /api/member/wheel/config` with a staging/mock member token.
 - [ ] Confirm wheel config returns campaign `wheel_main`, 8 demo rewards, remaining spins, mock balance, rules, and no `probabilityWeight` in the member response.
 - [ ] Verify spin with `POST /api/member/wheel/spin` using only `campaignId`; confirm backend returns `prizeIndex`, reward data, remaining spins, and balance after.
+- [ ] For local `lucky-wheel-game` API mode only, the frontend may send `x-demo-member-id: demo_member` instead of a bearer token when `NODE_ENV=development-local` or `test`, `APP_ENV=local-test`, and all external modes are `mock`. Do not use this local demo header for staging UAT or production.
 - [ ] Confirm frontend-style attempts to submit `rewardId` or `prizeIndex` are rejected.
 - [ ] Verify `GET /api/member/wheel/history` shows the spin and `GET /api/member/wheel/my-rewards` shows pending rewards when the result is not `no_reward`.
 - [ ] Verify admin `PATCH /api/admin/wheel/campaign` rejects empty `reason`.
@@ -95,6 +96,7 @@ Use this checklist for manual staging clicks only. Do not use production account
 - SMS provider mode remains mock/sandbox/disabled.
 - Slip OCR mode remains mock/sandbox/disabled.
 - Lucky Wheel remains staging/mock only. Backend chooses the result; frontend must never submit reward id, prize index, probability, or reward value.
+- The local Lucky Wheel demo member bridge accepts only `x-demo-member-id: demo_member` under local/test mock gates and does not issue tokens, expose session data, or create real payout.
 - Demo fixtures are staging-only and must not be treated as production accounts.
 
 ## How To Report Bugs
