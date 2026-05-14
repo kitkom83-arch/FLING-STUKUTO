@@ -303,6 +303,9 @@ async function assertStaticUi(baseUrl) {
     "Permission Guard",
     "Permission matrix",
     "Role Management / Admin Permission",
+    "Admin role assignment",
+    "Change admin role",
+    "Change role",
     "Current admin username",
     "Current site code",
     "Edit role permissions",
@@ -343,7 +346,12 @@ async function assertStaticUi(baseUrl) {
     "renderRoles",
     "openRoleEdit",
     "saveRolePermissions",
+    "openRoleAssignment",
+    "saveRoleAssignment",
+    "validateRoleAssignmentBeforeConfirm",
+    "You cannot change your own role in this staging UI.",
     "Confirm schedule update",
+    "Confirm role assignment update",
     "Reason is required",
     "function validateReasonBeforeConfirm",
     "setFieldError(errorEl, \"Reason is required\")",
@@ -375,6 +383,19 @@ async function assertStaticUi(baseUrl) {
   const roleToastIndex = js.indexOf("Role update endpoint not available in staging demo");
   if (roleReasonIndex === -1 || roleToastIndex === -1 || roleReasonIndex > roleToastIndex) {
     throw new Error("Role permission edit must validate reason before any save/confirm path.");
+  }
+  const assignmentValidationIndex = js.indexOf("validateRoleAssignmentBeforeConfirm()");
+  const assignmentConfirmIndex = js.indexOf("\"Confirm role assignment update\"");
+  if (assignmentValidationIndex === -1 || assignmentConfirmIndex === -1 || assignmentValidationIndex > assignmentConfirmIndex) {
+    throw new Error("Role assignment must validate before opening confirm.");
+  }
+  for (const marker of [
+    "nextRole === currentRole",
+    "isCurrentAdmin(row)",
+    "/admin/admins/${encodeURIComponent(validated.row.admin.id)}/role",
+    "setToast(\"Admin role updated\")",
+  ]) {
+    if (!js.includes(marker)) throw new Error(`UI script missing role assignment marker: ${marker}`);
   }
   if (js.includes("sessionStorage.setItem") || js.includes("localStorage.setItem")) {
     throw new Error("UI script must not persist admin credential values in web storage.");

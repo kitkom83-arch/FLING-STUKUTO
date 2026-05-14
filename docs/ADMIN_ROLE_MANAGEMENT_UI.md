@@ -170,7 +170,7 @@ All paths below include the `/api` prefix. Success responses use `{ "success": t
 | GET | `/api/admin/permissions` | `admin.manage` | None | Array of backend permission strings. | `401`, `403`, `500`. |
 | GET | `/api/admin/roles` | `admin.manage` | None | Array of `{ role, permissions }` entries from backend role catalog. | `401`, `403`, `500`. |
 | GET | `/api/admin/admins/:id/permissions` | `admin.manage` | None | Target `admin`, `siteId`, effective `role`, `permissions`, `owner`, and `source`. | `401`, `403`, `404` admin not found, `500`. |
-| PATCH | `/api/admin/admins/:id/role` | `admin.manage` | `role`; optional `permissions` array or `null`. | Updated target admin summary, `siteId`, assigned `role`, and effective permissions. Writes `admin.role.update` audit log when actor and site are available. | `400` validation/unknown role/unknown permission, `401`, `403`, `404` admin not found, `409` role conflict if future backend adds conflict detection, `500`. |
+| PATCH | `/api/admin/admins/:id/role` | `admin.manage` | `role`; required trimmed `reason` length 1-500; optional `permissions` array or `null`. | Updated target admin summary, `siteId`, assigned `role`, and effective permissions. Writes `admin.role.update` audit log with reason and before/after role metadata when actor and site are available. | `400` validation/unknown role/unknown permission/empty reason/same role/self role change, `401`, `403`, `404` admin not found, `500`. |
 
 Status expectation by endpoint:
 
@@ -180,7 +180,7 @@ Status expectation by endpoint:
 | `GET /api/admin/permissions` | Missing or invalid admin session. | Missing `admin.manage` or denied site access. | Not expected today. | Not expected today. | Generic safe error only. |
 | `GET /api/admin/roles` | Missing or invalid admin session. | Missing `admin.manage` or denied site access. | Not expected today. | Not expected today. | Generic safe error only. |
 | `GET /api/admin/admins/:id/permissions` | Missing or invalid admin session. | Missing `admin.manage` or denied site access. | Target admin not found. | Not expected today. | Generic safe error only. |
-| `PATCH /api/admin/admins/:id/role` | Missing or invalid admin session. | Missing `admin.manage` or denied site access. | Target admin not found. | Future role conflict only if backend adds conflict detection. | Generic safe error only. |
+| `PATCH /api/admin/admins/:id/role` | Missing or invalid admin session. | Missing `admin.manage` or denied site access. | Target admin not found. | Not expected today. | Generic safe error only. |
 
 Current gaps in API coverage for the page:
 
@@ -211,12 +211,14 @@ Role changes should be visible in an audit/history view with:
 - Old role.
 - New role.
 - Timestamp.
-- Note, if a future API supports storing notes.
+- Reason.
 
 Current backend behavior:
 
 - `PATCH /api/admin/admins/:id/role` writes an `admin.role.update` admin log action when `actor` and `siteId` are available.
+- The logged metadata includes `reason`, `targetAdminId`, target username, `beforeRole`, `afterRole`, and site code.
 - The logged `before`/`after` payload includes old role, new role, site access role, and permissions.
+- The backend rejects empty reasons, same-role updates, and self role changes.
 - `GET /api/admin/logs` requires `reports.view`, not `admin.manage`.
 
 Future UI enhancement: add a dedicated role-management audit timeline if a narrower audit endpoint is introduced.

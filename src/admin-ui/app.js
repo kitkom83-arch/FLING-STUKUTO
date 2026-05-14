@@ -42,6 +42,7 @@
     selectedAdminLabel: "",
     editingRow: null,
     togglingRow: null,
+    roleAssignmentRow: null,
   };
 
   const els = {
@@ -69,6 +70,9 @@
     roleUpdatedBy: document.getElementById("role-updated-by"),
     rolePermissions: document.getElementById("role-permissions"),
     editRolePermissions: document.getElementById("edit-role-permissions"),
+    refreshAdminRoles: document.getElementById("refresh-admin-roles"),
+    roleAssignmentEmpty: document.getElementById("role-assignment-empty"),
+    roleAssignmentRows: document.getElementById("role-assignment-rows"),
     search: document.getElementById("search"),
     roleFilter: document.getElementById("role-filter"),
     refresh: document.getElementById("refresh"),
@@ -121,6 +125,17 @@
     roleEditReason: document.getElementById("role-edit-reason"),
     roleEditReasonError: document.getElementById("role-edit-reason-error"),
     saveRolePermissions: document.getElementById("save-role-permissions"),
+    roleAssignmentModal: document.getElementById("role-assignment-modal"),
+    roleAssignmentForm: document.getElementById("role-assignment-form"),
+    roleTargetAdminId: document.getElementById("role-target-admin-id"),
+    roleTargetUsername: document.getElementById("role-target-username"),
+    roleCurrentRole: document.getElementById("role-current-role"),
+    selfRoleWarning: document.getElementById("self-role-warning"),
+    newAdminRole: document.getElementById("new-admin-role"),
+    newAdminRoleError: document.getElementById("new-admin-role-error"),
+    roleAssignmentReason: document.getElementById("role-assignment-reason"),
+    roleAssignmentReasonError: document.getElementById("role-assignment-reason-error"),
+    saveRoleAssignment: document.getElementById("save-role-assignment"),
     confirmModal: document.getElementById("confirm-modal"),
     confirmForm: document.getElementById("confirm-form"),
     confirmTitle: document.getElementById("confirm-title"),
@@ -240,6 +255,7 @@
     els.permissionSummary.textContent = `${state.permissions.length} granted`;
     els.backendEnforced.textContent = `Yes / ${SITE_CODE}`;
     els.loadPermissions.disabled = false;
+    els.refreshAdminRoles.disabled = !hasPermission("admin.manage");
     renderPermissionMatrix();
   }
 
@@ -318,6 +334,38 @@
     els.editRolePermissions.disabled = !state.token;
   }
 
+  function currentRoleForRow(row) {
+    return row.siteAccessRole || (row.admin && row.admin.role) || "-";
+  }
+
+  function isCurrentAdmin(row) {
+    if (!row || !row.admin || !state.currentAdmin) return false;
+    return row.admin.id === state.currentAdmin.id || row.admin.username === state.currentAdmin.username;
+  }
+
+  function renderRoleAssignments() {
+    els.roleAssignmentRows.innerHTML = "";
+    els.roleAssignmentEmpty.classList.toggle("hidden", state.schedules.length > 0);
+    for (const row of state.schedules) {
+      const schedule = scheduleFrom(row);
+      const tr = document.createElement("tr");
+      tr.appendChild(createCell(row.admin && row.admin.username));
+      tr.appendChild(createCell(currentRoleForRow(row)));
+      const status = document.createElement("td");
+      status.appendChild(createBadge(schedule.enabled ? "Enabled" : "Disabled", schedule.enabled ? "ok" : ""));
+      tr.appendChild(status);
+      tr.appendChild(createCell(formatDate(latestTime(row))));
+      tr.appendChild(createCell(latestActor(row)));
+      const actions = document.createElement("td");
+      actions.className = "actions";
+      const button = actionButton("Change role", () => openRoleAssignment(row), Boolean(state.token && hasPermission("admin.manage")));
+      if (isCurrentAdmin(row)) button.title = "Self role change is blocked";
+      actions.appendChild(button);
+      tr.appendChild(actions);
+      els.roleAssignmentRows.appendChild(tr);
+    }
+  }
+
   function clearSession() {
     state.token = "";
     state.permissions = [];
@@ -332,6 +380,7 @@
     state.canOverride = false;
     state.selectedAdminId = null;
     state.selectedAdminLabel = "";
+    state.roleAssignmentRow = null;
     sessionStorage.removeItem("pg77_admin_token");
     els.token.value = "";
     els.auditTarget.value = "";
@@ -343,6 +392,7 @@
     els.permissionSummary.textContent = "0 granted";
     els.backendEnforced.textContent = "Yes";
     els.loadPermissions.disabled = true;
+    els.refreshAdminRoles.disabled = true;
     renderSchedules([]);
     renderAudit([]);
     renderPermissionMatrix();
@@ -448,6 +498,7 @@
       els.rows.appendChild(tr);
     }
     renderRoleDetail(state.selectedRole);
+    renderRoleAssignments();
   }
 
   function actionButton(label, handler, enabled) {
@@ -584,12 +635,101 @@
     els.roleEditModal.showModal();
   }
 
+  function drawRoleOptions(currentRole) {
+    els.newAdminRole.innerHTML = "";
+    const roles = state.roles.length ? state.roles.map((role) => role.role) : ["owner", "super_admin", "finance", "support", "graphic", "viewer"];
+    const blank = document.createElement("option");
+    blank.value = "";
+    blank.textContent = "Select role";
+    els.newAdminRole.appendChild(blank);
+    for (const role of roles) {
+      const option = document.createElement("option");
+      option.value = role;
+      option.textContent = role;
+      option.disabled = role === currentRole;
+      els.newAdminRole.appendChild(option);
+    }
+  }
+
+  function openRoleAssignment(row) {
+    if (!state.token) return setToast("No session loaded");
+    if (!hasPermission("admin.manage")) return setToast("Role update failed");
+    state.roleAssignmentRow = row;
+    const currentRole = currentRoleForRow(row);
+    const self = isCurrentAdmin(row);
+    els.roleTargetAdminId.value = row.admin && row.admin.id ? row.admin.id : "";
+    els.roleTargetUsername.textContent = safeDisplay(row.admin && row.admin.username);
+    els.roleCurrentRole.textContent = safeDisplay(currentRole);
+    drawRoleOptions(currentRole);
+    els.roleAssignmentReason.value = "";
+    setFieldError(els.newAdminRoleError, "");
+    setFieldError(els.roleAssignmentReasonError, "");
+    els.selfRoleWarning.classList.toggle("hidden", !self);
+    els.saveRoleAssignment.disabled = self;
+    if (self) setToast("You cannot change your own role in this staging UI.");
+    els.roleAssignmentModal.showModal();
+  }
+
+  function validateRoleAssignmentBeforeConfirm() {
+    const row = state.roleAssignmentRow;
+    if (!state.token || !row || !row.admin || !row.admin.id) {
+      setToast("No session loaded");
+      return null;
+    }
+    if (isCurrentAdmin(row)) {
+      setToast("You cannot change your own role in this staging UI.");
+      return null;
+    }
+    const currentRole = currentRoleForRow(row);
+    const nextRole = els.newAdminRole.value;
+    if (!nextRole) {
+      setFieldError(els.newAdminRoleError, "Select a new role");
+      setToast("Select a new role");
+      return null;
+    }
+    if (nextRole === currentRole) {
+      setFieldError(els.newAdminRoleError, "New role must be different");
+      setToast("New role must be different");
+      return null;
+    }
+    setFieldError(els.newAdminRoleError, "");
+    const reason = validateReasonBeforeConfirm(els.roleAssignmentReason, els.roleAssignmentReasonError);
+    if (!reason) return null;
+    return { row, currentRole, nextRole, reason };
+  }
+
   async function saveRolePermissions(event) {
     event.preventDefault();
     const reason = validateReasonBeforeConfirm(els.roleEditReason, els.roleEditReasonError);
     if (!reason) return;
     await withLoading(els.saveRolePermissions, async () => {
       setToast("Role update endpoint not available in staging demo");
+    });
+  }
+
+  async function saveRoleAssignment(event) {
+    event.preventDefault();
+    const validated = validateRoleAssignmentBeforeConfirm();
+    if (!validated) return;
+    const confirmed = await confirmAction(
+      "Confirm role assignment update",
+      `Target admin: ${safeDisplay(validated.row.admin.username)} | Current role: ${safeDisplay(validated.currentRole)} | New role: ${safeDisplay(validated.nextRole)} | Reason: ${safeDisplay(validated.reason)} | This action changes admin permissions.`
+    );
+    if (!confirmed) return;
+
+    await withLoading(els.saveRoleAssignment, async () => {
+      try {
+        await api(`/admin/admins/${encodeURIComponent(validated.row.admin.id)}/role`, {
+          method: "PATCH",
+          body: { role: validated.nextRole, reason: validated.reason },
+        });
+        els.roleAssignmentModal.close();
+        setToast("Admin role updated");
+        await loadPermissions();
+        await loadSchedules();
+      } catch (error) {
+        setToast("Role update failed");
+      }
     });
   }
 
@@ -804,6 +944,9 @@
   function auditSummary(row) {
     const afterSchedule = row.afterJson && row.afterJson.schedule ? row.afterJson.schedule : null;
     if (!afterSchedule && row.metadata && row.metadata.after) {
+      const beforeRole = row.metadata.beforeRole || (row.metadata.before && (row.metadata.before.role || row.metadata.before.siteAccessRole));
+      const afterRole = row.metadata.afterRole || (row.metadata.after && (row.metadata.after.role || row.metadata.after.siteAccessRole));
+      if (beforeRole || afterRole) return safeDisplay(`role ${text(beforeRole)} -> ${text(afterRole)}`);
       const after = row.metadata.after;
       return safeDisplay(`role ${text(after.role || after.siteAccessRole)}; permissions ${Array.isArray(after.permissions) ? after.permissions.length : "-"}`);
     }
@@ -863,6 +1006,7 @@
   els.clearToken.addEventListener("click", clearSession);
   els.loadPermissions.addEventListener("click", () => withLoading(els.loadPermissions, loadPermissions).catch((error) => setToast("Permission request failed")));
   els.editRolePermissions.addEventListener("click", openRoleEdit);
+  els.refreshAdminRoles.addEventListener("click", () => withLoading(els.refreshAdminRoles, loadSchedules).catch((error) => setToast(error.message)));
   els.refresh.addEventListener("click", () => withLoading(els.refresh, loadSchedules).catch((error) => setToast(error.message)));
   els.search.addEventListener("input", () => loadSchedules().catch((error) => setToast(error.message)));
   els.roleFilter.addEventListener("change", () => loadSchedules().catch((error) => setToast(error.message)));
@@ -871,6 +1015,7 @@
   els.toggleForm.addEventListener("submit", (event) => toggleSchedule(event).catch((error) => setToast(error.message)));
   els.overrideForm.addEventListener("submit", (event) => saveOverride(event).catch((error) => setToast(error.message)));
   els.roleEditForm.addEventListener("submit", (event) => saveRolePermissions(event).catch((error) => setToast(error.message)));
+  els.roleAssignmentForm.addEventListener("submit", (event) => saveRoleAssignment(event).catch((error) => setToast("Role update failed")));
   els.startTime.addEventListener("change", updateOvernightNote);
   els.endTime.addEventListener("change", updateOvernightNote);
   document.querySelectorAll("[data-close-modal]").forEach((button) => {

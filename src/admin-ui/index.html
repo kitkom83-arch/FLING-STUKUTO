@@ -131,6 +131,26 @@
               <p class="note">Role definition update endpoint is not available in staging demo. Admin role assignment API is audited by backend.</p>
             </div>
           </div>
+          <div class="section-heading compact-heading">
+            <h2>Admin role assignment</h2>
+            <button id="refresh-admin-roles" type="button" disabled>Refresh admin list</button>
+          </div>
+          <div id="role-assignment-empty" class="empty-state">No records.</div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Admin username</th>
+                  <th>Current role</th>
+                  <th>Schedule status</th>
+                  <th>Last updated</th>
+                  <th>Updated by</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="role-assignment-rows"></tbody>
+            </table>
+          </div>
         </section>
 
         <section class="toolbar" aria-label="Schedule filters">
@@ -354,6 +374,37 @@
         <footer>
           <button type="button" class="secondary" data-close-modal>Cancel</button>
           <button id="save-role-permissions" type="submit">Save role permissions</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog id="role-assignment-modal">
+      <form method="dialog" class="modal-card" id="role-assignment-form">
+        <header>
+          <h2>Change admin role</h2>
+          <button type="button" class="icon-button" data-close-modal aria-label="Close">x</button>
+        </header>
+        <input type="hidden" id="role-target-admin-id" />
+        <dl class="detail-grid">
+          <dt>Target admin username</dt>
+          <dd id="role-target-username">-</dd>
+          <dt>Current role</dt>
+          <dd id="role-current-role">-</dd>
+        </dl>
+        <p id="self-role-warning" class="note hidden">You cannot change your own role in this staging UI.</p>
+        <div class="field">
+          <label for="new-admin-role">New role</label>
+          <select id="new-admin-role"></select>
+          <p id="new-admin-role-error" class="field-error hidden"></p>
+        </div>
+        <div class="field">
+          <label for="role-assignment-reason">Reason</label>
+          <textarea id="role-assignment-reason" rows="3" maxlength="500" aria-describedby="role-assignment-reason-error"></textarea>
+          <p id="role-assignment-reason-error" class="field-error hidden"></p>
+        </div>
+        <footer>
+          <button type="button" class="secondary" data-close-modal>Cancel</button>
+          <button id="save-role-assignment" type="submit">Change role</button>
         </footer>
       </form>
     </dialog>

@@ -48,6 +48,12 @@ Use this checklist for manual staging clicks only. Do not use production account
 - [ ] Confirm role-definition editing is clearly marked read-only/mock if the staging demo has no role definition update endpoint.
 - [ ] If an admin role/permission assignment is tested through backend write APIs, confirm the typed reason appears in audit history and does not disappear after reload.
 - [ ] Confirm role/permission audit rows show masked IP values and do not show passwords, tokens, secrets, raw authorization headers, or database URLs.
+- [ ] In Admin Role Assignment, confirm the table shows admin username, current role, schedule status, last updated, updated by, and Change role.
+- [ ] Click Change role without a reason and confirm the role update confirm modal does not open.
+- [ ] Select the current role as the new role, if selectable, and confirm the UI blocks the update before API submission.
+- [ ] Click Change role on the current logged-in admin and confirm the UI shows `You cannot change your own role in this staging UI.` and does not submit.
+- [ ] For another staging demo admin, select a different role, enter a reason, confirm `Confirm role assignment update`, and verify `Admin role updated`.
+- [ ] Load audit for `admin.role.update` and confirm reason plus before/after role are visible.
 - [ ] Open audit logs.
 - [ ] Confirm audit log rows, filters, empty states, and detail modal load without showing secrets.
 - [ ] Open security events.

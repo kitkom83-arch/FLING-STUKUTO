@@ -429,6 +429,17 @@ async function runOwnerAccessChecks(baseUrl, ownerAuth, targetId) {
   console.log("Owner access: PASS");
 }
 
+async function runSelfRoleChangeBlock(baseUrl, ownerAuth, ownerId) {
+  await expectStatus(baseUrl, `/admin/admins/${encodeURIComponent(ownerId)}/role`, {
+    method: "PATCH",
+    authValue: ownerAuth,
+    status: 400,
+    label: "owner self role change blocked",
+    body: { role: "viewer", reason: "local role smoke self block" },
+  });
+  console.log("Self role change block: PASS");
+}
+
 async function runNonOwnerForbiddenChecks(baseUrl, authByRole, targetId) {
   for (const role of ["finance", "support", "graphic", "viewer"]) {
     await expectStatus(baseUrl, `/admin/admins/${encodeURIComponent(targetId)}/role`, {
@@ -456,8 +467,15 @@ async function runRoleAssignmentChecks(baseUrl, ownerAuth, targetId) {
     label: "owner missing role update reason",
     body: { role: "support", reason: "   " },
   });
+  await expectStatus(baseUrl, `/admin/admins/${encodeURIComponent(targetId)}/role`, {
+    method: "PATCH",
+    authValue: ownerAuth,
+    status: 400,
+    label: "owner same role update blocked",
+    body: { role: originalRole, reason: "local role smoke same role block" },
+  });
 
-  for (const role of ["support", "graphic", "viewer"]) {
+  for (const role of ["support", "graphic"]) {
     const update = await apiRequest(baseUrl, `/admin/admins/${encodeURIComponent(targetId)}/role`, {
       method: "PATCH",
       authValue: ownerAuth,
@@ -499,6 +517,17 @@ async function runRoleAssignmentChecks(baseUrl, ownerAuth, targetId) {
   if (!logs.data.some((row) => row.metadata && row.metadata.reason === "local role smoke rollback")) {
     throw new Error("Admin role update audit log did not include reason metadata.");
   }
+  if (
+    !logs.data.some(
+      (row) =>
+        row.metadata &&
+        row.metadata.reason === "local role smoke rollback" &&
+        row.metadata.beforeRole &&
+        row.metadata.afterRole === originalRole
+    )
+  ) {
+    throw new Error("Admin role update audit log did not include before/after role metadata.");
+  }
 
   console.log("Role assignment and rollback: PASS");
 }
@@ -528,6 +557,7 @@ async function main() {
     console.log("Admin login by role: PASS");
 
     await runOwnerAccessChecks(baseUrl, ownerAuth, admins.target.id);
+    await runSelfRoleChangeBlock(baseUrl, ownerAuth, admins.owner.id);
     await runNonOwnerForbiddenChecks(baseUrl, authByRole, admins.target.id);
     await runRoleAssignmentChecks(baseUrl, ownerAuth, admins.target.id);
 

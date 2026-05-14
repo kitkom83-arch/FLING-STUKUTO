@@ -103,20 +103,20 @@ async function getSiteAccess(adminId, siteId) {
 async function resolveAdminPermissions(admin, siteId) {
   const role = admin && admin.role ? admin.role : "viewer";
   if (isOwnerRole(role)) {
-  return {
-    role,
-    permissions: [...PERMISSIONS],
-    owner: true,
-    source: "role",
-    admin: admin
-      ? {
-          id: admin.id,
-          username: admin.username,
-          role: admin.role,
-          status: admin.status,
-        }
-      : null,
-  };
+    return {
+      role,
+      permissions: [...PERMISSIONS],
+      owner: true,
+      source: "role",
+      admin: admin
+        ? {
+            id: admin.id,
+            username: admin.username,
+            role: admin.role,
+            status: admin.status,
+          }
+        : null,
+    };
   }
 
   const access = await getSiteAccess(admin.id, siteId);
@@ -212,6 +212,11 @@ async function assignRole({ adminId, siteId, siteCode = null, role, permissions 
     error.statusCode = 404;
     throw error;
   }
+  if (actor && actor.id === adminId) {
+    const error = new Error("You cannot change your own role in this staging UI.");
+    error.statusCode = 400;
+    throw error;
+  }
 
   const updated = await prisma.$transaction(async (tx) => {
     const beforeAccess = siteId
@@ -219,6 +224,12 @@ async function assignRole({ adminId, siteId, siteCode = null, role, permissions 
           where: { adminId_siteId: { adminId, siteId } },
         })
       : null;
+    const beforeRole = effectiveRole(admin, beforeAccess);
+    if (beforeRole === role) {
+      const error = new Error("New role must be different from current role");
+      error.statusCode = 400;
+      throw error;
+    }
 
     const nextAdmin = await tx.admin.update({
       where: { id: adminId },
@@ -248,6 +259,8 @@ async function assignRole({ adminId, siteId, siteCode = null, role, permissions 
           targetRole: role,
           targetAdminId: adminId,
           targetUsername: admin.username,
+          beforeRole,
+          afterRole: role,
           reason: auditReason,
           siteCode,
         },

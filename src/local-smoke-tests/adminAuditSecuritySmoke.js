@@ -372,6 +372,18 @@ async function assertAuditEndpoints(baseUrl, ownerAuth, ownerId, targetId) {
   if (!list.data.rows.some((row) => row.action === "admin.schedule.update" && row.metadata && row.metadata.reason === "local audit security schedule update")) {
     throw new Error("Audit list missing schedule update reason metadata.");
   }
+  if (
+    !list.data.rows.some(
+      (row) =>
+        row.action === "admin.role.update" &&
+        row.metadata &&
+        row.metadata.reason === "local audit role update" &&
+        row.metadata.beforeRole &&
+        row.metadata.afterRole === "support"
+    )
+  ) {
+    throw new Error("Audit list missing role update reason or before/after metadata.");
+  }
   if (!list.data.rows.some((row) => row.ipAddress && !/(?:\d{1,3}\.){3}\d{1,3}/.test(row.ipAddress))) {
     throw new Error("Audit list did not include a masked IP value.");
   }
