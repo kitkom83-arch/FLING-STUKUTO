@@ -33,7 +33,7 @@ Never paste real tokens, passwords, API keys, provider secrets, callback secrets
 - `src/local-smoke-tests/stagingSmoke.js` requires `BASE_URL`, blocks production-like API hosts, checks `GET /api/health`, verifies external modes are `mock`, `sandbox`, or `disabled`, calls admin auth as a negative leak check, and scans responses for secret-shaped values.
 - `src/staging-scripts/stagingDbCheck.js` connects to a confirmed staging/test PostgreSQL target, verifies required schema tables, verifies demo site/admin/member fixtures, and prints only safe labels/counts.
 - `src/staging-scripts/stagingDbSeed.js` runs the demo seed behind the staging safety guard. It requires a staging-only admin password env for `APP_ENV=staging` and never prints password values.
-- `src/staging-scripts/stagingUatSmoke.js` targets the Render staging API by default, requires a staging-only demo admin password env, verifies health/database/modes, checks admin auth leak behavior, and reads admin schedule/audit/security endpoints.
+- `src/staging-scripts/stagingUatSmoke.js` targets the Render staging API by default, skips safely with exit `0` when staging demo admin password env is absent, verifies health/database/modes when env is present, checks admin auth leak behavior, and reads admin schedule/audit/security endpoints.
 - `src/local-smoke-tests/adminAuditSecuritySmoke.js` checks the audit/security report UI contract and API responses against local/staging/test targets only, including permission guard, filters, empty responses, masked IP, omitted raw user-agent, and response leak scan.
 - `src/local-smoke-tests/runAllLocalSmoke.js` blocks unsafe `NODE_ENV`, missing required local credentials, unsafe database targets, production-like API base URLs, embedded URL credentials, and provider modes outside `mock` or `sandbox` before running the smoke suite.
 - Individual local smoke scripts also perform their own safety checks for production-like database/API targets and non-mock provider modes before creating fixtures or calling API flows.
@@ -59,7 +59,7 @@ Never paste real tokens, passwords, API keys, provider secrets, callback secrets
 - Confirm migrations ran through `npm run db:migrate:staging`, not raw Prisma deploy, after the staging DB target was confirmed.
 - Confirm demo seed ran through `npm run staging:db:seed` only if demo data was missing.
 - Confirm `npm run staging:db:check` passes with required schema and demo fixtures.
-- Confirm `npm run smoke:staging-uat` passes against the Render staging API.
+- Confirm `npm run smoke:staging-uat` passes against the Render staging API when staging demo admin env is present. Without that env, the command must return the documented SKIP-SAFE output and exit `0`.
 
 ## UAT Handoff Checklist
 
@@ -164,7 +164,7 @@ GO for staging UAT only when all items are true:
 - `npm run db:migrate:staging` completed against staging/test DB only.
 - `npm run staging:db:check` passes.
 - `npm run smoke:staging` passes.
-- `npm run smoke:staging-uat` passes.
+- `npm run smoke:staging-uat` passes with staging demo admin env present. A local SKIP-SAFE result is acceptable only before credentialed UAT handoff.
 - Demo admin and demo member exist with staging-only credentials known through a secure channel, not docs/log/chat.
 - No secret-shaped values appear in responses, logs, docs, commits, screenshots, or chat.
 
