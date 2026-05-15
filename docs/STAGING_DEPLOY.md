@@ -44,7 +44,7 @@ Do not deploy this backend as a static site. Do not use Netlify static hosting f
 | Health check path | `/api/health` |
 | ENV storage | Render Environment Variables or Environment Group only |
 
-Do not add real secret values to repository files. Render must hold real staging-only values for `DATABASE_URL`, JWT/admin secrets, and any approved sandbox provider credentials.
+Do not add real secret values to repository files. The selected platform must hold real staging-only values for `DATABASE_URL`, JWT/admin secrets, and any approved sandbox provider credentials.
 
 ## Recommended Architecture
 
@@ -79,6 +79,7 @@ Core keys:
 
 - `NODE_ENV`
 - `APP_ENV`
+- `STAGING_MODE`
 - `PORT`
 - `DATABASE_URL`
 - `JWT_SECRET`
@@ -115,8 +116,8 @@ All real values must be set only in the selected platform secret manager or an i
 
 | Group | ENV keys | Required value style | Notes |
 | --- | --- | --- | --- |
-| App runtime | `NODE_ENV`, `APP_ENV`, `PORT` | Render may use `production`; `APP_ENV` must be `staging`; platform port value | Runtime optimization is separate from environment boundary. Safety checks use `APP_ENV`, DB target markers, and provider modes. |
-| Database staging/test only | `DATABASE_URL` | `<staging-database-url>` in secret manager | Must point to dedicated staging/test PostgreSQL, never production or production clone. |
+| App runtime | `NODE_ENV`, `APP_ENV`, `STAGING_MODE`, `PORT` | `NODE_ENV` must be non-production; `APP_ENV=staging`; `STAGING_MODE=mock` or `sandbox`; platform port value | Runtime optimization must not override the environment boundary. Safety checks use app/staging labels, DB target markers, and provider modes. |
+| Database staging/test only | `DATABASE_URL` | `<SET_IN_PLATFORM_SECRET>` in secret manager | Must point to dedicated staging/test PostgreSQL, never production or production clone. |
 | Admin/session/auth | `JWT_SECRET`, `JWT_EXPIRES_IN`, `LOCAL_ADMIN_PASSWORD` | `<set-in-render-environment>`, `7d`, `<set-in-render-environment>` | Rotate if printed, pasted, committed, screenshotted, or shared outside secret manager. |
 | Provider/game mock/sandbox/disabled | `GAME_PROVIDER_MODE`, `GAME_PROVIDER_API_BASE_URL`, `GAME_PROVIDER_AGENT_CODE`, `GAME_PROVIDER_API_KEY`, `GAME_PROVIDER_SECRET` | `mock`, `sandbox`, or `disabled`; credentials as placeholders only | Keep credentials empty in mock mode; no live provider mode. |
 | Payment mock/sandbox/disabled | `PAYMENT_PROVIDER_MODE`, `PAYMENT_API_BASE_URL`, `PAYMENT_MERCHANT_ID`, `PAYMENT_API_KEY`, `PAYMENT_SECRET` | `mock`, `sandbox`, or `disabled`; credentials as placeholders only | No live payment rails, no real-money transfer. |
@@ -127,8 +128,9 @@ All real values must be set only in the selected platform secret manager or an i
 
 Required staging values:
 
-- `NODE_ENV` may be `production` on Render, but `APP_ENV` must be `staging`.
+- `NODE_ENV` must not be `production` for this mock/sandbox preflight.
 - `APP_ENV` must be `staging` or another explicit non-production staging/test label.
+- `STAGING_MODE` must be `staging`, `mock`, or `sandbox`.
 - `DATABASE_URL` must target a dedicated staging/test PostgreSQL database.
 - `JWT_SECRET`, session secret values, and admin passwords must be generated for staging and set only in the platform secret manager.
 - `CORS_ORIGIN` must be the staging frontend/admin origin list, not `*`.
@@ -161,8 +163,10 @@ Values that must be rotated if exposed:
 ## Pre-Deploy Checklist
 
 - Confirm the target platform and staging domain.
+- Confirm the platform is configured as a backend service, not a static site.
 - Confirm the staging PostgreSQL database is not production and not a production clone.
 - Confirm the staging database name, host label, or user label contains a staging/test marker.
+- Confirm `NODE_ENV` is non-production, `APP_ENV` is staging/test, and `STAGING_MODE` is mock/sandbox.
 - Confirm no live provider credentials are present in platform env values.
 - Confirm provider/payment/bank/SMS/Slip OCR modes are `mock`, `sandbox`, or `disabled`.
 - Confirm `CORS_ORIGIN` lists only staging frontend/admin origins and `PUBLIC_API_BASE_URL` points at the staging API.
@@ -243,7 +247,7 @@ Run migrations only after the staging database target has been verified without 
 npm run db:migrate:staging
 ```
 
-Do not run raw `npx prisma migrate deploy` for staging from a local checkout. The guarded command runs `src/db-safety-tests/dbSafetyGuard.js` before Prisma deploys migrations and accepts only staging/test DB targets and `mock`, `sandbox`, or `disabled` external modes. `NODE_ENV=production` is acceptable on Render only when `APP_ENV=staging` and the DB target is non-production.
+Do not run raw `npx prisma migrate deploy` for staging from a local checkout. The guarded command runs `src/db-safety-tests/dbSafetyGuard.js` before Prisma deploys migrations and accepts only staging/test DB targets and `mock`, `sandbox`, or `disabled` external modes. For this mock/sandbox preflight, `NODE_ENV` must stay non-production.
 
 Stop immediately if the guard blocks. Do not bypass the guard and do not switch to production database credentials.
 
@@ -309,6 +313,22 @@ NO-GO if any item is true:
 ## Smoke Testing Steps
 
 Use `docs/STAGING_SMOKE.md` for the staging smoke boundary and command plan.
+
+## Staging Deploy Mock/Sandbox Preflight
+
+Use this sequence before any real staging deploy. It is platform-neutral and applies to Render, Railway, Fly.io, VPS, or another backend host.
+
+1. Choose the backend platform and confirm rollback support, log access, health checks, and a platform secret manager.
+2. Create or select a dedicated PostgreSQL staging database whose host/name/user label contains a staging/test marker.
+3. Set staging env values only in the platform secret manager: non-production `NODE_ENV`, `APP_ENV=staging`, `STAGING_MODE=mock` or `sandbox`, a dedicated staging DB value, staging-only auth/admin secrets, staging CORS/base URLs, and mock/sandbox/disabled external modes.
+4. Generate Prisma client during build with `npx prisma generate`.
+5. Run guarded migrations with `npm run db:migrate:staging` only after the DB target label is confirmed safe.
+6. Seed demo/staging data with `npm run staging:db:seed` only if required for UAT.
+7. Check `/api/health` and verify safe external mode labels plus no secret-shaped values in the response or logs.
+8. Run smoke in order: `npm run staging:preflight`, `npm run smoke:staging`, `npm run staging:db:check`, `npm run smoke:admin-wheel-runtime`, `npm run smoke:wheel`, and `npm run smoke:staging-uat`.
+9. Roll back through the selected platform's previous release/deploy mechanism if health, migration, seed, smoke, or leak scan fails.
+
+This preflight is mock/sandbox only. It does not authorize production DB access, live provider/payment/bank/SMS/Slip OCR mode, real payout, or real-money transfer.
 
 Minimum staging smoke order:
 

@@ -1,4 +1,9 @@
-const { SAFE_EXTERNAL_MODES, ensureApiPath, inspectBaseUrl } = require("./stagingSafety");
+const {
+  SAFE_EXTERNAL_MODES,
+  ensureApiPath,
+  evaluateStagingSafety,
+  inspectBaseUrl,
+} = require("./stagingSafety");
 
 const DEFAULT_BASE_URL = "https://fling-stukuto-staging-api.onrender.com/api";
 const SITE_CODE = process.env.STAGING_SMOKE_SITE_CODE || "PG77";
@@ -323,6 +328,14 @@ async function assertLuckyWheelMemberEndpoints(baseUrl, authValue) {
 
 async function main() {
   try {
+    const safety = evaluateStagingSafety(process.env, {
+      requireDatabaseUrl: false,
+      allowSkipSafe: true,
+    });
+    if (safety.failed) {
+      throw new Error(`Staging UAT smoke safety guard: BLOCKED\n- ${safety.failReasons.join("\n- ")}`);
+    }
+
     const baseUrl = configuredBaseUrl();
     const target = inspectBaseUrl("BASE_URL", baseUrl);
     if (!target.ok) throw new Error(target.reason);

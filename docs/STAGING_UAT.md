@@ -92,7 +92,7 @@ Use this checklist only with approved staging/mock admin and member accounts. Do
 ### Lucky Wheel Runtime UAT Checklist
 
 - Preflight safety: run `npm run staging:preflight` with `BASE_URL` pointed at the staging API only.
-- ENV boundary: `APP_ENV` must be `staging` or another explicit staging/test label; `NODE_ENV=production` is acceptable only with explicit staging/test `APP_ENV`.
+- ENV boundary: `NODE_ENV` must be non-production for this mock/sandbox preflight; `APP_ENV` must be `staging` or another explicit staging/test label; `STAGING_MODE` must be `mock`, `sandbox`, or `staging`.
 - External modes: game provider, payment, bank statement, SMS, and Slip OCR must be `mock`, `sandbox`, or `disabled`; `live` is not approved.
 - Member config check: `GET /api/member/wheel/config` must return `campaignId`, cost fields, remaining spin data, and a public `rewards` array without probability or stock internals.
 - Member spin check: `POST /api/member/wheel/spin` must send only `campaignId`; response must include backend-selected `spinId`, `rewardId`, `prizeIndex`, and reward summary.
@@ -106,6 +106,20 @@ Use this checklist only with approved staging/mock admin and member accounts. Do
 - Audit history check: audit history must come from the existing admin audit endpoint and show safe action, actor, site code, reason, before/after, and created time summaries only.
 - Secret leak check: responses, UI details, docs, logs, and smoke output must not expose raw tokens, auth headers, passwords, provider secrets, database URLs, raw stack traces, or raw unmasked IPs.
 - Rollback note: if any Lucky Wheel check fails, disable staging tester access or roll back the staging deploy; keep provider modes mock/sandbox and do not switch to production DB as a workaround.
+
+### Lucky Wheel Staging Preflight Checklist
+
+- Member wheel config: verify `GET /api/member/wheel/config` returns public campaign/reward fields only.
+- Member wheel spin: verify `POST /api/member/wheel/spin` sends only `campaignId` and receives a backend-selected result.
+- Member wheel history: verify `GET /api/member/wheel/history` returns sanitized rows or an empty array.
+- Member my rewards: verify `GET /api/member/wheel/my-rewards` returns sanitized pending/claimed/expired rows or an empty array.
+- Admin wheel campaign config: verify `GET /api/admin/wheel/config` and campaign edits require staging admin auth plus non-empty `reason`.
+- Admin rewards: verify create/edit reward uses staging/mock data only and rejects empty `reason`.
+- Admin spin history: verify `GET /api/admin/wheel/spins` returns sanitized rows and masked IP values only.
+- Admin reports: verify reports render zero states safely and never show `NaN`, `undefined`, or real-money payout data.
+- Audit history: verify wheel audit rows show safe action, actor, site code, reason, before/after summaries, and created time only.
+- Secret leak scan: verify smoke output, API responses, docs, logs, and UI details do not expose DB URLs, tokens, passwords, auth headers, provider secrets, raw stacks, or raw IPs.
+- Rollback note: if any item fails, stop UAT, keep external modes mock/sandbox/disabled, disable staging tester access or roll back the staging deploy, and never point staging at production DB.
 
 - Open `/admin/lucky-wheel/` and confirm the page shows `Staging / Mock Admin Console` and `No real money / no live provider`.
 - Confirm Campaign settings loads through `GET /api/admin/wheel/config` or shows a safe error state.

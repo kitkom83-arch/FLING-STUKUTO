@@ -51,6 +51,12 @@ GitHub Actions also scans `src/local-smoke-tests` for secret-shaped values. It d
 
 ## Staging DB/UAT Coverage
 
+- Staging Deploy Mock/Sandbox Preflight covers platform-neutral deploy readiness before any real staging deploy.
+- Required preflight commands: `node --check src/staging-scripts/stagingSafety.js`, `node --check src/staging-scripts/stagingUatSmoke.js`, `npm run staging:preflight`, `npm run smoke:staging`, `npm run staging:db:check`, `npm run smoke:admin-wheel-runtime`, `npm run smoke:wheel`, `npm run smoke:staging-uat`, and `npm run check`.
+- Skip-safe conditions: missing local/staging demo admin password, missing local wheel runtime env, missing local wheel DB/env for smoke, or absent optional staging member env. These skip with exit `0` only when the target is otherwise safe.
+- Block conditions: production-like DB/API targets, `NODE_ENV` production for mock/sandbox preflight, live provider/payment/bank/SMS/Slip OCR modes, embedded URL credentials, unsafe external mode labels, or secret-shaped values in responses.
+- Secret-shaped scan covers database URL shapes, authorization scheme markers, JWT-shaped values, API-key-shaped values, DB assignment text, sensitive response keys, and sensitive env values echoed in output.
+- The preflight must always report no production DB, no real provider/payment/bank/SMS/Slip OCR, and no real money payout for staging UAT and Lucky Wheel smoke paths.
 - `staging:db:check` blocks production-like DB targets, live external modes, and unsafe app labels before connecting.
 - It verifies Prisma migration table plus core application tables exist.
 - It verifies the demo site, demo admin, demo member, wallet, bank/account/provider/game/payment/promotion fixtures are present.
@@ -342,7 +348,7 @@ Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not 
 `npm run staging:preflight` is a safe deploy readiness guard:
 
 - Requires effective `APP_ENV` to be `staging` or `local-test`.
-- Blocks `NODE_ENV=production` and production-like API/database targets for staging preparation.
+- Blocks `NODE_ENV` production and production-like API/database targets for staging preparation.
 - Allows `DATABASE_URL` to be absent only for local-test/CI dry runs; real staging requires a dedicated staging/test PostgreSQL URL supplied outside git.
 - Requires game, payment, bank statement, SMS, and Slip OCR modes to be `mock`, `sandbox`, or `disabled`.
 - Validates the `/api/health` contract when `BASE_URL` is set.
