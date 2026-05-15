@@ -46,6 +46,11 @@
     campaignEnd: document.getElementById("campaign-end"),
     campaignRules: document.getElementById("campaign-rules"),
     campaignReason: document.getElementById("campaign-reason"),
+    campaignSummaryStatus: document.getElementById("campaign-summary-status"),
+    campaignSummaryName: document.getElementById("campaign-summary-name"),
+    campaignSummaryCost: document.getElementById("campaign-summary-cost"),
+    campaignSummaryDaily: document.getElementById("campaign-summary-daily"),
+    campaignSummaryWindow: document.getElementById("campaign-summary-window"),
     campaignNameError: document.getElementById("campaign-name-error"),
     campaignCostError: document.getElementById("campaign-cost-error"),
     campaignDailyError: document.getElementById("campaign-daily-error"),
@@ -435,6 +440,19 @@
     els.campaignEnd.value = datetimeLocal(row.endAt);
     els.campaignRules.value = row.rulesText || "";
     els.campaignReason.value = "";
+    renderCampaignSummary(row);
+  }
+
+  function renderCampaignSummary(row) {
+    const status = safeEnum(row.status, CAMPAIGN_STATUSES, "draft");
+    els.campaignSummaryStatus.textContent = status;
+    els.campaignSummaryStatus.className = `summary-status ${status === "active" ? "ok" : status === "draft" ? "warn" : ""}`.trim();
+    els.campaignSummaryName.textContent = safeText(row.name || "-");
+    els.campaignSummaryCost.textContent = `${formatNumber(row.costAmount)} ${safeText(row.costType || "point")}`;
+    els.campaignSummaryDaily.textContent = formatNumber(row.dailySpinLimit || 0);
+    const start = row.startAt ? formatDate(row.startAt) : "-";
+    const end = row.endAt ? formatDate(row.endAt) : "-";
+    els.campaignSummaryWindow.textContent = `${start} / ${end}`;
   }
 
   function validateReason(input, errorEl) {
@@ -658,6 +676,11 @@
       setFieldError(els.rewardFormError, "Stock limit must be blank or 0 or more");
       ok = false;
     }
+    const currentStockUsed = state.editingReward ? intValue(state.editingReward.stockUsed) : 0;
+    if (ok && els.rewardStock.value !== "" && Number(els.rewardStock.value) < currentStockUsed) {
+      setFieldError(els.rewardFormError, "Stock limit must be greater than or equal to stock used");
+      ok = false;
+    }
     if (ok && !validColor(els.rewardColor.value)) {
       setFieldError(els.rewardFormError, "Segment color must be a hex color");
       ok = false;
@@ -756,6 +779,11 @@
     return member.username || member.phone || member.id || "-";
   }
 
+  function spinResultLabel(spin) {
+    const result = spin && spin.result && typeof spin.result === "object" ? spin.result : {};
+    return result.status || result.outcome || result.rewardType || (spin.reward && spin.reward.status) || "recorded";
+  }
+
   function renderSpins() {
     els.spinRows.innerHTML = "";
     els.spinsEmpty.classList.toggle("hidden", state.spins.length > 0);
@@ -769,7 +797,7 @@
       tr.appendChild(createCell(spin.prizeIndex));
       tr.appendChild(createCell(spin.ipAddressMasked));
       tr.appendChild(createCell(spin.siteCode || SITE_CODE));
-      tr.appendChild(createCell(spin.reward && spin.reward.status));
+      tr.appendChild(createCell(spinResultLabel(spin)));
       const detail = document.createElement("td");
       detail.appendChild(actionButton("Details", () => openSpinDetail(spin)));
       tr.appendChild(detail);
@@ -786,6 +814,7 @@
       ["cost", spin.cost ? `${safeText(spin.cost.type)} ${safeText(spin.cost.amount)}` : "-"],
       ["prizeIndex", spin.prizeIndex],
       ["ipAddressMasked", spin.ipAddressMasked],
+      ["result", spinResultLabel(spin)],
       ["siteCode", spin.siteCode || SITE_CODE],
     ], spin.result || {});
   }
@@ -809,7 +838,7 @@
       if (reward.stockLimit === null || reward.stockLimit === undefined) return sum;
       return sum + Math.max(intValue(reward.stockLimit) - intValue(reward.stockUsed), 0);
     }, 0);
-    const top = Array.from(counts.entries()).sort((a, b) => b[1] - a[1])[0];
+    const topRewards = Array.from(counts.entries()).sort((a, b) => b[1] - a[1]).slice(0, 3);
     const costByType = state.spins.reduce((acc, spin) => {
       const type = spin.cost && spin.cost.type ? spin.cost.type : "unknown";
       acc[type] = (acc[type] || 0) + numberValue(spin.cost && spin.cost.amount);
@@ -820,7 +849,9 @@
     els.reportIssued.textContent = formatNumber(issued);
     els.reportStockUsed.textContent = formatNumber(totalStockUsed);
     els.reportStockRemaining.textContent = formatNumber(finiteRemaining);
-    els.reportTopReward.textContent = top ? safeText(top[0]) : "-";
+    els.reportTopReward.textContent = topRewards.length
+      ? topRewards.map(([label, count]) => `${safeText(label)} (${formatNumber(count)})`).join(", ")
+      : "ไม่พบข้อมูล";
     els.reportCostUsed.textContent = Object.keys(costByType).length
       ? Object.entries(costByType).map(([type, value]) => `${formatNumber(value)} ${safeText(type)}`).join(", ")
       : "0";
@@ -919,13 +950,13 @@
     els.auditEmpty.classList.toggle("hidden", state.auditRows.length > 0 || !els.auditPlaceholder.classList.contains("hidden"));
     for (const row of state.auditRows) {
       const tr = document.createElement("tr");
-      tr.appendChild(createCell(formatDate(row.createdAt)));
       tr.appendChild(createCell(row.action));
-      tr.appendChild(createCell(auditReason(row)));
       tr.appendChild(createCell(auditActor(row)));
       tr.appendChild(createCell(auditSiteCode(row)));
+      tr.appendChild(createCell(auditReason(row)));
       tr.appendChild(createCell(shortJson(row.beforeJson || row.before)));
       tr.appendChild(createCell(shortJson(row.afterJson || row.after)));
+      tr.appendChild(createCell(formatDate(row.createdAt)));
       const detail = document.createElement("td");
       detail.appendChild(actionButton("Diff", () => openAuditDetail(row)));
       tr.appendChild(detail);
@@ -973,6 +1004,7 @@
     els.rewardsLoading.classList.add("hidden");
     els.spinsLoading.classList.add("hidden");
     els.auditLoading.classList.add("hidden");
+    renderCampaign();
     renderRewards();
     renderSpins();
     renderReports();

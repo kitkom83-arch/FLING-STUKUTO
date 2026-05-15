@@ -64,6 +64,13 @@
               </div>
               <button id="save-campaign" type="submit">Save</button>
             </div>
+            <div class="campaign-summary" aria-label="Current campaign summary">
+              <span class="summary-pill">Status <strong id="campaign-summary-status">draft</strong></span>
+              <span class="summary-pill">Campaign <strong id="campaign-summary-name">-</strong></span>
+              <span class="summary-pill">Cost <strong id="campaign-summary-cost">0 point</strong></span>
+              <span class="summary-pill">Daily limit <strong id="campaign-summary-daily">0</strong></span>
+              <span class="summary-pill">Window <strong id="campaign-summary-window">-</strong></span>
+            </div>
             <div class="form-grid">
               <div class="field">
                 <label for="campaign-status">Status</label>
@@ -136,7 +143,7 @@
               <table>
                 <thead>
                   <tr>
-                    <th>Prize index</th>
+                    <th>Sort order</th>
                     <th>Label</th>
                     <th>Reward type</th>
                     <th>Reward value</th>
@@ -205,7 +212,7 @@
             <article class="summary-card"><span>Rewards issued</span><strong id="report-issued">0</strong></article>
             <article class="summary-card"><span>Stock used</span><strong id="report-stock-used">0</strong></article>
             <article class="summary-card"><span>Remaining stock</span><strong id="report-stock-remaining">0</strong></article>
-            <article class="summary-card"><span>Top reward</span><strong id="report-top-reward">-</strong></article>
+            <article class="summary-card"><span>Top rewards</span><strong id="report-top-reward">ไม่พบข้อมูล</strong></article>
             <article class="summary-card"><span>Total cost used</span><strong id="report-cost-used">0</strong></article>
           </section>
           <section class="report-grid">
@@ -242,13 +249,13 @@
               <table>
                 <thead>
                   <tr>
-                    <th>Time</th>
                     <th>Action</th>
-                    <th>Reason</th>
                     <th>Actor</th>
                     <th>Site code</th>
+                    <th>Reason</th>
                     <th>Before</th>
                     <th>After</th>
+                    <th>Created at</th>
                     <th>Details</th>
                   </tr>
                 </thead>
