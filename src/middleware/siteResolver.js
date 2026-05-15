@@ -15,43 +15,50 @@ async function getDevelopmentFallbackSite() {
   });
 }
 
+async function resolveSiteForRequest(req) {
+  const siteCode = req.headers["x-site-code"];
+  const siteDomain = normalizeDomain(req.headers["x-site-domain"]);
+  const host = normalizeDomain(req.headers.host);
+
+  let site = null;
+  if (siteCode) {
+    site = await prisma.site.findUnique({
+      where: { code: String(siteCode).trim().toUpperCase() },
+      include: { setting: true, theme: true },
+    });
+  }
+
+  const domainCandidates = [siteDomain, host, host ? host.split(":")[0] : null].filter(Boolean);
+  for (const domain of domainCandidates) {
+    if (site) break;
+    const domainRow = await prisma.siteDomain.findFirst({
+      where: { domain, status: "active" },
+      include: { site: { include: { setting: true, theme: true } } },
+    });
+    if (domainRow && domainRow.site && domainRow.site.status === "active") {
+      site = domainRow.site;
+    }
+  }
+
+  if (!site || site.status !== "active") {
+    site = await getDevelopmentFallbackSite();
+  }
+
+  return site && site.status === "active" ? site : null;
+}
+
+function attachSiteToRequest(req, site) {
+  req.site = site;
+  req.siteId = site.id;
+  req.siteCode = site.code;
+}
+
 async function siteResolver(req, res, next) {
   try {
-    const siteCode = req.headers["x-site-code"];
-    const siteDomain = normalizeDomain(req.headers["x-site-domain"]);
-    const host = normalizeDomain(req.headers.host);
+    const site = await resolveSiteForRequest(req);
+    if (!site) return fail(res, "Site not found", 404, {});
 
-    let site = null;
-    if (siteCode) {
-      site = await prisma.site.findUnique({
-        where: { code: String(siteCode).trim().toUpperCase() },
-        include: { setting: true, theme: true },
-      });
-    }
-
-    const domainCandidates = [siteDomain, host, host ? host.split(":")[0] : null].filter(Boolean);
-    for (const domain of domainCandidates) {
-      if (site) break;
-      const domainRow = await prisma.siteDomain.findFirst({
-        where: { domain, status: "active" },
-        include: { site: { include: { setting: true, theme: true } } },
-      });
-      if (domainRow && domainRow.site && domainRow.site.status === "active") {
-        site = domainRow.site;
-      }
-    }
-
-    if (!site || site.status !== "active") {
-      site = await getDevelopmentFallbackSite();
-    }
-
-    if (!site || site.status !== "active") {
-      return fail(res, "Site not found", 404, {});
-    }
-
-    req.site = site;
-    req.siteId = site.id;
-    req.siteCode = site.code;
+    attachSiteToRequest(req, site);
     return next();
   } catch (error) {
     return next(error);
@@ -59,3 +66,5 @@ async function siteResolver(req, res, next) {
 }
 
 module.exports = siteResolver;
+module.exports.resolveSiteForRequest = resolveSiteForRequest;
+module.exports.attachSiteToRequest = attachSiteToRequest;

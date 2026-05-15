@@ -30,7 +30,6 @@ const canAny = (permissions) => async (req, res, next) => {
   }
 };
 
-router.post("/auth/login", asyncHandler(adminController.login));
 router.get("/me", protectedSite, asyncHandler(adminController.me));
 router.get("/permissions/me", protectedSite, asyncHandler(adminPermissionController.me));
 router.get("/permissions", protectedSite, can("admin.manage"), asyncHandler(adminPermissionController.listPermissions));

@@ -12,11 +12,13 @@ const wheelRoutes = require("./wheel.routes");
 const adminRoutes = require("./admin.routes");
 const siteResolver = require("../middleware/siteResolver");
 const siteController = require("../controllers/site.controller");
+const adminController = require("../controllers/admin.controller");
 const { asyncHandler } = require("../middleware/errorHandler");
 
 const router = express.Router();
 
 router.get("/health", asyncHandler(healthController.health));
+router.post("/admin/auth/login", asyncHandler(adminController.login));
 router.use(siteResolver);
 router.get("/site/config", asyncHandler(siteController.config));
 router.use("/auth", authRoutes);

@@ -13,11 +13,13 @@ const {
   auditLoginBlockedOutsideSchedule,
   checkAdminLoginSchedule,
 } = require("../services/adminWorkSchedule.service");
+const { attachSiteToRequest, resolveSiteForRequest } = require("../middleware/siteResolver");
 
 const loginSchema = z.object({
-  username: z.string().trim().min(1),
+  username: z.string().trim().min(1).optional(),
+  email: z.string().trim().min(1).optional(),
   password: z.string().min(1),
-});
+}).refine((value) => value.username || value.email);
 const INVALID_ADMIN_LOGIN_MESSAGE = "Invalid admin credentials";
 
 const amountSchema = z.object({
@@ -65,7 +67,25 @@ function invalidAdminLogin(res) {
 
 function parseAdminLoginBody(body) {
   const parsed = loginSchema.safeParse(body);
-  return parsed.success ? parsed.data : null;
+  if (!parsed.success) return null;
+  return {
+    username: parsed.data.username || parsed.data.email,
+    password: parsed.data.password,
+  };
+}
+
+async function ensureAdminLoginSite(req) {
+  if (req.siteId) return true;
+
+  try {
+    const site = await resolveSiteForRequest(req);
+    if (!site) return false;
+    attachSiteToRequest(req, site);
+    return true;
+  } catch (error) {
+    console.error({ event: "admin.login.site_resolution_failed", error: safeAdminLoginError(error) });
+    return false;
+  }
 }
 
 async function login(req, res) {
@@ -100,6 +120,9 @@ async function login(req, res) {
     const error = new Error("Admin is not active");
     error.statusCode = 403;
     throw error;
+  }
+  if (!(await ensureAdminLoginSite(req))) {
+    return invalidAdminLogin(res);
   }
 
   const now = new Date();
