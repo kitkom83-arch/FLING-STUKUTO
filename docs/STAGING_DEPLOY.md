@@ -87,11 +87,13 @@ npm run db:migrate:staging
 npm run staging:db:seed
 ```
 
-16. Create or refresh the staging UAT demo admin only after the base demo fixtures exist:
+16. Create or refresh the staging UAT demo admin/member only after the base demo fixtures exist:
 
 ```bash
 npm run staging:seed-demo
 ```
+
+Set `STAGING_DEMO_MEMBER_USERNAME`, `STAGING_DEMO_MEMBER_PHONE`, and `STAGING_DEMO_MEMBER_PASSWORD` in Render Environment before this step when Lucky Wheel member UAT must run instead of SKIP-SAFE. Do not paste the member password, admin password, token, JWT, authorization header, or DB URL into docs, logs, screenshots, tickets, or chat.
 
 17. Check health:
 
@@ -177,6 +179,9 @@ Core keys:
 - `LOCAL_ADMIN_PASSWORD`
 - `STAGING_DEMO_ADMIN_EMAIL`
 - `STAGING_DEMO_ADMIN_PASSWORD`
+- `STAGING_DEMO_MEMBER_USERNAME`
+- `STAGING_DEMO_MEMBER_PHONE`
+- `STAGING_DEMO_MEMBER_PASSWORD`
 - `STAGING_DEMO_SEED_ENABLED`
 
 Provider and external boundary keys:
@@ -209,7 +214,7 @@ All real values must be set only in the selected platform secret manager or an i
 | --- | --- | --- | --- |
 | App runtime | `NODE_ENV`, `APP_ENV`, `STAGING_MODE`, `PORT` | `NODE_ENV` must be non-production; `APP_ENV=staging`; `STAGING_MODE=mock` or `sandbox`; platform port value | Runtime optimization must not override the environment boundary. Safety checks use app/staging labels, DB target markers, and provider modes. |
 | Database staging/test only | `DATABASE_URL` | `<SET_IN_PLATFORM_SECRET>` in secret manager | Must point to dedicated staging/test PostgreSQL, never production or production clone. |
-| Admin/session/auth | `JWT_SECRET`, `JWT_EXPIRES_IN`, `LOCAL_ADMIN_PASSWORD`, `STAGING_DEMO_ADMIN_EMAIL`, `STAGING_DEMO_ADMIN_PASSWORD`, `STAGING_DEMO_SEED_ENABLED` | `<set-in-render-environment>`, `7d`, staging-only demo values in Render Environment | Demo credentials are for staging UAT only. Do not paste them into chat, logs, docs, commits, screenshots, or shell transcripts. |
+| Admin/session/auth | `JWT_SECRET`, `JWT_EXPIRES_IN`, `LOCAL_ADMIN_PASSWORD`, `STAGING_DEMO_ADMIN_EMAIL`, `STAGING_DEMO_ADMIN_PASSWORD`, `STAGING_DEMO_MEMBER_USERNAME`, `STAGING_DEMO_MEMBER_PHONE`, `STAGING_DEMO_MEMBER_PASSWORD`, `STAGING_DEMO_SEED_ENABLED` | `<set-in-render-environment>`, `7d`, staging-only demo values in Render Environment | Demo credentials are for staging UAT only. Do not paste them into chat, logs, docs, commits, screenshots, or shell transcripts. |
 | Provider/game mock/sandbox/disabled | `GAME_PROVIDER_MODE`, `GAME_PROVIDER_API_BASE_URL`, `GAME_PROVIDER_AGENT_CODE`, `GAME_PROVIDER_API_KEY`, `GAME_PROVIDER_SECRET` | `mock`, `sandbox`, or `disabled`; credentials as placeholders only | Keep credentials empty in mock mode; no live provider mode. |
 | Payment mock/sandbox/disabled | `PAYMENT_PROVIDER_MODE`, `PAYMENT_API_BASE_URL`, `PAYMENT_MERCHANT_ID`, `PAYMENT_API_KEY`, `PAYMENT_SECRET` | `mock`, `sandbox`, or `disabled`; credentials as placeholders only | No live payment rails, no real-money transfer. |
 | Bank/statement mock/sandbox/disabled | `BANK_STATEMENT_MODE`, `BANK_API_BASE_URL`, `BANK_API_KEY` | `mock`, `sandbox`, or `disabled`; credentials as placeholders only | No live bank rails or production statement feeds. |
@@ -225,6 +230,7 @@ Required staging values:
 - `DATABASE_URL` must target a dedicated staging/test PostgreSQL database.
 - `JWT_SECRET`, session secret values, and admin passwords must be generated for staging and set only in the platform secret manager.
 - `STAGING_DEMO_ADMIN_EMAIL` and `STAGING_DEMO_ADMIN_PASSWORD` must be staging-only values set only in Render Environment before credentialed UAT smoke.
+- `STAGING_DEMO_MEMBER_USERNAME` and `STAGING_DEMO_MEMBER_PASSWORD` must be staging-only values set only in Render Environment before Lucky Wheel member UAT smoke. `STAGING_DEMO_MEMBER_PHONE` is required for `staging:seed-demo` because the member row requires a phone value.
 - `STAGING_DEMO_SEED_ENABLED` may be set to `true` only while intentionally running the demo admin seed.
 - `CORS_ORIGIN` must be the staging frontend/admin origin list, not `*`.
 - `PUBLIC_API_BASE_URL` must be the staging API base URL.
@@ -239,6 +245,9 @@ Secret manager only values:
 - `LOCAL_ADMIN_PASSWORD`
 - `STAGING_DEMO_ADMIN_EMAIL`
 - `STAGING_DEMO_ADMIN_PASSWORD`
+- `STAGING_DEMO_MEMBER_USERNAME`
+- `STAGING_DEMO_MEMBER_PHONE`
+- `STAGING_DEMO_MEMBER_PASSWORD`
 - Provider, payment, bank, SMS, and Slip OCR API keys or secrets when sandbox mode is approved.
 
 Values that may be committed only as placeholders:
@@ -359,19 +368,19 @@ npm run staging:db:seed
 
 The base seed is intended for local/staging/test mock data. Do not seed production. For `APP_ENV=staging`, set staging-only demo admin/member passwords in the platform secret manager or ignored shell; never write them into docs/log/chat. See `docs/DEMO_SEED.md` for the seed runbook, verification checks, safe reset rules, and mock data list.
 
-Create or refresh the UAT demo admin with the dedicated staging-safe command:
+Create or refresh the UAT demo admin and Lucky Wheel demo member with the dedicated staging-safe command:
 
 ```bash
 npm run staging:seed-demo
 ```
 
-`staging:seed-demo` requires `STAGING_DEMO_ADMIN_EMAIL` and `STAGING_DEMO_ADMIN_PASSWORD`, uses the staging safety guard, upserts one active `super_admin`, grants staging site access, and writes only sanitized audit metadata. If the demo admin env is missing in a local shell, it returns SKIP-SAFE with exit `0`.
+`staging:seed-demo` requires `STAGING_DEMO_ADMIN_EMAIL`, `STAGING_DEMO_ADMIN_PASSWORD`, `STAGING_DEMO_MEMBER_USERNAME`, `STAGING_DEMO_MEMBER_PHONE`, and `STAGING_DEMO_MEMBER_PASSWORD`. It uses the staging safety guard, upserts one active `super_admin`, grants staging site access, writes sanitized audit metadata, and upserts one active staging demo member with mock wallet balance and points for Lucky Wheel member UAT. If demo member env is missing, the command fails with a safe message; if demo admin env is missing in a local shell, the command returns SKIP-SAFE with exit `0`.
 
 ### Render Free Demo Admin Seed
 
 Render Free services do not provide practical one-off jobs or SSH for this workflow. The free path is to run the seed through a temporary deploy/start command and then revert it immediately.
 
-1. Set `STAGING_DEMO_ADMIN_EMAIL`, `STAGING_DEMO_ADMIN_PASSWORD`, and `STAGING_DEMO_SEED_ENABLED` in the Render dashboard Environment tab or Environment Group only.
+1. Set `STAGING_DEMO_ADMIN_EMAIL`, `STAGING_DEMO_ADMIN_PASSWORD`, `STAGING_DEMO_MEMBER_USERNAME`, `STAGING_DEMO_MEMBER_PHONE`, `STAGING_DEMO_MEMBER_PASSWORD`, and `STAGING_DEMO_SEED_ENABLED` in the Render dashboard Environment tab or Environment Group only.
 2. Temporarily change the Render start command to:
 
 ```bash

@@ -8,7 +8,7 @@ const {
 const DEFAULT_BASE_URL = "https://stukuto-real-core-staging.onrender.com/api";
 const SITE_CODE = process.env.STAGING_SMOKE_SITE_CODE || "PG77";
 const ADMIN_USERNAME = process.env.STAGING_DEMO_ADMIN_EMAIL || process.env.STAGING_DEMO_ADMIN_USERNAME || "admin";
-const MEMBER_PHONE = process.env.STAGING_DEMO_MEMBER_PHONE || "";
+const MEMBER_USERNAME = process.env.STAGING_DEMO_MEMBER_USERNAME || "";
 const MEMBER_PASSWORD = process.env.STAGING_DEMO_MEMBER_PASSWORD || "";
 const INVALID_ADMIN_PASSWORD = "staging-uat-invalid-admin-login-check";
 const issuedAuthValues = new Set();
@@ -187,16 +187,16 @@ async function loginDemoAdmin(baseUrl, password) {
 }
 
 async function loginDemoMember(baseUrl) {
-  if (!MEMBER_PHONE || !MEMBER_PASSWORD) {
+  if (!MEMBER_USERNAME || !MEMBER_PASSWORD) {
     console.log("Lucky Wheel member UAT: SKIPPED");
-    console.log("reason: staging demo member env not configured");
+    console.log("reason: STAGING_DEMO_MEMBER_USERNAME or STAGING_DEMO_MEMBER_PASSWORD env not configured");
     return null;
   }
   const result = await apiRequest(baseUrl, "/auth/login", {
     method: "POST",
     allowAuthToken: true,
     label: "staging demo member login",
-    body: { phone: MEMBER_PHONE, password: MEMBER_PASSWORD },
+    body: { phone: MEMBER_USERNAME, password: MEMBER_PASSWORD },
   });
   if (result.status !== 200 || !result.data || typeof result.data.token !== "string") {
     throw new Error(`Staging demo member login returned ${result.status}, expected 200 with token.`);
@@ -286,6 +286,12 @@ async function assertLuckyWheelMemberEndpoints(baseUrl, authValue) {
   if (config.status !== 200 || !config.data || !config.data.campaignId || !Array.isArray(config.data.rewards)) {
     throw new Error(`Member wheel config returned ${config.status}, expected campaign and rewards.`);
   }
+  if (!Object.prototype.hasOwnProperty.call(config.data, "remainingSpinsToday")) {
+    throw new Error("Member wheel config missing remainingSpinsToday.");
+  }
+  if (!config.data.memberBalance || typeof config.data.memberBalance !== "object") {
+    throw new Error("Member wheel config missing memberBalance.");
+  }
   if (config.data.rewards.some((reward) => Object.prototype.hasOwnProperty.call(reward, "probabilityWeight"))) {
     throw new Error("Member wheel config exposed probabilityWeight.");
   }
@@ -311,7 +317,15 @@ async function assertLuckyWheelMemberEndpoints(baseUrl, authValue) {
     label: "staging member wheel spin",
     body: { campaignId: config.data.campaignId },
   });
-  if (spin.status !== 201 || !spin.data || !spin.data.spinId || !spin.data.rewardId || typeof spin.data.prizeIndex !== "number" || !spin.data.reward) {
+  if (
+    spin.status !== 201 ||
+    !spin.data ||
+    !spin.data.spinId ||
+    !spin.data.rewardId ||
+    typeof spin.data.prizeIndex !== "number" ||
+    !spin.data.reward ||
+    !Object.prototype.hasOwnProperty.call(spin.data, "remainingSpinsToday")
+  ) {
     throw new Error(`Member wheel spin returned ${spin.status}, expected backend-selected result.`);
   }
 

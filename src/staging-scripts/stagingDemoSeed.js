@@ -8,6 +8,8 @@ const prisma = new PrismaClient();
 const SITE_CODE = process.env.STAGING_SMOKE_SITE_CODE || "PG77";
 const DEMO_ADMIN_ROLE = "super_admin";
 const WHEEL_CAMPAIGN_ID = "wheel_main";
+const DEMO_MEMBER_POINTS = "360.00";
+const DEMO_MEMBER_BALANCE = "180.00";
 
 function envValue(name) {
   const value = process.env[name];
@@ -54,6 +56,26 @@ function validateDemoAdminEnv() {
     throw new Error("STAGING_DEMO_ADMIN_EMAIL must be an email-form login identifier.");
   }
   return { ok: true, email, password };
+}
+
+function validateDemoMemberEnv() {
+  const username = envValue("STAGING_DEMO_MEMBER_USERNAME");
+  const phone = envValue("STAGING_DEMO_MEMBER_PHONE");
+  const password = envValue("STAGING_DEMO_MEMBER_PASSWORD");
+
+  if (!username || !phone || !password) {
+    return {
+      ok: false,
+      reason: "missing STAGING_DEMO_MEMBER_USERNAME, STAGING_DEMO_MEMBER_PHONE, or STAGING_DEMO_MEMBER_PASSWORD env",
+    };
+  }
+  if (!/^[0-9+().\-\s]{6,32}$/.test(phone)) {
+    throw new Error("STAGING_DEMO_MEMBER_PHONE must be a staging-only phone/login value.");
+  }
+  if (!username || username.length > 64) {
+    throw new Error("STAGING_DEMO_MEMBER_USERNAME must be 1-64 characters when provided.");
+  }
+  return { ok: true, username, phone, password };
 }
 
 function isSeedEnabled() {
@@ -225,6 +247,99 @@ async function upsertStagingWheelFixtures(site) {
   }
 }
 
+async function upsertDemoMember(site, demoMember) {
+  const passwordHash = await bcrypt.hash(demoMember.password, 12);
+  const existing = await prisma.user.findFirst({
+    where: {
+      siteId: site.id,
+      OR: [{ phone: demoMember.phone }, { username: demoMember.username }],
+    },
+  });
+  const memberData = {
+    username: demoMember.username,
+    phone: demoMember.phone,
+    passwordHash,
+    status: "active",
+    points: decimal(DEMO_MEMBER_POINTS),
+    referralSource: "staging-demo-member",
+    acceptBonus: false,
+    acceptTerms: true,
+    rank: "Staging Demo",
+  };
+  const member = existing
+    ? await prisma.user.update({
+        where: { id: existing.id },
+        data: memberData,
+      })
+    : await prisma.user.create({
+        data: {
+          siteId: site.id,
+          ...memberData,
+        },
+      });
+
+  await prisma.walletAccount.upsert({
+    where: { userId: member.id },
+    update: {
+      siteId: site.id,
+      balance: decimal(DEMO_MEMBER_BALANCE),
+      currency: "THB",
+    },
+    create: {
+      siteId: site.id,
+      userId: member.id,
+      balance: decimal(DEMO_MEMBER_BALANCE),
+      currency: "THB",
+    },
+  });
+
+  await prisma.pointLedger.upsert({
+    where: { id: `staging-demo-member-points-${site.code.toLowerCase()}` },
+    update: {
+      siteId: site.id,
+      userId: member.id,
+      before: decimal("0.00"),
+      amount: decimal(DEMO_MEMBER_POINTS),
+      after: decimal(DEMO_MEMBER_POINTS),
+      reason: "Staging demo member points",
+      referenceType: "staging_demo_seed",
+      referenceId: `staging-demo-member-points-${site.code}`,
+      createdByType: "system",
+      createdById: null,
+    },
+    create: {
+      id: `staging-demo-member-points-${site.code.toLowerCase()}`,
+      siteId: site.id,
+      userId: member.id,
+      before: decimal("0.00"),
+      amount: decimal(DEMO_MEMBER_POINTS),
+      after: decimal(DEMO_MEMBER_POINTS),
+      reason: "Staging demo member points",
+      referenceType: "staging_demo_seed",
+      referenceId: `staging-demo-member-points-${site.code}`,
+      createdByType: "system",
+      createdById: null,
+    },
+  });
+
+  await prisma.memberReward.deleteMany({
+    where: {
+      siteId: site.id,
+      memberId: member.id,
+      source: "wheel",
+    },
+  });
+  await prisma.wheelSpin.deleteMany({
+    where: {
+      siteId: site.id,
+      memberId: member.id,
+      campaignId: WHEEL_CAMPAIGN_ID,
+    },
+  });
+
+  return member;
+}
+
 async function writeAuditLog(admin, site) {
   await prisma.adminLog.create({
     data: {
@@ -273,8 +388,10 @@ async function main() {
   }
 
   let demoAdmin;
+  let demoMember;
   try {
     demoAdmin = validateDemoAdminEnv();
+    demoMember = validateDemoMemberEnv();
   } catch (error) {
     fail(error.message);
     return;
@@ -282,6 +399,10 @@ async function main() {
 
   if (!demoAdmin.ok) {
     skipSafe(demoAdmin.reason);
+    return;
+  }
+  if (!demoMember.ok) {
+    fail(demoMember.reason);
     return;
   }
 
@@ -310,11 +431,13 @@ async function main() {
     await grantSiteAccess(admin, sites);
     const primarySite = sites.find((site) => site.code === SITE_CODE) || sites[0];
     await upsertStagingWheelFixtures(primarySite);
+    await upsertDemoMember(primarySite, demoMember);
     await writeAuditLog(admin, primarySite);
 
     console.log(`Demo admin: PASS (${admin.username}, role=${DEMO_ADMIN_ROLE})`);
     console.log(`Demo admin site access: PASS (${sites.length} active staging site(s))`);
     console.log(`Demo wheel fixtures: PASS (${WHEEL_CAMPAIGN_ID})`);
+    console.log(`Demo member: PASS (site=${primarySite.code})`);
     console.log("Demo admin audit log: PASS");
     printSafeBoundary();
     console.log("Staging demo admin seed: PASS");

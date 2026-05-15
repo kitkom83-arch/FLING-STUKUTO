@@ -4,7 +4,8 @@ const { assertStagingSafety } = require("./stagingSafety");
 const prisma = new PrismaClient();
 const SITE_CODE = process.env.STAGING_SMOKE_SITE_CODE || "PG77";
 const ADMIN_USERNAME = process.env.STAGING_DEMO_ADMIN_EMAIL || process.env.STAGING_DEMO_ADMIN_USERNAME || "admin";
-const DEMO_MEMBER_USERNAME = process.env.STAGING_DEMO_MEMBER_USERNAME || "ima00180";
+const DEMO_MEMBER_USERNAME = process.env.STAGING_DEMO_MEMBER_USERNAME || "staging_demo_member";
+const DEMO_MEMBER_PHONE = process.env.STAGING_DEMO_MEMBER_PHONE || "";
 
 const REQUIRED_TABLES = [
   "_prisma_migrations",
@@ -77,8 +78,11 @@ async function assertDemoDataReady() {
     throw new Error(`Staging demo admin ${ADMIN_USERNAME} has no access to site ${SITE_CODE}.`);
   }
 
+  const memberIdentity = DEMO_MEMBER_PHONE
+    ? { OR: [{ username: DEMO_MEMBER_USERNAME }, { phone: DEMO_MEMBER_PHONE }] }
+    : { username: DEMO_MEMBER_USERNAME };
   const member = await prisma.user.findFirst({
-    where: { siteId: site.id, username: DEMO_MEMBER_USERNAME },
+    where: { siteId: site.id, ...memberIdentity },
     select: { username: true, status: true, walletAccount: { select: { currency: true } } },
   });
   if (!member || member.status !== "active") {
