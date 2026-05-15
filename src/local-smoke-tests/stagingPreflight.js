@@ -64,30 +64,33 @@ function inspectDatabaseTarget(databaseUrl, appEnv) {
     if (appEnv === "staging") {
       return {
         ok: false,
-        reason: "DATABASE_URL must be set in the platform secret manager for a real staging run. Value is not printed.",
+        missing: true,
+        reason:
+          "DATABASE_URL is not present in this local shell. For Render, verify the value in the dashboard only; value is not printed.",
       };
     }
-    return { ok: true, reason: null };
+    return { ok: true, missing: false, reason: null };
   }
 
   const parsed = parseUrl(databaseUrl.trim());
   if (!parsed || !["postgres:", "postgresql:"].includes(parsed.protocol)) {
-    return { ok: false, reason: "DATABASE_URL must use PostgreSQL for staging. Value is not printed." };
+    return { ok: false, missing: false, reason: "DATABASE_URL must use PostgreSQL for staging. Value is not printed." };
   }
 
   const targetParts = [parsed.hostname, parsed.pathname, parsed.username];
   if (targetParts.some((part) => hasAnyToken(part, PRODUCTION_MARKERS))) {
-    return { ok: false, reason: "DATABASE_URL appears production-like and is blocked. Value is not printed." };
+    return { ok: false, missing: false, reason: "DATABASE_URL appears production-like and is blocked. Value is not printed." };
   }
 
   if (!isLoopbackHost(parsed.hostname) && !targetParts.some((part) => hasAnyToken(part, SAFE_TARGET_MARKERS))) {
     return {
       ok: false,
+      missing: false,
       reason: "DATABASE_URL must target local/staging/test PostgreSQL. Value is not printed.",
     };
   }
 
-  return { ok: true, reason: null };
+  return { ok: true, missing: false, reason: null };
 }
 
 function inspectBaseUrl(label, rawBaseUrl) {
@@ -232,7 +235,9 @@ function localHealthContractFixture(appEnv) {
 function assertEnvironment() {
   const effectiveAppEnv = String(process.env.APP_ENV || "local-test").trim().toLowerCase();
   const nodeEnv = String(process.env.NODE_ENV || "").trim().toLowerCase();
+  const baseUrl = inspectBaseUrl("BASE_URL", process.env.BASE_URL);
   const reasons = [];
+  const skipSafeReasons = [];
 
   if (!SAFE_APP_ENVS.has(effectiveAppEnv)) {
     reasons.push("APP_ENV must be staging or local-test.");
@@ -245,7 +250,10 @@ function assertEnvironment() {
   }
 
   const database = inspectDatabaseTarget(process.env.DATABASE_URL, effectiveAppEnv);
-  if (!database.ok) reasons.push(database.reason);
+  if (!database.ok) {
+    if (database.missing) skipSafeReasons.push(database.reason);
+    else reasons.push(database.reason);
+  }
 
   for (const key of MODE_ENV_KEYS) {
     const mode = String(process.env[key] || "mock").trim().toLowerCase();
@@ -258,7 +266,7 @@ function assertEnvironment() {
   }
 
   for (const key of ["BASE_URL", "PUBLIC_API_BASE_URL"]) {
-    const result = inspectBaseUrl(key, process.env[key]);
+    const result = key === "BASE_URL" ? baseUrl : inspectBaseUrl(key, process.env[key]);
     if (!result.ok) reasons.push(result.reason);
   }
 
@@ -268,20 +276,37 @@ function assertEnvironment() {
 
   console.log("Staging preflight safety guard: PASS");
   console.log(`Environment boundary: PASS (${effectiveAppEnv})`);
-  return effectiveAppEnv;
+  if (skipSafeReasons.length > 0) {
+    if (!baseUrl.value) {
+      console.log("Staging preflight local DB target check: SKIP-SAFE");
+      for (const reason of skipSafeReasons) console.log(`reason: ${reason}`);
+      console.log("no production DB used");
+      console.log("no real provider/payment/bank/SMS/Slip OCR used");
+      console.log("no real money payout");
+      return { appEnv: effectiveAppEnv, baseUrl: "", skipSafe: true };
+    }
+    console.log("Staging preflight local DB target check: SKIP-SAFE");
+    for (const reason of skipSafeReasons) console.log(`reason: ${reason}`);
+    console.log("Remote health check will verify the Render staging database contract without printing secrets.");
+  }
+  return { appEnv: effectiveAppEnv, baseUrl: baseUrl.value, skipSafe: false };
 }
 
 async function main() {
   try {
-    const appEnv = assertEnvironment();
-    const baseUrl = inspectBaseUrl("BASE_URL", process.env.BASE_URL).value;
+    const environment = assertEnvironment();
 
-    if (baseUrl) {
-      const health = await requestHealth(baseUrl);
+    if (environment.skipSafe) {
+      console.log("Staging preflight: SKIP-SAFE");
+      return;
+    }
+
+    if (environment.baseUrl) {
+      const health = await requestHealth(environment.baseUrl);
       assertHealthContract("health", health);
       console.log("Health endpoint contract: PASS");
     } else {
-      const health = localHealthContractFixture(appEnv);
+      const health = localHealthContractFixture(environment.appEnv);
       assertNoLeaks("local health contract fixture", health.payload);
       assertHealthContract("local health contract fixture", health);
       console.log("Health endpoint contract: PASS (local fixture, no BASE_URL)");

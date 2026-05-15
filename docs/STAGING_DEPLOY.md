@@ -38,13 +38,95 @@ Do not deploy this backend as a static site. Do not use Netlify static hosting f
 | --- | --- |
 | Service type | Web Service |
 | Runtime | Node.js |
+| Service name example | `pg77-real-core-staging` |
 | Branch | `main` |
+| Environment boundary | `APP_ENV=staging`, `STAGING_MODE=mock` or `sandbox`, provider modes mock/sandbox/off |
 | Build command | `npm ci && npx prisma generate` |
 | Start command | `npm start` |
 | Health check path | `/api/health` |
 | ENV storage | Render Environment Variables or Environment Group only |
 
 Do not add real secret values to repository files. The selected platform must hold real staging-only values for `DATABASE_URL`, JWT/admin secrets, and any approved sandbox provider credentials.
+
+## Render Staging Web Service Setup
+
+Use Render only for a staging mock/sandbox Web Service in this phase.
+
+1. In Render, create a new Web Service from the GitHub repository `kitkom83-arch/FLING-STUKUTO`.
+2. Select branch `main`.
+3. Set the service name to a staging-only name such as `pg77-real-core-staging`.
+4. Select Node.js runtime.
+5. Set the build command to:
+
+```bash
+npm ci && npx prisma generate
+```
+
+6. Set the start command to:
+
+```bash
+npm start
+```
+
+7. Set the health check path to `/api/health`.
+8. Keep auto deploy off or use manual deploy if the deploy owner wants explicit control for UAT windows.
+9. Create a dedicated Render PostgreSQL database for staging only. Do not use production, a production clone, or a production read replica.
+10. Copy the staging database connection into Render Environment Variables or a Render Environment Group only. Do not paste the DB URL into repo files, docs, chat, issue trackers, shell transcripts, screenshots, or logs.
+11. Configure env keys from `.env.staging.example` in the Render dashboard only. Use `APP_ENV=staging`, `STAGING_MODE=mock` or approved `sandbox`, and a non-production `NODE_ENV` such as `staging` because the staging safety guards block `NODE_ENV=production` for mock/sandbox preflight.
+12. Set game provider, payment, bank statement, SMS, and Slip OCR modes to `mock`, `sandbox`, or `disabled`. Do not use `live`.
+13. After the first build, run guarded migrations only after confirming the database target is staging/test:
+
+```bash
+npm run db:migrate:staging
+```
+
+14. Generate Prisma client during build with `npx prisma generate`; rerun only as part of a safe build or explicit staging maintenance step.
+15. Seed staging demo data only if UAT needs fixtures and only through:
+
+```bash
+npm run staging:db:seed
+```
+
+16. Check health:
+
+```bash
+curl https://<render-staging-domain>/api/health
+```
+
+17. Run staging preflight and smoke from a safe local shell after setting only the staging API base URL:
+
+```powershell
+$env:BASE_URL = "https://<render-staging-domain>/api"
+npm run staging:preflight
+npm run smoke:staging
+npm run smoke:admin-wheel-runtime
+npm run smoke:wheel
+npm run smoke:staging-uat
+```
+
+18. Check Render logs for health, migration, seed, and smoke errors. Logs must not contain DB URLs, authorization headers, JWTs, API keys, passwords, provider secrets, or raw callback secrets.
+19. Roll back through Render Deploys by redeploying the previous successful deploy. If a secret leak is suspected, suspend/disable the service first, rotate the exposed value, then redeploy.
+
+This setup remains mock/sandbox only: no production DB, no real money, no live provider, no live payment, no live bank rails, no live SMS, and no live Slip OCR.
+
+## Render Staging Checklist
+
+- GitHub repo connected to Render Web Service.
+- Branch set to `main`.
+- Service name is staging-only, for example `pg77-real-core-staging`.
+- Auto deploy is off or manual deploy is selected when deploy windows need explicit control.
+- Dedicated Render PostgreSQL staging database is created.
+- ENV values are set in the Render dashboard or Render Environment Group only.
+- `APP_ENV` is `staging`.
+- `STAGING_MODE` is `mock` or approved `sandbox`.
+- `NODE_ENV` is not `production` for this mock/sandbox preflight because the safety guard blocks it.
+- Provider/payment/bank/SMS/Slip OCR modes are `mock`, `sandbox`, or `disabled`.
+- Build command is `npm ci && npx prisma generate`.
+- Start command is `npm start`.
+- Health endpoint `/api/health` is checked.
+- Smoke commands are documented and run only against the staging API.
+- Logs are checked for no DB URL, authorization header, JWT, password, token, API key, provider secret, or callback secret leak.
+- Rollback owner and deploy owner are recorded before UAT.
 
 ## Recommended Architecture
 
@@ -186,6 +268,8 @@ Render-specific pre-deploy checks:
 - Confirm Render health check path is `/api/health`.
 - Confirm all real ENV values are stored in Render Environment/Secrets only.
 - Confirm no real secret value is committed in repo files.
+- Confirm Render auto deploy is off or manual deploy is intentionally selected for controlled staging windows.
+- Confirm `NODE_ENV` is not `production` for mock/sandbox preflight.
 
 ## Render Deploy Checklist
 

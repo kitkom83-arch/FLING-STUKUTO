@@ -85,6 +85,36 @@ Use this checklist when handing staging to testers. It authorizes staging UAT on
 - If any credential was exposed outside the approved secret channel, rotate it before tester handoff.
 - Do not screenshot Render ENV, database settings, shell output, request headers, or any page that shows raw secret values.
 
+## Render Staging UAT Flow
+
+Use this flow only after the Render Web Service, Render staging PostgreSQL database, and Render dashboard env values are configured for mock/sandbox staging.
+
+1. Open the Render staging URL in a browser and confirm it is the staging service, not production.
+2. Check `GET /api/health` at `https://<render-staging-domain>/api/health`.
+3. Run staging preflight from a safe local shell:
+
+```powershell
+$env:BASE_URL = "https://<render-staging-domain>/api"
+npm run staging:preflight
+```
+
+4. Run UAT smoke:
+
+```powershell
+npm run smoke:staging-uat
+```
+
+5. Check Lucky Wheel member config through `GET /api/member/wheel/config` using staging member auth only.
+6. Check Lucky Wheel spin through `POST /api/member/wheel/spin` with only `campaignId`; this must stay mock/sandbox and backend-selected.
+7. Check member wheel history and my rewards through `/api/member/wheel/history` and `/api/member/wheel/my-rewards`.
+8. Check admin Lucky Wheel config, rewards, spins, reports, and audit through staging admin auth only.
+9. Confirm no real money movement, no real payout, and no production ledger action occurred.
+10. Confirm game provider, payment, bank statement, SMS, and Slip OCR are not live.
+11. Run the local secret-shaped scan before reporting handoff results.
+12. Record the Safe CI Run ID, commit hash, Render deploy ID or timestamp, and staging URL. Do not record secret values, DB URLs, request headers, passwords, tokens, or provider credentials.
+
+Stop UAT immediately if health fails, `databaseConnected` is not `true`, an external mode is `live`, a response leaks secret-shaped data, or any real-money/provider/bank path becomes reachable.
+
 ## Admin Lucky Wheel UAT Checklist
 
 Use this checklist only with approved staging/mock admin and member accounts. Do not use production DB, live provider/payment/bank/SMS/Slip OCR modes, real money, or real payout flows.
