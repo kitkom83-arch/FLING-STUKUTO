@@ -11,6 +11,7 @@ const DEFAULT_BASE_URL = "http://localhost:4000/api";
 const SITE_CODE = process.env.LOCAL_SMOKE_SITE_CODE || "PG77";
 const OWNER_USERNAME = process.env.LOCAL_ADMIN_USERNAME || "local_wheel_runtime_owner";
 const NO_PERMISSION_USERNAME = "local_wheel_runtime_no_permission";
+const MEMBER_PASSWORD = process.env.LOCAL_MEMBER_PASSWORD || "local-wheel-runtime-member-only";
 const RUNTIME_REASON = "admin wheel runtime smoke reason";
 const WHEEL_AUDIT_ACTIONS = ["wheel.campaign.update", "wheel.reward.create", "wheel.reward.update"];
 const issuedAuthValues = new Set();
@@ -60,6 +61,11 @@ function webBaseFromApi(baseUrl) {
   const parsed = parseUrl(baseUrl);
   if (!parsed) throw new Error("BASE_URL must be a valid URL.");
   return `${parsed.protocol}//${parsed.host}`;
+}
+
+function makeRunId() {
+  const random = Math.floor(Math.random() * 10000).toString().padStart(4, "0");
+  return `${Date.now()}${random}`;
 }
 
 function inspectDatabaseTarget(databaseUrl) {
@@ -172,6 +178,7 @@ function assertNoUnsafeValues(label, payload, { allowAuthToken = false } = {}) {
   if (postgresWithCredentials.test(serialized)) throw new Error(`${label} response included a PostgreSQL credential URL.`);
   if (/Mozilla|Chrome|Safari|Firefox|Edg\//i.test(serialized)) throw new Error(`${label} response included raw user-agent content.`);
   if (/"ipAddress":"(?:\d{1,3}\.){3}\d{1,3}"/.test(serialized)) throw new Error(`${label} response exposed unmasked IPv4 address.`);
+  if (/(Error:\s.+\n\s+at\s+)|(\"stack\"\s*:)/i.test(serialized)) throw new Error(`${label} response included a raw internal stack.`);
 
   for (const [name, value] of [
     ["DATABASE_URL", process.env.DATABASE_URL],
@@ -237,6 +244,7 @@ async function ensureFixtures() {
   const prisma = require("../config/prisma");
   const { hashPassword } = require("../utils/password");
   const passwordHash = await hashPassword(process.env.LOCAL_ADMIN_PASSWORD);
+  const memberPasswordHash = await hashPassword(MEMBER_PASSWORD);
 
   const site = await prisma.site.upsert({
     where: { code: SITE_CODE },
@@ -334,7 +342,29 @@ async function ensureFixtures() {
     },
   });
 
-  return prisma;
+  const runId = makeRunId();
+  const member = await prisma.user.create({
+    data: {
+      siteId: site.id,
+      phone: `08${runId.slice(-8)}`,
+      username: `local_wheel_runtime_member_${runId}`,
+      passwordHash: memberPasswordHash,
+      referralSource: "admin-wheel-runtime-smoke",
+      acceptBonus: false,
+      acceptTerms: true,
+      status: "active",
+      points: new Prisma.Decimal("120.00"),
+      walletAccount: {
+        create: {
+          siteId: site.id,
+          balance: new Prisma.Decimal("180.00"),
+          currency: "THB",
+        },
+      },
+    },
+  });
+
+  return { prisma, memberPhone: member.phone };
 }
 
 async function loginAdmin(baseUrl, username) {
@@ -347,6 +377,88 @@ async function loginAdmin(baseUrl, username) {
   if (!login.data.token) throw new Error("Admin login token missing.");
   issuedAuthValues.add(login.data.token);
   return login.data.token;
+}
+
+async function loginMember(baseUrl, phone) {
+  const login = await apiRequest(baseUrl, "/auth/login", {
+    method: "POST",
+    allowAuthToken: true,
+    label: "admin wheel runtime member login",
+    body: { phone, password: MEMBER_PASSWORD },
+  });
+  if (!login.data.token) throw new Error("Member login token missing.");
+  issuedAuthValues.add(login.data.token);
+  return login.data.token;
+}
+
+async function assertMemberWheelRuntime(baseUrl, memberToken) {
+  await apiRequest(baseUrl, "/member/wheel/config", {
+    expectedStatus: 401,
+    expectSuccess: false,
+    label: "admin wheel runtime member config missing auth",
+  });
+
+  const config = await apiRequest(baseUrl, "/member/wheel/config", {
+    authValue: memberToken,
+    label: "admin wheel runtime member config",
+  });
+  if (!config.data.campaignId || !Array.isArray(config.data.rewards)) {
+    throw new Error("Member wheel config response shape invalid.");
+  }
+  if (config.data.rewards.some((reward) => Object.prototype.hasOwnProperty.call(reward, "probabilityWeight"))) {
+    throw new Error("Member wheel config exposed probabilityWeight.");
+  }
+
+  await apiRequest(baseUrl, "/member/wheel/spin", {
+    method: "POST",
+    authValue: memberToken,
+    expectedStatus: 400,
+    expectSuccess: false,
+    label: "admin wheel runtime member unsafe spin payload",
+    body: {
+      campaignId: config.data.campaignId,
+      rewardId: "wheel_runtime_base_reward",
+      prizeIndex: 0,
+      probabilityWeight: 999999,
+      rewardValue: "999.00",
+    },
+  });
+
+  await apiRequest(baseUrl, "/member/wheel/spin", {
+    method: "POST",
+    authValue: memberToken,
+    expectedStatus: 404,
+    expectSuccess: false,
+    label: "admin wheel runtime member invalid campaign",
+    body: { campaignId: "missing_wheel_campaign" },
+  });
+
+  const spin = await apiRequest(baseUrl, "/member/wheel/spin", {
+    method: "POST",
+    authValue: memberToken,
+    label: "admin wheel runtime member spin",
+    body: { campaignId: config.data.campaignId },
+  });
+  if (!spin.data.spinId || !spin.data.rewardId || typeof spin.data.prizeIndex !== "number" || !spin.data.reward) {
+    throw new Error("Member wheel spin response shape invalid.");
+  }
+
+  const history = await apiRequest(baseUrl, "/member/wheel/history?limit=20", {
+    authValue: memberToken,
+    label: "admin wheel runtime member history",
+  });
+  if (!Array.isArray(history.data) || !history.data.some((row) => row.spinId === spin.data.spinId)) {
+    throw new Error("Member wheel history response shape invalid.");
+  }
+
+  const myRewards = await apiRequest(baseUrl, "/member/wheel/my-rewards?limit=20", {
+    authValue: memberToken,
+    label: "admin wheel runtime member my rewards",
+  });
+  if (!Array.isArray(myRewards.data)) throw new Error("Member wheel my-rewards response shape invalid.");
+
+  console.log("Admin Wheel member config/spin/history/my-rewards runtime: PASS");
+  console.log("Admin Wheel frontend result injection guard: PASS");
 }
 
 function assertAuditRow(row, action) {
@@ -375,6 +487,7 @@ async function main() {
       console.log(`reason: ${safety.reasons.join("; ")}`);
       console.log("no production DB used");
       console.log("no real provider/payment/bank/SMS/Slip OCR used");
+      console.log("no real money payout");
       return;
     }
 
@@ -383,9 +496,11 @@ async function main() {
     console.log("Admin Wheel runtime smoke safety guard: PASS");
     await assertStaticRoutes(webBase);
 
-    prisma = await ensureFixtures();
+    const fixtures = await ensureFixtures();
+    prisma = fixtures.prisma;
     const ownerToken = await loginAdmin(baseUrl, OWNER_USERNAME);
     const noPermissionToken = await loginAdmin(baseUrl, NO_PERMISSION_USERNAME);
+    const memberToken = await loginMember(baseUrl, fixtures.memberPhone);
 
     await apiRequest(baseUrl, "/admin/wheel/config", {
       expectedStatus: 401,
@@ -415,6 +530,8 @@ async function main() {
     });
     if (!Array.isArray(spins.data)) throw new Error("Admin wheel spins response shape invalid.");
     console.log("Admin Wheel spins read: PASS");
+
+    await assertMemberWheelRuntime(baseUrl, memberToken);
 
     await apiRequest(baseUrl, "/admin/wheel/campaign", {
       method: "PATCH",
@@ -501,6 +618,9 @@ async function main() {
     }
     console.log("Admin Wheel audit log read: PASS");
     console.log("Admin Wheel runtime response leak scan: PASS");
+    console.log("no production DB used");
+    console.log("no real provider/payment/bank/SMS/Slip OCR used");
+    console.log("no real money payout");
     console.log("Admin Wheel runtime smoke: PASS");
   } catch (error) {
     console.error("Admin Wheel runtime smoke: FAIL");

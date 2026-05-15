@@ -39,12 +39,12 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `adminWorkScheduleUiSmoke.js` | `npm run smoke:admin-work-schedule-ui` | Yes | Yes | Yes | Syntax check only | Static admin schedule UI route/assets, owner flow, no-permission block, emergency override, masked audit history, and leak scan. |
 | `adminAuditSecuritySmoke.js` | `npm run smoke:admin-audit-security` | Yes | Yes | Yes | Syntax check only | Static audit/security UI route/assets, UX markers, report endpoints, filters, permission block, empty response shape, masked IP, raw user-agent omission, and leak scan. |
 | `adminWheelUiSmoke.js` | `npm run smoke:admin-wheel-ui` | No | No | No | Syntax check plus static contract | Static Admin Lucky Wheel UI source contract, campaign summary, reward modal/table fields, spin empty state, audit fields, endpoint usage, reason validation, 401/403 safe handling, audit placeholder/wiring, report zero guards, redaction markers, masked IP handling, and frontend spin-safety guard. |
-| `adminWheelRuntimeSmoke.js` | `npm run smoke:admin-wheel-runtime` | Yes | Yes | Yes | Syntax check only | Admin Lucky Wheel runtime route/assets, unauth `401`, no-permission `403`, config/spins reads, write reason validation, write audit creation, audit read sanitization, and leak scan. Skips safely when local admin env is not configured. |
-| `wheelSmoke.js` | `npm run smoke:wheel` | Yes | Yes | Yes | Syntax check only | Lucky Wheel mock config/spin/history/rewards, backend result selection, admin reason/audit checks, stock-zero exclusion, and leak scan. |
+| `adminWheelRuntimeSmoke.js` | `npm run smoke:admin-wheel-runtime` | Yes | Yes | Yes | Syntax check only | Admin Lucky Wheel runtime route/assets, unauth `401`, no-permission `403`, admin config/spins reads, member config/spin/history/my-rewards checks, write reason validation, write audit creation, audit read sanitization, and leak scan. Skips safely when local admin/member env is not configured. |
+| `wheelSmoke.js` | `npm run smoke:wheel` | Yes | Yes | Yes | Syntax check only | Lucky Wheel mock config/spin/history/rewards, missing auth, invalid campaign, backend result selection, admin reason/audit checks, stock-zero exclusion, fail-safe guards, and leak scan. Skips safely when local runtime env is missing; blocks unsafe targets. |
 | `stagingPreflight.js` | `npm run staging:preflight` | No local Prisma access | Optional | No | Runs local-test dry run | Staging readiness guard for env boundary, database/API target labels, external modes, health contract, and response leak scan. |
 | `stagingSmoke.js` | `npm run smoke:staging` | No local Prisma access | Yes | No | Syntax check only | Hosted staging health contract, safe external mode labels, admin auth negative leak check, and response leak scan. |
 | `stagingDbCheck.js` | `npm run staging:db:check` | Staging/test DB | No | No | Syntax check only | Staging DB connection, required tables, demo site/admin/member readiness, fixture counts, and safe output. |
-| `stagingUatSmoke.js` | `npm run smoke:staging-uat` | No local Prisma access | Hosted staging API | Yes | Syntax check only | Render staging health/database/mode contract, admin auth leak checks, admin work schedule read, audit/security read endpoints, and response leak scan. |
+| `stagingUatSmoke.js` | `npm run smoke:staging-uat` | No local Prisma access | Hosted staging API | Yes | Syntax check only | Render staging health/database/mode contract, admin auth leak checks, admin work schedule read, audit/security read endpoints, Admin Lucky Wheel config/spins, optional member wheel config/spin/history/my-rewards when staging member env exists, and response leak scan. |
 | `runAllLocalSmoke.js` | `npm run smoke:all-local` | Yes | Yes | Yes | Syntax check only | Guarded local runner for syntax, project checks, all local smokes, secret grep, and diff check. |
 
 GitHub Actions also scans `src/local-smoke-tests` for secret-shaped values. It does not run DB-backed smoke commands.
@@ -56,7 +56,7 @@ GitHub Actions also scans `src/local-smoke-tests` for secret-shaped values. It d
 - It verifies the demo site, demo admin, demo member, wallet, bank/account/provider/game/payment/promotion fixtures are present.
 - It prints only safe usernames, roles, site codes, currencies, and counts. It does not print `DATABASE_URL`, tokens, passwords, hashes, provider secrets, or encrypted config fields.
 - `smoke:staging-uat` defaults to `https://fling-stukuto-staging-api.onrender.com/api` when `BASE_URL` is not set.
-- It requires a staging-only demo admin password in env, verifies `/api/health`, confirms `databaseConnected=true`, confirms all external modes are non-live, verifies admin auth negative leak behavior, logs in without printing the token, and reads work schedule/audit/security endpoints.
+- It requires a staging-only demo admin password in env, verifies `/api/health`, confirms `databaseConnected=true`, confirms all external modes are non-live, verifies admin auth negative leak behavior, logs in without printing the token, reads work schedule/audit/security endpoints, reads Admin Lucky Wheel config/spins, and optionally runs member wheel config/spin/history/my-rewards when staging demo member env is present.
 
 ## 3. smoke:money-flow Coverage
 
@@ -298,11 +298,14 @@ The Admin Wheel UI smoke is static/source-only. It does not require a database, 
 ## 16. smoke:admin-wheel-runtime Coverage
 
 - Safety guard blocks production-like DB/API targets and live provider/payment/bank/SMS/Slip OCR modes.
-- Skips safely when local admin env is not configured, without printing env values or failing against a missing local runtime.
+- Skips safely when local admin/member env is not configured, without printing env values or failing against a missing local runtime.
+- Skip-safe output includes the reason plus `no production DB used`, `no real provider/payment/bank/SMS/Slip OCR used`, and `no real money payout`.
 - Static HTTP route check for `/admin/lucky-wheel/`, `/admin/lucky-wheel/app.js`, and `/admin/lucky-wheel/styles.css`.
 - Unauthenticated Admin Wheel API access returns `401`.
 - Authenticated admin with a site access override containing no permissions returns `403`.
 - Owner/super admin reads `GET /api/admin/wheel/config` and `GET /api/admin/wheel/spins`.
+- Member runtime checks cover `GET /api/member/wheel/config`, `POST /api/member/wheel/spin`, `GET /api/member/wheel/history`, and `GET /api/member/wheel/my-rewards`.
+- Member runtime checks confirm config campaign/rewards shape, reject unsafe spin payloads containing frontend-selected result fields, reject invalid campaign id safely, and confirm backend-selected `spinId`, `rewardId`, `prizeIndex`, and reward response shape.
 - `PATCH /api/admin/wheel/campaign`, `POST /api/admin/wheel/rewards`, and `PATCH /api/admin/wheel/rewards/:id` reject empty `reason`.
 - Successful campaign/reward writes use local/staging-safe fixtures only and create `wheel.campaign.update`, `wheel.reward.create`, and `wheel.reward.update` audit rows.
 - Audit read uses the existing `/api/admin/audit-logs` endpoint and verifies `reason`, actor, site code, sanitized before/after data, masked IP behavior, and no raw user-agent.
@@ -313,10 +316,12 @@ The Admin Wheel runtime smoke uses only local/staging/test PostgreSQL fixtures. 
 ## 17. smoke:wheel Coverage
 
 - Safety guard blocks unsafe environment, production-like DB/API targets, live provider modes, and missing `LOCAL_ADMIN_PASSWORD`.
+- Missing local runtime env skips safely with reason and confirms no production DB, no real provider/payment/bank/SMS/Slip OCR, and no real money payout. Production-like DB/API targets and unsafe provider modes remain blocked.
 - Creates local/staging-test only site, admin, member, campaign, and reward fixtures.
 - Verifies `GET /api/member/wheel/config` returns active campaign data and at least 8 public rewards.
+- Confirms missing member auth returns `401` and invalid campaign ids fail safely.
 - Confirms member config does not expose `probabilityWeight`.
-- Confirms `POST /api/member/wheel/spin` rejects frontend-submitted `rewardId` and `prizeIndex`.
+- Confirms `POST /api/member/wheel/spin` rejects frontend-submitted `rewardId`, `prizeIndex`, `probabilityWeight`, and reward value fields.
 - Confirms successful spin returns backend-selected `spinId`, `rewardId`, `prizeIndex`, reward summary, remaining spins, and balance after.
 - Confirms stock-zero reward fixtures are not selected even with high probability weight.
 - Confirms history includes the created spin.
@@ -327,7 +332,7 @@ The Admin Wheel runtime smoke uses only local/staging/test PostgreSQL fixtures. 
 - Confirms admin campaign/reward updates reject empty reason.
 - Confirms successful admin reward update writes `wheel.reward.update` audit metadata with the reason.
 - Reads admin config and admin spin history.
-- Response leak scan checks DB URL markers, auth values, password/token/secret markers, JWT-like values, and credential-shaped PostgreSQL URLs.
+- Response leak scan checks DB URL markers, auth values, password/token/secret markers, JWT-like values, credential-shaped PostgreSQL URLs, authorization scheme markers, and raw internal stack traces.
 
 Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not call real provider, payment, bank, SMS, or Slip OCR services, does not run real-money UAT, and does not create real payout.
 

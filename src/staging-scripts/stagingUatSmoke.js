@@ -3,6 +3,8 @@ const { SAFE_EXTERNAL_MODES, ensureApiPath, inspectBaseUrl } = require("./stagin
 const DEFAULT_BASE_URL = "https://fling-stukuto-staging-api.onrender.com/api";
 const SITE_CODE = process.env.STAGING_SMOKE_SITE_CODE || "PG77";
 const ADMIN_USERNAME = process.env.STAGING_DEMO_ADMIN_USERNAME || "admin";
+const MEMBER_PHONE = process.env.STAGING_DEMO_MEMBER_PHONE || "";
+const MEMBER_PASSWORD = process.env.STAGING_DEMO_MEMBER_PASSWORD || "";
 const INVALID_ADMIN_PASSWORD = "staging-uat-invalid-admin-login-check";
 const issuedAuthValues = new Set();
 
@@ -54,6 +56,7 @@ function assertNoLeaks(label, payload, { allowAuthToken = false } = {}) {
     throw new Error(`${label} leaked a JWT-shaped value.`);
   }
   if (lower.includes(authScheme)) throw new Error(`${label} leaked an authorization scheme marker.`);
+  if (/(Error:\s.+\n\s+at\s+)|(\"stack\"\s*:)/i.test(serialized)) throw new Error(`${label} leaked a raw internal stack.`);
   if (!allowAuthToken) {
     for (const authValue of issuedAuthValues) {
       if (authValue && serialized.includes(authValue)) throw new Error(`${label} echoed an authorization token.`);
@@ -167,6 +170,26 @@ async function loginDemoAdmin(baseUrl) {
   return result.data.token;
 }
 
+async function loginDemoMember(baseUrl) {
+  if (!MEMBER_PHONE || !MEMBER_PASSWORD) {
+    console.log("Lucky Wheel member UAT: SKIPPED");
+    console.log("reason: staging demo member env not configured");
+    return null;
+  }
+  const result = await apiRequest(baseUrl, "/auth/login", {
+    method: "POST",
+    allowAuthToken: true,
+    label: "staging demo member login",
+    body: { phone: MEMBER_PHONE, password: MEMBER_PASSWORD },
+  });
+  if (result.status !== 200 || !result.data || typeof result.data.token !== "string") {
+    throw new Error(`Staging demo member login returned ${result.status}, expected 200 with token.`);
+  }
+  issuedAuthValues.add(result.data.token);
+  console.log("Demo member auth: PASS");
+  return result.data.token;
+}
+
 function assertRowsSummaryShape(label, data) {
   if (!data || !Array.isArray(data.rows)) throw new Error(`${label} must return rows array.`);
   if (!data.summary || typeof data.summary.totalEvents !== "number") {
@@ -216,6 +239,80 @@ async function assertAdminEndpoints(baseUrl, authValue) {
   console.log("Admin audit/security endpoints: PASS");
 }
 
+async function assertLuckyWheelAdminEndpoints(baseUrl, authValue) {
+  const config = await apiRequest(baseUrl, "/admin/wheel/config", {
+    authValue,
+    label: "staging admin wheel config",
+  });
+  if (config.status !== 200 || !config.data || !config.data.campaign || !Array.isArray(config.data.rewards)) {
+    throw new Error(`Admin wheel config returned ${config.status}, expected campaign and rewards.`);
+  }
+  if (!config.data.summary || typeof config.data.summary.totalSpins !== "number") {
+    throw new Error("Admin wheel config summary shape invalid.");
+  }
+
+  const spins = await apiRequest(baseUrl, "/admin/wheel/spins?limit=20", {
+    authValue,
+    label: "staging admin wheel spins",
+  });
+  if (spins.status !== 200 || !Array.isArray(spins.data)) {
+    throw new Error(`Admin wheel spins returned ${spins.status}, expected array.`);
+  }
+  console.log("Admin Lucky Wheel config/rewards/spins: PASS");
+}
+
+async function assertLuckyWheelMemberEndpoints(baseUrl, authValue) {
+  if (!authValue) return;
+  const config = await apiRequest(baseUrl, "/member/wheel/config", {
+    authValue,
+    label: "staging member wheel config",
+  });
+  if (config.status !== 200 || !config.data || !config.data.campaignId || !Array.isArray(config.data.rewards)) {
+    throw new Error(`Member wheel config returned ${config.status}, expected campaign and rewards.`);
+  }
+  if (config.data.rewards.some((reward) => Object.prototype.hasOwnProperty.call(reward, "probabilityWeight"))) {
+    throw new Error("Member wheel config exposed probabilityWeight.");
+  }
+
+  await apiRequest(baseUrl, "/member/wheel/spin", {
+    method: "POST",
+    authValue,
+    label: "staging member wheel unsafe spin payload",
+    body: {
+      campaignId: config.data.campaignId,
+      rewardId: "client_selected_reward",
+      prizeIndex: 0,
+    },
+  }).then((result) => {
+    if (![400, 401, 403].includes(result.status) || !result.payload || result.payload.success !== false) {
+      throw new Error("Unsafe member wheel spin payload must fail safely.");
+    }
+  });
+
+  const spin = await apiRequest(baseUrl, "/member/wheel/spin", {
+    method: "POST",
+    authValue,
+    label: "staging member wheel spin",
+    body: { campaignId: config.data.campaignId },
+  });
+  if (spin.status !== 201 || !spin.data || !spin.data.spinId || !spin.data.rewardId || typeof spin.data.prizeIndex !== "number" || !spin.data.reward) {
+    throw new Error(`Member wheel spin returned ${spin.status}, expected backend-selected result.`);
+  }
+
+  const history = await apiRequest(baseUrl, "/member/wheel/history?limit=20", {
+    authValue,
+    label: "staging member wheel history",
+  });
+  if (history.status !== 200 || !Array.isArray(history.data)) throw new Error("Member wheel history shape invalid.");
+
+  const rewards = await apiRequest(baseUrl, "/member/wheel/my-rewards?limit=20", {
+    authValue,
+    label: "staging member wheel my rewards",
+  });
+  if (rewards.status !== 200 || !Array.isArray(rewards.data)) throw new Error("Member wheel my-rewards shape invalid.");
+  console.log("Member Lucky Wheel config/spin/history/my-rewards: PASS");
+}
+
 async function main() {
   try {
     const baseUrl = configuredBaseUrl();
@@ -235,8 +332,14 @@ async function main() {
     await assertDemoAdminWrongPasswordFailure(baseUrl, demoAdminPassword);
     console.log("Demo admin wrong password negative leak check: PASS");
     await assertAdminEndpoints(baseUrl, authValue);
+    await assertLuckyWheelAdminEndpoints(baseUrl, authValue);
+    const memberAuthValue = await loginDemoMember(baseUrl);
+    await assertLuckyWheelMemberEndpoints(baseUrl, memberAuthValue);
 
     console.log("Response leak scan: PASS");
+    console.log("no production DB used");
+    console.log("no real provider/payment/bank/SMS/Slip OCR used");
+    console.log("no real money payout");
     console.log("Staging UAT smoke: PASS");
   } catch (error) {
     console.error("Staging UAT smoke: FAIL");

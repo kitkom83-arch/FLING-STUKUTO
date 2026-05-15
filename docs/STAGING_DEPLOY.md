@@ -63,6 +63,14 @@ Strict boundaries:
 - Never connect real provider/payment/bank rails from staging preparation.
 - Never run real-money transfer, auto settlement, or live payout from staging.
 
+Lucky Wheel staging notes:
+
+- Lucky Wheel is mock/staging/sandbox only in this phase.
+- Member wheel config/spin/history/my-rewards and Admin Lucky Wheel config/rewards/spins may be checked in staging only after `/api/health` and the staging safety guard pass.
+- `POST /api/member/wheel/spin` must send only `campaignId`; the backend chooses `prizeIndex` and reward result.
+- Lucky Wheel must not trigger real payout, real wallet payout, live provider calls, real payment rails, bank rails, SMS, or Slip OCR.
+- Use `npm run smoke:admin-wheel-runtime`, `npm run smoke:wheel`, and `npm run smoke:staging-uat` only against local/staging/test targets with mock/sandbox modes. Missing local runtime env may skip safely, but production-like targets must remain blocked.
+
 ## Required ENV Checklist
 
 Use `.env.staging.example` as the placeholder template. Set real staging values only in the hosting platform secret manager or a local ignored `.env` file. Keep the real values out of source control and logs.
@@ -210,6 +218,8 @@ set BASE_URL=https://<render-staging-domain>/api
 npm run staging:preflight
 npm run smoke:staging
 npm run staging:db:check
+npm run smoke:admin-wheel-runtime
+npm run smoke:wheel
 npm run smoke:staging-uat
 ```
 

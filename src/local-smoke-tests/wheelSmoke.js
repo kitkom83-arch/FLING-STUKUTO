@@ -14,6 +14,7 @@ const SITE_CODE = process.env.LOCAL_SMOKE_SITE_CODE || "PG77";
 const ADMIN_USERNAME = process.env.LOCAL_ADMIN_USERNAME || "local_wheel_admin";
 const ADMIN_REASON = "local wheel smoke reason";
 const MEMBER_PASSWORD = process.env.LOCAL_MEMBER_PASSWORD || "local-wheel-member-only";
+const issuedAuthValues = new Set();
 const REWARD_IDS = [
   "wheel_reward_1",
   "wheel_reward_2",
@@ -121,34 +122,38 @@ function normalizedGuardEnv() {
 }
 
 function assertLocalSafety() {
-  const reasons = [];
+  const blockers = [];
+  const missing = [];
   const nodeEnv = String(process.env.NODE_ENV || "").trim().toLowerCase();
   const databaseTarget = inspectDatabaseTarget(process.env.DATABASE_URL);
   const apiTarget = inspectApiBaseUrl(configuredBaseUrl());
   const guardResult = evaluateDbSafetyGuard(normalizedGuardEnv());
 
-  if (!SAFE_NODE_ENVS.has(nodeEnv)) reasons.push("NODE_ENV must be development-local or test.");
-  if (!process.env.JWT_SECRET) reasons.push("JWT_SECRET must be set for the local wheel smoke test.");
-  if (!process.env.LOCAL_ADMIN_PASSWORD) reasons.push("LOCAL_ADMIN_PASSWORD must be set for the local wheel smoke admin.");
-  if (!databaseTarget.ok) reasons.push(databaseTarget.reason);
-  if (!apiTarget.ok) reasons.push(apiTarget.reason);
+  if (!SAFE_NODE_ENVS.has(nodeEnv)) missing.push("NODE_ENV must be development-local or test.");
+  if (!process.env.JWT_SECRET) missing.push("JWT_SECRET must be set for the local wheel smoke test.");
+  if (!process.env.LOCAL_ADMIN_PASSWORD) missing.push("LOCAL_ADMIN_PASSWORD must be set for the local wheel smoke admin.");
+  if (!databaseTarget.ok) {
+    if (databaseTarget.reason.startsWith("DATABASE_URL must be set")) missing.push(databaseTarget.reason);
+    else blockers.push(databaseTarget.reason);
+  }
+  if (!apiTarget.ok) blockers.push(apiTarget.reason);
 
   for (const key of PROVIDER_MODE_KEYS) {
     const mode = String(process.env[key] || "mock").trim().toLowerCase();
-    if (!SAFE_PROVIDER_MODES.has(mode)) reasons.push(`${key} must be mock or sandbox for wheel smoke.`);
+    if (!SAFE_PROVIDER_MODES.has(mode)) blockers.push(`${key} must be mock or sandbox for wheel smoke.`);
   }
   for (const reason of guardResult.reasons) {
     const localMarkerReason = reason.startsWith("DATABASE_URL must include an explicit staging/test marker");
     if (localMarkerReason && databaseTarget.ok && databaseTarget.localAllowed) continue;
-    reasons.push(reason);
+    if (!databaseTarget.ok && databaseTarget.reason.startsWith("DATABASE_URL must be set") && /DATABASE_URL/.test(reason)) missing.push(reason);
+    else blockers.push(reason);
   }
 
-  if (reasons.length > 0) {
-    throw new Error(`Lucky Wheel smoke safety guard: BLOCKED\n- ${reasons.join("\n- ")}`);
-  }
+  if (blockers.length > 0) return { ok: false, blocked: true, reasons: [...new Set(blockers)] };
+  if (missing.length > 0) return { ok: false, skipped: true, reasons: [...new Set(missing)] };
 
   console.log("Lucky Wheel smoke safety guard: PASS");
-  return configuredBaseUrl();
+  return { ok: true, baseUrl: configuredBaseUrl() };
 }
 
 function headerWithAuth(token) {
@@ -173,6 +178,13 @@ function assertNoUnsafeValues(label, payload, { allowAuthToken = false } = {}) {
   if (/postgres(?:ql)?:\/\/[^\s"']+/i.test(serialized)) throw new Error(`${label} response leaked a connection string.`);
   if (!allowAuthToken && /\b[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\b/.test(serialized)) {
     throw new Error(`${label} response leaked a JWT-shaped value.`);
+  }
+  if (serialized.includes(["Be", "arer"].join(""))) throw new Error(`${label} response leaked an authorization scheme marker.`);
+  if (/(Error:\s.+\n\s+at\s+)|(\"stack\"\s*:)/i.test(serialized)) throw new Error(`${label} response leaked a raw internal stack.`);
+  if (!allowAuthToken) {
+    for (const authValue of issuedAuthValues) {
+      if (authValue && serialized.includes(authValue)) throw new Error(`${label} response echoed an authorization value.`);
+    }
   }
   assertNoUnsafeKeys(label, payload, allowAuthToken);
 }
@@ -407,6 +419,7 @@ async function loginAdmin(baseUrl) {
     body: { username: ADMIN_USERNAME, password: process.env.LOCAL_ADMIN_PASSWORD },
   });
   if (!login.token) throw new Error("Admin login token missing.");
+  issuedAuthValues.add(login.token);
   return login.token;
 }
 
@@ -418,13 +431,24 @@ async function loginMember(baseUrl, phone) {
     body: { phone, password: MEMBER_PASSWORD },
   });
   if (!login.token) throw new Error("Member login token missing.");
+  issuedAuthValues.add(login.token);
   return login.token;
 }
 
 async function main() {
   let prisma = null;
   try {
-    const baseUrl = assertLocalSafety();
+    const safety = assertLocalSafety();
+    if (safety.blocked) throw new Error(`Lucky Wheel smoke safety guard: BLOCKED\n- ${safety.reasons.join("\n- ")}`);
+    if (safety.skipped) {
+      console.log("Lucky Wheel smoke: SKIPPED by safety guard");
+      console.log(`reason: ${safety.reasons.join("; ")}`);
+      console.log("no production DB used");
+      console.log("no real provider/payment/bank/SMS/Slip OCR used");
+      console.log("no real money payout");
+      return;
+    }
+    const baseUrl = safety.baseUrl;
     prisma = await ensureFixtures();
     const site = await prisma.site.findUnique({ where: { code: SITE_CODE } });
     const adminToken = await loginAdmin(baseUrl);
@@ -438,15 +462,46 @@ async function main() {
     }
     console.log("Wheel member config: PASS");
 
+    await apiRequest(baseUrl, "/member/wheel/config", {
+      label: "wheel member config missing auth",
+      expectedStatus: 401,
+      expectSuccess: false,
+    });
+    console.log("Wheel member missing auth guard: PASS");
+
+    await apiRequest(baseUrl, "/member/wheel/config?campaignId=missing_wheel_campaign", {
+      token: memberToken,
+      label: "wheel invalid campaign config",
+      expectedStatus: 404,
+      expectSuccess: false,
+    });
+    console.log("Wheel invalid campaign guard: PASS");
+
     await apiRequest(baseUrl, "/member/wheel/spin", {
       method: "POST",
       token: memberToken,
       label: "wheel spin injection reject",
       expectedStatus: 400,
       expectSuccess: false,
-      body: { campaignId: "wheel_main", rewardId: "wheel_reward_1", prizeIndex: 0 },
+      body: {
+        campaignId: "wheel_main",
+        rewardId: "wheel_reward_1",
+        prizeIndex: 0,
+        probabilityWeight: 999999,
+        rewardValue: "999.00",
+      },
     });
     console.log("Wheel frontend result injection guard: PASS");
+
+    await apiRequest(baseUrl, "/member/wheel/spin", {
+      method: "POST",
+      token: memberToken,
+      label: "wheel invalid campaign spin",
+      expectedStatus: 404,
+      expectSuccess: false,
+      body: { campaignId: "missing_wheel_campaign" },
+    });
+    console.log("Wheel invalid campaign spin guard: PASS");
 
     const spin = await apiRequest(baseUrl, "/member/wheel/spin", {
       method: "POST",
@@ -554,8 +609,12 @@ async function main() {
     if (!adminConfig.summary || adminConfig.rewards.length < REWARD_IDS.length) throw new Error("Wheel admin config shape invalid.");
     const adminSpins = await apiRequest(baseUrl, "/admin/wheel/spins?limit=20", { token: adminToken, label: "wheel admin spins" });
     if (!Array.isArray(adminSpins) || adminSpins.length < 1) throw new Error("Wheel admin spins response invalid.");
+    console.log("Wheel admin config/spins visibility: PASS");
 
     console.log("Wheel response leak scan: PASS");
+    console.log("no production DB used");
+    console.log("no real provider/payment/bank/SMS/Slip OCR used");
+    console.log("no real money payout");
     console.log("Lucky Wheel smoke: PASS");
   } catch (error) {
     console.error("Lucky Wheel smoke: FAIL");

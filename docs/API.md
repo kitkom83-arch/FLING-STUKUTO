@@ -380,6 +380,15 @@ Member endpoints:
 | GET | `/member/wheel/history` | Member or local demo header | `page`, `limit` max 100 | newest spin rows with reward label/type/value/status/prizeIndex | Sanitized history only |
 | GET | `/member/wheel/my-rewards` | Member or local demo header | `page`, `limit` max 100 | pending/claimed/expired wheel rewards, excluding no-reward results | No real payout or claim payout is implemented |
 
+Member runtime fail-safe behavior:
+
+- Missing member auth returns a controlled JSON `401`.
+- Unknown `campaignId` returns a controlled not-found response and must not expose raw internal error details.
+- `POST /member/wheel/spin` accepts only `campaignId`; frontend/client requests that include `rewardId`, `prizeIndex`, `probabilityWeight`, or reward value fields are rejected before reward selection.
+- Insufficient mock points, daily limit reached, inactive campaign, and unavailable stock fail safely with sanitized JSON errors.
+- Stock-zero rewards are excluded from backend selection even if configured with a high probability weight.
+- History and my-rewards responses must not expose raw tokens, auth headers, passwords, secrets, database URLs, raw stack traces, or raw provider data.
+
 Local Lucky Wheel frontend demo bridge:
 
 - Header name: `x-demo-member-id`
@@ -427,8 +436,8 @@ Mock seed: campaign `wheel_main`, name `กงล้อนำโชค`, active,
 Smoke coverage:
 
 - `npm run smoke:admin-wheel-ui` covers static Admin Lucky Wheel UI source contract, campaign summary fields, reward table/modal fields, spin history empty state, audit history fields, existing endpoint usage, reason validation before writes, safe auth/permission messages, report zero guards, redaction markers, masked IP handling, and frontend spin-safety guard.
-- `npm run smoke:admin-wheel-runtime` covers static HTTP route/assets, unauthenticated `401`, no-permission `403`, admin config/spins reads, write-without-reason rejection, write-with-reason success, audit creation/read through the existing audit endpoint, and response leak scan. It skips safely when local admin env is not configured.
-- `npm run smoke:wheel` covers the local/staging safety guard, member config, member result field injection rejection, backend-selected spin result, history, my rewards, daily limit, insufficient points, inactive campaign, stock-zero exclusion, admin reason validation, admin audit reason, admin config/spins, and response leak scan.
+- `npm run smoke:admin-wheel-runtime` covers static HTTP route/assets, unauthenticated `401`, no-permission `403`, admin config/spins reads, member config/spin/history/my-rewards runtime shape, unsafe spin payload rejection, write-without-reason rejection, write-with-reason success, audit creation/read through the existing audit endpoint, and response leak scan. It skips safely when local admin/member env is not configured.
+- `npm run smoke:wheel` covers the local/staging safety guard, member config, missing auth, invalid campaign, member result field injection rejection, backend-selected spin result, history, my rewards, daily limit, insufficient points, inactive campaign, stock-zero exclusion, admin reason validation, admin audit reason, admin config/spins, and response leak scan. It skips safely when local runtime env is missing and blocks production-like targets.
 
 ## 12. Safety / Negative Contract
 
