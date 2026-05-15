@@ -1,8 +1,8 @@
 require("dotenv").config();
 
-const bcrypt = require("bcrypt");
 const { PrismaClient, Prisma } = require("@prisma/client");
 const { evaluateStagingSafety } = require("./stagingSafety");
+const { hashPassword } = require("../utils/password");
 
 const prisma = new PrismaClient();
 const SITE_CODE = process.env.STAGING_SMOKE_SITE_CODE || "PG77";
@@ -102,7 +102,7 @@ async function loadTargetSites() {
 }
 
 async function upsertDemoAdmin(email, password) {
-  const passwordHash = await bcrypt.hash(password, 12);
+  const passwordHash = await hashPassword(password);
   return prisma.admin.upsert({
     where: { username: email },
     update: {
@@ -248,14 +248,9 @@ async function upsertStagingWheelFixtures(site) {
 }
 
 async function upsertDemoMember(site, demoMember) {
-  const passwordHash = await bcrypt.hash(demoMember.password, 12);
-  const existing = await prisma.user.findFirst({
-    where: {
-      siteId: site.id,
-      OR: [{ phone: demoMember.phone }, { username: demoMember.username }],
-    },
-  });
+  const passwordHash = await hashPassword(demoMember.password);
   const memberData = {
+    siteId: site.id,
     username: demoMember.username,
     phone: demoMember.phone,
     passwordHash,
@@ -266,78 +261,93 @@ async function upsertDemoMember(site, demoMember) {
     acceptTerms: true,
     rank: "Staging Demo",
   };
-  const member = existing
-    ? await prisma.user.update({
-        where: { id: existing.id },
-        data: memberData,
-      })
-    : await prisma.user.create({
-        data: {
-          siteId: site.id,
-          ...memberData,
-        },
-      });
 
-  await prisma.walletAccount.upsert({
-    where: { userId: member.id },
-    update: {
-      siteId: site.id,
-      balance: decimal(DEMO_MEMBER_BALANCE),
-      currency: "THB",
-    },
-    create: {
-      siteId: site.id,
-      userId: member.id,
-      balance: decimal(DEMO_MEMBER_BALANCE),
-      currency: "THB",
-    },
-  });
+  return prisma.$transaction(async (tx) => {
+    const existingMatches = await tx.user.findMany({
+      where: {
+        siteId: site.id,
+        OR: [{ phone: demoMember.phone }, { username: demoMember.username }],
+      },
+      select: { id: true },
+      orderBy: { createdAt: "asc" },
+    });
+    const distinctIds = [...new Set(existingMatches.map((row) => row.id))];
+    if (distinctIds.length > 1) {
+      throw new Error(
+        "Staging demo member username and phone match different existing users. Resolve the duplicate staging fixture before seeding."
+      );
+    }
 
-  await prisma.pointLedger.upsert({
-    where: { id: `staging-demo-member-points-${site.code.toLowerCase()}` },
-    update: {
-      siteId: site.id,
-      userId: member.id,
-      before: decimal("0.00"),
-      amount: decimal(DEMO_MEMBER_POINTS),
-      after: decimal(DEMO_MEMBER_POINTS),
-      reason: "Staging demo member points",
-      referenceType: "staging_demo_seed",
-      referenceId: `staging-demo-member-points-${site.code}`,
-      createdByType: "system",
-      createdById: null,
-    },
-    create: {
-      id: `staging-demo-member-points-${site.code.toLowerCase()}`,
-      siteId: site.id,
-      userId: member.id,
-      before: decimal("0.00"),
-      amount: decimal(DEMO_MEMBER_POINTS),
-      after: decimal(DEMO_MEMBER_POINTS),
-      reason: "Staging demo member points",
-      referenceType: "staging_demo_seed",
-      referenceId: `staging-demo-member-points-${site.code}`,
-      createdByType: "system",
-      createdById: null,
-    },
-  });
+    const member = distinctIds.length
+      ? await tx.user.update({
+          where: { id: distinctIds[0] },
+          data: memberData,
+        })
+      : await tx.user.create({
+          data: memberData,
+        });
 
-  await prisma.memberReward.deleteMany({
-    where: {
-      siteId: site.id,
-      memberId: member.id,
-      source: "wheel",
-    },
-  });
-  await prisma.wheelSpin.deleteMany({
-    where: {
-      siteId: site.id,
-      memberId: member.id,
-      campaignId: WHEEL_CAMPAIGN_ID,
-    },
-  });
+    await tx.walletAccount.upsert({
+      where: { userId: member.id },
+      update: {
+        siteId: site.id,
+        balance: decimal(DEMO_MEMBER_BALANCE),
+        currency: "THB",
+      },
+      create: {
+        siteId: site.id,
+        userId: member.id,
+        balance: decimal(DEMO_MEMBER_BALANCE),
+        currency: "THB",
+      },
+    });
 
-  return member;
+    await tx.pointLedger.upsert({
+      where: { id: `staging-demo-member-points-${site.code.toLowerCase()}` },
+      update: {
+        siteId: site.id,
+        userId: member.id,
+        before: decimal("0.00"),
+        amount: decimal(DEMO_MEMBER_POINTS),
+        after: decimal(DEMO_MEMBER_POINTS),
+        reason: "Staging demo member points",
+        referenceType: "staging_demo_seed",
+        referenceId: `staging-demo-member-points-${site.code}`,
+        createdByType: "system",
+        createdById: null,
+      },
+      create: {
+        id: `staging-demo-member-points-${site.code.toLowerCase()}`,
+        siteId: site.id,
+        userId: member.id,
+        before: decimal("0.00"),
+        amount: decimal(DEMO_MEMBER_POINTS),
+        after: decimal(DEMO_MEMBER_POINTS),
+        reason: "Staging demo member points",
+        referenceType: "staging_demo_seed",
+        referenceId: `staging-demo-member-points-${site.code}`,
+        createdByType: "system",
+        createdById: null,
+      },
+    });
+
+    await tx.memberReward.deleteMany({
+      where: {
+        siteId: site.id,
+        memberId: member.id,
+        source: "wheel",
+      },
+    });
+    await tx.wheelSpin.deleteMany({
+      where: {
+        siteId: site.id,
+        memberId: member.id,
+        campaignId: WHEEL_CAMPAIGN_ID,
+      },
+    });
+
+    return member;
+  });
 }
 
 async function writeAuditLog(admin, site) {

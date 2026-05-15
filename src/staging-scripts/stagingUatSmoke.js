@@ -9,6 +9,7 @@ const DEFAULT_BASE_URL = "https://stukuto-real-core-staging.onrender.com/api";
 const SITE_CODE = process.env.STAGING_SMOKE_SITE_CODE || "PG77";
 const ADMIN_USERNAME = process.env.STAGING_DEMO_ADMIN_EMAIL || process.env.STAGING_DEMO_ADMIN_USERNAME || "admin";
 const MEMBER_USERNAME = process.env.STAGING_DEMO_MEMBER_USERNAME || "";
+const MEMBER_PHONE = process.env.STAGING_DEMO_MEMBER_PHONE || "";
 const MEMBER_PASSWORD = process.env.STAGING_DEMO_MEMBER_PASSWORD || "";
 const INVALID_ADMIN_PASSWORD = "staging-uat-invalid-admin-login-check";
 const issuedAuthValues = new Set();
@@ -38,6 +39,44 @@ function sensitiveEnvValues() {
     .filter(([key, value]) => sensitiveKeyPattern.test(key) && typeof value === "string" && value.length >= 8)
     .map(([, value]) => value)
     .sort((a, b) => b.length - a.length);
+}
+
+function sanitizeStringForLog(value) {
+  let safe = String(value);
+  for (const sensitiveValue of sensitiveEnvValues()) {
+    safe = safe.split(sensitiveValue).join("[redacted]");
+  }
+  return safe
+    .replace(/postgres(?:ql)?:\/\/[^\s"']+/gi, "[redacted]")
+    .replace(/\b[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\b/g, "[redacted]")
+    .replace(/\bBearer\s+[A-Za-z0-9._-]+/gi, "[redacted]")
+    .replace(/password/gi, "credential")
+    .replace(/token/gi, "credential")
+    .replace(/secret/gi, "credential")
+    .replace(/authorization/gi, "credential");
+}
+
+function sanitizeForLog(value) {
+  if (value === null || value === undefined) return value;
+  if (Array.isArray(value)) return value.map(sanitizeForLog);
+  if (typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, item]) => {
+        const safeKey = sanitizeStringForLog(key);
+        if (/(password|token|secret|authorization|refresh|session|database|api_?key|jwt)/i.test(key)) {
+          return [safeKey, "[redacted]"];
+        }
+        return [safeKey, sanitizeForLog(item)];
+      })
+    );
+  }
+  if (typeof value === "string") return sanitizeStringForLog(value);
+  return value;
+}
+
+function safePayloadSummary(payload) {
+  const serialized = JSON.stringify(sanitizeForLog(payload));
+  return serialized.length > 800 ? `${serialized.slice(0, 800)}...` : serialized;
 }
 
 function assertNoUnsafeKeys(label, value, { allowAuthToken = false } = {}) {
@@ -110,7 +149,8 @@ async function apiRequest(baseUrl, path, options = {}) {
   }
 
   const payload = await response.json();
-  assertNoLeaks(options.label || path, payload, { allowAuthToken: Boolean(options.allowAuthToken) });
+  const allowAuthToken = Boolean(options.allowAuthToken && response.status >= 200 && response.status < 300);
+  assertNoLeaks(options.label || path, payload, { allowAuthToken });
   return { status: response.status, payload, data: payload.data };
 }
 
@@ -187,19 +227,35 @@ async function loginDemoAdmin(baseUrl, password) {
 }
 
 async function loginDemoMember(baseUrl) {
-  if (!MEMBER_USERNAME || !MEMBER_PASSWORD) {
+  const loginIdentifier = MEMBER_USERNAME || MEMBER_PHONE;
+  const missing = [];
+  if (!loginIdentifier) missing.push("STAGING_DEMO_MEMBER_USERNAME or STAGING_DEMO_MEMBER_PHONE");
+  if (!MEMBER_PASSWORD) missing.push("STAGING_DEMO_MEMBER_PASSWORD");
+
+  if (missing.length) {
     console.log("Lucky Wheel member UAT: SKIPPED");
-    console.log("reason: STAGING_DEMO_MEMBER_USERNAME or STAGING_DEMO_MEMBER_PASSWORD env not configured");
+    console.log(`reason: missing ${missing.join(", ")} env`);
     return null;
   }
+  if (MEMBER_USERNAME && MEMBER_USERNAME.length > 64) {
+    throw new Error("STAGING_DEMO_MEMBER_USERNAME must be 1-64 characters when provided.");
+  }
+  if (MEMBER_PHONE && !/^[0-9+().\-\s]{6,32}$/.test(MEMBER_PHONE)) {
+    throw new Error("STAGING_DEMO_MEMBER_PHONE must be a staging-only phone/login value when provided.");
+  }
+
   const result = await apiRequest(baseUrl, "/auth/login", {
     method: "POST",
     allowAuthToken: true,
     label: "staging demo member login",
-    body: { phone: MEMBER_USERNAME, password: MEMBER_PASSWORD },
+    body: { phone: loginIdentifier, password: MEMBER_PASSWORD },
   });
   if (result.status !== 200 || !result.data || typeof result.data.token !== "string") {
-    throw new Error(`Staging demo member login returned ${result.status}, expected 200 with token.`);
+    throw new Error(
+      `Staging demo member login returned ${result.status}, expected 200 with token. Sanitized response body: ${safePayloadSummary(
+        result.payload
+      )}`
+    );
   }
   issuedAuthValues.add(result.data.token);
   console.log("Demo member auth: PASS");

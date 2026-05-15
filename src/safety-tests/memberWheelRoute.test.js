@@ -223,7 +223,18 @@ async function main() {
   assert(login.payload.data && typeof login.payload.data.token === "string", "demo member login must return token");
   assertNoSecretLeak("demo member login", login.payload, { allowAuthToken: true });
 
-  const authHeaders = { Authorization: `Bearer ${login.payload.data.token}` };
+  const usernameLogin = await requestJson("/api/auth/login", {
+    method: "POST",
+    body: { phone: member.username, password: DEMO_MEMBER_PASSWORD },
+  });
+  assert.strictEqual(usernameLogin.statusCode, 200, "demo member username login must return 200");
+  assert(
+    usernameLogin.payload.data && typeof usernameLogin.payload.data.token === "string",
+    "demo member username login must return token"
+  );
+  assertNoSecretLeak("demo member username login", usernameLogin.payload, { allowAuthToken: true });
+
+  const authHeaders = { Authorization: `Bearer ${usernameLogin.payload.data.token}` };
   const config = await requestJson("/api/member/wheel/config", { headers: authHeaders });
   assert.strictEqual(config.statusCode, 200, "member wheel config must return 200");
   assert(config.payload.data && config.payload.data.campaignId === campaign.id, "member wheel config must include campaignId");
