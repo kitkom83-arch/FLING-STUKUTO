@@ -33,6 +33,7 @@ Never paste real tokens, passwords, API keys, provider secrets, callback secrets
 - `src/local-smoke-tests/stagingSmoke.js` requires `BASE_URL`, blocks production-like API hosts, checks `GET /api/health`, verifies external modes are `mock`, `sandbox`, or `disabled`, calls admin auth as a negative leak check, and scans responses for secret-shaped values.
 - `src/staging-scripts/stagingDbCheck.js` connects to a confirmed staging/test PostgreSQL target, verifies required schema tables, verifies demo site/admin/member fixtures, and prints only safe labels/counts.
 - `src/staging-scripts/stagingDbSeed.js` runs the demo seed behind the staging safety guard. It requires a staging-only admin password env for `APP_ENV=staging` and never prints password values.
+- `src/staging-scripts/stagingDemoSeed.js` creates or refreshes the staging demo admin from `STAGING_DEMO_ADMIN_EMAIL` and `STAGING_DEMO_ADMIN_PASSWORD` only after the staging safety guard passes. It skips safely when the demo admin env is missing locally and never prints credential values.
 - `src/staging-scripts/stagingUatSmoke.js` targets the Render staging API by default, skips safely with exit `0` when staging demo admin password env is absent, verifies health/database/modes when env is present, checks admin auth leak behavior, and reads admin schedule/audit/security endpoints.
 - `src/local-smoke-tests/adminAuditSecuritySmoke.js` checks the audit/security report UI contract and API responses against local/staging/test targets only, including permission guard, filters, empty responses, masked IP, omitted raw user-agent, and response leak scan.
 - `src/local-smoke-tests/runAllLocalSmoke.js` blocks unsafe `NODE_ENV`, missing required local credentials, unsafe database targets, production-like API base URLs, embedded URL credentials, and provider modes outside `mock` or `sandbox` before running the smoke suite.
@@ -58,6 +59,7 @@ Never paste real tokens, passwords, API keys, provider secrets, callback secrets
 - Confirm `npm run staging:preflight` passes before deploy handoff and again after deploy when `BASE_URL` points at staging.
 - Confirm migrations ran through `npm run db:migrate:staging`, not raw Prisma deploy, after the staging DB target was confirmed.
 - Confirm demo seed ran through `npm run staging:db:seed` only if demo data was missing.
+- Confirm demo admin seed ran through `npm run staging:seed-demo` only after `STAGING_DEMO_ADMIN_EMAIL` and `STAGING_DEMO_ADMIN_PASSWORD` were set in Render Environment.
 - Confirm `npm run staging:db:check` passes with required schema and demo fixtures.
 - Confirm `npm run smoke:staging-uat` passes against the Render staging API when staging demo admin env is present. Without that env, the command must return the documented SKIP-SAFE output and exit `0`.
 
@@ -65,8 +67,8 @@ Never paste real tokens, passwords, API keys, provider secrets, callback secrets
 
 Use this checklist when handing staging to testers. It authorizes staging UAT only, with no production database, no live provider/payment/bank/SMS/Slip OCR mode, and no real-money flow.
 
-- Staging URL: `https://fling-stukuto-staging-api.onrender.com`.
-- API base URL for smoke commands: `https://fling-stukuto-staging-api.onrender.com/api`.
+- Staging URL: `https://stukuto-real-core-staging.onrender.com`.
+- API base URL for smoke commands: `https://stukuto-real-core-staging.onrender.com/api`.
 - Health check path: `GET /api/health`.
 - Health check must show `success: true`, `data.ok: true`, `data.databaseConnected: true`, and external modes only as `mock`, `sandbox`, or `disabled`.
 - Smoke commands before handoff:
@@ -82,6 +84,7 @@ Use this checklist when handing staging to testers. It authorizes staging UAT on
 - Rollback condition: stop handoff and roll back or disable staging access if health fails, DB disconnects, smoke fails, an invalid login returns `500`, any secret-shaped value appears, any external mode is `live`, or any real-money/provider/bank path is reachable.
 - NO live money/provider mode: game provider, payment, bank statement, SMS, and Slip OCR must stay `mock`, `sandbox`, or `disabled`; live mode is not approved for this handoff.
 - Demo credentials must live in Render Environment/Secrets, a password manager, or another approved secret manager only. Do not write them into docs, logs, commits, screenshots, issue trackers, or chat.
+- UAT smoke uses `STAGING_DEMO_ADMIN_EMAIL` and `STAGING_DEMO_ADMIN_PASSWORD` when they are present. Without the password env, it must remain SKIP-SAFE and must not call authenticated UAT endpoints.
 - If any credential was exposed outside the approved secret channel, rotate it before tester handoff.
 - Do not screenshot Render ENV, database settings, shell output, request headers, or any page that shows raw secret values.
 
@@ -104,14 +107,15 @@ npm run staging:preflight
 npm run smoke:staging-uat
 ```
 
-5. Check Lucky Wheel member config through `GET /api/member/wheel/config` using staging member auth only.
-6. Check Lucky Wheel spin through `POST /api/member/wheel/spin` with only `campaignId`; this must stay mock/sandbox and backend-selected.
-7. Check member wheel history and my rewards through `/api/member/wheel/history` and `/api/member/wheel/my-rewards`.
-8. Check admin Lucky Wheel config, rewards, spins, reports, and audit through staging admin auth only.
-9. Confirm no real money movement, no real payout, and no production ledger action occurred.
-10. Confirm game provider, payment, bank statement, SMS, and Slip OCR are not live.
-11. Run the local secret-shaped scan before reporting handoff results.
-12. Record the Safe CI Run ID, commit hash, Render deploy ID or timestamp, and staging URL. Do not record secret values, DB URLs, request headers, passwords, tokens, or provider credentials.
+5. If credentialed UAT smoke skips because demo admin env is missing, set `STAGING_DEMO_ADMIN_EMAIL` and `STAGING_DEMO_ADMIN_PASSWORD` in Render Environment and run the guarded seed.
+6. Check Lucky Wheel member config through `GET /api/member/wheel/config` using staging member auth only.
+7. Check Lucky Wheel spin through `POST /api/member/wheel/spin` with only `campaignId`; this must stay mock/sandbox and backend-selected.
+8. Check member wheel history and my rewards through `/api/member/wheel/history` and `/api/member/wheel/my-rewards`.
+9. Check admin Lucky Wheel config, rewards, spins, reports, and audit through staging admin auth only.
+10. Confirm no real money movement, no real payout, and no production ledger action occurred.
+11. Confirm game provider, payment, bank statement, SMS, and Slip OCR are not live.
+12. Run the local secret-shaped scan before reporting handoff results.
+13. Record the Safe CI Run ID, commit hash, Render deploy ID or timestamp, and staging URL. Do not record secret values, DB URLs, request headers, passwords, tokens, or provider credentials.
 
 Stop UAT immediately if health fails, `databaseConnected` is not `true`, an external mode is `live`, a response leaks secret-shaped data, or any real-money/provider/bank path becomes reachable.
 
@@ -179,6 +183,20 @@ Seed only if the DB check reports missing demo data. Use staging-only demo value
 npm run staging:db:seed
 ```
 
+Create or refresh only the staging UAT demo admin:
+
+```bash
+npm run staging:seed-demo
+```
+
+For Render Free, use a temporary start command only long enough to run the seed:
+
+```bash
+npm run staging:seed-demo && npm start
+```
+
+After the deploy logs show the sanitized seed result, change the start command back to `npm start` and redeploy. Render Free does not provide practical one-off jobs or SSH for this workflow, so do not leave the seed command in place.
+
 Verify schema and fixtures:
 
 ```bash
@@ -188,13 +206,13 @@ npm run staging:db:check
 Verify hosted UAT readiness against Render:
 
 ```bash
-BASE_URL=https://fling-stukuto-staging-api.onrender.com/api npm run smoke:staging-uat
+BASE_URL=https://stukuto-real-core-staging.onrender.com/api npm run smoke:staging-uat
 ```
 
 PowerShell equivalent:
 
 ```powershell
-$env:BASE_URL = "https://fling-stukuto-staging-api.onrender.com/api"
+$env:BASE_URL = "https://stukuto-real-core-staging.onrender.com/api"
 npm run smoke:staging-uat
 ```
 

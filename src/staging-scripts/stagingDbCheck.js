@@ -3,7 +3,7 @@ const { assertStagingSafety } = require("./stagingSafety");
 
 const prisma = new PrismaClient();
 const SITE_CODE = process.env.STAGING_SMOKE_SITE_CODE || "PG77";
-const ADMIN_USERNAME = process.env.STAGING_DEMO_ADMIN_USERNAME || "admin";
+const ADMIN_USERNAME = process.env.STAGING_DEMO_ADMIN_EMAIL || process.env.STAGING_DEMO_ADMIN_USERNAME || "admin";
 const DEMO_MEMBER_USERNAME = process.env.STAGING_DEMO_MEMBER_USERNAME || "ima00180";
 
 const REQUIRED_TABLES = [

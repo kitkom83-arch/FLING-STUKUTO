@@ -5,9 +5,9 @@ const {
   inspectBaseUrl,
 } = require("./stagingSafety");
 
-const DEFAULT_BASE_URL = "https://fling-stukuto-staging-api.onrender.com/api";
+const DEFAULT_BASE_URL = "https://stukuto-real-core-staging.onrender.com/api";
 const SITE_CODE = process.env.STAGING_SMOKE_SITE_CODE || "PG77";
-const ADMIN_USERNAME = process.env.STAGING_DEMO_ADMIN_USERNAME || "admin";
+const ADMIN_USERNAME = process.env.STAGING_DEMO_ADMIN_EMAIL || process.env.STAGING_DEMO_ADMIN_USERNAME || "admin";
 const MEMBER_PHONE = process.env.STAGING_DEMO_MEMBER_PHONE || "";
 const MEMBER_PASSWORD = process.env.STAGING_DEMO_MEMBER_PASSWORD || "";
 const INVALID_ADMIN_PASSWORD = "staging-uat-invalid-admin-login-check";
@@ -17,13 +17,16 @@ function configuredBaseUrl() {
   return ensureApiPath(process.env.BASE_URL || DEFAULT_BASE_URL);
 }
 
-function demoAdminPassword() {
-  return process.env.LOCAL_ADMIN_PASSWORD || process.env.STAGING_DEMO_ADMIN_PASSWORD;
+function demoAdminCredentials() {
+  const email = process.env.STAGING_DEMO_ADMIN_EMAIL;
+  const password = process.env.STAGING_DEMO_ADMIN_PASSWORD;
+  if (!email || !password) return null;
+  return { username: email, password };
 }
 
 function skipMissingDemoAdminPassword() {
   console.log("Staging UAT smoke: SKIPPED by safety guard");
-  console.log("reason: missing staging demo admin password env");
+  console.log("reason: missing STAGING_DEMO_ADMIN_EMAIL or STAGING_DEMO_ADMIN_PASSWORD env");
   console.log("no production DB used");
   console.log("no real provider/payment/bank/SMS/Slip OCR used");
   console.log("no real money payout");
@@ -341,8 +344,8 @@ async function main() {
     if (!target.ok) throw new Error(target.reason);
     console.log("Staging UAT smoke safety guard: PASS");
 
-    const password = demoAdminPassword();
-    if (!password) {
+    const demoAdmin = demoAdminCredentials();
+    if (!demoAdmin) {
       skipMissingDemoAdminPassword();
       return;
     }
@@ -354,8 +357,8 @@ async function main() {
     await assertUnknownAdminAuthFailure(baseUrl);
     console.log("Unknown admin auth negative leak check: PASS");
 
-    const authValue = await loginDemoAdmin(baseUrl, password);
-    await assertDemoAdminWrongPasswordFailure(baseUrl, password);
+    const authValue = await loginDemoAdmin(baseUrl, demoAdmin.password);
+    await assertDemoAdminWrongPasswordFailure(baseUrl, demoAdmin.password);
     console.log("Demo admin wrong password negative leak check: PASS");
     await assertAdminEndpoints(baseUrl, authValue);
     await assertLuckyWheelAdminEndpoints(baseUrl, authValue);

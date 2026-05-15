@@ -87,13 +87,19 @@ npm run db:migrate:staging
 npm run staging:db:seed
 ```
 
-16. Check health:
+16. Create or refresh the staging UAT demo admin only after the base demo fixtures exist:
+
+```bash
+npm run staging:seed-demo
+```
+
+17. Check health:
 
 ```bash
 curl https://<render-staging-domain>/api/health
 ```
 
-17. Run staging preflight and smoke from a safe local shell after setting only the staging API base URL:
+18. Run staging preflight and smoke from a safe local shell after setting only the staging API base URL:
 
 ```powershell
 $env:BASE_URL = "https://<render-staging-domain>/api"
@@ -104,8 +110,8 @@ npm run smoke:wheel
 npm run smoke:staging-uat
 ```
 
-18. Check Render logs for health, migration, seed, and smoke errors. Logs must not contain DB URLs, authorization headers, JWTs, API keys, passwords, provider secrets, or raw callback secrets.
-19. Roll back through Render Deploys by redeploying the previous successful deploy. If a secret leak is suspected, suspend/disable the service first, rotate the exposed value, then redeploy.
+19. Check Render logs for health, migration, seed, and smoke errors. Logs must not contain DB URLs, authorization headers, JWTs, API keys, passwords, provider secrets, or raw callback secrets.
+20. Roll back through Render Deploys by redeploying the previous successful deploy. If a secret leak is suspected, suspend/disable the service first, rotate the exposed value, then redeploy.
 
 This setup remains mock/sandbox only: no production DB, no real money, no live provider, no live payment, no live bank rails, no live SMS, and no live Slip OCR.
 
@@ -169,6 +175,9 @@ Core keys:
 - `CORS_ORIGIN`
 - `PUBLIC_API_BASE_URL`
 - `LOCAL_ADMIN_PASSWORD`
+- `STAGING_DEMO_ADMIN_EMAIL`
+- `STAGING_DEMO_ADMIN_PASSWORD`
+- `STAGING_DEMO_SEED_ENABLED`
 
 Provider and external boundary keys:
 
@@ -200,7 +209,7 @@ All real values must be set only in the selected platform secret manager or an i
 | --- | --- | --- | --- |
 | App runtime | `NODE_ENV`, `APP_ENV`, `STAGING_MODE`, `PORT` | `NODE_ENV` must be non-production; `APP_ENV=staging`; `STAGING_MODE=mock` or `sandbox`; platform port value | Runtime optimization must not override the environment boundary. Safety checks use app/staging labels, DB target markers, and provider modes. |
 | Database staging/test only | `DATABASE_URL` | `<SET_IN_PLATFORM_SECRET>` in secret manager | Must point to dedicated staging/test PostgreSQL, never production or production clone. |
-| Admin/session/auth | `JWT_SECRET`, `JWT_EXPIRES_IN`, `LOCAL_ADMIN_PASSWORD` | `<set-in-render-environment>`, `7d`, `<set-in-render-environment>` | Rotate if printed, pasted, committed, screenshotted, or shared outside secret manager. |
+| Admin/session/auth | `JWT_SECRET`, `JWT_EXPIRES_IN`, `LOCAL_ADMIN_PASSWORD`, `STAGING_DEMO_ADMIN_EMAIL`, `STAGING_DEMO_ADMIN_PASSWORD`, `STAGING_DEMO_SEED_ENABLED` | `<set-in-render-environment>`, `7d`, staging-only demo values in Render Environment | Demo credentials are for staging UAT only. Do not paste them into chat, logs, docs, commits, screenshots, or shell transcripts. |
 | Provider/game mock/sandbox/disabled | `GAME_PROVIDER_MODE`, `GAME_PROVIDER_API_BASE_URL`, `GAME_PROVIDER_AGENT_CODE`, `GAME_PROVIDER_API_KEY`, `GAME_PROVIDER_SECRET` | `mock`, `sandbox`, or `disabled`; credentials as placeholders only | Keep credentials empty in mock mode; no live provider mode. |
 | Payment mock/sandbox/disabled | `PAYMENT_PROVIDER_MODE`, `PAYMENT_API_BASE_URL`, `PAYMENT_MERCHANT_ID`, `PAYMENT_API_KEY`, `PAYMENT_SECRET` | `mock`, `sandbox`, or `disabled`; credentials as placeholders only | No live payment rails, no real-money transfer. |
 | Bank/statement mock/sandbox/disabled | `BANK_STATEMENT_MODE`, `BANK_API_BASE_URL`, `BANK_API_KEY` | `mock`, `sandbox`, or `disabled`; credentials as placeholders only | No live bank rails or production statement feeds. |
@@ -215,6 +224,8 @@ Required staging values:
 - `STAGING_MODE` must be `staging`, `mock`, or `sandbox`.
 - `DATABASE_URL` must target a dedicated staging/test PostgreSQL database.
 - `JWT_SECRET`, session secret values, and admin passwords must be generated for staging and set only in the platform secret manager.
+- `STAGING_DEMO_ADMIN_EMAIL` and `STAGING_DEMO_ADMIN_PASSWORD` must be staging-only values set only in Render Environment before credentialed UAT smoke.
+- `STAGING_DEMO_SEED_ENABLED` may be set to `true` only while intentionally running the demo admin seed.
 - `CORS_ORIGIN` must be the staging frontend/admin origin list, not `*`.
 - `PUBLIC_API_BASE_URL` must be the staging API base URL.
 - Provider/payment/bank/SMS/Slip OCR modes must be `mock`, approved `sandbox`, or `disabled`.
@@ -226,6 +237,8 @@ Secret manager only values:
 - `DATABASE_URL`
 - `JWT_SECRET`
 - `LOCAL_ADMIN_PASSWORD`
+- `STAGING_DEMO_ADMIN_EMAIL`
+- `STAGING_DEMO_ADMIN_PASSWORD`
 - Provider, payment, bank, SMS, and Slip OCR API keys or secrets when sandbox mode is approved.
 
 Values that may be committed only as placeholders:
@@ -298,6 +311,7 @@ After deploy:
 - Confirm external mode labels are `mock`, `sandbox`, or `disabled`.
 - Run staging preflight and staging smoke against the Render staging API.
 - Run guarded DB migration, demo seed if needed, DB check, and UAT smoke before UAT handoff.
+- On Render Free, run `staging:seed-demo` only through a temporary deploy command, then revert the command back to `npm start`.
 
 Smoke command template:
 
@@ -343,7 +357,35 @@ Seed only after migrations pass and the database is confirmed as staging/test.
 npm run staging:db:seed
 ```
 
-The seed is intended for local/staging/test mock data. Do not seed production. For `APP_ENV=staging`, set staging-only demo admin/member passwords in the platform secret manager or ignored shell; never write them into docs/log/chat. See `docs/DEMO_SEED.md` for the seed runbook, verification checks, safe reset rules, and mock data list.
+The base seed is intended for local/staging/test mock data. Do not seed production. For `APP_ENV=staging`, set staging-only demo admin/member passwords in the platform secret manager or ignored shell; never write them into docs/log/chat. See `docs/DEMO_SEED.md` for the seed runbook, verification checks, safe reset rules, and mock data list.
+
+Create or refresh the UAT demo admin with the dedicated staging-safe command:
+
+```bash
+npm run staging:seed-demo
+```
+
+`staging:seed-demo` requires `STAGING_DEMO_ADMIN_EMAIL` and `STAGING_DEMO_ADMIN_PASSWORD`, uses the staging safety guard, upserts one active `super_admin`, grants staging site access, and writes only sanitized audit metadata. If the demo admin env is missing in a local shell, it returns SKIP-SAFE with exit `0`.
+
+### Render Free Demo Admin Seed
+
+Render Free services do not provide practical one-off jobs or SSH for this workflow. The free path is to run the seed through a temporary deploy/start command and then revert it immediately.
+
+1. Set `STAGING_DEMO_ADMIN_EMAIL`, `STAGING_DEMO_ADMIN_PASSWORD`, and `STAGING_DEMO_SEED_ENABLED` in the Render dashboard Environment tab or Environment Group only.
+2. Temporarily change the Render start command to:
+
+```bash
+npm run staging:seed-demo && npm start
+```
+
+3. Trigger a manual deploy and watch logs only for sanitized PASS/SKIP-SAFE/FAIL lines. Do not copy credential values into chat, tickets, docs, screenshots, or logs.
+4. After the seed succeeds, change the start command back to:
+
+```bash
+npm start
+```
+
+5. Trigger another manual deploy so the service runs normally. Remove or disable the temporary seed setting when it is no longer needed.
 
 After seed, verify readiness:
 

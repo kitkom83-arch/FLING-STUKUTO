@@ -15,6 +15,7 @@ Latest staging handoff status:
 - Staging DB connected: PASS with `databaseConnected=true`.
 - `npm run staging:db:check`: PASS.
 - `npm run staging:db:seed`: PASS.
+- `npm run staging:seed-demo`: PASS when staging demo admin env is present; SKIP-SAFE when it is absent locally.
 - `npm run smoke:staging`: PASS.
 - `npm run smoke:staging-uat`: PASS when staging demo admin env is present; SKIP-SAFE when it is absent.
 - Invalid admin login negative test: PASS, failed closed without returning `500`.
@@ -44,6 +45,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `stagingPreflight.js` | `npm run staging:preflight` | No local Prisma access | Optional | No | Runs local-test dry run | Staging readiness guard for env boundary, database/API target labels, external modes, health contract, and response leak scan. |
 | `stagingSmoke.js` | `npm run smoke:staging` | No local Prisma access | Yes | No | Syntax check only | Hosted staging health contract, safe external mode labels, admin auth negative leak check, and response leak scan. |
 | `stagingDbCheck.js` | `npm run staging:db:check` | Staging/test DB | No | No | Syntax check only | Staging DB connection, required tables, demo site/admin/member readiness, fixture counts, and safe output. |
+| `stagingDemoSeed.js` | `npm run staging:seed-demo` | Staging/test DB | No | `STAGING_DEMO_ADMIN_PASSWORD` | Syntax check only | Staging-safe UAT demo admin upsert from `STAGING_DEMO_ADMIN_EMAIL`, super-admin site access, sanitized audit log, SKIP-SAFE on missing local demo admin env, and no credential output. |
 | `stagingUatSmoke.js` | `npm run smoke:staging-uat` | No local Prisma access | Hosted staging API | Optional; skips safely if absent | Syntax check only | Render staging health/database/mode contract, admin auth leak checks, admin work schedule read, audit/security read endpoints, Admin Lucky Wheel config/spins, optional member wheel config/spin/history/my-rewards when staging member env exists, and response leak scan. |
 | `runAllLocalSmoke.js` | `npm run smoke:all-local` | Yes | Yes | Yes | Syntax check only | Guarded local runner for syntax, project checks, all local smokes, secret grep, and diff check. |
 
@@ -53,9 +55,9 @@ GitHub Actions also scans `src/local-smoke-tests` for secret-shaped values. It d
 
 - Staging Deploy Mock/Sandbox Preflight covers platform-neutral deploy readiness before any real staging deploy.
 - Render Staging Deploy Setup covers the Render Web Service, branch `main`, staging-only service name, Render PostgreSQL staging database, Render dashboard env-only secret handling, build command `npm ci && npx prisma generate`, start command `npm start`, health path `/api/health`, manual deploy control, rollback, and log leak checks.
-- Local commands before Render deploy: `node --check src/local-smoke-tests/stagingPreflight.js`, `node --check src/staging-scripts/stagingSafety.js`, `node --check src/staging-scripts/stagingUatSmoke.js`, `npm run staging:preflight`, `npm run smoke:admin-wheel-runtime`, `npm run smoke:wheel`, and `npm run check`.
-- Post-Render commands after the service is healthy: set `BASE_URL` to the Render staging API, then run `npm run staging:preflight`, `npm run smoke:staging`, `npm run staging:db:check`, `npm run smoke:admin-wheel-runtime`, `npm run smoke:wheel`, and `npm run smoke:staging-uat`.
-- Required preflight commands: `node --check src/staging-scripts/stagingSafety.js`, `node --check src/staging-scripts/stagingUatSmoke.js`, `npm run staging:preflight`, `npm run smoke:staging`, `npm run staging:db:check`, `npm run smoke:admin-wheel-runtime`, `npm run smoke:wheel`, `npm run smoke:staging-uat`, and `npm run check`.
+- Local commands before Render deploy: `node --check src/local-smoke-tests/stagingPreflight.js`, `node --check src/staging-scripts/stagingSafety.js`, `node --check src/staging-scripts/stagingDemoSeed.js`, `node --check src/staging-scripts/stagingUatSmoke.js`, `npm run staging:preflight`, `npm run smoke:admin-wheel-runtime`, `npm run smoke:wheel`, and `npm run check`.
+- Post-Render commands after the service is healthy: set `BASE_URL` to the Render staging API, then run `npm run staging:preflight`, `npm run smoke:staging`, `npm run staging:db:check`, `npm run staging:seed-demo` when demo admin env is set, `npm run smoke:admin-wheel-runtime`, `npm run smoke:wheel`, and `npm run smoke:staging-uat`.
+- Required preflight commands: `node --check src/staging-scripts/stagingSafety.js`, `node --check src/staging-scripts/stagingDemoSeed.js`, `node --check src/staging-scripts/stagingUatSmoke.js`, `npm run staging:preflight`, `npm run staging:seed-demo`, `npm run smoke:staging`, `npm run staging:db:check`, `npm run smoke:admin-wheel-runtime`, `npm run smoke:wheel`, `npm run smoke:staging-uat`, and `npm run check`.
 - Skip-safe conditions: missing local shell `DATABASE_URL` for staging preflight when no `BASE_URL` is available, missing local/staging demo admin password, missing local wheel runtime env, missing local wheel DB/env for smoke, or absent optional staging member env. These skip with exit `0` only when the target is otherwise safe and no production-like target or live mode is detected.
 - Block conditions: production-like DB/API targets, `NODE_ENV` production for mock/sandbox preflight, live provider/payment/bank/SMS/Slip OCR modes, embedded URL credentials, unsafe external mode labels, or secret-shaped values in responses.
 - Secret-shaped scan covers database URL shapes, authorization scheme markers, JWT-shaped values, API-key-shaped values, DB assignment text, sensitive response keys, docs, staging scripts, local smoke scripts, controllers, routes, services, middleware, and sensitive env values echoed in output.
@@ -65,7 +67,7 @@ GitHub Actions also scans `src/local-smoke-tests` for secret-shaped values. It d
 - It verifies Prisma migration table plus core application tables exist.
 - It verifies the demo site, demo admin, demo member, wallet, bank/account/provider/game/payment/promotion fixtures are present.
 - It prints only safe usernames, roles, site codes, currencies, and counts. It does not print `DATABASE_URL`, tokens, passwords, hashes, provider secrets, or encrypted config fields.
-- `smoke:staging-uat` defaults to `https://fling-stukuto-staging-api.onrender.com/api` when `BASE_URL` is not set.
+- `smoke:staging-uat` defaults to `https://stukuto-real-core-staging.onrender.com/api` when `BASE_URL` is not set.
 - It skips safely with exit `0` when the staging demo admin password env is absent, without printing secret values or calling authenticated UAT endpoints.
 - When staging demo admin env is present, it verifies `/api/health`, confirms `databaseConnected=true`, confirms all external modes are non-live, verifies admin auth negative leak behavior, logs in without printing the token, reads work schedule/audit/security endpoints, reads Admin Lucky Wheel config/spins, and optionally runs member wheel config/spin/history/my-rewards when staging demo member env is present.
 
