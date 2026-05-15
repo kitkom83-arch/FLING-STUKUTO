@@ -209,6 +209,64 @@ function adminCampaign(campaign) {
   };
 }
 
+function stagingMockRewards(campaignId) {
+  const now = new Date(0);
+  return [
+    {
+      id: "wheel_reward_1",
+      campaignId,
+      label: "Mock Credit 10",
+      rewardType: "credit",
+      rewardValue: toDecimal("10.00"),
+      displayValue: "10 mock credit",
+      probabilityWeight: 30,
+      stockLimit: null,
+      stockUsed: 0,
+      segmentColor: "#2563eb",
+      imageUrl: null,
+      sortOrder: 1,
+      status: "active",
+      createdAt: now,
+      updatedAt: now,
+    },
+  ];
+}
+
+function stagingMockAdminConfig(siteId) {
+  const now = new Date(0);
+  const campaign = {
+    id: DEFAULT_CAMPAIGN_ID,
+    siteId,
+    name: "Staging Mock Lucky Wheel",
+    status: "active",
+    costType: "point",
+    costAmount: toDecimal("0.00"),
+    dailySpinLimit: 3,
+    monthlySpinLimit: null,
+    startAt: null,
+    endAt: null,
+    rulesText: "Staging demo rewards only. No real payout.",
+    showHistory: true,
+    maxWheelCredit: null,
+    minDepositRequired: null,
+    minTurnoverRequired: null,
+    createdAt: now,
+    updatedAt: now,
+  };
+  const rewards = stagingMockRewards(campaign.id);
+  return {
+    campaign: adminCampaign(campaign),
+    rewards: rewards.map(adminReward),
+    summary: {
+      totalSpins: 0,
+      totalRewardsIssued: 0,
+      totalStockUsed: 0,
+      activeRewardCount: rewards.length,
+      mode: "staging_mock_only",
+    },
+  };
+}
+
 function resultSnapshot(reward) {
   return sanitizeAdminLogData({
     rewardId: reward.id,
@@ -530,12 +588,18 @@ async function myRewards({ siteId, userId, query = {} }) {
 
 async function adminConfig(siteId) {
   assertWheelSafeRuntime();
-  const campaign = await activeCampaign(siteId, DEFAULT_CAMPAIGN_ID);
+  const campaign = await prisma.wheelCampaign.findFirst({
+    where: { id: DEFAULT_CAMPAIGN_ID, siteId },
+    include: { rewards: { orderBy: { sortOrder: "asc" } } },
+  });
+  if (!campaign) return stagingMockAdminConfig(siteId);
   const [totalSpins, totalRewardsIssued] = await Promise.all([
     prisma.wheelSpin.count({ where: { siteId, campaignId: campaign.id } }),
     prisma.memberReward.count({ where: { siteId, source: "wheel" } }),
   ]);
-  const rewards = campaign.rewards.sort((a, b) => a.sortOrder - b.sortOrder);
+  const rewards = campaign.rewards.length
+    ? campaign.rewards.sort((a, b) => a.sortOrder - b.sortOrder)
+    : stagingMockRewards(campaign.id);
   return {
     campaign: adminCampaign(campaign),
     rewards: rewards.map(adminReward),

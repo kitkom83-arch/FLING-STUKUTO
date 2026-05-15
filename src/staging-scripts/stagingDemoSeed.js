@@ -1,12 +1,13 @@
 require("dotenv").config();
 
 const bcrypt = require("bcrypt");
-const { PrismaClient } = require("@prisma/client");
+const { PrismaClient, Prisma } = require("@prisma/client");
 const { evaluateStagingSafety } = require("./stagingSafety");
 
 const prisma = new PrismaClient();
 const SITE_CODE = process.env.STAGING_SMOKE_SITE_CODE || "PG77";
 const DEMO_ADMIN_ROLE = "super_admin";
+const WHEEL_CAMPAIGN_ID = "wheel_main";
 
 function envValue(name) {
   const value = process.env[name];
@@ -114,6 +115,116 @@ async function grantSiteAccess(admin, sites) {
   }
 }
 
+function decimal(value) {
+  return new Prisma.Decimal(value);
+}
+
+async function upsertStagingWheelFixtures(site) {
+  await prisma.wheelCampaign.upsert({
+    where: { id: WHEEL_CAMPAIGN_ID },
+    update: {
+      siteId: site.id,
+      name: "Staging Mock Lucky Wheel",
+      status: "active",
+      costType: "point",
+      costAmount: decimal("0.00"),
+      dailySpinLimit: 3,
+      monthlySpinLimit: null,
+      startAt: null,
+      endAt: null,
+      rulesText: "Staging demo rewards only. No real payout.",
+      showHistory: true,
+      maxWheelCredit: null,
+      minDepositRequired: null,
+      minTurnoverRequired: null,
+    },
+    create: {
+      id: WHEEL_CAMPAIGN_ID,
+      siteId: site.id,
+      name: "Staging Mock Lucky Wheel",
+      status: "active",
+      costType: "point",
+      costAmount: decimal("0.00"),
+      dailySpinLimit: 3,
+      monthlySpinLimit: null,
+      startAt: null,
+      endAt: null,
+      rulesText: "Staging demo rewards only. No real payout.",
+      showHistory: true,
+      maxWheelCredit: null,
+      minDepositRequired: null,
+      minTurnoverRequired: null,
+    },
+  });
+
+  const rewards = [
+    {
+      id: "wheel_reward_1",
+      label: "Mock Credit 10",
+      rewardType: "credit",
+      rewardValue: "10.00",
+      displayValue: "10 mock credit",
+      probabilityWeight: 30,
+      segmentColor: "#2563eb",
+      sortOrder: 1,
+    },
+    {
+      id: "wheel_reward_2",
+      label: "Mock Points 20",
+      rewardType: "point",
+      rewardValue: "20.00",
+      displayValue: "20 points",
+      probabilityWeight: 20,
+      segmentColor: "#16a34a",
+      sortOrder: 2,
+    },
+    {
+      id: "wheel_reward_3",
+      label: "Try Again",
+      rewardType: "no_reward",
+      rewardValue: "0.00",
+      displayValue: "Try again",
+      probabilityWeight: 50,
+      segmentColor: "#64748b",
+      sortOrder: 3,
+    },
+  ];
+
+  for (const reward of rewards) {
+    await prisma.wheelReward.upsert({
+      where: { id: reward.id },
+      update: {
+        campaignId: WHEEL_CAMPAIGN_ID,
+        label: reward.label,
+        rewardType: reward.rewardType,
+        rewardValue: decimal(reward.rewardValue),
+        displayValue: reward.displayValue,
+        probabilityWeight: reward.probabilityWeight,
+        stockLimit: null,
+        segmentColor: reward.segmentColor,
+        imageUrl: null,
+        sortOrder: reward.sortOrder,
+        status: "active",
+      },
+      create: {
+        id: reward.id,
+        campaignId: WHEEL_CAMPAIGN_ID,
+        label: reward.label,
+        rewardType: reward.rewardType,
+        rewardValue: decimal(reward.rewardValue),
+        displayValue: reward.displayValue,
+        probabilityWeight: reward.probabilityWeight,
+        stockLimit: null,
+        stockUsed: 0,
+        segmentColor: reward.segmentColor,
+        imageUrl: null,
+        sortOrder: reward.sortOrder,
+        status: "active",
+      },
+    });
+  }
+}
+
 async function writeAuditLog(admin, site) {
   await prisma.adminLog.create({
     data: {
@@ -197,10 +308,13 @@ async function main() {
     const sites = await loadTargetSites();
     const admin = await upsertDemoAdmin(demoAdmin.email, demoAdmin.password);
     await grantSiteAccess(admin, sites);
-    await writeAuditLog(admin, sites.find((site) => site.code === SITE_CODE) || sites[0]);
+    const primarySite = sites.find((site) => site.code === SITE_CODE) || sites[0];
+    await upsertStagingWheelFixtures(primarySite);
+    await writeAuditLog(admin, primarySite);
 
     console.log(`Demo admin: PASS (${admin.username}, role=${DEMO_ADMIN_ROLE})`);
     console.log(`Demo admin site access: PASS (${sites.length} active staging site(s))`);
+    console.log(`Demo wheel fixtures: PASS (${WHEEL_CAMPAIGN_ID})`);
     console.log("Demo admin audit log: PASS");
     printSafeBoundary();
     console.log("Staging demo admin seed: PASS");
