@@ -69,8 +69,8 @@ function validateDemoMemberEnv() {
       reason: "missing STAGING_DEMO_MEMBER_USERNAME, STAGING_DEMO_MEMBER_PHONE, or STAGING_DEMO_MEMBER_PASSWORD env",
     };
   }
-  if (!/^[0-9+().\-\s]{6,32}$/.test(phone)) {
-    throw new Error("STAGING_DEMO_MEMBER_PHONE must be a staging-only phone/login value.");
+  if (/^\d+$/.test(phone) || /^0[89]\d{8}$/.test(phone) || !/(demo|staging|test)/i.test(phone)) {
+    throw new Error("STAGING_DEMO_MEMBER_PHONE must be a non-real staging/test/demo login value.");
   }
   if (!username || username.length > 64) {
     throw new Error("STAGING_DEMO_MEMBER_USERNAME must be 1-64 characters when provided.");

@@ -79,6 +79,10 @@ function safePayloadSummary(payload) {
   return serialized.length > 800 ? `${serialized.slice(0, 800)}...` : serialized;
 }
 
+function isSafeDemoMemberPhone(value) {
+  return Boolean(value) && !/^\d+$/.test(value) && !/^0[89]\d{8}$/.test(value) && /(demo|staging|test)/i.test(value);
+}
+
 function assertNoUnsafeKeys(label, value, { allowAuthToken = false } = {}) {
   if (!value || typeof value !== "object") return;
   if (Array.isArray(value)) {
@@ -240,8 +244,8 @@ async function loginDemoMember(baseUrl) {
   if (MEMBER_USERNAME && MEMBER_USERNAME.length > 64) {
     throw new Error("STAGING_DEMO_MEMBER_USERNAME must be 1-64 characters when provided.");
   }
-  if (MEMBER_PHONE && !/^[0-9+().\-\s]{6,32}$/.test(MEMBER_PHONE)) {
-    throw new Error("STAGING_DEMO_MEMBER_PHONE must be a staging-only phone/login value when provided.");
+  if (MEMBER_PHONE && !isSafeDemoMemberPhone(MEMBER_PHONE)) {
+    throw new Error("STAGING_DEMO_MEMBER_PHONE must be a non-real staging/test/demo login value when provided.");
   }
 
   const result = await apiRequest(baseUrl, "/auth/login", {
