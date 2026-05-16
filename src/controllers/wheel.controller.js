@@ -97,6 +97,7 @@ async function adminSpins(req, res) {
     res,
     await wheelService.listAdminSpins({
       siteId: req.siteId,
+      siteCode: req.siteCode,
       query: req.query,
     })
   );

@@ -13,7 +13,7 @@ const OWNER_USERNAME = process.env.LOCAL_ADMIN_USERNAME || "local_wheel_runtime_
 const NO_PERMISSION_USERNAME = "local_wheel_runtime_no_permission";
 const MEMBER_PASSWORD = process.env.LOCAL_MEMBER_PASSWORD || "local-wheel-runtime-member-only";
 const RUNTIME_REASON = "admin wheel runtime smoke reason";
-const WHEEL_AUDIT_ACTIONS = ["wheel.campaign.update", "wheel.reward.create", "wheel.reward.update"];
+const WHEEL_AUDIT_ACTIONS = ["wheel.campaign.update", "wheel.reward.create", "wheel.reward.update", "wheel.reward.status.update"];
 const issuedAuthValues = new Set();
 
 function tokenize(value) {
@@ -604,6 +604,12 @@ async function main() {
       authValue: ownerToken,
       label: "admin wheel reward update with reason",
       body: { label: "Runtime Smoke Reward Updated", probabilityWeight: 2, reason: RUNTIME_REASON },
+    });
+    await apiRequest(baseUrl, `/admin/wheel/rewards/${encodeURIComponent(rewardId)}`, {
+      method: "PATCH",
+      authValue: ownerToken,
+      label: "admin wheel reward status update with reason",
+      body: { status: "inactive", reason: RUNTIME_REASON },
     });
     console.log("Admin Wheel writes with reason: PASS");
 

@@ -805,10 +805,15 @@ async function updateReward({ siteId, siteCode, admin, rewardId, body, req }) {
       throw error;
     }
     const after = await tx.wheelReward.update({ where: { id: before.id }, data });
+    const changedKeys = Object.keys(data);
+    const action =
+      changedKeys.length === 1 && changedKeys[0] === "status" && before.status !== after.status
+        ? "wheel.reward.status.update"
+        : "wheel.reward.update";
     await logAdminAction({
       tx,
       admin,
-      action: "wheel.reward.update",
+      action,
       targetType: "wheel_reward",
       targetId: before.id,
       before: adminReward(before),
@@ -827,12 +832,13 @@ async function updateReward({ siteId, siteCode, admin, rewardId, body, req }) {
   });
 }
 
-async function listAdminSpins({ siteId, query = {} }) {
+async function listAdminSpins({ siteId, siteCode = null, query = {} }) {
   assertWheelSafeRuntime();
   const { skip, take } = pagination(query, { limit: 50, maxLimit: 100 });
   const where = { siteId };
   if (query.campaignId) where.campaignId = String(query.campaignId);
   if (query.memberId) where.memberId = String(query.memberId);
+  if (query.rewardId || query.reward_id) where.rewardId = String(query.rewardId || query.reward_id);
   if (query.rewardType) where.reward = { rewardType: String(query.rewardType) };
   if (query.username) {
     where.member = { username: { contains: String(query.username), mode: "insensitive" } };
@@ -881,6 +887,8 @@ async function listAdminSpins({ siteId, query = {} }) {
     },
     prizeIndex: row.prizeIndex,
     ipAddressMasked: row.ipAddressMasked,
+    userAgentHash: row.userAgentHash,
+    siteCode,
     result: row.resultSnapshot,
   }));
 }

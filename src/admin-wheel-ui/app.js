@@ -3,12 +3,12 @@
 
   const API_BASE = "/api";
   const SITE_CODE = "PG77";
-  const CAMPAIGN_STATUSES = ["active", "inactive", "draft"];
-  const COST_TYPES = ["point", "ticket", "mock_credit"];
+  const CAMPAIGN_STATUSES = ["active", "inactive"];
+  const COST_TYPES = ["point", "ticket"];
   const REWARD_TYPES = ["credit", "point", "ticket", "item", "no_reward"];
   const REWARD_STATUSES = ["active", "inactive"];
-  const WHEEL_AUDIT_ACTIONS = ["wheel.campaign.update", "wheel.reward.create", "wheel.reward.update", "wheel.reward.delete", "wheel.spin.adjust"];
-  const SENSITIVE_KEY_PATTERN = /(pass(word|code)?|token|secret|api[_-]?key|authorization|session|cookie|database[_-]?url|refresh|user[-_]?agent|headers?)/i;
+  const WHEEL_AUDIT_ACTIONS = ["wheel.campaign.update", "wheel.reward.create", "wheel.reward.update", "wheel.reward.status.update"];
+  const SENSITIVE_KEY_PATTERN = /(pass(word|code)?|token|secret|api[_-]?key|authorization|session|cookie|database[_-]?url|refresh|headers?)/i;
   const IP_KEY_PATTERN = /^(ip|ipAddress|rawIp|clientIp|remoteAddress)$/i;
   const RAW_IPV4_PATTERN = /\b(?:\d{1,3}\.){3}\d{1,3}\b/;
   const SENSITIVE_VALUE_PATTERNS = [
@@ -25,6 +25,7 @@
     auditRows: [],
     activeTab: "campaign",
     editingReward: null,
+    statusReward: null,
   };
 
   const els = {
@@ -36,7 +37,11 @@
     toast: document.getElementById("toast"),
     tabButtons: Array.from(document.querySelectorAll("[data-tab]")),
     tabPanels: Array.from(document.querySelectorAll(".tab-panel")),
+    consoleStatusBadge: document.getElementById("console-status-badge"),
+    consoleSiteCode: document.getElementById("console-site-code"),
+    consoleLastUpdated: document.getElementById("console-last-updated"),
     campaignForm: document.getElementById("campaign-form"),
+    campaignId: document.getElementById("campaign-id"),
     campaignStatus: document.getElementById("campaign-status"),
     campaignName: document.getElementById("campaign-name"),
     campaignCostType: document.getElementById("campaign-cost-type"),
@@ -89,6 +94,7 @@
     filterTo: document.getElementById("filter-to"),
     filterMember: document.getElementById("filter-member"),
     filterReward: document.getElementById("filter-reward"),
+    filterRewardId: document.getElementById("filter-reward-id"),
     filterCampaign: document.getElementById("filter-campaign"),
     filterStatus: document.getElementById("filter-status"),
     filterSite: document.getElementById("filter-site"),
@@ -96,14 +102,16 @@
     reportTotalSpins: document.getElementById("report-total-spins"),
     reportIssued: document.getElementById("report-issued"),
     reportStockUsed: document.getElementById("report-stock-used"),
-    reportStockRemaining: document.getElementById("report-stock-remaining"),
     reportTopReward: document.getElementById("report-top-reward"),
     reportCostUsed: document.getElementById("report-cost-used"),
+    reportEmptyCount: document.getElementById("report-empty-count"),
     topRewardRows: document.getElementById("top-reward-rows"),
     topRewardsEmpty: document.getElementById("top-rewards-empty"),
     distributionRows: document.getElementById("distribution-rows"),
     distributionEmpty: document.getElementById("distribution-empty"),
     stockRows: document.getElementById("stock-rows"),
+    dailyRows: document.getElementById("daily-rows"),
+    dailyEmpty: document.getElementById("daily-empty"),
     refreshAudit: document.getElementById("refresh-audit"),
     auditRows: document.getElementById("audit-rows"),
     auditEmpty: document.getElementById("audit-empty"),
@@ -113,6 +121,19 @@
     detailTitle: document.getElementById("detail-title"),
     detailGrid: document.getElementById("detail-grid"),
     detailJson: document.getElementById("detail-json"),
+    statusModal: document.getElementById("status-modal"),
+    statusForm: document.getElementById("status-form"),
+    statusModalTitle: document.getElementById("status-modal-title"),
+    statusModalCopy: document.getElementById("status-modal-copy"),
+    statusReason: document.getElementById("status-reason"),
+    statusReasonError: document.getElementById("status-reason-error"),
+    confirmStatus: document.getElementById("confirm-status"),
+    confirmModal: document.getElementById("confirm-modal"),
+    confirmForm: document.getElementById("confirm-form"),
+    confirmTitle: document.getElementById("confirm-title"),
+    confirmMessage: document.getElementById("confirm-message"),
+    confirmCancel: document.getElementById("confirm-cancel"),
+    confirmOk: document.getElementById("confirm-ok"),
   };
 
   function safeText(value) {
@@ -218,6 +239,8 @@
     for (const [key, item] of Object.entries(value)) {
       if (IP_KEY_PATTERN.test(key)) {
         next[key] = maskIp(item);
+      } else if (/^user[-_]?agent$/i.test(key)) {
+        next[key] = REDACTED;
       } else if (SENSITIVE_KEY_PATTERN.test(key)) {
         next[key] = REDACTED;
       } else {
@@ -296,6 +319,40 @@
     return button;
   }
 
+  function rewardTypeLabel(value) {
+    return value === "no_reward" ? "empty" : safeText(value);
+  }
+
+  function confirmAction(title, message) {
+    els.confirmTitle.textContent = safeText(title);
+    els.confirmMessage.textContent = safeText(message);
+    return new Promise((resolve) => {
+      let settled = false;
+      const finish = (value) => {
+        if (settled) return;
+        settled = true;
+        els.confirmForm.removeEventListener("submit", onSubmit);
+        els.confirmCancel.removeEventListener("click", onCancel);
+        els.confirmModal.removeEventListener("close", onClose);
+        resolve(value);
+      };
+      const onSubmit = (event) => {
+        event.preventDefault();
+        finish(true);
+        els.confirmModal.close();
+      };
+      const onCancel = () => {
+        finish(false);
+        els.confirmModal.close();
+      };
+      const onClose = () => finish(false);
+      els.confirmForm.addEventListener("submit", onSubmit);
+      els.confirmCancel.addEventListener("click", onCancel);
+      els.confirmModal.addEventListener("close", onClose);
+      els.confirmModal.showModal();
+    });
+  }
+
   async function withLoading(button, fn) {
     button.classList.add("is-loading");
     button.disabled = true;
@@ -326,7 +383,7 @@
     return {
       id: safeText(source.id) === "-" ? "wheel_main" : source.id,
       name: safeText(source.name) === "-" ? "" : safeText(source.name),
-      status: safeEnum(source.status, CAMPAIGN_STATUSES, "draft"),
+      status: safeEnum(source.status, CAMPAIGN_STATUSES, "inactive"),
       costType: safeEnum(source.costType, COST_TYPES, "point"),
       costAmount: numberValue(source.costAmount).toFixed(2),
       dailySpinLimit: intValue(source.dailySpinLimit),
@@ -391,6 +448,7 @@
       },
       prizeIndex: intValue(source.prizeIndex),
       ipAddressMasked: source.ipAddressMasked ? maskIp(source.ipAddressMasked) : maskIp(source.ipAddress || source.rawIp),
+      userAgentHash: source.userAgentHash ? safeText(source.userAgentHash) : "-",
       siteCode: source.siteCode ? safeText(source.siteCode) : SITE_CODE,
       result: sanitizeValue(source.result || {}),
     };
@@ -431,7 +489,8 @@
 
   function renderCampaign() {
     const row = campaign();
-    els.campaignStatus.value = safeEnum(row.status, CAMPAIGN_STATUSES, "draft");
+    els.campaignId.value = row.id || "wheel_main";
+    els.campaignStatus.value = safeEnum(row.status, CAMPAIGN_STATUSES, "inactive");
     els.campaignName.value = row.name || "";
     els.campaignCostType.value = safeEnum(row.costType, COST_TYPES, "point");
     els.campaignCostAmount.value = row.costAmount || "0.00";
@@ -444,9 +503,13 @@
   }
 
   function renderCampaignSummary(row) {
-    const status = safeEnum(row.status, CAMPAIGN_STATUSES, "draft");
+    const status = safeEnum(row.status, CAMPAIGN_STATUSES, "inactive");
     els.campaignSummaryStatus.textContent = status;
-    els.campaignSummaryStatus.className = `summary-status ${status === "active" ? "ok" : status === "draft" ? "warn" : ""}`.trim();
+    els.campaignSummaryStatus.className = `summary-status ${status === "active" ? "ok" : ""}`.trim();
+    els.consoleStatusBadge.textContent = status;
+    els.consoleStatusBadge.className = `summary-status ${status === "active" ? "ok" : ""}`.trim();
+    els.consoleSiteCode.textContent = SITE_CODE;
+    els.consoleLastUpdated.textContent = formatDate(row.updatedAt);
     els.campaignSummaryName.textContent = safeText(row.name || "-");
     els.campaignSummaryCost.textContent = `${formatNumber(row.costAmount)} ${safeText(row.costType || "point")}`;
     els.campaignSummaryDaily.textContent = formatNumber(row.dailySpinLimit || 0);
@@ -502,7 +565,10 @@
     }
     const start = els.campaignStart.value ? new Date(els.campaignStart.value) : null;
     const end = els.campaignEnd.value ? new Date(els.campaignEnd.value) : null;
-    if (start && end && end < start) {
+    if ((start && Number.isNaN(start.getTime())) || (end && Number.isNaN(end.getTime()))) {
+      setFieldError(els.campaignDateError, "Start date and end date must be valid");
+      ok = false;
+    } else if (start && end && end < start) {
       setFieldError(els.campaignDateError, "End date must not be before start date");
       ok = false;
     } else {
@@ -531,6 +597,8 @@
       rulesText: els.campaignRules.value,
       reason,
     };
+    const confirmed = await confirmAction("Confirm campaign update", `Save campaign settings for ${safeText(body.name)}. Reason: ${safeText(reason)}`);
+    if (!confirmed) return;
     await withLoading(els.saveCampaign, async () => {
       try {
         await api("/admin/wheel/campaign", {
@@ -561,7 +629,7 @@
       const tr = document.createElement("tr");
       tr.appendChild(createCell(reward.sortOrder || index + 1));
       tr.appendChild(createCell(reward.label));
-      tr.appendChild(createCell(reward.rewardType));
+      tr.appendChild(createCell(rewardTypeLabel(reward.rewardType)));
       tr.appendChild(createCell(reward.rewardValue));
       tr.appendChild(createCell(reward.probabilityWeight));
       tr.appendChild(createCell(reward.stockLimit === null || reward.stockLimit === undefined ? "ไม่จำกัด" : reward.stockLimit));
@@ -595,7 +663,7 @@
       const actions = document.createElement("td");
       actions.className = "button-row";
       actions.appendChild(actionButton("Edit", () => openRewardModal(reward)));
-      actions.appendChild(actionButton(reward.status === "active" ? "Disable" : "Enable", () => quickToggleReward(reward)));
+      actions.appendChild(actionButton(reward.status === "active" ? "Disable" : "Enable", () => openStatusModal(reward)));
       tr.appendChild(actions);
       els.rewardRows.appendChild(tr);
     });
@@ -607,7 +675,7 @@
     for (const type of new Set([...REWARD_TYPES, ...existing])) {
       const option = document.createElement("option");
       option.value = type;
-      option.textContent = type;
+      option.textContent = rewardTypeLabel(type);
       els.filterReward.appendChild(option);
     }
   }
@@ -618,7 +686,7 @@
 
   function openRewardModal(reward) {
     state.editingReward = reward || null;
-    els.rewardModalTitle.textContent = reward ? "Edit reward" : "Create reward";
+    els.rewardModalTitle.textContent = reward ? "Edit reward" : "Add reward";
     els.rewardId.value = reward ? reward.id : "";
     els.rewardLabel.value = reward ? reward.label || "" : "";
     els.rewardType.value = reward ? reward.rewardType || "credit" : "credit";
@@ -682,8 +750,7 @@
       ok = false;
     }
     if (ok && !validColor(els.rewardColor.value)) {
-      setFieldError(els.rewardFormError, "Segment color must be a hex color");
-      ok = false;
+      els.rewardColor.value = "#16705d";
     }
     if (ok) setFieldError(els.rewardFormError, "");
     const reason = validateReason(els.rewardReason, els.rewardReasonError);
@@ -699,7 +766,7 @@
       displayValue: els.rewardDisplay.value.trim() || els.rewardLabel.value.trim(),
       probabilityWeight: intValue(els.rewardWeight.value),
       stockLimit: els.rewardStock.value === "" ? null : intValue(els.rewardStock.value),
-      segmentColor: els.rewardColor.value.trim(),
+      segmentColor: validColor(els.rewardColor.value) ? els.rewardColor.value.trim() : "#16705d",
       imageUrl: els.rewardImage.value.trim() || null,
       sortOrder: Math.max(1, intValue(els.rewardSort.value)),
       status: els.rewardStatus.value,
@@ -715,6 +782,11 @@
       return;
     }
     const body = rewardPayload(reason);
+    const confirmed = await confirmAction(
+      state.editingReward ? "Confirm reward update" : "Confirm reward create",
+      `${state.editingReward ? "Update" : "Create"} reward ${safeText(body.label)}. Reason: ${safeText(reason)}`
+    );
+    if (!confirmed) return;
     await withLoading(els.saveReward, async () => {
       try {
         if (state.editingReward) {
@@ -743,9 +815,52 @@
     });
   }
 
-  function quickToggleReward(reward) {
-    openRewardModal(reward);
-    els.rewardStatus.value = reward.status === "active" ? "inactive" : "active";
+  function openStatusModal(reward) {
+    state.statusReward = reward || null;
+    if (!state.statusReward) return;
+    const nextStatus = reward.status === "active" ? "inactive" : "active";
+    els.statusModalTitle.textContent = nextStatus === "active" ? "Enable reward" : "Disable reward";
+    els.statusModalCopy.textContent = `${nextStatus === "active" ? "Enable" : "Disable"} reward ${safeText(reward.label)}. This does not force a member spin result.`;
+    els.statusReason.value = "";
+    setFieldError(els.statusReasonError, "");
+    els.confirmStatus.textContent = nextStatus === "active" ? "Enable" : "Disable";
+    els.statusModal.showModal();
+  }
+
+  async function saveStatus(event) {
+    event.preventDefault();
+    const reward = state.statusReward;
+    if (!reward) return;
+    const reason = validateReason(els.statusReason, els.statusReasonError);
+    if (!reason) {
+      setToast("Reason is required");
+      return;
+    }
+    const nextStatus = reward.status === "active" ? "inactive" : "active";
+    const confirmed = await confirmAction(
+      "Confirm reward status update",
+      `${nextStatus === "active" ? "Enable" : "Disable"} reward ${safeText(reward.label)}. Reason: ${safeText(reason)}`
+    );
+    if (!confirmed) return;
+    await withLoading(els.confirmStatus, async () => {
+      try {
+        await api(`/admin/wheel/rewards/${encodeURIComponent(reward.id)}`, {
+          method: "PATCH",
+          body: { status: nextStatus, reason },
+          safeError: "บันทึกไม่สำเร็จ กรุณาตรวจสอบข้อมูลอีกครั้ง",
+        });
+        els.statusModal.close();
+        state.statusReward = null;
+        setToast("บันทึกสถานะรางวัลสำเร็จ");
+        await loadConfig();
+      } catch (_error) {
+        const message = _error && (_error.status === 401 || _error.status === 403 || _error.status === 404)
+          ? _error.message
+          : "บันทึกไม่สำเร็จ กรุณาตรวจสอบข้อมูลอีกครั้ง";
+        setGlobalError(message);
+        setToast(message);
+      }
+    });
   }
 
   async function loadSpins() {
@@ -755,6 +870,7 @@
       if (els.filterCampaign.value.trim()) params.set("campaignId", els.filterCampaign.value.trim());
       if (els.filterMember.value.trim()) params.set("username", els.filterMember.value.trim());
       if (els.filterReward.value) params.set("rewardType", els.filterReward.value);
+      if (els.filterRewardId.value.trim()) params.set("rewardId", els.filterRewardId.value.trim());
       if (els.filterFrom.value) params.set("dateFrom", els.filterFrom.value);
       if (els.filterTo.value) params.set("dateTo", `${els.filterTo.value}T23:59:59.999Z`);
       params.set("limit", "100");
@@ -793,11 +909,13 @@
       tr.appendChild(createCell(memberLabel(spin.member)));
       tr.appendChild(createCell(spin.campaign && (spin.campaign.name || spin.campaign.id)));
       tr.appendChild(createCell(spin.reward && (spin.reward.label || spin.reward.rewardType)));
-      tr.appendChild(createCell(spin.cost ? `${safeText(spin.cost.type)} ${safeText(spin.cost.amount)}` : "-"));
+      tr.appendChild(createCell(spin.reward && rewardTypeLabel(spin.reward.rewardType)));
+      tr.appendChild(createCell(spin.cost && spin.cost.type));
+      tr.appendChild(createCell(spin.cost && spin.cost.amount));
       tr.appendChild(createCell(spin.prizeIndex));
       tr.appendChild(createCell(spin.ipAddressMasked));
-      tr.appendChild(createCell(spin.siteCode || SITE_CODE));
-      tr.appendChild(createCell(spinResultLabel(spin)));
+      tr.appendChild(createCell(spin.userAgentHash));
+      tr.appendChild(createCell(spin.id));
       const detail = document.createElement("td");
       detail.appendChild(actionButton("Details", () => openSpinDetail(spin)));
       tr.appendChild(detail);
@@ -811,9 +929,12 @@
       ["time", formatDate(spin.time)],
       ["member", memberLabel(spin.member)],
       ["reward", spin.reward && spin.reward.label],
-      ["cost", spin.cost ? `${safeText(spin.cost.type)} ${safeText(spin.cost.amount)}` : "-"],
+      ["rewardType", spin.reward && rewardTypeLabel(spin.reward.rewardType)],
+      ["costType", spin.cost && spin.cost.type],
+      ["costAmount", spin.cost && spin.cost.amount],
       ["prizeIndex", spin.prizeIndex],
       ["ipAddressMasked", spin.ipAddressMasked],
+      ["userAgentHash", spin.userAgentHash],
       ["result", spinResultLabel(spin)],
       ["siteCode", spin.siteCode || SITE_CODE],
     ], spin.result || {});
@@ -833,11 +954,8 @@
     const counts = rewardCounts();
     const totalSpins = state.spins.length;
     const issued = state.spins.filter((spin) => spin.reward && spin.reward.status !== "no_reward").length;
+    const emptyCount = state.spins.filter((spin) => spin.reward && spin.reward.rewardType === "no_reward").length;
     const totalStockUsed = rows.reduce((sum, reward) => sum + intValue(reward.stockUsed), 0);
-    const finiteRemaining = rows.reduce((sum, reward) => {
-      if (reward.stockLimit === null || reward.stockLimit === undefined) return sum;
-      return sum + Math.max(intValue(reward.stockLimit) - intValue(reward.stockUsed), 0);
-    }, 0);
     const topRewards = Array.from(counts.entries()).sort((a, b) => b[1] - a[1]).slice(0, 3);
     const costByType = state.spins.reduce((acc, spin) => {
       const type = spin.cost && spin.cost.type ? spin.cost.type : "unknown";
@@ -848,17 +966,18 @@
     els.reportTotalSpins.textContent = formatNumber(totalSpins);
     els.reportIssued.textContent = formatNumber(issued);
     els.reportStockUsed.textContent = formatNumber(totalStockUsed);
-    els.reportStockRemaining.textContent = formatNumber(finiteRemaining);
     els.reportTopReward.textContent = topRewards.length
       ? topRewards.map(([label, count]) => `${safeText(label)} (${formatNumber(count)})`).join(", ")
       : "ไม่พบข้อมูล";
     els.reportCostUsed.textContent = Object.keys(costByType).length
       ? Object.entries(costByType).map(([type, value]) => `${formatNumber(value)} ${safeText(type)}`).join(", ")
       : "0";
+    els.reportEmptyCount.textContent = formatNumber(emptyCount);
 
     renderTopRewards(counts, totalSpins);
-    renderDistribution(counts);
+    renderRewardTypeSummary();
     renderStockUsage();
+    renderDailySpinCount();
   }
 
   function renderTopRewards(counts, totalSpins) {
@@ -876,17 +995,24 @@
     }
   }
 
-  function renderDistribution(counts) {
+  function renderRewardTypeSummary() {
     els.distributionRows.innerHTML = "";
     const totalSpins = state.spins.length;
-    els.distributionEmpty.classList.toggle("hidden", rewards().length > 0);
-    for (const reward of rewards()) {
-      const issuedCount = counts.get(reward.label) || 0;
+    const byType = state.spins.reduce((acc, spin) => {
+      const type = spin.reward && spin.reward.rewardType ? spin.reward.rewardType : "unknown";
+      if (!acc[type]) acc[type] = { spinCount: 0, issuedCount: 0 };
+      acc[type].spinCount += 1;
+      if (type !== "no_reward") acc[type].issuedCount += 1;
+      return acc;
+    }, {});
+    const entries = Object.entries(byType).sort((a, b) => b[1].spinCount - a[1].spinCount);
+    els.distributionEmpty.classList.toggle("hidden", entries.length > 0);
+    for (const [type, summary] of entries) {
       const tr = document.createElement("tr");
-      tr.appendChild(createCell(reward.label));
-      tr.appendChild(createCell(reward.probabilityWeight));
-      tr.appendChild(createCell(issuedCount));
-      tr.appendChild(createCell(totalSpins > 0 ? `${formatNumber((issuedCount / totalSpins) * 100)} %` : "0 %"));
+      tr.appendChild(createCell(rewardTypeLabel(type)));
+      tr.appendChild(createCell(summary.spinCount));
+      tr.appendChild(createCell(summary.issuedCount));
+      tr.appendChild(createCell(totalSpins > 0 ? `${formatNumber((summary.spinCount / totalSpins) * 100)} %` : "0 %"));
       els.distributionRows.appendChild(tr);
     }
   }
@@ -900,6 +1026,31 @@
       tr.appendChild(createCell(reward.stockUsed || 0));
       tr.appendChild(createCell(remainingStock(reward)));
       els.stockRows.appendChild(tr);
+    }
+  }
+
+  function renderDailySpinCount() {
+    els.dailyRows.innerHTML = "";
+    const byDay = state.spins.reduce((acc, spin) => {
+      const date = spin.time ? new Date(spin.time) : null;
+      const key = date && !Number.isNaN(date.getTime()) ? date.toISOString().slice(0, 10) : "unknown";
+      if (!acc[key]) acc[key] = { spins: 0, issued: 0, cost: {} };
+      acc[key].spins += 1;
+      if (spin.reward && spin.reward.rewardType !== "no_reward") acc[key].issued += 1;
+      const type = spin.cost && spin.cost.type ? spin.cost.type : "unknown";
+      acc[key].cost[type] = (acc[key].cost[type] || 0) + numberValue(spin.cost && spin.cost.amount);
+      return acc;
+    }, {});
+    const entries = Object.entries(byDay).sort((a, b) => b[0].localeCompare(a[0]));
+    els.dailyEmpty.classList.toggle("hidden", entries.length > 0);
+    for (const [day, summary] of entries) {
+      const cost = Object.entries(summary.cost).map(([type, value]) => `${formatNumber(value)} ${safeText(type)}`).join(", ");
+      const tr = document.createElement("tr");
+      tr.appendChild(createCell(day));
+      tr.appendChild(createCell(summary.spins));
+      tr.appendChild(createCell(summary.issued));
+      tr.appendChild(createCell(cost || "0"));
+      els.dailyRows.appendChild(tr);
     }
   }
 
@@ -950,13 +1101,14 @@
     els.auditEmpty.classList.toggle("hidden", state.auditRows.length > 0 || !els.auditPlaceholder.classList.contains("hidden"));
     for (const row of state.auditRows) {
       const tr = document.createElement("tr");
-      tr.appendChild(createCell(row.action));
-      tr.appendChild(createCell(auditActor(row)));
-      tr.appendChild(createCell(auditSiteCode(row)));
-      tr.appendChild(createCell(auditReason(row)));
-      tr.appendChild(createCell(shortJson(row.beforeJson || row.before)));
-      tr.appendChild(createCell(shortJson(row.afterJson || row.after)));
       tr.appendChild(createCell(formatDate(row.createdAt)));
+      tr.appendChild(createCell(auditActor(row)));
+      tr.appendChild(createCell(row.action));
+      tr.appendChild(createCell(row.targetType));
+      tr.appendChild(createCell(row.targetId));
+      tr.appendChild(createCell(auditReason(row)));
+      tr.appendChild(createCell(`${shortJson(row.beforeJson || row.before)} -> ${shortJson(row.afterJson || row.after)}`));
+      tr.appendChild(createCell(auditSiteCode(row)));
       const detail = document.createElement("td");
       detail.appendChild(actionButton("Diff", () => openAuditDetail(row)));
       tr.appendChild(detail);
@@ -998,6 +1150,7 @@
     state.config = null;
     state.spins = [];
     state.auditRows = [];
+    state.statusReward = null;
     els.credential.value = "";
     els.sessionState.textContent = "No session loaded";
     setGlobalError("");
@@ -1043,6 +1196,7 @@
       setToast(message);
     }));
     els.rewardForm.addEventListener("submit", (event) => saveReward(event));
+    els.statusForm.addEventListener("submit", (event) => saveStatus(event));
     els.refreshSpins.addEventListener("click", () => withLoading(els.refreshSpins, loadSpins).catch((error) => {
       const message = error && error.message ? error.message : "โหลดข้อมูลไม่สำเร็จ";
       setGlobalError(message);

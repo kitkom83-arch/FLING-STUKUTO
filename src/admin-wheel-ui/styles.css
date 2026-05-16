@@ -199,6 +199,19 @@ p {
   color: #0e5446;
 }
 
+.leak-boundary {
+  border-color: #e2d8b8;
+  background: #fffaf0;
+  color: #5f4815;
+}
+
+.console-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
 .error-state {
   border-color: #ffd1d1;
   background: #fff3f3;
@@ -315,6 +328,11 @@ textarea {
   min-height: 38px;
   padding: 8px 10px;
   font-size: 14px;
+}
+
+input[readonly] {
+  background: #f2f6f4;
+  color: #52635e;
 }
 
 textarea {

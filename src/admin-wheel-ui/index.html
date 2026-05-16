@@ -26,9 +26,14 @@
       <section class="workspace">
         <header class="topbar">
           <div>
-            <p class="label">Admin &gt; Services</p>
-            <h1>Lucky Wheel</h1>
+            <p class="label">Admin &gt; Lucky Wheel</p>
+            <h1>Lucky Wheel Admin Console</h1>
             <p>Staging / Mock Admin Console. The backend remains the only source for prize selection.</p>
+            <div class="console-meta" aria-label="Lucky Wheel console status">
+              <span class="summary-pill">Status <strong id="console-status-badge" class="summary-status">inactive</strong></span>
+              <span class="summary-pill">Site code <strong id="console-site-code">PG77</strong></span>
+              <span class="summary-pill">Last updated <strong id="console-last-updated">-</strong></span>
+            </div>
           </div>
           <div class="session-panel">
             <label for="admin-token">Admin credential</label>
@@ -43,6 +48,9 @@
 
         <section class="notice safe-boundary">
           Staging / Mock Admin Console. No real money / no live provider. No real payout, payment, bank, SMS, Slip OCR, or frontend reward selection is used here.
+        </section>
+        <section class="notice leak-boundary">
+          Response leak warning: sanitized UI only. No password, token, secret, DATABASE_URL, Authorization header, JWT, raw session, or raw connection string is rendered.
         </section>
 
         <nav class="tab-list" aria-label="Lucky Wheel tabs">
@@ -65,7 +73,7 @@
               <button id="save-campaign" type="submit">Save</button>
             </div>
             <div class="campaign-summary" aria-label="Current campaign summary">
-              <span class="summary-pill">Status <strong id="campaign-summary-status">draft</strong></span>
+              <span class="summary-pill">Status <strong id="campaign-summary-status">inactive</strong></span>
               <span class="summary-pill">Campaign <strong id="campaign-summary-name">-</strong></span>
               <span class="summary-pill">Cost <strong id="campaign-summary-cost">0 point</strong></span>
               <span class="summary-pill">Daily limit <strong id="campaign-summary-daily">0</strong></span>
@@ -73,11 +81,14 @@
             </div>
             <div class="form-grid">
               <div class="field">
+                <label for="campaign-id">Campaign ID</label>
+                <input id="campaign-id" type="text" readonly value="wheel_main" />
+              </div>
+              <div class="field">
                 <label for="campaign-status">Status</label>
                 <select id="campaign-status">
                   <option value="active">active</option>
                   <option value="inactive">inactive</option>
-                  <option value="draft">draft</option>
                 </select>
               </div>
               <div class="field">
@@ -90,7 +101,6 @@
                 <select id="campaign-cost-type">
                   <option value="point">point</option>
                   <option value="ticket">ticket</option>
-                  <option value="mock_credit">mock_credit</option>
                 </select>
               </div>
               <div class="field">
@@ -133,7 +143,7 @@
                 <p>Admin configuration only. Spin result fields are never submitted by this page.</p>
               </div>
               <div class="button-row">
-                <button id="create-reward" type="button">Create reward</button>
+                <button id="create-reward" type="button">Add reward</button>
                 <button id="refresh-rewards" type="button" class="secondary">Refresh</button>
               </div>
             </div>
@@ -147,12 +157,12 @@
                     <th>Label</th>
                     <th>Reward type</th>
                     <th>Reward value</th>
-                    <th>Weight</th>
+                    <th>Probability weight</th>
                     <th>Stock limit</th>
                     <th>Stock used</th>
                     <th>Remaining</th>
                     <th>Segment color</th>
-                    <th>Image</th>
+                    <th>Image URL</th>
                     <th>Status</th>
                     <th>Actions</th>
                   </tr>
@@ -177,6 +187,7 @@
               <label>Date to <input id="filter-to" type="date" /></label>
               <label>Member <input id="filter-member" type="search" placeholder="username" /></label>
               <label>Reward type <select id="filter-reward"><option value="">All</option></select></label>
+              <label>Reward ID <input id="filter-reward-id" type="text" placeholder="reward id" /></label>
               <label>Campaign <input id="filter-campaign" type="text" placeholder="wheel_main" /></label>
               <label>Status <select id="filter-status"><option value="">All</option><option value="pending">pending</option><option value="claimed">claimed</option><option value="expired">expired</option><option value="no_reward">no_reward</option></select></label>
               <label>Site code <input id="filter-site" type="text" placeholder="PG77" /></label>
@@ -192,11 +203,13 @@
                     <th>Member</th>
                     <th>Campaign</th>
                     <th>Reward</th>
-                    <th>Cost</th>
+                    <th>Reward type</th>
+                    <th>Cost type</th>
+                    <th>Cost amount</th>
                     <th>Prize index</th>
                     <th>IP masked</th>
-                    <th>Site code</th>
-                    <th>Result</th>
+                    <th>User agent hash</th>
+                    <th>Spin ID</th>
                     <th>Details</th>
                   </tr>
                 </thead>
@@ -210,11 +223,12 @@
           <section class="summary-grid" aria-label="Lucky Wheel report summary">
             <article class="summary-card"><span>Total spins</span><strong id="report-total-spins">0</strong></article>
             <article class="summary-card"><span>Rewards issued</span><strong id="report-issued">0</strong></article>
+            <article class="summary-card"><span>Total point/ticket cost</span><strong id="report-cost-used">0</strong></article>
             <article class="summary-card"><span>Stock used</span><strong id="report-stock-used">0</strong></article>
-            <article class="summary-card"><span>Remaining stock</span><strong id="report-stock-remaining">0</strong></article>
-            <article class="summary-card"><span>Top rewards</span><strong id="report-top-reward">ไม่พบข้อมูล</strong></article>
-            <article class="summary-card"><span>Total cost used</span><strong id="report-cost-used">0</strong></article>
+            <article class="summary-card"><span>Top reward</span><strong id="report-top-reward">ไม่พบข้อมูล</strong></article>
+            <article class="summary-card"><span>Empty/no reward count</span><strong id="report-empty-count">0</strong></article>
           </section>
+          <section class="notice">Reports are client-side summaries from GET /api/admin/wheel/config and GET /api/admin/wheel/spins. Reports do not calculate random rewards and do not write data.</section>
           <section class="report-grid">
             <article class="panel table-section">
               <div class="section-heading"><h2>Top rewards</h2></div>
@@ -222,13 +236,18 @@
               <div class="table-scroll"><table><thead><tr><th>Reward</th><th>Count</th><th>Percent</th><th>Stock used</th></tr></thead><tbody id="top-reward-rows"></tbody></table></div>
             </article>
             <article class="panel table-section">
-              <div class="section-heading"><h2>Reward distribution</h2></div>
+              <div class="section-heading"><h2>Reward type summary</h2></div>
               <div id="distribution-empty" class="empty-state hidden">ไม่พบข้อมูล</div>
-              <div class="table-scroll"><table><thead><tr><th>Reward label</th><th>Probability weight</th><th>Actual issued count</th><th>Actual percent</th></tr></thead><tbody id="distribution-rows"></tbody></table></div>
+              <div class="table-scroll"><table><thead><tr><th>Reward type</th><th>Spin count</th><th>Issued count</th><th>Percent</th></tr></thead><tbody id="distribution-rows"></tbody></table></div>
             </article>
             <article class="panel table-section">
-              <div class="section-heading"><h2>Stock usage</h2></div>
+              <div class="section-heading"><h2>Reward stock usage</h2></div>
               <div class="table-scroll"><table><thead><tr><th>Reward label</th><th>Stock limit</th><th>Stock used</th><th>Remaining</th></tr></thead><tbody id="stock-rows"></tbody></table></div>
+            </article>
+            <article class="panel table-section">
+              <div class="section-heading"><h2>Daily spin count</h2></div>
+              <div id="daily-empty" class="empty-state hidden">ไม่พบข้อมูล</div>
+              <div class="table-scroll"><table><thead><tr><th>Date</th><th>Spin count</th><th>Rewards issued</th><th>Point/ticket cost</th></tr></thead><tbody id="daily-rows"></tbody></table></div>
             </article>
           </section>
         </section>
@@ -249,13 +268,14 @@
               <table>
                 <thead>
                   <tr>
+                    <th>Time</th>
+                    <th>Actor/admin</th>
                     <th>Action</th>
-                    <th>Actor</th>
-                    <th>Site code</th>
+                    <th>Target type</th>
+                    <th>Target ID</th>
                     <th>Reason</th>
-                    <th>Before</th>
-                    <th>After</th>
-                    <th>Created at</th>
+                    <th>Before/after summary</th>
+                    <th>Site code</th>
                     <th>Details</th>
                   </tr>
                 </thead>
@@ -270,7 +290,7 @@
     <dialog id="reward-modal" data-modal="reward" data-testid="reward-modal">
       <form method="dialog" class="modal-card" id="reward-form">
         <header>
-          <h2 id="reward-modal-title">Create reward</h2>
+          <h2 id="reward-modal-title">Add reward</h2>
           <button type="button" class="icon-button" data-close-modal="reward-modal" data-testid="reward-modal-close" aria-label="Close">x</button>
         </header>
         <input id="reward-id" type="hidden" />
@@ -287,7 +307,7 @@
               <option value="point">point</option>
               <option value="ticket">ticket</option>
               <option value="item">item</option>
-              <option value="no_reward">no_reward</option>
+              <option value="no_reward">empty</option>
             </select>
           </div>
           <div class="field">
@@ -335,6 +355,39 @@
         <footer>
           <button type="button" class="secondary" data-close-modal="reward-modal" data-testid="reward-modal-cancel">Cancel</button>
           <button id="save-reward" type="submit">Save reward</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog id="status-modal" data-modal="status" data-testid="status-modal">
+      <form method="dialog" class="modal-card" id="status-form">
+        <header>
+          <h2 id="status-modal-title">Confirm reward status</h2>
+          <button type="button" class="icon-button" data-close-modal="status-modal" aria-label="Close">x</button>
+        </header>
+        <p id="status-modal-copy">Confirm reward status update.</p>
+        <div class="field">
+          <label for="status-reason">Reason</label>
+          <textarea id="status-reason" rows="3" maxlength="500" placeholder="Required for audit log"></textarea>
+          <p id="status-reason-error" class="field-error hidden"></p>
+        </div>
+        <footer>
+          <button type="button" class="secondary" data-close-modal="status-modal">Cancel</button>
+          <button id="confirm-status" type="submit">Confirm</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog id="confirm-modal" data-modal="confirm" data-testid="confirm-modal">
+      <form method="dialog" class="modal-card" id="confirm-form">
+        <header>
+          <h2 id="confirm-title">Confirm update</h2>
+          <button type="button" class="icon-button" data-close-modal="confirm-modal" aria-label="Close">x</button>
+        </header>
+        <p id="confirm-message">Confirm this admin write action.</p>
+        <footer>
+          <button id="confirm-cancel" type="button" class="secondary">Cancel</button>
+          <button id="confirm-ok" type="submit">Confirm</button>
         </footer>
       </form>
     </dialog>

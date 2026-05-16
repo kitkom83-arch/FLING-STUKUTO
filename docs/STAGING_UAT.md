@@ -136,9 +136,9 @@ Use this checklist only with approved staging/mock admin and member accounts. Do
 - My rewards check: `GET /api/member/wheel/my-rewards` must return sanitized rows or an empty array; no real payout or claim payout is part of this phase.
 - Admin campaign config check: `GET /api/admin/wheel/config` must show the campaign config and summary through staging admin auth only.
 - Admin rewards check: admin config must expose reward management fields for staging/mock administration only; reward writes still require `reason`.
-- Admin spin history check: `GET /api/admin/wheel/spins` must return sanitized rows with masked IP values.
-- Admin reports check: the Admin Lucky Wheel reports tab must derive only from admin config/spins and must show `0`, `0 %`, or `ไม่พบข้อมูล` instead of `NaN` or `undefined`.
-- Audit history check: audit history must come from the existing admin audit endpoint and show safe action, actor, site code, reason, before/after, and created time summaries only.
+- Admin spin history check: `GET /api/admin/wheel/spins` must return sanitized rows with reward type, cost type/amount, backend `prizeIndex`, spin ID, masked IP values, and user-agent hash when present.
+- Admin reports check: the Admin Lucky Wheel reports tab must derive only from admin config/spins and show total spins, rewards issued, total point/ticket cost, stock used, top reward, empty/no reward count, stock usage, reward type summary, and daily spin count without `NaN` or `undefined`.
+- Audit history check: audit history must come from the existing admin audit endpoint and show safe time, actor/admin, action, target type, target ID, site code, reason, and before/after summaries only.
 - Secret leak check: responses, UI details, docs, logs, and smoke output must not expose raw tokens, auth headers, passwords, provider secrets, database URLs, raw stack traces, or raw unmasked IPs.
 - Rollback note: if any Lucky Wheel check fails, disable staging tester access or roll back the staging deploy; keep provider modes mock/sandbox and do not switch to production DB as a workaround.
 
@@ -150,17 +150,17 @@ Use this checklist only with approved staging/mock admin and member accounts. Do
 - Member my rewards: verify `GET /api/member/wheel/my-rewards` returns sanitized pending/claimed/expired rows or an empty array.
 - Admin wheel campaign config: verify `GET /api/admin/wheel/config` and campaign edits require staging admin auth plus non-empty `reason`.
 - Admin rewards: verify create/edit reward uses staging/mock data only and rejects empty `reason`.
-- Admin spin history: verify `GET /api/admin/wheel/spins` returns sanitized rows and masked IP values only.
-- Admin reports: verify reports render zero states safely and never show `NaN`, `undefined`, or real-money payout data.
-- Audit history: verify wheel audit rows show safe action, actor, site code, reason, before/after summaries, and created time only.
+- Admin spin history: verify `GET /api/admin/wheel/spins` returns sanitized rows, supports reward ID filtering, and shows masked IP plus user-agent hash only when available.
+- Admin reports: verify reports render client-side summaries from config/spins only, including empty/no reward count and daily spin count, and never show `NaN`, `undefined`, or real-money payout data.
+- Audit history: verify wheel audit rows show safe time, actor/admin, action, target type, target ID, site code, reason, and before/after summaries only.
 - Secret leak scan: verify smoke output, API responses, docs, logs, and UI details do not expose DB URLs, tokens, passwords, auth headers, provider secrets, raw stacks, or raw IPs.
 - Rollback note: if any item fails, stop UAT, keep external modes mock/sandbox/disabled, disable staging tester access or roll back the staging deploy, and never point staging at production DB.
 
-- Open `/admin/lucky-wheel/` and confirm the page shows `Staging / Mock Admin Console` and `No real money / no live provider`.
+- Open `/admin/lucky-wheel/` and confirm the page shows `Lucky Wheel Admin Console`, `Staging / Mock Admin Console`, `No real money / no live provider`, site code, active/inactive status, last updated, and the response leak warning.
 - Confirm Campaign settings loads through `GET /api/admin/wheel/config` or shows a safe error state.
 - Confirm Save campaign without `reason` fails before API submission.
 - Confirm Save campaign with `reason` uses only approved staging/mock data and writes audit context.
-- Confirm Create/Edit reward opens the modal and rejects empty `reason`.
+- Confirm Create/Edit reward opens the modal and rejects empty `reason`; confirm Enable/Disable reward uses a reason and creates a status audit row.
 - Confirm reward payloads do not include `stockUsed`, `rewardId`, `prizeIndex`, or member spin result fields.
 - Confirm Spin history loads sanitized rows or `ไม่พบข้อมูล`, shows masked IP only, and detail modal does not expose raw IP, user-agent, token, password, secret, authorization header, or database URL.
 - Confirm Reports derive from admin config/spins only and never show `NaN` or `undefined`; zero-spin state must render `0`, `0 %`, `ไม่จำกัด`, or `ไม่พบข้อมูล`.
