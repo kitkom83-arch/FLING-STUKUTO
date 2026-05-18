@@ -4,7 +4,10 @@ const cors = require("cors");
 const helmet = require("helmet");
 const env = require("./config/env");
 const routes = require("./routes");
-const { notFound, errorHandler } = require("./middleware/errorHandler");
+const adminRoutes = require("./routes/admin.routes");
+const adminController = require("./controllers/admin.controller");
+const siteResolver = require("./middleware/siteResolver");
+const { asyncHandler, notFound, errorHandler } = require("./middleware/errorHandler");
 
 const app = express();
 const adminUiDir = path.join(__dirname, "admin-ui");
@@ -37,13 +40,30 @@ function sendAdminWheelUi(_req, res) {
   res.sendFile(path.join(adminWheelUiDir, "index.html"));
 }
 
+function staticGetHead(route, dir, options) {
+  const middleware = express.static(dir, options);
+  app.use(route, (req, res, next) => {
+    if (req.method !== "GET" && req.method !== "HEAD") return next();
+    return middleware(req, res, next);
+  });
+}
+
+app.post("/admin/auth/login", asyncHandler(adminController.login));
+app.use("/admin", (req, res, next) => {
+  if (req.method === "GET" || req.method === "HEAD") return next();
+  return siteResolver(req, res, (error) => {
+    if (error) return next(error);
+    return adminRoutes(req, res, next);
+  });
+});
+
 app.get(["/admin", "/admin/", "/admin/roles", "/admin/roles/", "/admin/work-schedules", "/admin/work-schedules/"], sendAdminUi);
 app.get(["/admin-wheel", "/admin-wheel/", "/admin/lucky-wheel", "/admin/lucky-wheel/"], sendAdminWheelUi);
-app.use("/admin/work-schedules", express.static(adminUiDir, { index: "index.html" }));
-app.use("/admin/roles", express.static(adminUiDir, { index: "index.html" }));
-app.use("/admin/audit-security", express.static(path.join(__dirname, "admin-audit-ui"), { index: "index.html" }));
-app.use("/admin-wheel", express.static(adminWheelUiDir, { index: "index.html" }));
-app.use("/admin/lucky-wheel", express.static(adminWheelUiDir, { index: "index.html" }));
+staticGetHead("/admin/work-schedules", adminUiDir, { index: "index.html" });
+staticGetHead("/admin/roles", adminUiDir, { index: "index.html" });
+staticGetHead("/admin/audit-security", path.join(__dirname, "admin-audit-ui"), { index: "index.html" });
+staticGetHead("/admin-wheel", adminWheelUiDir, { index: "index.html" });
+staticGetHead("/admin/lucky-wheel", adminWheelUiDir, { index: "index.html" });
 app.use("/api", routes);
 app.use(notFound);
 app.use(errorHandler);

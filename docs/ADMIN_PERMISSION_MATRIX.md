@@ -41,6 +41,7 @@ Owner and `super_admin` keep the existing bypass behavior and receive every perm
 | `support` | `wheel.view`, `wheel.claims.view`, `wheel.claims.status.update` | No role-management or security defaults. |
 | `graphic` | Campaign and reward view/create/update/status update. | No role-management or security defaults. |
 | `viewer` | `wheel.view`, campaign/reward/spin/report/claim read only. | No role-management or security defaults. |
+| `staging_safe_role` | `wheel.view`, `wheel.reports.view` only. | Staging fixture role for Phase H permission update/restore UAT; no `admin.manage`, no role-management write, and no owner/super_admin behavior. |
 
 ## UI Rules
 
@@ -65,8 +66,8 @@ Required env values:
 
 - `STAGING_DEMO_ADMIN_EMAIL`
 - `STAGING_DEMO_ADMIN_PASSWORD`
-- Optional `STAGING_NO_PERMISSION_ADMIN_EMAIL` or `STAGING_NO_PERMISSION_ADMIN_USERNAME`
-- Optional `STAGING_NO_PERMISSION_ADMIN_PASSWORD`
+- `STAGING_NO_PERMISSION_ADMIN_EMAIL` or `STAGING_NO_PERMISSION_ADMIN_USERNAME` plus `STAGING_NO_PERMISSION_ADMIN_PASSWORD` when closing Phase H no-permission negative coverage.
+- `STAGING_SAFE_ROLE_NAME` (default `staging_safe_role`), `STAGING_SAFE_ROLE_ADMIN_EMAIL` or `STAGING_SAFE_ROLE_ADMIN_USERNAME`, and `STAGING_SAFE_ROLE_ADMIN_PASSWORD` when closing Phase H valid minimal change coverage.
 
 Safety guard requirements:
 
@@ -83,8 +84,8 @@ Runtime coverage:
 - Reads roles through `GET /api/admin/roles` and one safe non-owner role through `GET /api/admin/roles/:role`.
 - Verifies `PATCH /api/admin/roles/:role/permissions` fails safely for no auth, missing reason, invalid permission key, `admin.manage`, `owner`, and `super_admin`.
 - Verifies an authenticated no-permission `403` when optional no-permission staging admin env is provided.
-- Performs a valid minimal permission change only for a safe non-owner role with assigned staging admins, then restores the original permission list immediately.
+- Performs a valid minimal permission change only for the safe non-owner staging fixture role with assigned staging admins when fixture env is present, verifies role detail after the update, then restores the original permission list immediately and verifies role detail again.
 - Confirms `GET /api/admin/audit-logs?action=admin.role.permissions.update` includes the role permission update or restore audit row after a successful valid update.
 - Scans every response for password/token/secret markers, `DATABASE_URL`, raw authorization/JWT-shaped values, raw stack traces, and credential-shaped PostgreSQL URLs.
 
-The valid update section may report `SKIPPED` when no safe role exists. That skip is acceptable only for the valid update section; negative path, catalog, role detail, protected-role checks, staging safety guard, reason guard, audit requirement, and leak scan must not be weakened.
+The fixture-dependent sections may report `SKIPPED` only when their env values are absent. For Phase H closure, run `npm run staging:seed-demo` after setting the fixture env so the no-permission negative reports `PASS (403)`, valid minimal change reports PASS, restore reports PASS, and audit log reports PASS. Negative path, catalog, role detail, protected-role checks, staging safety guard, reason guard, audit requirement, and leak scan must not be weakened.

@@ -7,6 +7,9 @@ const { hashPassword } = require("../utils/password");
 const prisma = new PrismaClient();
 const SITE_CODE = process.env.STAGING_SMOKE_SITE_CODE || "PG77";
 const DEMO_ADMIN_ROLE = "super_admin";
+const DEFAULT_NO_PERMISSION_ROLE = "no_permission_admin";
+const DEFAULT_SAFE_ROLE = "staging_safe_role";
+const SAFE_ROLE_PERMISSIONS = ["wheel.view", "wheel.reports.view"];
 const WHEEL_CAMPAIGN_ID = "wheel_main";
 const DEMO_MEMBER_POINTS = "360.00";
 const DEMO_MEMBER_BALANCE = "180.00";
@@ -78,6 +81,85 @@ function validateDemoMemberEnv() {
   return { ok: true, username, phone, password };
 }
 
+function fixtureIdentifier(emailKey, usernameKey) {
+  return {
+    email: envValue(emailKey).toLowerCase(),
+    username: envValue(usernameKey).toLowerCase(),
+  };
+}
+
+function hasProductionLikeMarker(value) {
+  const tokens = String(value || "")
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter(Boolean);
+  return tokens.some((token) => ["prod", "production", "live", "real", "customer", "main", "master"].includes(token));
+}
+
+function hasSafeFixtureMarker(value) {
+  return /(staging|stage|demo|test|sandbox|qa|uat)/i.test(String(value || ""));
+}
+
+function validateFixtureIdentifier(label, identifier) {
+  const value = identifier.email || identifier.username;
+  if (!value) return null;
+  if (identifier.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(identifier.email)) {
+    throw new Error(`${label} email must be an email-form staging/demo/test login identifier.`);
+  }
+  if (identifier.username && (identifier.username.length > 128 || /\s/.test(identifier.username))) {
+    throw new Error(`${label} username must be 1-128 characters without whitespace.`);
+  }
+  if (!hasSafeFixtureMarker(value) || hasProductionLikeMarker(value)) {
+    throw new Error(`${label} identifier must be staging/demo/test only and must not look production/live/customer-like.`);
+  }
+  return value;
+}
+
+function validateSafeRoleName() {
+  const role = (envValue("STAGING_SAFE_ROLE_NAME") || DEFAULT_SAFE_ROLE).toLowerCase();
+  if (!/^[a-z0-9_:-]{3,64}$/.test(role)) {
+    throw new Error("STAGING_SAFE_ROLE_NAME must be 3-64 safe characters.");
+  }
+  if (role === "owner" || role === "super_admin" || role === "admin.manage") {
+    throw new Error("STAGING_SAFE_ROLE_NAME must not be owner, super_admin, or admin.manage.");
+  }
+  if (!hasSafeFixtureMarker(role) || hasProductionLikeMarker(role)) {
+    throw new Error("STAGING_SAFE_ROLE_NAME must be staging/demo/test only and must not look production/live/customer-like.");
+  }
+  return role;
+}
+
+function fixturePassword(name) {
+  return envValue(name);
+}
+
+function limitedFixtureEnv() {
+  const identifier = fixtureIdentifier("STAGING_NO_PERMISSION_ADMIN_EMAIL", "STAGING_NO_PERMISSION_ADMIN_USERNAME");
+  const username = validateFixtureIdentifier("STAGING_NO_PERMISSION_ADMIN", identifier);
+  const password = fixturePassword("STAGING_NO_PERMISSION_ADMIN_PASSWORD");
+  if (!username || !password) {
+    return {
+      ok: false,
+      reason: "missing STAGING_NO_PERMISSION_ADMIN_EMAIL/USERNAME or STAGING_NO_PERMISSION_ADMIN_PASSWORD env",
+    };
+  }
+  return { ok: true, username, password, role: DEFAULT_NO_PERMISSION_ROLE, permissions: [] };
+}
+
+function safeRoleFixtureEnv() {
+  const role = validateSafeRoleName();
+  const identifier = fixtureIdentifier("STAGING_SAFE_ROLE_ADMIN_EMAIL", "STAGING_SAFE_ROLE_ADMIN_USERNAME");
+  const username = validateFixtureIdentifier("STAGING_SAFE_ROLE_ADMIN", identifier);
+  const password = fixturePassword("STAGING_SAFE_ROLE_ADMIN_PASSWORD");
+  if (!username || !password) {
+    return {
+      ok: false,
+      reason: "missing STAGING_SAFE_ROLE_ADMIN_EMAIL/USERNAME or STAGING_SAFE_ROLE_ADMIN_PASSWORD env",
+    };
+  }
+  return { ok: true, username, password, role, permissions: SAFE_ROLE_PERMISSIONS };
+}
+
 function isSeedEnabled() {
   const raw = envValue("STAGING_DEMO_SEED_ENABLED");
   if (!raw) return true;
@@ -135,6 +217,40 @@ async function grantSiteAccess(admin, sites) {
       },
     });
   }
+}
+
+async function upsertLimitedAdminFixture(site, fixture) {
+  const passwordHash = await hashPassword(fixture.password);
+  const admin = await prisma.admin.upsert({
+    where: { username: fixture.username },
+    update: {
+      passwordHash,
+      role: fixture.role,
+      status: "active",
+    },
+    create: {
+      username: fixture.username,
+      passwordHash,
+      role: fixture.role,
+      status: "active",
+    },
+  });
+
+  await prisma.adminSiteAccess.upsert({
+    where: { adminId_siteId: { adminId: admin.id, siteId: site.id } },
+    update: {
+      role: fixture.role,
+      permissions: fixture.permissions,
+    },
+    create: {
+      adminId: admin.id,
+      siteId: site.id,
+      role: fixture.role,
+      permissions: fixture.permissions,
+    },
+  });
+
+  return admin;
 }
 
 function decimal(value) {
@@ -399,9 +515,13 @@ async function main() {
 
   let demoAdmin;
   let demoMember;
+  let noPermissionFixture;
+  let safeRoleFixture;
   try {
     demoAdmin = validateDemoAdminEnv();
     demoMember = validateDemoMemberEnv();
+    noPermissionFixture = limitedFixtureEnv();
+    safeRoleFixture = safeRoleFixtureEnv();
   } catch (error) {
     fail(error.message);
     return;
@@ -442,6 +562,20 @@ async function main() {
     const primarySite = sites.find((site) => site.code === SITE_CODE) || sites[0];
     await upsertStagingWheelFixtures(primarySite);
     await upsertDemoMember(primarySite, demoMember);
+    if (noPermissionFixture.ok) {
+      await upsertLimitedAdminFixture(primarySite, noPermissionFixture);
+      console.log("no-permission admin fixture: PASS");
+    } else {
+      console.log("no-permission admin fixture: SKIP-SAFE");
+      console.log(`reason: ${noPermissionFixture.reason}`);
+    }
+    if (safeRoleFixture.ok) {
+      await upsertLimitedAdminFixture(primarySite, safeRoleFixture);
+      console.log("safe role/admin fixture: PASS");
+    } else {
+      console.log("safe role/admin fixture: SKIP-SAFE");
+      console.log(`reason: ${safeRoleFixture.reason}`);
+    }
     await writeAuditLog(admin, primarySite);
 
     console.log(`Demo admin: PASS (${admin.username}, role=${DEMO_ADMIN_ROLE})`);

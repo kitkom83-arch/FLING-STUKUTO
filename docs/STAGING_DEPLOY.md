@@ -27,10 +27,10 @@ Do not deploy this backend as a static site. Do not use Netlify static hosting f
 
 | Platform | เหมาะกับอะไร | สิ่งที่ต้องเตรียม | Build command | Start command | Health check path | Env secret manager | Rollback method | ข้อควรระวัง |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Render | Managed web service พร้อม deploy history | Web Service, staging PostgreSQL, staging domain, env variables | `npm ci && npx prisma generate` | `npm start` | `/api/health` | Render Environment Variables/Environment Group | Redeploy previous successful deploy | ห้ามใช้ production DB หรือ live provider env ร่วมกับ staging service |
-| Railway | Setup เร็วสำหรับ API + DB ใน project เดียว | Railway service, staging PostgreSQL, public domain, variables | `npm ci && npx prisma generate` | `npm start` | `/api/health` | Railway Variables | Redeploy previous deployment หรือ pin previous commit | ตรวจ project/env ไม่ reuse production และ domain ไม่ production-like |
-| Fly.io | ต้องการ release rollback และ region control | Fly app, staging DB access, secrets, health check config | `npm ci && npx prisma generate` | `npm start` | `/api/health` | Fly secrets | Rollback to previous release | ตรวจ DB reachability, region, TLS, และไม่ใส่ live credentials |
-| VPS | ต้องการควบคุม OS/network/process เอง | Node.js 18.18+, process manager, reverse proxy, staging DB, secret store | `npm ci && npx prisma generate` | `npm start` | `/api/health` | systemd/PM2/vault outside git | Switch release dir/commit and restart | ต้องดูแล patching, firewall, TLS, logs, backup, restart policy เอง |
+| Render | Managed web service พร้อม deploy history | Web Service, staging PostgreSQL, staging domain, env variables | `npm install && npx prisma generate` | `npm start` | `/api/health` | Render Environment Variables/Environment Group | Redeploy previous successful deploy | ห้ามใช้ production DB หรือ live provider env ร่วมกับ staging service |
+| Railway | Setup เร็วสำหรับ API + DB ใน project เดียว | Railway service, staging PostgreSQL, public domain, variables | `npm install && npx prisma generate` | `npm start` | `/api/health` | Railway Variables | Redeploy previous deployment หรือ pin previous commit | ตรวจ project/env ไม่ reuse production และ domain ไม่ production-like |
+| Fly.io | ต้องการ release rollback และ region control | Fly app, staging DB access, secrets, health check config | `npm install && npx prisma generate` | `npm start` | `/api/health` | Fly secrets | Rollback to previous release | ตรวจ DB reachability, region, TLS, และไม่ใส่ live credentials |
+| VPS | ต้องการควบคุม OS/network/process เอง | Node.js 18.18+, process manager, reverse proxy, staging DB, secret store | `npm install && npx prisma generate` | `npm start` | `/api/health` | systemd/PM2/vault outside git | Switch release dir/commit and restart | ต้องดูแล patching, firewall, TLS, logs, backup, restart policy เอง |
 
 ## Render Staging Quick Setup
 
@@ -41,7 +41,7 @@ Do not deploy this backend as a static site. Do not use Netlify static hosting f
 | Service name example | `pg77-real-core-staging` |
 | Branch | `main` |
 | Environment boundary | `APP_ENV=staging`, `STAGING_MODE=mock` or `sandbox`, provider modes mock/sandbox/off |
-| Build command | `npm ci && npx prisma generate` |
+| Build command | `npm install && npx prisma generate` |
 | Start command | `npm start` |
 | Health check path | `/api/health` |
 | ENV storage | Render Environment Variables or Environment Group only |
@@ -59,7 +59,7 @@ Use Render only for a staging mock/sandbox Web Service in this phase.
 5. Set the build command to:
 
 ```bash
-npm ci && npx prisma generate
+npm install && npx prisma generate
 ```
 
 6. Set the start command to:
@@ -93,7 +93,7 @@ npm run staging:db:seed
 npm run staging:seed-demo
 ```
 
-Set `STAGING_DEMO_MEMBER_USERNAME`, `STAGING_DEMO_MEMBER_PHONE`, and `STAGING_DEMO_MEMBER_PASSWORD` in Render Environment before this step when Lucky Wheel member UAT must run instead of SKIP-SAFE. Do not paste the member password, admin password, token, JWT, authorization header, or DB URL into docs, logs, screenshots, tickets, or chat.
+Set `STAGING_DEMO_MEMBER_USERNAME`, `STAGING_DEMO_MEMBER_PHONE`, and `STAGING_DEMO_MEMBER_PASSWORD` in Render Environment before this step when Lucky Wheel member UAT must run instead of SKIP-SAFE. For Phase H role-permission UAT, also set `STAGING_NO_PERMISSION_ADMIN_EMAIL` or `STAGING_NO_PERMISSION_ADMIN_USERNAME`, `STAGING_NO_PERMISSION_ADMIN_PASSWORD`, `STAGING_SAFE_ROLE_NAME`, `STAGING_SAFE_ROLE_ADMIN_EMAIL` or `STAGING_SAFE_ROLE_ADMIN_USERNAME`, and `STAGING_SAFE_ROLE_ADMIN_PASSWORD` before running `staging:seed-demo`. Do not paste member passwords, admin passwords, tokens, JWTs, authorization headers, or DB URLs into docs, logs, screenshots, tickets, or chat.
 
 17. Check health:
 
@@ -129,7 +129,7 @@ This setup remains mock/sandbox only: no production DB, no real money, no live p
 - `STAGING_MODE` is `mock` or approved `sandbox`.
 - `NODE_ENV` is not `production` for this mock/sandbox preflight because the safety guard blocks it.
 - Provider/payment/bank/SMS/Slip OCR modes are `mock`, `sandbox`, or `disabled`.
-- Build command is `npm ci && npx prisma generate`.
+- Build command is `npm install && npx prisma generate`.
 - Start command is `npm start`.
 - Health endpoint `/api/health` is checked.
 - Smoke commands are documented and run only against the staging API.
@@ -190,6 +190,13 @@ Core keys:
 - `STAGING_DEMO_MEMBER_PHONE`
 - `STAGING_DEMO_MEMBER_PASSWORD`
 - `STAGING_DEMO_SEED_ENABLED`
+- `STAGING_NO_PERMISSION_ADMIN_EMAIL`
+- `STAGING_NO_PERMISSION_ADMIN_USERNAME`
+- `STAGING_NO_PERMISSION_ADMIN_PASSWORD`
+- `STAGING_SAFE_ROLE_NAME`
+- `STAGING_SAFE_ROLE_ADMIN_EMAIL`
+- `STAGING_SAFE_ROLE_ADMIN_USERNAME`
+- `STAGING_SAFE_ROLE_ADMIN_PASSWORD`
 
 Provider and external boundary keys:
 
@@ -221,7 +228,7 @@ All real values must be set only in the selected platform secret manager or an i
 | --- | --- | --- | --- |
 | App runtime | `NODE_ENV`, `APP_ENV`, `STAGING_MODE`, `PORT` | `NODE_ENV` must be non-production; `APP_ENV=staging`; `STAGING_MODE=mock` or `sandbox`; platform port value | Runtime optimization must not override the environment boundary. Safety checks use app/staging labels, DB target markers, and provider modes. |
 | Database staging/test only | `DATABASE_URL` | `<SET_IN_PLATFORM_SECRET>` in secret manager | Must point to dedicated staging/test PostgreSQL, never production or production clone. |
-| Admin/session/auth | `JWT_SECRET`, `JWT_EXPIRES_IN`, `LOCAL_ADMIN_PASSWORD`, `STAGING_DEMO_ADMIN_EMAIL`, `STAGING_DEMO_ADMIN_PASSWORD`, `STAGING_DEMO_MEMBER_USERNAME`, `STAGING_DEMO_MEMBER_PHONE`, `STAGING_DEMO_MEMBER_PASSWORD`, `STAGING_DEMO_SEED_ENABLED` | `<set-in-render-environment>`, `7d`, staging-only demo values in Render Environment | Demo credentials are for staging UAT only. Do not paste them into chat, logs, docs, commits, screenshots, or shell transcripts. |
+| Admin/session/auth | `JWT_SECRET`, `JWT_EXPIRES_IN`, `LOCAL_ADMIN_PASSWORD`, `STAGING_DEMO_ADMIN_EMAIL`, `STAGING_DEMO_ADMIN_PASSWORD`, `STAGING_DEMO_MEMBER_USERNAME`, `STAGING_DEMO_MEMBER_PHONE`, `STAGING_DEMO_MEMBER_PASSWORD`, `STAGING_DEMO_SEED_ENABLED`, `STAGING_NO_PERMISSION_ADMIN_EMAIL`, `STAGING_NO_PERMISSION_ADMIN_USERNAME`, `STAGING_NO_PERMISSION_ADMIN_PASSWORD`, `STAGING_SAFE_ROLE_NAME`, `STAGING_SAFE_ROLE_ADMIN_EMAIL`, `STAGING_SAFE_ROLE_ADMIN_USERNAME`, `STAGING_SAFE_ROLE_ADMIN_PASSWORD` | `<set-in-render-environment>`, `7d`, staging-only demo values in Render Environment | Demo credentials are for staging UAT only. Limited role fixture credentials are for authenticated 403 and update/restore UAT only. Do not paste them into chat, logs, docs, commits, screenshots, or shell transcripts. |
 | Provider/game mock/sandbox/disabled | `GAME_PROVIDER_MODE`, `GAME_PROVIDER_API_BASE_URL`, `GAME_PROVIDER_AGENT_CODE`, `GAME_PROVIDER_API_KEY`, `GAME_PROVIDER_SECRET` | `mock`, `sandbox`, or `disabled`; credentials as placeholders only | Keep credentials empty in mock mode; no live provider mode. |
 | Payment mock/sandbox/disabled | `PAYMENT_PROVIDER_MODE`, `PAYMENT_API_BASE_URL`, `PAYMENT_MERCHANT_ID`, `PAYMENT_API_KEY`, `PAYMENT_SECRET` | `mock`, `sandbox`, or `disabled`; credentials as placeholders only | No live payment rails, no real-money transfer. |
 | Bank/statement mock/sandbox/disabled | `BANK_STATEMENT_MODE`, `BANK_API_BASE_URL`, `BANK_API_KEY` | `mock`, `sandbox`, or `disabled`; credentials as placeholders only | No live bank rails or production statement feeds. |
@@ -238,6 +245,7 @@ Required staging values:
 - `JWT_SECRET`, session secret values, and admin passwords must be generated for staging and set only in the platform secret manager.
 - `STAGING_DEMO_ADMIN_EMAIL` and `STAGING_DEMO_ADMIN_PASSWORD` must be staging-only values set only in Render Environment before credentialed UAT smoke.
 - `STAGING_DEMO_MEMBER_USERNAME` and `STAGING_DEMO_MEMBER_PASSWORD` must be staging-only values set only in Render Environment before Lucky Wheel member UAT smoke. `STAGING_DEMO_MEMBER_PHONE` is required for `staging:seed-demo` because the member row requires a phone value.
+- Phase H role-permission UAT requires staging-only no-permission admin env and safe role/admin env set only in Render Environment before `staging:seed-demo`; identifiers must contain staging/demo/test/sandbox/QA/UAT markers and must not look production/live/real-customer-like.
 - `STAGING_DEMO_SEED_ENABLED` may be set to `true` only while intentionally running the demo admin seed.
 - `CORS_ORIGIN` must be the staging frontend/admin origin list, not `*`.
 - `PUBLIC_API_BASE_URL` must be the staging API base URL.
@@ -255,6 +263,13 @@ Secret manager only values:
 - `STAGING_DEMO_MEMBER_USERNAME`
 - `STAGING_DEMO_MEMBER_PHONE`
 - `STAGING_DEMO_MEMBER_PASSWORD`
+- `STAGING_NO_PERMISSION_ADMIN_EMAIL`
+- `STAGING_NO_PERMISSION_ADMIN_USERNAME`
+- `STAGING_NO_PERMISSION_ADMIN_PASSWORD`
+- `STAGING_SAFE_ROLE_NAME`
+- `STAGING_SAFE_ROLE_ADMIN_EMAIL`
+- `STAGING_SAFE_ROLE_ADMIN_USERNAME`
+- `STAGING_SAFE_ROLE_ADMIN_PASSWORD`
 - Provider, payment, bank, SMS, and Slip OCR API keys or secrets when sandbox mode is approved.
 
 Values that may be committed only as placeholders:
@@ -292,7 +307,7 @@ Render-specific pre-deploy checks:
 - Confirm Render service type is Web Service.
 - Confirm Render runtime is Node.js.
 - Confirm Render branch is `main`.
-- Confirm Render build command is `npm ci && npx prisma generate`.
+- Confirm Render build command is `npm install && npx prisma generate`.
 - Confirm Render start command is `npm start`.
 - Confirm Render health check path is `/api/health`.
 - Confirm all real ENV values are stored in Render Environment/Secrets only.
@@ -314,7 +329,7 @@ Before deploy:
 During deploy:
 
 - Deploy Render Web Service from branch `main`.
-- Use build command `npm ci && npx prisma generate`.
+- Use build command `npm install && npx prisma generate`.
 - Use start command `npm start`.
 - Use health check path `/api/health`.
 - Do not paste secrets into deploy logs, comments, docs, screenshots, or chat.
@@ -394,7 +409,7 @@ npm run staging:seed-demo
 
 Render Free services do not provide practical one-off jobs or SSH for this workflow. The free path is to run the seed through a temporary deploy/start command and then revert it immediately.
 
-1. Set `STAGING_DEMO_ADMIN_EMAIL`, `STAGING_DEMO_ADMIN_PASSWORD`, `STAGING_DEMO_MEMBER_USERNAME`, `STAGING_DEMO_MEMBER_PHONE`, `STAGING_DEMO_MEMBER_PASSWORD`, and `STAGING_DEMO_SEED_ENABLED` in the Render dashboard Environment tab or Environment Group only.
+1. Set `STAGING_DEMO_ADMIN_EMAIL`, `STAGING_DEMO_ADMIN_PASSWORD`, `STAGING_DEMO_MEMBER_USERNAME`, `STAGING_DEMO_MEMBER_PHONE`, `STAGING_DEMO_MEMBER_PASSWORD`, and `STAGING_DEMO_SEED_ENABLED` in the Render dashboard Environment tab or Environment Group only. For Phase H, also set the no-permission admin fixture env and safe role/admin fixture env before this temporary seed deploy.
 2. Temporarily change the Render start command to:
 
 ```bash
@@ -409,6 +424,15 @@ npm start
 ```
 
 5. Trigger another manual deploy so the service runs normally. Remove or disable the temporary seed setting when it is no longer needed.
+
+For full Phase H verification after seed, run:
+
+```powershell
+$env:BASE_URL = "https://stukuto-real-core-staging.onrender.com/api"
+npm run smoke:staging-role-permission-uat
+```
+
+Expected Phase H fixture results are no-permission negative `PASS (403)`, valid minimal change PASS, restore PASS, and role permission audit log PASS. The owner and super_admin protected-role checks must remain safe failures.
 
 After seed, verify readiness:
 

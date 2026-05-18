@@ -2,6 +2,17 @@ const prisma = require("../config/prisma");
 const { logAdminAction } = require("./adminLog.service");
 
 const OWNER_ROLES = new Set(["owner", "super_admin"]);
+const DEFAULT_STAGING_SAFE_ROLE = "staging_safe_role";
+
+function safeStagingRoleName(value) {
+  const role = String(value || DEFAULT_STAGING_SAFE_ROLE).trim().toLowerCase();
+  if (!/^[a-z0-9_:-]{3,64}$/.test(role)) return DEFAULT_STAGING_SAFE_ROLE;
+  if (OWNER_ROLES.has(role) || role === "admin.manage") return DEFAULT_STAGING_SAFE_ROLE;
+  if (!/(staging|stage|demo|test|sandbox|qa|uat)/i.test(role)) return DEFAULT_STAGING_SAFE_ROLE;
+  return role;
+}
+
+const STAGING_SAFE_ROLE = safeStagingRoleName(process.env.STAGING_SAFE_ROLE_NAME);
 
 const PERMISSIONS = [
   "members.view",
@@ -98,6 +109,10 @@ const ROLE_PERMISSIONS = {
   ],
 };
 
+if (!ROLE_PERMISSIONS[STAGING_SAFE_ROLE]) {
+  ROLE_PERMISSIONS[STAGING_SAFE_ROLE] = ["wheel.view", "wheel.reports.view"];
+}
+
 const ROLES = Object.entries(ROLE_PERMISSIONS).map(([role, permissions]) => ({
   role,
   permissions,
@@ -109,6 +124,7 @@ const ROLE_DESCRIPTIONS = {
   support: "Member support and reward claim handling.",
   graphic: "Website, promotion, Lucky Wheel campaign, and reward setup.",
   viewer: "Read-only operational visibility.",
+  [STAGING_SAFE_ROLE]: "Staging-only safe role used for permission update/restore UAT.",
 };
 const PERMISSION_DETAILS = [
   ["Lucky Wheel", "wheel.view", "View Lucky Wheel console", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/config"],

@@ -13,6 +13,10 @@ const NO_PERMISSION_USERNAME =
   process.env.STAGING_NO_PERMISSION_ADMIN_EMAIL || process.env.STAGING_NO_PERMISSION_ADMIN_USERNAME || "";
 const NO_PERMISSION_PASSWORD = process.env.STAGING_NO_PERMISSION_ADMIN_PASSWORD || "";
 const PROTECTED_ROLES = new Set(["owner", "super_admin"]);
+const SAFE_ROLE_NAME = safeStagingRoleName(process.env.STAGING_SAFE_ROLE_NAME || "staging_safe_role");
+const SAFE_ROLE_ADMIN_USERNAME =
+  process.env.STAGING_SAFE_ROLE_ADMIN_EMAIL || process.env.STAGING_SAFE_ROLE_ADMIN_USERNAME || "";
+const SAFE_ROLE_ADMIN_PASSWORD = process.env.STAGING_SAFE_ROLE_ADMIN_PASSWORD || "";
 const REQUIRED_CATALOG_KEYS = [
   "wheel.view",
   "wheel.claims.view",
@@ -22,14 +26,20 @@ const REQUIRED_CATALOG_KEYS = [
   "admin.audit.view",
 ];
 const TEMPORARY_PERMISSION_CANDIDATES = [
-  "wheel.reports.view",
-  "admin.audit.view",
-  "wheel.view",
   "wheel.claims.view",
-  "reports.view",
-  "members.view",
+  "wheel.spins.view",
+  "wheel.campaign.view",
+  "wheel.rewards.view",
 ];
 const issuedAuthValues = new Set();
+
+function safeStagingRoleName(value) {
+  const role = String(value || "staging_safe_role").trim().toLowerCase();
+  if (!/^[a-z0-9_:-]{3,64}$/.test(role)) return "staging_safe_role";
+  if (PROTECTED_ROLES.has(role) || role === "admin.manage") return "staging_safe_role";
+  if (!/(staging|stage|demo|test|sandbox|qa|uat)/i.test(role)) return "staging_safe_role";
+  return role;
+}
 
 function configuredBaseUrl() {
   return ensureApiPath(process.env.BASE_URL || DEFAULT_BASE_URL);
@@ -241,15 +251,45 @@ function rolePermissions(roleDetail) {
   return [...permissions];
 }
 
+function normalizedPermissions(permissions) {
+  return [...new Set(permissions || [])].sort();
+}
+
+function assertPermissionsEqual(label, actual, expected) {
+  assertArrayEqual(label, normalizedPermissions(actual), normalizedPermissions(expected));
+}
+
+function assertArrayEqual(label, actual, expected) {
+  const left = JSON.stringify(actual);
+  const right = JSON.stringify(expected);
+  if (left !== right) throw new Error(`${label} mismatch. expected=${right} actual=${left}`);
+}
+
 function findCatalogKeys(catalog) {
   requireArray(catalog, "permission catalog");
   return new Set(catalog.map((item) => item && item.key).filter(Boolean));
 }
 
-function chooseReadableSafeRole(roles, currentRole) {
-  const requested = process.env.STAGING_ROLE_PERMISSION_TEST_ROLE;
+function safeRoleFixtureEnvComplete() {
+  return Boolean(SAFE_ROLE_ADMIN_USERNAME && SAFE_ROLE_ADMIN_PASSWORD);
+}
+
+function chooseReadableSafeRole(roles, currentRole, { requireFixtureRole = false } = {}) {
+  const requested = process.env.STAGING_ROLE_PERMISSION_TEST_ROLE || SAFE_ROLE_NAME;
   if (requested) {
     const role = roles.find((item) => item && item.role === requested);
+    if (!role && requireFixtureRole) throw new Error("STAGING_SAFE_ROLE_NAME was not found in the staging role catalog. Run staging:seed-demo after setting the safe role fixture env.");
+    if (role && PROTECTED_ROLES.has(role.role)) throw new Error("STAGING_SAFE_ROLE_NAME must not be owner or super_admin.");
+    if (role) return role;
+  }
+
+  if (requireFixtureRole) {
+    throw new Error("Staging safe role fixture env is present, but the safe role was unavailable.");
+  }
+
+  const legacyRequested = process.env.STAGING_ROLE_PERMISSION_TEST_ROLE;
+  if (legacyRequested) {
+    const role = roles.find((item) => item && item.role === legacyRequested);
     if (!role) throw new Error("STAGING_ROLE_PERMISSION_TEST_ROLE was not found in the staging role catalog.");
     if (PROTECTED_ROLES.has(role.role)) throw new Error("STAGING_ROLE_PERMISSION_TEST_ROLE must not be owner or super_admin.");
     return role;
@@ -263,10 +303,15 @@ function chooseReadableSafeRole(roles, currentRole) {
   return roles.find((item) => item && item.role && !PROTECTED_ROLES.has(item.role) && item.role !== currentRole) || null;
 }
 
-function chooseWritableSafeRole(roles, currentRole) {
-  const readable = chooseReadableSafeRole(roles, currentRole);
+function chooseWritableSafeRole(roles, currentRole, options = {}) {
+  const readable = chooseReadableSafeRole(roles, currentRole, options);
   if (!readable) return null;
-  if (Number(readable.adminCount || 0) <= 0) return null;
+  if (Number(readable.adminCount || 0) <= 0) {
+    if (options.requireFixtureRole) {
+      throw new Error("Staging safe role has no assigned admins. Run staging:seed-demo after setting the safe role fixture env.");
+    }
+    return null;
+  }
   return readable;
 }
 
@@ -378,6 +423,9 @@ async function runValidMinimalChange(baseUrl, authValue, role, catalogKeys) {
     console.log("reason: no safe temporary permission delta could be selected");
     return false;
   }
+  if (temporaryPermissions.includes("admin.manage")) {
+    throw new Error("Valid minimal change attempted to grant admin.manage.");
+  }
 
   let changed = false;
   try {
@@ -391,6 +439,11 @@ async function runValidMinimalChange(baseUrl, authValue, role, catalogKeys) {
       },
     });
     requireArray(update.data && update.data.permissions, "updated role permissions");
+    const afterUpdate = await apiRequest(baseUrl, `/admin/roles/${encodeURIComponent(role)}`, {
+      authValue,
+      label: "role detail after valid minimal change",
+    });
+    assertPermissionsEqual("Role permissions after valid minimal change", rolePermissions(afterUpdate.data), temporaryPermissions);
     changed = true;
     console.log("role permission valid minimal change: PASS");
   } finally {
@@ -403,6 +456,15 @@ async function runValidMinimalChange(baseUrl, authValue, role, catalogKeys) {
           permissions: originalPermissions,
           reason: "staging role permission UAT restore",
         },
+      });
+      const afterRestore = await apiRequest(baseUrl, `/admin/roles/${encodeURIComponent(role)}`, {
+        authValue,
+        label: "role detail after restore",
+      });
+      assertPermissionsEqual("Role permissions after restore", rolePermissions(afterRestore.data), originalPermissions);
+      await apiRequest(baseUrl, "/admin/permissions/me", {
+        authValue,
+        label: "demo admin permissions after restore",
       });
       console.log("role permission restore: PASS");
     }
@@ -509,7 +571,9 @@ async function main() {
     await runRolePermissionNegatives(baseUrl, authValue, readableRole.role);
     await runNoPermissionNegative(baseUrl, readableRole.role);
 
-    const writableRole = chooseWritableSafeRole(roles.data, currentRole);
+    const writableRole = chooseWritableSafeRole(roles.data, currentRole, {
+      requireFixtureRole: safeRoleFixtureEnvComplete(),
+    });
     if (!writableRole) {
       console.log("role permission valid minimal change: SKIPPED");
       console.log("reason: no safe non-owner/super_admin staging role with assigned admins was available");

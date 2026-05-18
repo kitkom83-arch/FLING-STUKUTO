@@ -192,12 +192,20 @@ Current implemented Phase E API coverage:
 Phase G runtime UAT coverage:
 
 - `npm run smoke:staging-role-permission-uat` is the hosted staging/mock runtime smoke for the role matrix.
-- Required env: `BASE_URL` pointing at the HTTPS staging API, `STAGING_DEMO_ADMIN_EMAIL`, and `STAGING_DEMO_ADMIN_PASSWORD`. Optional env for authenticated no-permission `403`: `STAGING_NO_PERMISSION_ADMIN_EMAIL` or `STAGING_NO_PERMISSION_ADMIN_USERNAME`, plus `STAGING_NO_PERMISSION_ADMIN_PASSWORD`.
+- Required env: `BASE_URL` pointing at the HTTPS staging API, `STAGING_DEMO_ADMIN_EMAIL`, and `STAGING_DEMO_ADMIN_PASSWORD`. Phase H full fixture coverage also requires `STAGING_NO_PERMISSION_ADMIN_EMAIL` or `STAGING_NO_PERMISSION_ADMIN_USERNAME` plus `STAGING_NO_PERMISSION_ADMIN_PASSWORD`, and the safe role/admin fixture env documented below.
 - Safety guard: `APP_ENV`/`STAGING_MODE` must be staging/test/QA/sandbox labels, `NODE_ENV` must not be production, `DATABASE_URL` if present must not look production-like, and game/payment/bank/SMS/Slip OCR modes must remain `mock`, `sandbox`, or `disabled`.
 - Runtime endpoints covered: `GET /api/admin/permissions/me`, `GET /api/admin/permissions/catalog`, `GET /api/admin/roles`, `GET /api/admin/roles/:role`, `PATCH /api/admin/roles/:role/permissions`, and `GET /api/admin/audit-logs?action=admin.role.permissions.update`.
 - Negative paths covered: no auth, optional authenticated no permission, missing `reason`, invalid permission key, forbidden `admin.manage`, protected `owner`, and protected `super_admin`.
 - Valid update path runs only against a non-owner/super_admin role that is not the current demo admin role and has assigned staging admins. The smoke restores the original permissions immediately and then checks the `admin.role.permissions.update` audit log. If no such safe role exists, only the valid update section reports `SKIPPED` with a clear reason.
 - Response leak scan rejects password, token, secret, `DATABASE_URL`, raw authorization/JWT-shaped values, raw stack traces, and credential-shaped PostgreSQL URLs.
+
+Phase H staging fixture coverage:
+
+- `npm run staging:seed-demo` can create a no-permission admin fixture from `STAGING_NO_PERMISSION_ADMIN_EMAIL` or `STAGING_NO_PERMISSION_ADMIN_USERNAME` plus `STAGING_NO_PERMISSION_ADMIN_PASSWORD`. The fixture is active, site-bound, non-owner, non-super_admin, and receives no `admin.roles.view`, no `admin.roles.update`, and no `admin.manage`.
+- `npm run staging:seed-demo` can create a safe non-owner role/admin fixture from `STAGING_SAFE_ROLE_NAME` (default `staging_safe_role`), `STAGING_SAFE_ROLE_ADMIN_EMAIL` or `STAGING_SAFE_ROLE_ADMIN_USERNAME`, and `STAGING_SAFE_ROLE_ADMIN_PASSWORD`. The default permissions are `wheel.view` and `wheel.reports.view`.
+- Fixture login identifiers must contain staging/demo/test/sandbox/QA/UAT markers and must not look production/live/real-customer-like. Passwords come from the secret manager only and are never printed.
+- With the fixture env set and seeded, `npm run smoke:staging-role-permission-uat` must turn the two former fixture SKIPPED sections into PASS: no-permission admin `PATCH /api/admin/roles/:role/permissions` returns authenticated `403`, and the safe role valid minimal change updates role detail, restores the original permissions, and confirms `admin.role.permissions.update` audit history.
+- The fixture never grants `admin.manage`, never edits owner/super_admin permissions, and never weakens the backend permission guard. The UI remains advisory only.
 
 Current gaps in API coverage for the page:
 

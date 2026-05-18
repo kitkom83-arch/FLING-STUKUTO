@@ -79,6 +79,18 @@ function safePayloadSummary(payload) {
   return serialized.length > 800 ? `${serialized.slice(0, 800)}...` : serialized;
 }
 
+async function safeNonJsonSummary(response) {
+  let body = "";
+  try {
+    body = await response.text();
+  } catch (_error) {
+    body = "";
+  }
+  const contentType = sanitizeStringForLog(response.headers.get("content-type") || "");
+  const preview = sanitizeStringForLog(body).replace(/\s+/g, " ").trim().slice(0, 120);
+  return `status=${response.status}; content-type=${contentType || "missing"}; preview=${preview || "[empty]"}`;
+}
+
 function isSafeDemoMemberPhone(value) {
   return Boolean(value) && !/^\d+$/.test(value) && !/^0[89]\d{8}$/.test(value) && /(demo|staging|test)/i.test(value);
 }
@@ -149,7 +161,7 @@ async function apiRequest(baseUrl, path, options = {}) {
 
   const contentType = response.headers.get("content-type") || "";
   if (!contentType.toLowerCase().includes("application/json")) {
-    throw new Error(`${path} returned non-JSON response.`);
+    throw new Error(`${sanitizeStringForLog(path)} returned non-JSON response. ${await safeNonJsonSummary(response)}`);
   }
 
   const payload = await response.json();
@@ -394,7 +406,11 @@ async function assertLuckyWheelMemberEndpoints(baseUrl, authValue) {
     !spin.data.reward ||
     !Object.prototype.hasOwnProperty.call(spin.data, "remainingSpinsToday")
   ) {
-    throw new Error(`Member wheel spin returned ${spin.status}, expected backend-selected result.`);
+    throw new Error(
+      `Member wheel spin returned ${spin.status}, expected backend-selected result. Sanitized response body: ${safePayloadSummary(
+        spin.payload
+      )}`
+    );
   }
 
   const history = await apiRequest(baseUrl, "/member/wheel/history?limit=20", {

@@ -36,6 +36,20 @@ async function get(baseUrl, route) {
   return { response, text };
 }
 
+async function postJson(baseUrl, route, body) {
+  const response = await fetch(`${baseUrl}${route}`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+    redirect: "manual",
+  });
+  const text = await response.text();
+  return { response, text };
+}
+
 function visibleTextFromHtml(html) {
   return html
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
@@ -112,6 +126,16 @@ async function assertAsset(baseUrl, route) {
   }
   assertNoStaticSecret(route, text);
   return text;
+}
+
+async function assertJsonNotHtml(label, result) {
+  const contentType = result.response.headers.get("content-type") || "";
+  assert(contentType.toLowerCase().includes("application/json"), `${label} should return JSON, got ${contentType || "missing content-type"}`);
+  assert(!result.text.toLowerCase().includes("<!doctype html>"), `${label} must not return static HTML`);
+  assert(!result.text.includes("Admin Role Management"), `${label} must not return Admin Role Management HTML`);
+  assert(!result.text.includes("Lucky Wheel Admin Console"), `${label} must not return Admin Wheel HTML`);
+  const payload = JSON.parse(result.text);
+  assert(payload && payload.success === false, `${label} should return a safe failure JSON payload`);
 }
 
 async function main() {
@@ -199,8 +223,17 @@ async function main() {
 
     const apiMiss = await get(baseUrl, "/api/__admin_browser_routes_smoke__");
     assert.notStrictEqual(apiMiss.response.status, 200, "/api/* should remain outside admin static HTML routes");
+    assert(
+      (apiMiss.response.headers.get("content-type") || "").toLowerCase().includes("application/json"),
+      "/api/* misses should return JSON, not static HTML"
+    );
     assert(!apiMiss.text.includes("Admin Role Management"), "/api/* must not return Admin Role Management HTML");
     assert(!apiMiss.text.includes("Lucky Wheel Admin Console"), "/api/* must not return Admin Wheel HTML");
+
+    await assertJsonNotHtml(
+      "POST /admin/auth/login",
+      await postJson(baseUrl, "/admin/auth/login", { username: "admin_browser_routes_smoke" })
+    );
 
     console.log("Admin browser route /admin contract: PASS");
     console.log("Admin browser route /admin/roles contract: PASS");
@@ -210,6 +243,7 @@ async function main() {
     console.log("Admin browser no owner/super_admin bypass controls: PASS");
     console.log("Admin browser no force reward/spin controls or member spin endpoint calls: PASS");
     console.log("Admin browser /api route boundary: PASS");
+    console.log("Admin browser /admin/auth/login JSON boundary: PASS");
     console.log("Admin browser routes smoke: PASS");
   } finally {
     await close(server);
