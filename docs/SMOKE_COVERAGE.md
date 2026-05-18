@@ -224,6 +224,10 @@ RBAC smoke uses only local/staging/test PostgreSQL fixtures. It does not call re
 - `GET /api/health`.
 - Unauthenticated role-management endpoints return `401`.
 - Owner role lists permissions, lists roles, reads current permissions through `/api/admin/permissions/me`, and reads target admin permissions through `/api/admin/admins/:id/permissions`.
+- Static `/admin/roles` UI route renders Role Management, grouped permission matrix, effective permission preview, reason-required save controls, audit shortcut, and no member spin endpoint.
+- Owner role reads `GET /api/admin/permissions/catalog` and verifies `wheel.view`, `admin.audit.view`, and `admin.roles.update` metadata.
+- Role permission assignment rejects unauthenticated requests, non-owner/no-permission requests, missing reason, invalid keys, owner/super_admin role edits, and `admin.manage` grants through the role matrix.
+- Role permission assignment updates and rolls back the local support role through `PATCH /api/admin/roles/support/permissions`, then confirms `admin.role.permissions.update` audit log reason metadata.
 - Owner role updates a local target admin through `/api/admin/admins/:id/role`.
 - Role assignment rejects empty reason, same-role updates, and self role changes.
 - Finance, support, graphic, and viewer are forbidden from role updates with `403`.

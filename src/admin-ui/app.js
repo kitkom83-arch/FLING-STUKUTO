@@ -7,14 +7,24 @@
   const SENSITIVE_WORDS = /\b(password|secret|authorization)\b/i;
   const TOKEN_SHAPED_VALUE = /\b[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\b/;
   const PERMISSION_MATRIX = [
-    ["Work schedule", "admin.schedule.view", "View admin work schedules", "owner / super_admin"],
-    ["Work schedule", "admin.schedule.update", "Update work schedule windows", "owner / super_admin"],
-    ["Work schedule", "admin.schedule.override", "Manage emergency overrides", "owner / super_admin"],
-    ["Work schedule", "admin.schedule.view", "Read schedule audit history", "owner / super_admin"],
-    ["Role management", "admin.manage", "View roles and admin permissions", "owner / super_admin"],
-    ["Role management", "admin.manage", "Update admin role or permissions", "owner / super_admin"],
-    ["Permission guard", "admin.manage", "View permission catalog", "owner / super_admin"],
-    ["Permission guard", "admin.manage", "Update permission overrides", "owner / super_admin"],
+    ["Admin/Audit", "admin.roles.view", "View roles and permission catalog", "read", false, false, "/admin/roles", "GET /api/admin/roles"],
+    ["Admin/Audit", "admin.roles.update", "Assign or revoke role permissions", "write", true, true, "/admin/roles", "PATCH /api/admin/roles/:role/permissions"],
+    ["Admin/Audit", "admin.audit.view", "View admin audit logs", "read", false, false, "/admin/audit-security", "GET /api/admin/audit-logs"],
+    ["Admin/Audit", "admin.security.view", "View security events", "read", false, false, "/admin/audit-security", "GET /api/admin/security-events"],
+    ["Admin/Audit", "admin.workSchedule.view", "View work schedules", "read", false, false, "/admin/work-schedules", "GET /api/admin/work-schedules"],
+    ["Admin/Audit", "admin.workSchedule.update", "Update work schedules", "write", true, true, "/admin/work-schedules", "PATCH /api/admin/work-schedules/:adminId"],
+    ["Lucky Wheel", "wheel.view", "Open Lucky Wheel console", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/config"],
+    ["Lucky Wheel", "wheel.campaign.view", "View wheel campaign", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/config"],
+    ["Lucky Wheel", "wheel.campaign.update", "Update wheel campaign", "write", true, true, "/admin/lucky-wheel", "PATCH /api/admin/wheel/campaign"],
+    ["Lucky Wheel", "wheel.rewards.view", "View rewards", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/config"],
+    ["Lucky Wheel", "wheel.rewards.create", "Create rewards", "write", true, true, "/admin/lucky-wheel", "POST /api/admin/wheel/rewards"],
+    ["Lucky Wheel", "wheel.rewards.update", "Update rewards", "write", true, true, "/admin/lucky-wheel", "PATCH /api/admin/wheel/rewards/:id"],
+    ["Lucky Wheel", "wheel.rewards.status.update", "Update reward status", "write", true, true, "/admin/lucky-wheel", "PATCH /api/admin/wheel/rewards/:id"],
+    ["Lucky Wheel", "wheel.spins.view", "View spins", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/spins"],
+    ["Lucky Wheel", "wheel.reports.view", "View wheel reports", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/spins"],
+    ["Lucky Wheel", "wheel.claims.view", "View reward claims", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/member-rewards"],
+    ["Lucky Wheel", "wheel.claims.status.update", "Update reward claims", "write", true, true, "/admin/lucky-wheel", "PATCH /api/admin/wheel/member-rewards/:id/status"],
+    ["Lucky Wheel", "wheel.audit.view", "View wheel audit", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/audit-logs"],
   ];
   const ROLE_DESCRIPTIONS = {
     owner: "Full backend access with owner bypass.",
@@ -43,6 +53,8 @@
     editingRow: null,
     togglingRow: null,
     roleAssignmentRow: null,
+    roleDraftPermissions: [],
+    roleOriginalPermissions: [],
   };
 
   const els = {
@@ -57,6 +69,8 @@
     currentSiteCode: document.getElementById("current-site-code"),
     permissionSummary: document.getElementById("permission-summary"),
     backendEnforced: document.getElementById("backend-enforced"),
+    roleLastRefresh: document.getElementById("role-last-refresh"),
+    responseLeakWarning: document.getElementById("response-leak-warning"),
     permissionMatrixRows: document.getElementById("permission-matrix-rows"),
     permissionMatrixCount: document.getElementById("permission-matrix-count"),
     roleCount: document.getElementById("role-count"),
@@ -64,12 +78,26 @@
     roleList: document.getElementById("role-list"),
     roleDetailName: document.getElementById("role-detail-name"),
     roleDescription: document.getElementById("role-description"),
+    roleSiteCode: document.getElementById("role-site-code"),
     rolePermissionCount: document.getElementById("role-permission-count"),
     roleAdminCount: document.getElementById("role-admin-count"),
+    roleStatus: document.getElementById("role-status"),
     roleLastUpdated: document.getElementById("role-last-updated"),
     roleUpdatedBy: document.getElementById("role-updated-by"),
+    roleOwnerWarning: document.getElementById("role-owner-warning"),
+    roleSelfWarning: document.getElementById("role-self-warning"),
+    roleUnsaved: document.getElementById("role-unsaved"),
+    effectivePreview: document.getElementById("effective-preview"),
+    rolePreviewBefore: document.getElementById("role-preview-before"),
+    rolePreviewAfter: document.getElementById("role-preview-after"),
+    rolePermissionReason: document.getElementById("role-permission-reason"),
+    rolePermissionReasonError: document.getElementById("role-permission-reason-error"),
+    resetRolePermissions: document.getElementById("reset-role-permissions"),
+    saveRolePermissionAssignment: document.getElementById("save-role-permission-assignment"),
+    rolePermissionMatrixRows: document.getElementById("role-permission-matrix-rows"),
     rolePermissions: document.getElementById("role-permissions"),
     editRolePermissions: document.getElementById("edit-role-permissions"),
+    refreshRoles: document.getElementById("refresh-roles"),
     refreshAdminRoles: document.getElementById("refresh-admin-roles"),
     roleAssignmentEmpty: document.getElementById("role-assignment-empty"),
     roleAssignmentRows: document.getElementById("role-assignment-rows"),
@@ -237,6 +265,14 @@
     return state.permissions.includes(permission) || state.permissions.includes("admin.manage");
   }
 
+  function canManageRoles() {
+    return hasPermission("admin.roles.view");
+  }
+
+  function canUpdateRoles() {
+    return hasPermission("admin.roles.update");
+  }
+
   function setPermissions(data) {
     state.permissions = Array.isArray(data.permissions) ? data.permissions : [];
     state.currentAdmin = data.admin || null;
@@ -254,8 +290,11 @@
     els.currentSiteCode.textContent = safeDisplay(data.siteCode || SITE_CODE);
     els.permissionSummary.textContent = `${state.permissions.length} granted`;
     els.backendEnforced.textContent = `Yes / ${SITE_CODE}`;
+    els.roleLastRefresh.textContent = formatDate(new Date().toISOString());
+    els.responseLeakWarning.textContent = "Safe display only";
     els.loadPermissions.disabled = false;
-    els.refreshAdminRoles.disabled = !hasPermission("admin.manage");
+    els.refreshAdminRoles.disabled = !canManageRoles();
+    els.refreshRoles.disabled = !canManageRoles();
     renderPermissionMatrix();
   }
 
@@ -263,18 +302,18 @@
     els.permissionMatrixRows.innerHTML = "";
     els.permissionMatrixCount.textContent = `${PERMISSION_MATRIX.length} checks`;
     const checkedAt = state.token ? formatDate(new Date().toISOString()) : "-";
-    for (const [module, key, description, requiredRole] of PERMISSION_MATRIX) {
+    for (const [module, key, description, accessType, requiresReason, auditRequired] of PERMISSION_MATRIX) {
       const tr = document.createElement("tr");
       const granted = state.permissions.includes(key) || state.permissions.includes("admin.manage");
       tr.appendChild(createCell(module));
       tr.appendChild(createCell(key));
       tr.appendChild(createCell(description));
-      tr.appendChild(createCell(requiredRole));
+      tr.appendChild(createCell(accessType));
       const access = document.createElement("td");
       access.appendChild(createBadge(granted ? "Granted" : "Denied", granted ? "ok" : "danger"));
       tr.appendChild(access);
       const enforced = document.createElement("td");
-      enforced.appendChild(createBadge("Yes", "ok"));
+      enforced.appendChild(createBadge(auditRequired || requiresReason ? "Yes" : "Guarded", "ok"));
       tr.appendChild(enforced);
       tr.appendChild(createCell(checkedAt));
       els.permissionMatrixRows.appendChild(tr);
@@ -286,8 +325,133 @@
     return state.schedules.length ? String(rows.length) : "-";
   }
 
+  function rolePermissions(role) {
+    return Array.isArray(role && role.permissions) ? role.permissions.slice().sort() : [];
+  }
+
+  function permissionCatalogRows() {
+    if (state.permissionCatalog.length && typeof state.permissionCatalog[0] === "object") return state.permissionCatalog;
+    const keys = state.permissionCatalog.length ? state.permissionCatalog : PERMISSION_MATRIX.map((item) => item[1]);
+    return keys.map((key) => {
+      const local = PERMISSION_MATRIX.find((item) => item[1] === key);
+      return {
+        group: local ? local[0] : "General Admin",
+        key,
+        label: local ? local[2] : key,
+        access: local ? local[3] : "read",
+        requiresReason: local ? local[4] : false,
+        auditRequired: local ? local[5] : false,
+        linkedPage: local ? local[6] : "Admin console",
+        linkedApi: local ? local[7] : "See docs/API.md",
+      };
+    });
+  }
+
+  function permissionCountText(list) {
+    const permissions = Array.isArray(list) ? list : [];
+    return permissions.length ? `${permissions.length} permissions` : "0 permissions";
+  }
+
+  function roleIsProtected(role) {
+    const name = role && role.role ? role.role : "";
+    return name === "owner" || name === "super_admin" || Boolean(role && role.protected);
+  }
+
+  function selectedRoleHasCurrentAdmin() {
+    if (!state.currentAdmin || !state.selectedRole) return false;
+    return state.schedules.some((row) => row.admin && row.admin.id === state.currentAdmin.id && currentRoleForRow(row) === state.selectedRole.role);
+  }
+
+  function rolePermissionChanged() {
+    const before = state.roleOriginalPermissions.slice().sort().join("|");
+    const after = state.roleDraftPermissions.slice().sort().join("|");
+    return before !== after;
+  }
+
+  function renderEffectivePreview() {
+    els.effectivePreview.innerHTML = "";
+    const role = state.selectedRole;
+    const draft = state.roleDraftPermissions;
+    const protectedRole = roleIsProtected(role);
+    const rows = [
+      ["Selected role", role ? role.role : "-"],
+      ["Direct permissions", permissionCountText(draft)],
+      ["Inherited/guard", protectedRole ? "Allowed by owner/super_admin guard" : "Matrix permissions only"],
+      ["Can access Admin Wheel", protectedRole || draft.includes("wheel.view") || draft.includes("wheel.campaign.view") ? "Yes" : "No"],
+      ["Can update campaign", protectedRole || draft.includes("wheel.campaign.update") ? "Yes" : "No"],
+      ["Can manage rewards", protectedRole || draft.includes("wheel.rewards.create") || draft.includes("wheel.rewards.update") ? "Yes" : "No"],
+      ["Can claim/cancel rewards", protectedRole || draft.includes("wheel.claims.status.update") ? "Yes" : "No"],
+      ["Can view reports", protectedRole || draft.includes("wheel.reports.view") || draft.includes("reports.view") ? "Yes" : "No"],
+      ["Can view audit", protectedRole || draft.includes("admin.audit.view") || draft.includes("wheel.audit.view") ? "Yes" : "No"],
+      ["Can manage roles", protectedRole || draft.includes("admin.roles.update") ? "Yes" : "No"],
+      ["Can update work schedule", protectedRole || draft.includes("admin.workSchedule.update") ? "Yes" : "No"],
+    ];
+    for (const [label, value] of rows) {
+      const dt = document.createElement("dt");
+      const dd = document.createElement("dd");
+      dt.textContent = label;
+      dd.textContent = safeDisplay(value);
+      els.effectivePreview.appendChild(dt);
+      els.effectivePreview.appendChild(dd);
+    }
+  }
+
+  function renderRolePermissionMatrix() {
+    els.rolePermissionMatrixRows.innerHTML = "";
+    const protectedRole = roleIsProtected(state.selectedRole);
+    const selfRole = selectedRoleHasCurrentAdmin();
+    const canEdit = Boolean(state.token && canUpdateRoles() && !protectedRole && !selfRole);
+    for (const permission of permissionCatalogRows()) {
+      const key = permission.key || permission;
+      const tr = document.createElement("tr");
+      const enabled = document.createElement("td");
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.value = key;
+      input.checked = state.roleDraftPermissions.includes(key);
+      input.disabled = !canEdit || key === "admin.manage";
+      input.addEventListener("change", () => {
+        if (input.checked) {
+          state.roleDraftPermissions = [...new Set([...state.roleDraftPermissions, key])].sort();
+        } else {
+          state.roleDraftPermissions = state.roleDraftPermissions.filter((item) => item !== key);
+        }
+        renderRoleDraftState();
+      });
+      enabled.appendChild(input);
+      tr.appendChild(enabled);
+      tr.appendChild(createCell(key));
+      tr.appendChild(createCell(permission.label || key));
+      tr.appendChild(createCell(permission.group || "General Admin"));
+      tr.appendChild(createCell(permission.access || "read"));
+      tr.appendChild(createCell(permission.requiresReason ? "Yes" : "No"));
+      tr.appendChild(createCell(permission.auditRequired ? "Yes" : "No"));
+      tr.appendChild(createCell(permission.linkedPage || "-"));
+      tr.appendChild(createCell(permission.linkedApi || "-"));
+      els.rolePermissionMatrixRows.appendChild(tr);
+    }
+  }
+
+  function renderRoleDraftState() {
+    const changed = rolePermissionChanged();
+    const protectedRole = roleIsProtected(state.selectedRole);
+    const selfRole = selectedRoleHasCurrentAdmin();
+    const hasReason = Boolean(els.rolePermissionReason.value.trim());
+    els.roleUnsaved.classList.toggle("hidden", !changed);
+    els.roleOwnerWarning.classList.toggle("hidden", !protectedRole);
+    els.roleSelfWarning.classList.toggle("hidden", !selfRole);
+    els.rolePreviewBefore.textContent = state.roleOriginalPermissions.join(", ") || "-";
+    els.rolePreviewAfter.textContent = state.roleDraftPermissions.join(", ") || "-";
+    els.resetRolePermissions.disabled = !changed;
+    els.saveRolePermissionAssignment.disabled = !changed || !hasReason || protectedRole || selfRole || !canUpdateRoles();
+    renderEffectivePreview();
+  }
+
   function renderRoles(roles) {
     state.roles = Array.isArray(roles) ? roles : [];
+    if (state.selectedRole) {
+      state.selectedRole = state.roles.find((role) => role.role === state.selectedRole.role) || null;
+    }
     els.roleList.innerHTML = "";
     els.roleCount.textContent = `${state.roles.length} roles`;
     els.roleEmpty.classList.toggle("hidden", state.roles.length > 0);
@@ -311,19 +475,31 @@
     if (!role) {
       els.roleDetailName.textContent = "Role detail";
       els.roleDescription.textContent = "-";
+      els.roleSiteCode.textContent = SITE_CODE;
       els.rolePermissionCount.textContent = "-";
       els.roleAdminCount.textContent = "-";
+      els.roleStatus.textContent = "-";
       els.rolePermissions.innerHTML = "";
       els.editRolePermissions.disabled = true;
+      state.roleOriginalPermissions = [];
+      state.roleDraftPermissions = [];
+      renderRolePermissionMatrix();
+      renderRoleDraftState();
       return;
     }
-    const permissions = Array.isArray(role.permissions) ? role.permissions : [];
+    const permissions = rolePermissions(role);
+    state.roleOriginalPermissions = permissions.slice();
+    state.roleDraftPermissions = permissions.slice();
     els.roleDetailName.textContent = safeDisplay(role.role);
-    els.roleDescription.textContent = safeDisplay(ROLE_DESCRIPTIONS[role.role] || "Backend role catalog");
+    els.roleDescription.textContent = safeDisplay(role.description || ROLE_DESCRIPTIONS[role.role] || "Backend role catalog");
+    els.roleSiteCode.textContent = safeDisplay(role.siteCode || SITE_CODE);
     els.rolePermissionCount.textContent = String(permissions.length);
-    els.roleAdminCount.textContent = roleAdminCount(role.role);
-    els.roleLastUpdated.textContent = "Read-only catalog";
-    els.roleUpdatedBy.textContent = "Backend role defaults";
+    els.roleAdminCount.textContent = role.adminCount === 0 || role.adminCount ? String(role.adminCount) : roleAdminCount(role.role);
+    els.roleStatus.textContent = safeDisplay(role.status || "active");
+    els.roleLastUpdated.textContent = formatDate(role.updatedAt) || "Role default";
+    els.roleUpdatedBy.textContent = role.source === "site_override" ? "Site permission override" : "Backend role defaults";
+    els.rolePermissionReason.value = "";
+    setFieldError(els.rolePermissionReasonError, "");
     els.rolePermissions.innerHTML = "";
     for (const permission of permissions) {
       const chip = document.createElement("span");
@@ -331,7 +507,9 @@
       chip.textContent = safeDisplay(permission);
       els.rolePermissions.appendChild(chip);
     }
-    els.editRolePermissions.disabled = !state.token;
+    els.editRolePermissions.disabled = !state.token || !canUpdateRoles() || roleIsProtected(role);
+    renderRolePermissionMatrix();
+    renderRoleDraftState();
   }
 
   function currentRoleForRow(row) {
@@ -358,7 +536,7 @@
       tr.appendChild(createCell(latestActor(row)));
       const actions = document.createElement("td");
       actions.className = "actions";
-      const button = actionButton("Change role", () => openRoleAssignment(row), Boolean(state.token && hasPermission("admin.manage")));
+      const button = actionButton("Change role", () => openRoleAssignment(row), Boolean(state.token && canUpdateRoles()));
       if (isCurrentAdmin(row)) button.title = "Self role change is blocked";
       actions.appendChild(button);
       tr.appendChild(actions);
@@ -381,6 +559,8 @@
     state.selectedAdminId = null;
     state.selectedAdminLabel = "";
     state.roleAssignmentRow = null;
+    state.roleDraftPermissions = [];
+    state.roleOriginalPermissions = [];
     sessionStorage.removeItem("pg77_admin_token");
     els.token.value = "";
     els.auditTarget.value = "";
@@ -391,8 +571,13 @@
     els.currentSiteCode.textContent = SITE_CODE;
     els.permissionSummary.textContent = "0 granted";
     els.backendEnforced.textContent = "Yes";
+    els.roleLastRefresh.textContent = "-";
+    els.responseLeakWarning.textContent = "Safe display only";
     els.loadPermissions.disabled = true;
     els.refreshAdminRoles.disabled = true;
+    els.refreshRoles.disabled = true;
+    els.rolePermissionReason.value = "";
+    setFieldError(els.rolePermissionReasonError, "");
     renderSchedules([]);
     renderAudit([]);
     renderPermissionMatrix();
@@ -614,6 +799,12 @@
   function openRoleEdit() {
     if (!state.token) return setToast("No session loaded");
     if (!state.selectedRole) return setToast("Select a role");
+    if (roleIsProtected(state.selectedRole)) return setToast("owner/super_admin permissions are controlled by guard");
+    document.getElementById("role-management").scrollIntoView({ behavior: "smooth", block: "start" });
+    els.rolePermissionReason.focus();
+  }
+
+  function openRoleEditModal() {
     els.roleEditName.value = state.selectedRole.role;
     els.roleEditPermissions.innerHTML = "";
     const permissions = Array.isArray(state.selectedRole.permissions) ? state.selectedRole.permissions : [];
@@ -646,14 +837,14 @@
       const option = document.createElement("option");
       option.value = role;
       option.textContent = role;
-      option.disabled = role === currentRole;
+      option.disabled = role === currentRole || ((role === "owner" || role === "super_admin") && state.currentRole !== "owner" && state.currentRole !== "super_admin");
       els.newAdminRole.appendChild(option);
     }
   }
 
   function openRoleAssignment(row) {
     if (!state.token) return setToast("No session loaded");
-    if (!hasPermission("admin.manage")) return setToast("Role update failed");
+    if (!canUpdateRoles()) return setToast("Role update failed");
     state.roleAssignmentRow = row;
     const currentRole = currentRoleForRow(row);
     const self = isCurrentAdmin(row);
@@ -699,11 +890,29 @@
   }
 
   async function saveRolePermissions(event) {
-    event.preventDefault();
-    const reason = validateReasonBeforeConfirm(els.roleEditReason, els.roleEditReasonError);
+    if (event && event.preventDefault) event.preventDefault();
+    if (!state.selectedRole) return setToast("Select a role");
+    const reasonInput = event && event.target === els.roleEditForm ? els.roleEditReason : els.rolePermissionReason;
+    const errorEl = event && event.target === els.roleEditForm ? els.roleEditReasonError : els.rolePermissionReasonError;
+    const reason = validateReasonBeforeConfirm(reasonInput, errorEl);
     if (!reason) return;
-    await withLoading(els.saveRolePermissions, async () => {
-      setToast("Role update endpoint not available in staging demo");
+    if (!rolePermissionChanged()) return setToast("No permission changes selected");
+    if (roleIsProtected(state.selectedRole)) return setToast("owner/super_admin permissions are controlled by guard");
+    if (selectedRoleHasCurrentAdmin()) return setToast("Self role permission update is blocked");
+    const confirmed = await confirmAction(
+      "Confirm role permission assignment",
+      `Role: ${safeDisplay(state.selectedRole.role)} | Before: ${permissionCountText(state.roleOriginalPermissions)} | After: ${permissionCountText(state.roleDraftPermissions)} | Reason: ${safeDisplay(reason)}`
+    );
+    if (!confirmed) return;
+    await withLoading(els.saveRolePermissionAssignment, async () => {
+      await api(`/admin/roles/${encodeURIComponent(state.selectedRole.role)}/permissions`, {
+        method: "PATCH",
+        body: { permissions: state.roleDraftPermissions, reason },
+      });
+      if (els.roleEditModal.open) els.roleEditModal.close();
+      setToast("Role permissions updated");
+      await loadPermissions();
+      await loadSchedules();
     });
   }
 
@@ -771,8 +980,8 @@
     }
     const data = await api("/admin/permissions/me");
     setPermissions(data);
-    if (hasPermission("admin.manage")) {
-      state.permissionCatalog = await api("/admin/permissions");
+    if (canManageRoles()) {
+      state.permissionCatalog = await api("/admin/permissions/catalog");
       const roles = await api("/admin/roles");
       renderRoles(roles);
     } else {
@@ -1006,6 +1215,16 @@
   els.clearToken.addEventListener("click", clearSession);
   els.loadPermissions.addEventListener("click", () => withLoading(els.loadPermissions, loadPermissions).catch((error) => setToast("Permission request failed")));
   els.editRolePermissions.addEventListener("click", openRoleEdit);
+  els.refreshRoles.addEventListener("click", () => withLoading(els.refreshRoles, loadPermissions).catch((error) => setToast(error.message)));
+  els.rolePermissionReason.addEventListener("input", renderRoleDraftState);
+  els.resetRolePermissions.addEventListener("click", () => {
+    state.roleDraftPermissions = state.roleOriginalPermissions.slice();
+    els.rolePermissionReason.value = "";
+    setFieldError(els.rolePermissionReasonError, "");
+    renderRolePermissionMatrix();
+    renderRoleDraftState();
+  });
+  els.saveRolePermissionAssignment.addEventListener("click", (event) => saveRolePermissions(event).catch((error) => setToast(error.message)));
   els.refreshAdminRoles.addEventListener("click", () => withLoading(els.refreshAdminRoles, loadSchedules).catch((error) => setToast(error.message)));
   els.refresh.addEventListener("click", () => withLoading(els.refresh, loadSchedules).catch((error) => setToast(error.message)));
   els.search.addEventListener("input", () => loadSchedules().catch((error) => setToast(error.message)));

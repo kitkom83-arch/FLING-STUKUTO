@@ -12,7 +12,7 @@ The current backend role-management API is site-aware. Non-owner permissions can
 
 Purpose: show admins that can be inspected or managed by an `owner`/`super_admin`.
 
-Current backend note: there is no dedicated `GET /api/admin/admins` list endpoint in `src/routes/admin.routes.js` today. The table UI is the desired frontend contract, but the list API and create-admin API are proposed until backend routes are added. Existing backend support covers reading one admin's effective permissions and changing one admin's role by admin ID.
+Current backend note: there is no dedicated `GET /api/admin/admins` list endpoint in `src/routes/admin.routes.js` today. The implemented UI reuses the guarded work-schedule list for existing site admin rows, and role permission assignment updates the existing `AdminSiteAccess.permissions` field for admins currently assigned to the selected role on the current site. No migration or new RBAC table is added.
 
 Required UI controls:
 
@@ -181,6 +181,13 @@ Status expectation by endpoint:
 | `GET /api/admin/roles` | Missing or invalid admin session. | Missing `admin.manage` or denied site access. | Not expected today. | Not expected today. | Generic safe error only. |
 | `GET /api/admin/admins/:id/permissions` | Missing or invalid admin session. | Missing `admin.manage` or denied site access. | Target admin not found. | Not expected today. | Generic safe error only. |
 | `PATCH /api/admin/admins/:id/role` | Missing or invalid admin session. | Missing `admin.manage` or denied site access. | Target admin not found. | Not expected today. | Generic safe error only. |
+
+Current implemented Phase E API coverage:
+
+- `GET /api/admin/permissions/catalog` returns grouped permission metadata for the Role Management matrix.
+- `GET /api/admin/roles` returns site-aware role summaries including admin count, source, updatedAt, and permissions.
+- `GET /api/admin/roles/:role` returns one role summary.
+- `PATCH /api/admin/roles/:role/permissions` assigns/revokes permissions for existing site access rows on that role, requires `reason`, writes `admin.role.permissions.update`, blocks owner/super_admin protected-role edits, blocks `admin.manage` grants through the matrix, and sanitizes before/after audit payloads.
 
 Current gaps in API coverage for the page:
 
@@ -430,7 +437,7 @@ Related smoke scripts:
 
 ## 19. Known Gaps
 
-- There is no real frontend role-management UI implementation yet.
+- Frontend Role Management UI is implemented at `/admin/roles` for role list/detail, grouped permission matrix, effective permission preview, before/after preview, reason-required save, reset changes, and audit shortcut.
 - There is no dedicated `GET /api/admin/admins` list endpoint today.
 - There is no dedicated create-admin UI or clear backend create-admin API contract today.
 - Audit history UI may need a dedicated endpoint later; current backend has `GET /api/admin/logs` with `reports.view`.

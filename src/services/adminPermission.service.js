@@ -102,6 +102,60 @@ const ROLES = Object.entries(ROLE_PERMISSIONS).map(([role, permissions]) => ({
   role,
   permissions,
 }));
+const ROLE_DESCRIPTIONS = {
+  owner: "Full backend access with owner bypass.",
+  super_admin: "Legacy full access role with owner/super_admin guard.",
+  finance: "Finance operations, deposits, withdrawals, claims, and reports.",
+  support: "Member support and reward claim handling.",
+  graphic: "Website, promotion, Lucky Wheel campaign, and reward setup.",
+  viewer: "Read-only operational visibility.",
+};
+const PERMISSION_DETAILS = [
+  ["Lucky Wheel", "wheel.view", "View Lucky Wheel console", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/config"],
+  ["Lucky Wheel", "wheel.campaign.view", "View wheel campaign", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/config"],
+  ["Lucky Wheel", "wheel.campaign.update", "Update wheel campaign", "write", true, true, "/admin/lucky-wheel", "PATCH /api/admin/wheel/campaign"],
+  ["Lucky Wheel", "wheel.rewards.view", "View wheel rewards", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/config"],
+  ["Lucky Wheel", "wheel.rewards.create", "Create wheel rewards", "write", true, true, "/admin/lucky-wheel", "POST /api/admin/wheel/rewards"],
+  ["Lucky Wheel", "wheel.rewards.update", "Update wheel rewards", "write", true, true, "/admin/lucky-wheel", "PATCH /api/admin/wheel/rewards/:id"],
+  ["Lucky Wheel", "wheel.rewards.status.update", "Update wheel reward status", "write", true, true, "/admin/lucky-wheel", "PATCH /api/admin/wheel/rewards/:id"],
+  ["Lucky Wheel", "wheel.spins.view", "View wheel spins", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/spins"],
+  ["Lucky Wheel", "wheel.reports.view", "View wheel reports", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/spins"],
+  ["Lucky Wheel", "wheel.claims.view", "View reward claims", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/member-rewards"],
+  ["Lucky Wheel", "wheel.claims.status.update", "Update reward claim status", "write", true, true, "/admin/lucky-wheel", "PATCH /api/admin/wheel/member-rewards/:id/status"],
+  ["Lucky Wheel", "wheel.audit.view", "View wheel audit history", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/audit-logs"],
+  ["Admin/Audit", "admin.audit.view", "View admin audit logs", "read", false, false, "/admin/audit-security", "GET /api/admin/audit-logs"],
+  ["Admin/Audit", "admin.security.view", "View security events", "read", false, false, "/admin/audit-security", "GET /api/admin/security-events"],
+  ["Admin/Audit", "admin.roles.view", "View role management", "read", false, false, "/admin/roles", "GET /api/admin/roles"],
+  ["Admin/Audit", "admin.roles.update", "Update role permissions", "write", true, true, "/admin/roles", "PATCH /api/admin/roles/:role/permissions"],
+  ["Admin/Audit", "admin.workSchedule.view", "View admin work schedules", "read", false, false, "/admin/work-schedules", "GET /api/admin/work-schedules"],
+  ["Admin/Audit", "admin.workSchedule.update", "Update admin work schedules", "write", true, true, "/admin/work-schedules", "PATCH /api/admin/work-schedules/:adminId"],
+  ["General Admin", "members.view", "View members", "read", false, false, "Admin member tools", "GET /api/admin/members"],
+  ["General Admin", "members.update", "Update members", "write", true, true, "Admin member tools", "POST /api/admin/members/:id/*"],
+  ["General Admin", "deposits.view", "View deposits", "read", false, false, "Admin finance tools", "GET /api/admin/deposits"],
+  ["General Admin", "deposits.approve", "Approve/reject deposits", "write", true, true, "Admin finance tools", "POST /api/admin/deposits/:id/*"],
+  ["General Admin", "withdrawals.view", "View withdrawals", "read", false, false, "Admin finance tools", "GET /api/admin/withdrawals"],
+  ["General Admin", "withdrawals.approve", "Approve/reject withdrawals", "write", true, true, "Admin finance tools", "POST /api/admin/withdrawals/:id/*"],
+  ["General Admin", "bank.view", "View bank tools", "read", false, false, "Admin bank tools", "GET /api/admin/bank-accounts/pending"],
+  ["General Admin", "bank.update", "Update bank tools", "write", true, true, "Admin bank tools", "POST /api/admin/bank-accounts/:id/*"],
+  ["General Admin", "reports.view", "View reports", "read", false, false, "Admin reports", "GET /api/admin/reports/summary"],
+  ["General Admin", "settings.website.view", "View site settings", "read", false, false, "Admin site settings", "GET /api/admin/sites"],
+  ["General Admin", "settings.website.update", "Update site settings", "write", true, true, "Admin site settings", "POST /api/admin/sites/:id/*"],
+  ["General Admin", "settings.promotion.view", "View promotion settings", "read", false, false, "Admin promotion settings", "GET /api/admin/promotions"],
+  ["General Admin", "assets.upload", "Upload admin assets", "write", true, true, "Admin assets", "Admin asset upload"],
+  ["General Admin", "admin.manage", "Legacy full admin management", "write", true, true, "/admin/roles", "Legacy admin management"],
+  ["Admin/Audit", "admin.schedule.view", "Legacy schedule view", "read", false, false, "/admin/work-schedules", "GET /api/admin/work-schedules"],
+  ["Admin/Audit", "admin.schedule.update", "Legacy schedule update", "write", true, true, "/admin/work-schedules", "PATCH /api/admin/work-schedules/:adminId"],
+  ["Admin/Audit", "admin.schedule.override", "Legacy schedule override", "write", true, true, "/admin/work-schedules", "POST/DELETE /api/admin/work-schedules/:adminId/override"],
+].filter((item) => PERMISSIONS.includes(item[1])).map(([group, key, label, access, requiresReason, auditRequired, linkedPage, linkedApi]) => ({
+  group,
+  key,
+  label,
+  access,
+  requiresReason,
+  auditRequired,
+  linkedPage,
+  linkedApi,
+}));
 const SENSITIVE_REASON_PATTERNS = [
   /postgres(?:ql)?:\/\/[^\s"']+/gi,
   /\b[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\b/g,
@@ -239,6 +293,19 @@ function assertKnownPermissions(permissions) {
   }
 }
 
+function assertAssignableRolePermissions(role, permissions) {
+  if (isOwnerRole(role)) {
+    const error = new Error("owner/super_admin permissions are controlled by guard and cannot be edited");
+    error.statusCode = 400;
+    throw error;
+  }
+  if ((permissions || []).includes("*") || (permissions || []).includes("admin.manage")) {
+    const error = new Error("Forbidden permission key for role assignment");
+    error.statusCode = 400;
+    throw error;
+  }
+}
+
 function normalizeReason(reason) {
   let value = String(reason || "").trim();
   if (!value) {
@@ -248,6 +315,154 @@ function normalizeReason(reason) {
   }
   for (const pattern of SENSITIVE_REASON_PATTERNS) value = value.replace(pattern, "[REDACTED]");
   return value.slice(0, 500);
+}
+
+function permissionCatalog() {
+  const detailByKey = new Map(PERMISSION_DETAILS.map((item) => [item.key, item]));
+  return PERMISSIONS.map((key) => detailByKey.get(key) || {
+    group: "General Admin",
+    key,
+    label: key,
+    access: key.includes(".update") || key.includes(".approve") || key.includes(".create") ? "write" : "read",
+    requiresReason: key.includes(".update") || key.includes(".approve") || key.includes(".create"),
+    auditRequired: key.includes(".update") || key.includes(".approve") || key.includes(".create"),
+    linkedPage: "Admin console",
+    linkedApi: "See docs/API.md",
+  });
+}
+
+function maxDate(rows, fallback = null) {
+  return rows.reduce((latest, row) => {
+    const value = row && row.updatedAt ? new Date(row.updatedAt).getTime() : 0;
+    return value > latest.value ? { value, date: row.updatedAt } : latest;
+  }, { value: 0, date: fallback }).date;
+}
+
+function formatRoleSummary(role, rows = []) {
+  const latestOverride = rows
+    .slice()
+    .sort((a, b) => new Date(b.updatedAt || 0).getTime() - new Date(a.updatedAt || 0).getTime())
+    .find((row) => normalizePermissionList(row.permissions));
+  const overridePermissions = latestOverride ? normalizePermissionList(latestOverride.permissions) : null;
+  return {
+    role,
+    description: ROLE_DESCRIPTIONS[role] || "Backend role catalog",
+    permissions: overridePermissions || ROLE_PERMISSIONS[role] || [],
+    defaultPermissions: ROLE_PERMISSIONS[role] || [],
+    source: overridePermissions ? "site_override" : "role",
+    siteCode: null,
+    adminCount: rows.length,
+    status: "active",
+    updatedAt: maxDate(rows),
+    protected: isOwnerRole(role),
+  };
+}
+
+async function listRoles({ siteId = null, siteCode = null } = {}) {
+  const accessRows = siteId
+    ? await prisma.adminSiteAccess.findMany({
+        where: { siteId },
+        select: { role: true, permissions: true, updatedAt: true },
+      })
+    : [];
+  return Object.keys(ROLE_PERMISSIONS).map((role) => ({
+    ...formatRoleSummary(role, accessRows.filter((row) => row.role === role)),
+    siteCode,
+  }));
+}
+
+async function getRole({ role, siteId = null, siteCode = null }) {
+  assertKnownRole(role);
+  const rows = siteId
+    ? await prisma.adminSiteAccess.findMany({
+        where: { siteId, role },
+        select: { role: true, permissions: true, updatedAt: true },
+      })
+    : [];
+  return { ...formatRoleSummary(role, rows), siteCode };
+}
+
+async function updateRolePermissions({ role, permissions, reason, actor = null, req = null, siteId, siteCode = null }) {
+  assertKnownRole(role);
+  const normalizedPermissions = normalizePermissionList(permissions);
+  if (!Array.isArray(permissions) || !normalizedPermissions || normalizedPermissions.length !== permissions.length) {
+    assertKnownPermissions(Array.isArray(permissions) ? permissions : []);
+    const error = new Error("permissions must be an array of known permission keys");
+    error.statusCode = 400;
+    throw error;
+  }
+  assertKnownPermissions(normalizedPermissions);
+  assertAssignableRolePermissions(role, normalizedPermissions);
+  const auditReason = normalizeReason(reason);
+
+  const updated = await prisma.$transaction(async (tx) => {
+    const rows = await tx.adminSiteAccess.findMany({
+      where: { siteId, role },
+      include: {
+        admin: { select: { id: true, username: true, role: true, status: true } },
+      },
+      orderBy: { createdAt: "asc" },
+    });
+    if (actor && !isOwnerRole(actor.role) && rows.some((row) => row.adminId === actor.id)) {
+      const error = new Error("You cannot change permissions for your own role in this staging UI.");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const beforeRows = rows.map((row) => ({
+      adminId: row.adminId,
+      username: row.admin && row.admin.username,
+      permissions: normalizePermissionList(row.permissions) || ROLE_PERMISSIONS[role] || [],
+    }));
+
+    for (const row of rows) {
+      await tx.adminSiteAccess.update({
+        where: { adminId_siteId: { adminId: row.adminId, siteId } },
+        data: { permissions: preserveAccessMetadata(normalizedPermissions, row.permissions) },
+      });
+    }
+
+    if (actor && siteId) {
+      await logAdminAction({
+        tx,
+        admin: actor,
+        action: "admin.role.permissions.update",
+        targetType: "role",
+        targetId: role,
+        metadata: {
+          action: "admin.role.permissions.update",
+          actor: { id: actor.id, username: actor.username, role: actor.role },
+          role,
+          reason: auditReason,
+          siteCode,
+          changedAdminCount: rows.length,
+          beforePermissionCount: beforeRows.length ? beforeRows[0].permissions.length : ROLE_PERMISSIONS[role].length,
+          afterPermissionCount: normalizedPermissions.length,
+        },
+        before: {
+          role,
+          permissions: beforeRows.length ? beforeRows[0].permissions : ROLE_PERMISSIONS[role],
+          affectedAdmins: beforeRows,
+        },
+        after: {
+          role,
+          permissions: normalizedPermissions,
+          affectedAdminCount: rows.length,
+        },
+        req,
+        siteId,
+      });
+    }
+
+    return rows.length;
+  });
+
+  return {
+    ...(await getRole({ role, siteId, siteCode })),
+    permissions: normalizedPermissions,
+    source: "site_override",
+    updatedAdminCount: updated,
+  };
 }
 
 async function assignRole({ adminId, siteId, siteCode = null, role, permissions = null, reason, actor = null, req = null }) {
@@ -260,6 +475,11 @@ async function assignRole({ adminId, siteId, siteCode = null, role, permissions 
   if (!admin) {
     const error = new Error("Admin not found");
     error.statusCode = 404;
+    throw error;
+  }
+  if (isOwnerRole(role) && actor && !isOwnerRole(actor.role)) {
+    const error = new Error("Only owner/super_admin can assign owner/super_admin roles");
+    error.statusCode = 403;
     throw error;
   }
   if (actor && actor.id === adminId) {
@@ -348,9 +568,14 @@ module.exports = {
   PERMISSIONS,
   ROLES,
   ROLE_PERMISSIONS,
+  PERMISSION_DETAILS,
   isOwnerRole,
+  permissionCatalog,
+  listRoles,
+  getRole,
   resolveAdminPermissions,
   getAdminPermissions,
   adminHasPermission,
   assignRole,
+  updateRolePermissions,
 };

@@ -153,7 +153,11 @@ The permissions below are not backend permissions today. Do not send them to the
 - API `403` means show `ไม่มีสิทธิ์ใช้งาน`, keep the user on the current screen when possible, and refresh current permissions if the UI may be stale.
 - API `401` means clear the admin session and return to login.
 - Frontend must call `GET /api/admin/permissions/me` after admin login or site switch and use the returned effective permissions for UI gating.
-- Frontend role-management screens must use `GET /api/admin/permissions`, `GET /api/admin/roles`, `GET /api/admin/admins/:id/permissions`, and `PATCH /api/admin/admins/:id/role`; all require `admin.manage` except current-admin permission read.
+- Frontend role-management screen is served at `/admin/roles` and shares the guarded admin UI assets with `/admin/work-schedules`.
+- Role Management uses `GET /api/admin/permissions/me`, `GET /api/admin/permissions/catalog`, `GET /api/admin/roles`, `GET /api/admin/roles/:role`, `GET /api/admin/admins/:id/permissions`, `PATCH /api/admin/roles/:role/permissions`, and `PATCH /api/admin/admins/:id/role`.
+- Role list/detail requires `admin.roles.view` or legacy `admin.manage`. Permission assignment and admin role assignment require `admin.roles.update` or legacy `admin.manage`.
+- Permission assignment shows grouped rows with checkbox, permission key, label, group, read/write, reason/audit requirement, linked page, and linked API. Save is disabled until there is an unsaved change and a reason.
+- Permission assignment writes `admin.role.permissions.update`, refreshes role permissions after save, and uses `AdminSiteAccess.permissions` for site-level overrides. Protected `owner`/`super_admin` permissions are shown as “Allowed by owner/super_admin guard” and are not editable.
 - Frontend work-schedule screen is served at `/admin/work-schedules` and uses `GET /api/admin/work-schedules`, `GET /api/admin/work-schedules/:adminId`, `PATCH /api/admin/work-schedules/:adminId`, `POST /api/admin/work-schedules/:adminId/override`, `DELETE /api/admin/work-schedules/:adminId/override`, and `GET /api/admin/work-schedules/:adminId/audit-logs`; backend accepts the schedule-specific permission or `admin.manage`.
 - Frontend audit/security screen is served at `/admin/audit-security` and uses `GET /api/admin/permissions/me`, `GET /api/admin/audit-logs`, `GET /api/admin/audit-logs/summary`, `GET /api/admin/security-events`, and `GET /api/admin/security-events/summary`; backend requires `admin.audit.view` or `wheel.audit.view` for audit logs and `admin.security.view` for security events.
 - Admin Lucky Wheel screen is served at `/admin-wheel` and `/admin/lucky-wheel/`. It uses `GET /api/admin/permissions/me` for the permission summary panel. Missing view permission shows `ไม่มีสิทธิ์เข้าถึง`; missing write permission disables Save/Add/Edit/Claim/Cancel with `ไม่มีสิทธิ์ดำเนินการนี้`.
@@ -172,7 +176,7 @@ The permissions below are not backend permissions today. Do not send them to the
 - Active emergency override permits temporary login until `expiresAt`. Expired overrides do not permit login.
 - Audit/security report responses mask IP addresses, omit raw user-agent, classify actions into module/result/severity, and sanitize metadata before returning it.
 - Responses must not leak secrets. Existing docs require responses to strip password hashes and encrypted provider/payment secrets, and smoke tests scan for secret-shaped values.
-- Business mutations listed in `docs/API.md` write admin log actions where implemented, such as member block/unblock, credit changes, deposit/withdrawal approvals, bank-account approval, site/config changes, `admin.role.update`, schedule update/enable/disable, override enable/disable, and schedule-blocked login.
+- Business mutations listed in `docs/API.md` write admin log actions where implemented, such as member block/unblock, credit changes, deposit/withdrawal approvals, bank-account approval, site/config changes, `admin.role.update`, `admin.role.permissions.update`, schedule update/enable/disable, override enable/disable, and schedule-blocked login.
 
 ## 9. Smoke Coverage
 
@@ -187,7 +191,7 @@ The permissions below are not backend permissions today. Do not send them to the
 - No-permission/site override requests returning `403`.
 - Forbidden action checks returning `403`.
 - Response leak scan for DB URL markers, auth values, password/token/secret markers, JWT-like values, and credential-shaped PostgreSQL URLs.
-- `adminRoleManagementSmoke.js` covers owner role-management access, target admin permission reads, non-owner `403` role-update attempts, role assignment to support/graphic/viewer, rollback to the original role, `admin.role.update` audit log presence, and response leak scan.
+- `adminRoleManagementSmoke.js` covers static `/admin/roles` UI contract, owner role-management access, permission metadata, target admin permission reads, non-owner `403` role-update attempts, role permission assignment/revoke rollback with `admin.role.permissions.update`, admin role assignment rollback with `admin.role.update`, and response leak scan.
 - `adminWorkScheduleSmoke.js` covers unauthenticated schedule `401`, no-permission `403`, owner schedule read/update, active/disabled emergency override, login outside schedule `403` without token, login inside schedule allow, expired override block, overnight shift helper behavior, schedule rollback, audit log actions, and response leak scan.
 - `adminWorkScheduleUiSmoke.js` covers the static schedule UI route/assets, owner UI API flow, no-permission block, emergency override flow, masked audit history, and response leak scan.
 - `adminAuditSecuritySmoke.js` covers the static audit/security UI route/assets, summary endpoints, list endpoints, action/admin/target/date/severity/module/result filters, no-permission `403`, empty response shape, masked IP, raw user-agent omission, and response leak scan.
@@ -195,7 +199,7 @@ The permissions below are not backend permissions today. Do not send them to the
 ## 10. Known Gaps
 
 - Broader frontend menu hiding and disabled buttons remain a documentation contract outside the static pages implemented in this repo.
-- Role UI management is limited to backend admin permission endpoints; a complete role-management UI remains a later phase if it does not already exist in the frontend.
+- Role Management UI is implemented at `/admin/roles` for role list/detail, permission matrix, before/after preview, reason-required save, refresh, and audit shortcut. It does not create admins or introduce a new RBAC table.
 - Admin work schedule static frontend is implemented at `/admin/work-schedules`; backend API and login guard are available. Force-logout of already-active sessions is not implemented yet.
 - Admin audit/security static frontend is implemented at `/admin/audit-security`; browser-rendered visual regression is not covered by the local smoke script.
 - Production/live provider, payment, bank, SMS, Slip OCR, and real-money behavior are out of scope for this contract.

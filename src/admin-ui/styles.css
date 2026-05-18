@@ -189,6 +189,24 @@ p {
   box-shadow: none;
 }
 
+.toolbar.inline-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 12px;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.secondary-link {
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
 .eyebrow {
   display: block;
   color: var(--accent);
@@ -380,6 +398,34 @@ th {
   flex-wrap: wrap;
   gap: 8px;
   padding: 12px;
+}
+
+.preview-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px;
+}
+
+.preview-grid h3 {
+  margin: 0 0 10px;
+  font-size: 14px;
+  letter-spacing: 0;
+}
+
+.compact-detail {
+  grid-template-columns: 140px minmax(0, 1fr);
+}
+
+.role-save-panel {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.role-matrix-scroll table {
+  min-width: 1180px;
 }
 
 .permission-chip {
@@ -579,6 +625,7 @@ button:disabled.is-loading::after {
   .token-row,
   .status-grid,
   .role-layout,
+  .preview-grid,
   .form-grid,
   .day-grid,
   .detail-grid,

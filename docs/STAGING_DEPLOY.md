@@ -164,6 +164,7 @@ Lucky Wheel staging notes:
 - Lucky Wheel must not trigger real payout, real wallet payout, live provider calls, real payment rails, bank rails, SMS, or Slip OCR.
 - Use `npm run smoke:admin-wheel-runtime`, `npm run smoke:wheel`, and `npm run smoke:staging-uat` only against local/staging/test targets with mock/sandbox modes. Missing local runtime env may skip safely, but production-like targets must remain blocked.
 - Use `node src\local-smoke-tests\adminWheelUiSmoke.js` for the Admin Wheel static/manual-QA contract before browser handoff.
+- Use `node src\local-smoke-tests\adminRoleManagementSmoke.js` for `/admin/roles` static/API contract before Role Management UAT. It stays staging/mock/sandbox only and must not touch production DB, live provider/payment/bank/SMS/Slip OCR, or real-money flows.
 
 ## Required ENV Checklist
 
@@ -323,6 +324,7 @@ After deploy:
 - Confirm `GET /api/health` returns `success: true`, `data.ok: true`, and boolean `data.databaseConnected`.
 - Confirm external mode labels are `mock`, `sandbox`, or `disabled`.
 - Open `https://stukuto-real-core-staging.onrender.com/admin-wheel` for Phase C Admin Wheel UI Manual QA + Handoff.
+- Open `https://stukuto-real-core-staging.onrender.com/admin/roles` for Phase E Admin Role Management UI checks when staging admin credentials are available.
 - Run staging preflight and staging smoke against the Render staging API.
 - Run guarded DB migration, demo seed if needed, DB check, and UAT smoke before UAT handoff.
 - After every staging deploy that affects Admin Wheel UI or wheel APIs, run `npm run smoke:staging-uat`.
@@ -336,6 +338,7 @@ npm run staging:preflight
 npm run smoke:staging
 npm run staging:db:check
 node src\local-smoke-tests\adminWheelUiSmoke.js
+node src\local-smoke-tests\adminRoleManagementSmoke.js
 npm run smoke:admin-wheel-runtime
 npm run smoke:wheel
 npm run smoke:staging-uat

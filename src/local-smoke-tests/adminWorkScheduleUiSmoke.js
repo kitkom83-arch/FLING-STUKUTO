@@ -327,6 +327,8 @@ async function assertStaticUi(baseUrl) {
     "x-site-code",
     "SITE_CODE = \"PG77\"",
     "/admin/permissions/me",
+    "/admin/permissions/catalog",
+    "/admin/roles",
     "/admin/work-schedules",
     "/override",
     "/audit-logs",
@@ -380,8 +382,8 @@ async function assertStaticUi(baseUrl) {
     throw new Error("Enable/disable handler must validate reason before API call.");
   }
   const roleReasonIndex = js.indexOf("const reason = validateReasonBeforeConfirm(els.roleEditReason, els.roleEditReasonError)");
-  const roleToastIndex = js.indexOf("Role update endpoint not available in staging demo");
-  if (roleReasonIndex === -1 || roleToastIndex === -1 || roleReasonIndex > roleToastIndex) {
+  const roleApiIndex = js.indexOf("/admin/roles/${encodeURIComponent(state.selectedRole.role)}/permissions");
+  if (roleReasonIndex === -1 || roleApiIndex === -1 || roleReasonIndex > roleApiIndex) {
     throw new Error("Role permission edit must validate reason before any save/confirm path.");
   }
   const assignmentValidationIndex = js.indexOf("validateRoleAssignmentBeforeConfirm()");

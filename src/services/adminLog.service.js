@@ -11,8 +11,8 @@ const SENSITIVE_VALUE_PATTERNS = [
 ];
 const REDACTED = "[REDACTED]";
 
-const ROLE_ACTIONS = new Set(["admin.role.update"]);
-const PERMISSION_ACTIONS = new Set(["admin.role.update"]);
+const ROLE_ACTIONS = new Set(["admin.role.update", "admin.role.permissions.update"]);
+const PERMISSION_ACTIONS = new Set(["admin.role.update", "admin.role.permissions.update"]);
 const SCHEDULE_ACTIONS = new Set([
   "admin.schedule.update",
   "admin.schedule.enable",

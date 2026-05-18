@@ -27,8 +27,8 @@ Owner and `super_admin` keep the existing bypass behavior and receive every perm
 | --- | --- | --- | --- | --- | --- | --- |
 | `admin.audit.view` | Audit/security report | `GET /api/admin/audit-logs`, `GET /api/admin/audit-logs/summary` | read | No | No | Full safe audit log view; masked IP, no raw user-agent. |
 | `admin.security.view` | Audit/security report | `GET /api/admin/security-events`, `GET /api/admin/security-events/summary` | read | No | No | Security-event read only; no secrets or raw session data. |
-| `admin.roles.view` | Admin role/permission screens | `GET /api/admin/permissions`, `GET /api/admin/roles`, `GET /api/admin/admins/:id/permissions` | read | No | No | Shows permission keys only, not credentials. |
-| `admin.roles.update` | Admin role assignment | `PATCH /api/admin/admins/:id/role` | write | Yes | Yes, `admin.role.update` | Uses existing self-update guard and secret-shaped reason redaction. |
+| `admin.roles.view` | Admin role/permission screens | `GET /api/admin/permissions`, `GET /api/admin/permissions/catalog`, `GET /api/admin/roles`, `GET /api/admin/roles/:role`, `GET /api/admin/admins/:id/permissions` | read | No | No | Shows permission keys/metadata only, not credentials. |
+| `admin.roles.update` | Admin role and permission assignment | `PATCH /api/admin/admins/:id/role`, `PATCH /api/admin/roles/:role/permissions` | write | Yes | Yes, `admin.role.update`, `admin.role.permissions.update` | Uses existing self-update guard, blocks protected owner/super_admin permission edits, blocks `admin.manage` grants through role-permission assignment, and redacts secret-shaped reason text. |
 | `admin.workSchedule.view` | Work schedule screens | `GET /api/admin/work-schedules`, `GET /api/admin/work-schedules/:adminId`, audit aliases | read | No | No | Existing `admin.schedule.view` remains accepted for compatibility. |
 | `admin.workSchedule.update` | Work schedule update | `PATCH /api/admin/work-schedules/:adminId` | write | Yes | Yes, `admin.schedule.update` and enable/disable actions | Existing `admin.schedule.update` remains accepted for compatibility. |
 
@@ -47,5 +47,7 @@ Owner and `super_admin` keep the existing bypass behavior and receive every perm
 - No view permission: tab shows `ไม่มีสิทธิ์เข้าถึง` and does not load that API data.
 - No write permission: action buttons are disabled with `ไม่มีสิทธิ์ดำเนินการนี้`.
 - Every write path requires a non-empty `reason` before submission and must create the existing audit action.
+- Role permission assignment is exposed at `/admin/roles`. It previews before/after permissions, disables Save until a change and reason exist, and writes `admin.role.permissions.update`.
+- `owner` and `super_admin` are allowed by guard and are not edited through the role-permission matrix. Normal roles are deny by default and use only catalog keys stored in `AdminSiteAccess.permissions` for the current site.
 - Read views must not display raw tokens, auth headers, passwords, secrets, database URLs, raw stacks, raw user-agent strings, or raw unmasked IPs.
 - Member spin result and `prizeIndex` remain backend-selected only.

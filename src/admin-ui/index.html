@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Admin Work Schedule</title>
+    <title>Admin Role Management</title>
     <link rel="stylesheet" href="/admin/work-schedules/styles.css" />
   </head>
   <body>
@@ -18,7 +18,7 @@
         </div>
         <nav class="nav-list">
           <a href="#permissions" class="nav-link active">Permission Guard</a>
-          <a href="#role-management" class="nav-link">Role Management</a>
+          <a href="/admin/roles/" class="nav-link">Role Management</a>
           <a href="#schedule" class="nav-link">Work Schedule</a>
           <a href="#audit" class="nav-link">Audit History</a>
           <a href="/admin/lucky-wheel/" class="nav-link">Lucky Wheel</a>
@@ -28,8 +28,8 @@
       <section class="workspace">
         <header class="topbar">
           <div>
-            <h1>Admin Work Schedule</h1>
-            <p>Manage admin login windows, emergency access, and schedule audit history.</p>
+            <h1>Admin Role Management</h1>
+            <p>Manage role permissions, preview effective access, and keep Admin Work Schedule/audit controls guarded.</p>
           </div>
           <div class="session-panel">
             <label for="admin-token">Admin token</label>
@@ -76,6 +76,14 @@
             <span>Backend enforced status</span>
             <strong id="backend-enforced">Yes</strong>
           </article>
+          <article class="status-card">
+            <span>Last updated</span>
+            <strong id="role-last-refresh">-</strong>
+          </article>
+          <article class="status-card">
+            <span>Response leak warning</span>
+            <strong id="response-leak-warning">Safe display only</strong>
+          </article>
         </section>
 
         <section class="table-section" id="permission-matrix">
@@ -108,6 +116,10 @@
           </div>
           <div class="role-layout">
             <div>
+              <div class="toolbar inline-toolbar">
+                <button id="refresh-roles" type="button" disabled>Refresh roles</button>
+                <a class="secondary-link" href="#audit">Audit history shortcut</a>
+              </div>
               <div id="role-empty" class="empty-state">No records.</div>
               <div id="role-list" class="role-list"></div>
             </div>
@@ -119,17 +131,67 @@
               <dl class="detail-grid">
                 <dt>Description</dt>
                 <dd id="role-description">-</dd>
+                <dt>Site code</dt>
+                <dd id="role-site-code">PG77</dd>
                 <dt>Permission count</dt>
                 <dd id="role-permission-count">-</dd>
                 <dt>Admin count</dt>
                 <dd id="role-admin-count">-</dd>
+                <dt>Status</dt>
+                <dd id="role-status">-</dd>
                 <dt>Last updated</dt>
                 <dd id="role-last-updated">Read-only catalog</dd>
                 <dt>Updated by</dt>
                 <dd id="role-updated-by">Backend role defaults</dd>
               </dl>
+              <div id="role-owner-warning" class="note hidden">Allowed by owner/super_admin guard. Direct permission assignment is disabled for protected roles.</div>
+              <div id="role-self-warning" class="note hidden">Changing permissions for your own role can lock you out. Backend blocks unsafe self-role permission writes.</div>
+              <div id="role-unsaved" class="note hidden">Unsaved changes: review before/after and enter a reason before saving.</div>
+              <div class="preview-grid">
+                <section>
+                  <h3>Effective permission preview</h3>
+                  <dl class="detail-grid compact-detail" id="effective-preview"></dl>
+                </section>
+                <section>
+                  <h3>Before / after</h3>
+                  <dl class="detail-grid compact-detail">
+                    <dt>Before</dt>
+                    <dd id="role-preview-before">-</dd>
+                    <dt>After</dt>
+                    <dd id="role-preview-after">-</dd>
+                  </dl>
+                </section>
+              </div>
+              <div class="role-save-panel">
+                <div class="field">
+                  <label for="role-permission-reason">Reason</label>
+                  <textarea id="role-permission-reason" rows="3" maxlength="500" aria-describedby="role-permission-reason-error" placeholder="Required for audit context"></textarea>
+                  <p id="role-permission-reason-error" class="field-error hidden"></p>
+                </div>
+                <div class="actions">
+                  <button id="reset-role-permissions" type="button" class="secondary" disabled>Reset changes</button>
+                  <button id="save-role-permission-assignment" type="button" disabled>Save permission assignment</button>
+                </div>
+              </div>
+              <div class="table-scroll role-matrix-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Enabled</th>
+                      <th>Permission key</th>
+                      <th>Label</th>
+                      <th>Group</th>
+                      <th>Read/write</th>
+                      <th>Reason</th>
+                      <th>Audit</th>
+                      <th>Linked page</th>
+                      <th>Linked API</th>
+                    </tr>
+                  </thead>
+                  <tbody id="role-permission-matrix-rows"></tbody>
+                </table>
+              </div>
               <div class="permission-chip-list" id="role-permissions"></div>
-              <p class="note">Role definition update endpoint is not available in staging demo. Admin role assignment API is audited by backend.</p>
             </div>
           </div>
           <div class="section-heading compact-heading">

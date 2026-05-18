@@ -53,6 +53,7 @@ Never paste real tokens, passwords, API keys, provider secrets, callback secrets
 - Confirm `BASE_URL` is set to the staging API and `npm run smoke:staging` passes.
 - Confirm `npm run smoke:admin-work-schedule` passes before validating admin schedule UI behavior in staging.
 - Confirm `npm run smoke:admin-work-schedule-ui` passes before UAT on `/admin/work-schedules`.
+- Confirm `node src\local-smoke-tests\adminRoleManagementSmoke.js` passes before UAT on `/admin/roles` when a safe local/staging DB-backed target and staging-only admin credentials are available.
 - Confirm `npm run smoke:admin-audit-security` passes before UAT on `/admin/audit-security` when a safe DB-backed staging/local target is available.
 - Confirm local smoke commands are run only after the backend is pointed at the approved safe target.
 - Confirm logs redact database URLs, JWTs, tokens, API keys, callback secrets, provider payloads, passwords, and raw authorization headers.
@@ -84,6 +85,7 @@ Use this checklist when handing staging to testers. It authorizes staging UAT on
 - Safe negative login test: invalid admin login must return a controlled JSON failure such as `401`/auth failure and must not return `500`, token values, password hints, stack traces, or secret-shaped data.
 - Admin schedule UI scope: testers may verify schedule list/read/update behavior, emergency override behavior, schedule-blocked login behavior, and masked audit history for staging demo admins only.
 - Audit/security UI scope: testers may verify audit log filters, security event filters, summary counts, empty states, masked IP values, and safe detail modals only.
+- Role Management UI scope: testers may open `/admin/roles`, review grouped permission matrix rows, preview effective permissions, assign/revoke permissions for non-owner roles only, enter a required reason, confirm `admin.role.permissions.update` audit history, and verify Save stays disabled without a change plus reason.
 - Rollback condition: stop handoff and roll back or disable staging access if health fails, DB disconnects, smoke fails, an invalid login returns `500`, any secret-shaped value appears, any external mode is `live`, or any real-money/provider/bank path is reachable.
 - NO live money/provider mode: game provider, payment, bank statement, SMS, and Slip OCR must stay `mock`, `sandbox`, or `disabled`; live mode is not approved for this handoff.
 - Demo credentials must live in Render Environment/Secrets, a password manager, or another approved secret manager only. Do not write them into docs, logs, commits, screenshots, issue trackers, or chat.
@@ -174,6 +176,7 @@ Phase C is Admin Wheel UI Manual QA + Handoff. Use `docs/ADMIN_WHEEL_HANDOFF.md`
 - Member my rewards: verify `GET /api/member/wheel/my-rewards` returns sanitized pending/claimed/expired rows or an empty array.
 - Admin wheel campaign config: verify `GET /api/admin/wheel/config` and campaign edits require staging admin auth plus non-empty `reason`.
 - Admin wheel permission panel: verify `/admin-wheel` reads `GET /api/admin/permissions/me`, shows only safe role/site/can-do summary values, and does not render raw permission objects.
+- Admin role management: verify `/admin/roles` reads `GET /api/admin/permissions/me`, `GET /api/admin/permissions/catalog`, and `GET /api/admin/roles`; owner/super_admin are shown as guard-protected; normal-role writes require reason and create `admin.role.permissions.update`.
 - Admin rewards: verify create/edit reward uses staging/mock data only and rejects empty `reason`.
 - Admin Reward Claims: verify list filters for date range, member, reward type, status, campaign, and source spin ID; verify claim/cancel rejects empty `reason`, creates audit, and never changes reward value or performs live payout.
 - Admin spin history: verify `GET /api/admin/wheel/spins` returns sanitized rows, supports reward ID filtering, and shows masked IP plus user-agent hash only when available.

@@ -59,7 +59,20 @@ const canAuditLogs = async (req, res, next) => {
 router.get("/me", protectedSite, asyncHandler(adminController.me));
 router.get("/permissions/me", protectedSite, asyncHandler(adminPermissionController.me));
 router.get("/permissions", protectedSite, canAny(["admin.roles.view", "admin.manage"]), asyncHandler(adminPermissionController.listPermissions));
+router.get(
+  "/permissions/catalog",
+  protectedSite,
+  canAny(["admin.roles.view", "admin.security.view", "admin.manage"]),
+  asyncHandler(adminPermissionController.listPermissionCatalog)
+);
 router.get("/roles", protectedSite, canAny(["admin.roles.view", "admin.manage"]), asyncHandler(adminPermissionController.listRoles));
+router.get("/roles/:role", protectedSite, canAny(["admin.roles.view", "admin.manage"]), asyncHandler(adminPermissionController.roleDetail));
+router.patch(
+  "/roles/:role/permissions",
+  protectedSite,
+  canAny(["admin.roles.update", "admin.manage"]),
+  asyncHandler(adminPermissionController.patchRolePermissions)
+);
 router.get("/admins/:id/permissions", protectedSite, canAny(["admin.roles.view", "admin.manage"]), asyncHandler(adminPermissionController.getAdmin));
 router.patch("/admins/:id/role", protectedSite, canAny(["admin.roles.update", "admin.manage"]), asyncHandler(adminPermissionController.assignAdminRole));
 router.get(

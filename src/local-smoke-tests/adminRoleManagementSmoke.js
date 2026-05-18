@@ -60,6 +60,12 @@ function ensureApiPath(baseUrl) {
   return trimmed;
 }
 
+function webBaseFromApi(baseUrl) {
+  const parsed = parseUrl(baseUrl);
+  if (!parsed) throw new Error("BASE_URL must be a valid URL.");
+  return `${parsed.protocol}//${parsed.host}`;
+}
+
 function configuredBaseUrl() {
   if (process.env.BASE_URL) return ensureApiPath(process.env.BASE_URL);
   if (process.env.CORE_API_BASE_URL) return ensureApiPath(process.env.CORE_API_BASE_URL);
@@ -285,6 +291,81 @@ async function apiRequest(baseUrl, path, options = {}) {
   return { status: response.status, data: payload.data, payload };
 }
 
+async function fetchText(url, label) {
+  const response = await fetch(url, { headers: { Accept: "text/html,*/*" } });
+  if (!response.ok) throw new Error(`${label} returned ${response.status}`);
+  const text = await response.text();
+  if (/postgres(?:ql)?:\/\/[^\s"']+|database_url|Bearer\s+/i.test(text)) throw new Error(`${label} included unsafe text.`);
+  return text;
+}
+
+function visibleTextFromHtml(html) {
+  return String(html || "")
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function assertNoUnsafeStatic(label, text, { checkVisibleText = true } = {}) {
+  const rendered = visibleTextFromHtml(text).replaceAll("Admin token", "").replaceAll("Use token", "");
+  for (const marker of ["undefined", "NaN", "[object Object]"]) {
+    if (rendered.includes(marker)) throw new Error(`${label} rendered placeholder text: ${marker}`);
+  }
+  if (checkVisibleText && /\b(password|token|secret|DATABASE_URL|Authorization|JWT)\b/i.test(rendered)) {
+    throw new Error(`${label} rendered sensitive keyword copy.`);
+  }
+  const jwtLike = /\b[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\b/;
+  const postgresWithCredentials = /postgres(?:ql)?:\/\/[^:\s/]+:[^@\s/]+@/i;
+  if (jwtLike.test(text)) throw new Error(`${label} included a JWT-like static value.`);
+  if (postgresWithCredentials.test(text)) throw new Error(`${label} included a PostgreSQL credential URL.`);
+}
+
+async function assertStaticRoleManagementUi(baseUrl) {
+  const webBase = webBaseFromApi(baseUrl);
+  const html = await fetchText(`${webBase}/admin/roles/`, "admin role management page");
+  for (const marker of [
+    "Admin Role Management",
+    "Role Management / Admin Permission",
+    "Permission matrix",
+    "Effective permission preview",
+    "Audit history shortcut",
+    "Response leak warning",
+    "Save permission assignment",
+    "Reset changes",
+    "Reason",
+    "Before / after",
+    "wheel.view",
+    "admin.audit.view",
+    "admin.roles.update",
+  ]) {
+    if (!html.includes(marker)) throw new Error(`Role Management UI missing marker: ${marker}`);
+  }
+  if (/owner override|super_admin override|wildcard|\*\s*permission/i.test(visibleTextFromHtml(html))) {
+    throw new Error("Role Management UI exposed an unsafe owner/super_admin bypass control.");
+  }
+  assertNoUnsafeStatic("admin role management page", html);
+
+  const js = await fetchText(`${webBase}/admin/roles/app.js`, "admin role management app.js");
+  for (const marker of [
+    "/admin/permissions/me",
+    "/admin/permissions/catalog",
+    "/admin/roles",
+    "/admin/roles/${encodeURIComponent(state.selectedRole.role)}/permissions",
+    "validateReasonBeforeConfirm",
+    "Confirm role permission assignment",
+    "rolePermissionChanged",
+    "Self role permission update is blocked",
+    "owner/super_admin permissions are controlled by guard",
+  ]) {
+    if (!js.includes(marker)) throw new Error(`Role Management JS missing marker: ${marker}`);
+  }
+  if (js.includes("/member/wheel/spin")) throw new Error("Role Management UI must not call member spin endpoint.");
+  assertNoUnsafeStatic("admin role management app.js", js, { checkVisibleText: false });
+  console.log("Static role management UI route: PASS");
+}
+
 function requireString(value, label) {
   if (typeof value !== "string" || !value) throw new Error(`${label} was missing from API response.`);
   return value;
@@ -410,6 +491,17 @@ async function runOwnerAccessChecks(baseUrl, ownerAuth, targetId) {
     if (!roles.data.some((item) => item.role === role)) throw new Error(`Role list did not include ${role}.`);
   }
 
+  const catalog = await apiRequest(baseUrl, "/admin/permissions/catalog", {
+    authValue: ownerAuth,
+    label: "owner permission metadata catalog",
+  });
+  requireArray(catalog.data, "Permission metadata catalog");
+  for (const permission of ["wheel.view", "admin.audit.view", "admin.roles.update"]) {
+    if (!catalog.data.some((item) => item && item.key === permission)) {
+      throw new Error(`Permission metadata catalog did not include ${permission}.`);
+    }
+  }
+
   const me = await apiRequest(baseUrl, "/admin/permissions/me", {
     authValue: ownerAuth,
     label: "owner current permissions",
@@ -427,6 +519,86 @@ async function runOwnerAccessChecks(baseUrl, ownerAuth, targetId) {
   }
 
   console.log("Owner access: PASS");
+}
+
+async function runRolePermissionAssignmentChecks(baseUrl, ownerAuth, supportAuth) {
+  await expectStatus(baseUrl, "/admin/roles/support/permissions", {
+    method: "PATCH",
+    status: 401,
+    label: "role permission update unauth",
+    body: { permissions: ["members.view"], reason: "local role permission unauth" },
+  });
+  await expectStatus(baseUrl, "/admin/roles/support/permissions", {
+    method: "PATCH",
+    authValue: supportAuth,
+    status: 403,
+    label: "support role permission update forbidden",
+    body: { permissions: ["members.view"], reason: "local role permission denied" },
+  });
+  await expectStatus(baseUrl, "/admin/roles/support/permissions", {
+    method: "PATCH",
+    authValue: ownerAuth,
+    status: 400,
+    label: "role permission missing reason",
+    body: { permissions: ["members.view"], reason: "   " },
+  });
+  await expectStatus(baseUrl, "/admin/roles/support/permissions", {
+    method: "PATCH",
+    authValue: ownerAuth,
+    status: 400,
+    label: "role permission invalid key",
+    body: { permissions: ["members.view", "owner.override"], reason: "local role permission invalid key" },
+  });
+  await expectStatus(baseUrl, "/admin/roles/owner/permissions", {
+    method: "PATCH",
+    authValue: ownerAuth,
+    status: 400,
+    label: "owner role permission protected",
+    body: { permissions: ["members.view"], reason: "local role permission owner block" },
+  });
+  await expectStatus(baseUrl, "/admin/roles/support/permissions", {
+    method: "PATCH",
+    authValue: ownerAuth,
+    status: 400,
+    label: "admin manage permission forbidden",
+    body: { permissions: ["members.view", "admin.manage"], reason: "local role permission admin manage block" },
+  });
+
+  const update = await apiRequest(baseUrl, "/admin/roles/support/permissions", {
+    method: "PATCH",
+    authValue: ownerAuth,
+    label: "owner update support role permissions",
+    body: {
+      permissions: ["members.view", "wheel.view", "wheel.claims.view", "admin.audit.view"],
+      reason: "local role permission update",
+    },
+  });
+  if (!update.data || !update.data.permissions.includes("wheel.view")) {
+    throw new Error("Role permission update did not return wheel.view.");
+  }
+
+  await apiRequest(baseUrl, "/admin/roles/support/permissions", {
+    method: "PATCH",
+    authValue: ownerAuth,
+    label: "owner rollback support role permissions",
+    body: {
+      permissions: ["members.view", "members.update", "deposits.view", "withdrawals.view", "bank.view", "wheel.view", "wheel.claims.view", "wheel.claims.status.update"],
+      reason: "local role permission rollback",
+    },
+  });
+
+  const logs = await apiRequest(baseUrl, "/admin/audit-logs?action=admin.role.permissions.update&limit=20", {
+    authValue: ownerAuth,
+    label: "role permission update audit log",
+  });
+  const rows = logs.data && Array.isArray(logs.data.rows) ? logs.data.rows : [];
+  if (!rows.some((row) => row.action === "admin.role.permissions.update" && row.targetId === "support")) {
+    throw new Error("Role permission update audit log was not found.");
+  }
+  if (!rows.some((row) => row.metadata && row.metadata.reason === "local role permission rollback")) {
+    throw new Error("Role permission update audit log did not include reason metadata.");
+  }
+  console.log("Role permission assignment and rollback: PASS");
 }
 
 async function runSelfRoleChangeBlock(baseUrl, ownerAuth, ownerId) {
@@ -539,6 +711,7 @@ async function main() {
     const health = await apiRequest(baseUrl, "/health", { label: "health" });
     if (health.status !== 200) throw new Error(`Health returned ${health.status}, expected 200.`);
     console.log("Health 200: PASS");
+    await assertStaticRoleManagementUi(baseUrl);
 
     const fixture = await ensureLocalFixtures();
     prisma = fixture.prisma;
@@ -559,6 +732,7 @@ async function main() {
     await runOwnerAccessChecks(baseUrl, ownerAuth, admins.target.id);
     await runSelfRoleChangeBlock(baseUrl, ownerAuth, admins.owner.id);
     await runNonOwnerForbiddenChecks(baseUrl, authByRole, admins.target.id);
+    await runRolePermissionAssignmentChecks(baseUrl, ownerAuth, authByRole.support);
     await runRoleAssignmentChecks(baseUrl, ownerAuth, admins.target.id);
 
     console.log("Response leak scan: PASS");

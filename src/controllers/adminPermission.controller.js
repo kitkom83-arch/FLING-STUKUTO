@@ -2,10 +2,13 @@ const { z } = require("zod");
 const { success } = require("../utils/response");
 const {
   PERMISSIONS,
-  ROLES,
   resolveAdminPermissions,
   getAdminPermissions,
   assignRole,
+  permissionCatalog,
+  listRoles: listRoleCatalog,
+  getRole,
+  updateRolePermissions,
 } = require("../services/adminPermission.service");
 const {
   listAdminWorkSchedules,
@@ -21,6 +24,11 @@ const reasonSchema = z.string().trim().min(1).max(500);
 const assignRoleSchema = z.object({
   role: z.string().min(1),
   permissions: z.array(z.string()).optional().nullable(),
+  reason: reasonSchema,
+});
+
+const updateRolePermissionsSchema = z.object({
+  permissions: z.array(z.string()),
   reason: reasonSchema,
 });
 
@@ -52,11 +60,19 @@ const disableOverrideSchema = z.object({
 });
 
 async function listRoles(req, res) {
-  return success(res, ROLES);
+  return success(res, await listRoleCatalog({ siteId: req.siteId, siteCode: req.siteCode }));
 }
 
 async function listPermissions(req, res) {
   return success(res, PERMISSIONS);
+}
+
+async function listPermissionCatalog(req, res) {
+  return success(res, permissionCatalog());
+}
+
+async function roleDetail(req, res) {
+  return success(res, await getRole({ role: req.params.role, siteId: req.siteId, siteCode: req.siteCode }));
 }
 
 async function me(req, res) {
@@ -87,6 +103,22 @@ async function assignAdminRole(req, res) {
     req,
   });
   return success(res, result);
+}
+
+async function patchRolePermissions(req, res) {
+  const data = updateRolePermissionsSchema.parse(req.body);
+  return success(
+    res,
+    await updateRolePermissions({
+      role: req.params.role,
+      permissions: data.permissions,
+      reason: data.reason,
+      actor: req.admin,
+      req,
+      siteId: req.siteId,
+      siteCode: req.siteCode,
+    })
+  );
 }
 
 function targetAdminId(req) {
@@ -148,9 +180,12 @@ async function listWorkScheduleAuditLogs(req, res) {
 module.exports = {
   listRoles,
   listPermissions,
+  listPermissionCatalog,
+  roleDetail,
   me,
   getAdmin,
   assignAdminRole,
+  patchRolePermissions,
   listWorkSchedules,
   getWorkSchedule,
   patchWorkSchedule,

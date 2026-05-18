@@ -128,6 +128,8 @@ npm run smoke:staging-uat
 
 Phase D also covers permission summary markers, disabled write buttons, access-denied copy, `GET /api/admin/permissions/me`, and granular Lucky Wheel permission keys. Runtime smoke verifies owner/super-admin allow paths, no-permission `403`, missing-reason rejection, audit read guard, response leak scan, and member spin result injection rejection when a safe local/staging runtime is available.
 
+Phase E adds `/admin/roles` for assigning/revoking Lucky Wheel and admin/audit permissions to existing site role access rows. Operators can use it to preview effective access before saving, enter a required reason, and confirm the `admin.role.permissions.update` audit entry. This remains staging/mock/sandbox only and does not enable real payout, live provider/payment/bank/SMS/Slip OCR, or frontend spin-result control.
+
 ## Known Mock/Sandbox Limits
 
 - No real money.
