@@ -5,6 +5,7 @@ Phase C covers Admin Wheel UI manual QA and operator handoff for staging only. I
 ## Staging URL
 
 - Admin Wheel: `https://stukuto-real-core-staging.onrender.com/admin-wheel`
+- Trailing slash: `https://stukuto-real-core-staging.onrender.com/admin-wheel/`
 - Legacy alias: `https://stukuto-real-core-staging.onrender.com/admin/lucky-wheel/`
 
 ## What This Page Does
@@ -109,6 +110,7 @@ Phase C covers Admin Wheel UI manual QA and operator handoff for staging only. I
 Run local static/source smoke:
 
 ```powershell
+node src\local-smoke-tests\adminBrowserRoutesSmoke.js
 node src\local-smoke-tests\adminWheelUiSmoke.js
 ```
 
@@ -124,11 +126,13 @@ Run staging UAT smoke after deploy:
 npm run smoke:staging-uat
 ```
 
-`adminWheelUiSmoke.js` covers static route aliases, title/tabs, modal selectors, reason validation markers, no visible placeholder text, static asset leak shapes, no member spin endpoint call, and no force reward/spin controls. Browser-only checks such as Console red errors, actual table overflow, and visual modal fit remain manual checklist items.
+`adminBrowserRoutesSmoke.js` covers `/admin`, `/admin/roles`, `/admin-wheel`, trailing-slash aliases, static asset paths, and the `/api/*` boundary before browser QA. `adminWheelUiSmoke.js` covers static route aliases, title/tabs, modal selectors, reason validation markers, no visible placeholder text, static asset leak shapes, no member spin endpoint call, and no force reward/spin controls. Browser-only checks such as Console red errors, actual table overflow, and visual modal fit remain manual checklist items.
 
 Phase D also covers permission summary markers, disabled write buttons, access-denied copy, `GET /api/admin/permissions/me`, and granular Lucky Wheel permission keys. Runtime smoke verifies owner/super-admin allow paths, no-permission `403`, missing-reason rejection, audit read guard, response leak scan, and member spin result injection rejection when a safe local/staging runtime is available.
 
 Phase E adds `/admin/roles` for assigning/revoking Lucky Wheel and admin/audit permissions to existing site role access rows. Operators can use it to preview effective access before saving, enter a required reason, and confirm the `admin.role.permissions.update` audit entry. This remains staging/mock/sandbox only and does not enable real payout, live provider/payment/bank/SMS/Slip OCR, or frontend spin-result control.
+
+Phase F adds browser route QA for `/admin`, `/admin/roles`, and `/admin-wheel`. After deploy, open each route directly and refresh it. If a DB-backed runtime smoke is SKIPPED or BLOCKED by the safe env guard, report the reason and do not weaken auth, permission, staging, or provider-mode guards.
 
 ## Known Mock/Sandbox Limits
 

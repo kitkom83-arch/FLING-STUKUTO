@@ -434,8 +434,37 @@ Related smoke scripts:
 - `src/local-smoke-tests/adminRoleManagementSmoke.js`
 - `src/local-smoke-tests/adminPermissionSmoke.js`
 - `src/local-smoke-tests/adminWorkScheduleUiSmoke.js`
+- `src/local-smoke-tests/adminBrowserRoutesSmoke.js`
 
-## 19. Known Gaps
+## 19. Browser Route QA
+
+Open these staging browser routes before handoff:
+
+- `/admin`
+- `/admin/roles`
+- `/admin/roles/`
+
+Expected behavior:
+
+- `/admin` opens the shared admin shell and includes Role Management navigation.
+- `/admin/roles` and `/admin/roles/` open the Role Management UI without redirect loops or `404`.
+- Browser refresh on `/admin/roles` returns the same UI, not an API or error page.
+- Static JS/CSS assets load from the admin UI paths.
+- Save remains disabled until a permission change and reason are present.
+- Reset changes restores the before state.
+- Confirm modal appears before save.
+- Owner and legacy `super_admin` roles show the protected-role warning or are blocked by backend logic.
+- Rendered UI does not show `undefined`, `NaN`, `[object Object]`, raw stacks, database connection strings, request auth headers, session values, or credential values.
+
+Run route smoke:
+
+```powershell
+node src\local-smoke-tests\adminBrowserRoutesSmoke.js
+```
+
+The route smoke does not require local admin credentials and does not touch production DB, live provider/payment/bank/SMS/Slip OCR, or real-money paths.
+
+## 20. Known Gaps
 
 - Frontend Role Management UI is implemented at `/admin/roles` for role list/detail, grouped permission matrix, effective permission preview, before/after preview, reason-required save, reset changes, and audit shortcut.
 - There is no dedicated `GET /api/admin/admins` list endpoint today.

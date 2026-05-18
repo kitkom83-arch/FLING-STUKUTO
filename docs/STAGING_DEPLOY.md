@@ -163,8 +163,10 @@ Lucky Wheel staging notes:
 - Reward Claims is staging/mock only. `GET /api/admin/wheel/member-rewards` is read-only reporting data; `PATCH /api/admin/wheel/member-rewards/:id/status` may mark pending item rewards as `claimed` or pending rewards as `cancelled` with a reason. It must not perform real payout, wallet credit, point/ticket mutation, live provider calls, real payment rails, bank rails, SMS, or Slip OCR.
 - Lucky Wheel must not trigger real payout, real wallet payout, live provider calls, real payment rails, bank rails, SMS, or Slip OCR.
 - Use `npm run smoke:admin-wheel-runtime`, `npm run smoke:wheel`, and `npm run smoke:staging-uat` only against local/staging/test targets with mock/sandbox modes. Missing local runtime env may skip safely, but production-like targets must remain blocked.
+- Use `node src\local-smoke-tests\adminBrowserRoutesSmoke.js` before browser QA to confirm `/admin`, `/admin/roles`, `/admin-wheel`, trailing-slash aliases, static assets, and `/api/*` route boundaries.
 - Use `node src\local-smoke-tests\adminWheelUiSmoke.js` for the Admin Wheel static/manual-QA contract before browser handoff.
 - Use `node src\local-smoke-tests\adminRoleManagementSmoke.js` for `/admin/roles` static/API contract before Role Management UAT. It stays staging/mock/sandbox only and must not touch production DB, live provider/payment/bank/SMS/Slip OCR, or real-money flows.
+- If a DB-backed smoke reports SKIPPED or BLOCKED because the safe local/staging env guard is not satisfied, report the guard reason. Do not lower auth, permission, staging, or provider-mode guards to force a pass.
 
 ## Required ENV Checklist
 
@@ -323,6 +325,7 @@ After deploy:
 - Confirm the Render service reaches healthy state.
 - Confirm `GET /api/health` returns `success: true`, `data.ok: true`, and boolean `data.databaseConnected`.
 - Confirm external mode labels are `mock`, `sandbox`, or `disabled`.
+- Open `https://stukuto-real-core-staging.onrender.com/admin` for the admin shell and Work Schedule/Role Management navigation checks.
 - Open `https://stukuto-real-core-staging.onrender.com/admin-wheel` for Phase C Admin Wheel UI Manual QA + Handoff.
 - Open `https://stukuto-real-core-staging.onrender.com/admin/roles` for Phase E Admin Role Management UI checks when staging admin credentials are available.
 - Run staging preflight and staging smoke against the Render staging API.
@@ -337,6 +340,7 @@ set BASE_URL=https://<render-staging-domain>/api
 npm run staging:preflight
 npm run smoke:staging
 npm run staging:db:check
+node src\local-smoke-tests\adminBrowserRoutesSmoke.js
 node src\local-smoke-tests\adminWheelUiSmoke.js
 node src\local-smoke-tests\adminRoleManagementSmoke.js
 npm run smoke:admin-wheel-runtime

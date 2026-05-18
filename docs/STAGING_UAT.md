@@ -51,6 +51,7 @@ Never paste real tokens, passwords, API keys, provider secrets, callback secrets
 - Confirm `GET /api/health` returns `success: true`, `data.ok: true`, boolean `data.databaseConnected`, and safe external mode labels without secrets.
 - Confirm `npm run check` passes before any smoke command.
 - Confirm `BASE_URL` is set to the staging API and `npm run smoke:staging` passes.
+- Confirm `node src\local-smoke-tests\adminBrowserRoutesSmoke.js` passes before browser UAT on `/admin`, `/admin/roles`, and `/admin-wheel`.
 - Confirm `npm run smoke:admin-work-schedule` passes before validating admin schedule UI behavior in staging.
 - Confirm `npm run smoke:admin-work-schedule-ui` passes before UAT on `/admin/work-schedules`.
 - Confirm `node src\local-smoke-tests\adminRoleManagementSmoke.js` passes before UAT on `/admin/roles` when a safe local/staging DB-backed target and staging-only admin credentials are available.
@@ -69,13 +70,17 @@ Never paste real tokens, passwords, API keys, provider secrets, callback secrets
 Use this checklist when handing staging to testers. It authorizes staging UAT only, with no production database, no live provider/payment/bank/SMS/Slip OCR mode, and no real-money flow.
 
 - Staging URL: `https://stukuto-real-core-staging.onrender.com`.
+- Admin shell URL: `https://stukuto-real-core-staging.onrender.com/admin`.
+- Role Management URL: `https://stukuto-real-core-staging.onrender.com/admin/roles`.
 - Admin Wheel Phase C URL: `https://stukuto-real-core-staging.onrender.com/admin-wheel`.
+- Phase F admin browser QA doc: `docs/STAGING_ADMIN_BROWSER_QA.md`.
 - Phase C handoff doc: `docs/ADMIN_WHEEL_HANDOFF.md`.
 - API base URL for smoke commands: `https://stukuto-real-core-staging.onrender.com/api`.
 - Health check path: `GET /api/health`.
 - Health check must show `success: true`, `data.ok: true`, `data.databaseConnected: true`, and external modes only as `mock`, `sandbox`, or `disabled`.
 - Smoke commands before handoff:
   - `npm run check`
+  - `node src\local-smoke-tests\adminBrowserRoutesSmoke.js`
   - `node src\local-smoke-tests\adminWheelUiSmoke.js`
   - `npm run staging:preflight`
   - `npm run staging:db:check`
@@ -86,11 +91,13 @@ Use this checklist when handing staging to testers. It authorizes staging UAT on
 - Admin schedule UI scope: testers may verify schedule list/read/update behavior, emergency override behavior, schedule-blocked login behavior, and masked audit history for staging demo admins only.
 - Audit/security UI scope: testers may verify audit log filters, security event filters, summary counts, empty states, masked IP values, and safe detail modals only.
 - Role Management UI scope: testers may open `/admin/roles`, review grouped permission matrix rows, preview effective permissions, assign/revoke permissions for non-owner roles only, enter a required reason, confirm `admin.role.permissions.update` audit history, and verify Save stays disabled without a change plus reason.
+- Admin browser route scope: testers may open `/admin`, `/admin/roles`, and `/admin-wheel` directly, refresh each route, verify static assets load, and confirm the browser Console has no red errors.
 - Rollback condition: stop handoff and roll back or disable staging access if health fails, DB disconnects, smoke fails, an invalid login returns `500`, any secret-shaped value appears, any external mode is `live`, or any real-money/provider/bank path is reachable.
 - NO live money/provider mode: game provider, payment, bank statement, SMS, and Slip OCR must stay `mock`, `sandbox`, or `disabled`; live mode is not approved for this handoff.
 - Demo credentials must live in Render Environment/Secrets, a password manager, or another approved secret manager only. Do not write them into docs, logs, commits, screenshots, issue trackers, or chat.
 - UAT smoke uses `STAGING_DEMO_ADMIN_EMAIL` and `STAGING_DEMO_ADMIN_PASSWORD` when they are present. Lucky Wheel member UAT calls `POST /api/auth/login`; the API request body key is `phone`, and the value may be the configured member username or phone because member auth searches both columns. The smoke prefers `STAGING_DEMO_MEMBER_USERNAME`, falls back to `STAGING_DEMO_MEMBER_PHONE`, and requires `STAGING_DEMO_MEMBER_PASSWORD`. `STAGING_DEMO_MEMBER_PHONE` is still required by `staging:seed-demo` because the member table requires a phone value.
 - If any credential was exposed outside the approved secret channel, rotate it before tester handoff.
+- If a DB-backed runtime smoke reports SKIP-SAFE, SKIPPED, or BLOCKED because the safe local/staging env guard is not satisfied, record the reason and continue only with the checks that are valid for the configured environment. Do not lower auth, permission, staging, or provider-mode guards to force a pass.
 - Do not screenshot Render ENV, database settings, shell output, request headers, or any page that shows raw secret values.
 
 ## Render Staging UAT Flow

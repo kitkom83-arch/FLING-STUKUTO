@@ -27,6 +27,7 @@ const RELATED_FILES = [
   "src/local-smoke-tests/adminAuditSecuritySmoke.js",
   "src/local-smoke-tests/adminWheelUiSmoke.js",
   "src/local-smoke-tests/adminWheelRuntimeSmoke.js",
+  "src/local-smoke-tests/adminBrowserRoutesSmoke.js",
   "src/local-smoke-tests/wheelSmoke.js",
   "src/admin-wheel-ui/index.html",
   "src/admin-wheel-ui/app.js",
@@ -67,6 +68,7 @@ const summary = [
   { key: "adminAuditSecurity", label: "admin-audit-security", status: "PENDING" },
   { key: "adminWheelUi", label: "admin-wheel-ui", status: "PENDING" },
   { key: "adminWheelRuntime", label: "admin-wheel-runtime", status: "PENDING" },
+  { key: "adminBrowserRoutes", label: "admin-browser-routes", status: "PENDING" },
   { key: "wheel", label: "wheel", status: "PENDING" },
   { key: "responseScan", label: "response leak scan", status: "PENDING" },
   { key: "secretGrep", label: "secret grep", status: "PENDING" },
@@ -156,6 +158,12 @@ const steps = [
     name: "node --check adminWheelRuntimeSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/adminWheelRuntimeSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check adminBrowserRoutesSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/adminBrowserRoutesSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -273,6 +281,12 @@ const steps = [
     args: npmArgs(["run", "smoke:admin-wheel-runtime"]),
     summaryKey: "adminWheelRuntime",
     alsoPass: ["responseScan"],
+  },
+  {
+    name: "npm run smoke:admin-browser-routes",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:admin-browser-routes"]),
+    summaryKey: "adminBrowserRoutes",
   },
   {
     name: "npm run smoke:wheel",

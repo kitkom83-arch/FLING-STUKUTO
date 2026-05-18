@@ -32,10 +32,10 @@
             <p>Manage role permissions, preview effective access, and keep Admin Work Schedule/audit controls guarded.</p>
           </div>
           <div class="session-panel">
-            <label for="admin-token">Admin token</label>
+            <label for="admin-token">Admin credential</label>
             <div class="token-row">
               <input id="admin-token" type="password" autocomplete="off" placeholder="Paste credential locally" />
-              <button id="save-token" type="button">Use token</button>
+              <button id="save-token" type="button">Use credential</button>
               <button id="clear-token" type="button" class="secondary">Clear</button>
             </div>
           </div>
@@ -433,7 +433,7 @@
           <textarea id="role-edit-reason" rows="3" maxlength="500" aria-describedby="role-edit-reason-error" placeholder="Required for audit context"></textarea>
           <p id="role-edit-reason-error" class="field-error hidden"></p>
         </div>
-        <p class="note">Role definition update endpoint is not available in staging demo.</p>
+        <p class="note">Role permission assignment uses the guarded site-level endpoint and requires a reason.</p>
         <footer>
           <button type="button" class="secondary" data-close-modal>Cancel</button>
           <button id="save-role-permissions" type="submit">Save role permissions</button>
