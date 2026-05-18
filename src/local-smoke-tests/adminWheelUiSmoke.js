@@ -17,6 +17,32 @@ function assertIncludes(label, text, markers) {
   }
 }
 
+function visibleTextFromHtml(html) {
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&gt;/g, ">")
+    .replace(/&lt;/g, "<")
+    .replace(/&amp;/g, "&")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function assertNoRenderedPlaceholderText(label, text) {
+  const rendered = visibleTextFromHtml(text);
+  for (const marker of ["undefined", "NaN", "[object Object]"]) {
+    if (rendered.includes(marker)) throw new Error(`${label} rendered placeholder text: ${marker}`);
+  }
+}
+
+function assertNoRenderedSensitiveCopy(label, text) {
+  const rendered = visibleTextFromHtml(text);
+  if (/\b(secret|token|password|database_url|auth|jwt)\b/i.test(rendered)) {
+    throw new Error(`${label} rendered sensitive keyword copy.`);
+  }
+}
+
 function assertNoStaticSecret(label, text) {
   const jwtLike = /\b[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\b/;
   const postgresWithCredentials = /postgres(?:ql)?:\/\/[^:\s/]+:[^@\s/]+@/i;
@@ -65,13 +91,24 @@ function assertNoFrontendSpinPayload(js) {
   }
 }
 
+function assertNoAdminForceControls(html, js) {
+  const rendered = visibleTextFromHtml(html);
+  if (/\b(force reward|force spin|set prizeIndex)\b/i.test(rendered)) {
+    throw new Error("Admin Wheel UI must not render force reward/spin controls.");
+  }
+  const buttonLabelPattern = /actionButton\(\s*["'](?:force reward|force spin|set prizeIndex)["']|<button[^>]*>\s*(?:force reward|force spin|set prizeIndex)\s*<\/button>/i;
+  if (buttonLabelPattern.test(js) || buttonLabelPattern.test(html)) {
+    throw new Error("Admin Wheel UI must not define force reward/spin buttons.");
+  }
+}
+
 function main() {
   const html = read(HTML_PATH);
   const js = read(JS_PATH);
   const css = read(CSS_PATH);
   const app = read(APP_PATH);
 
-  assertIncludes("Express app", app, ["/admin/lucky-wheel", "admin-wheel-ui"]);
+  assertIncludes("Express app", app, ["/admin-wheel", "/admin/lucky-wheel", "admin-wheel-ui"]);
   assertIncludes("Admin Wheel HTML", html, [
     "Admin Lucky Wheel",
     "Admin &gt; Lucky Wheel",
@@ -92,7 +129,7 @@ function main() {
     "Start date",
     "End date",
     "Rules text",
-    "Rewards",
+    "Rewards management",
     "Reward Claims",
     "Sort order",
     "Reward type",
@@ -142,7 +179,9 @@ function main() {
     'id="reward-modal" data-modal="reward" data-testid="reward-modal"',
     'id="status-modal" data-modal="status" data-testid="status-modal"',
     'id="confirm-modal" data-modal="confirm" data-testid="confirm-modal"',
+    'id="detail-modal" data-modal="detail" data-testid="detail-modal"',
     'data-close-modal="reward-modal" data-testid="reward-modal-close"',
+    'data-close-modal="detail-modal" data-testid="detail-modal-close"',
     "ไม่พบข้อมูล",
     "กำลังโหลดข้อมูล",
     "Audit history จะเชื่อมกับ admin audit log endpoint เมื่อพร้อม",
@@ -216,14 +255,24 @@ function main() {
   assertReasonBeforeWrite(js, "const reason = validateCampaign();", "/admin/wheel/campaign", "Campaign save");
   assertReasonBeforeWrite(js, "const reason = validateReward();", "/admin/wheel/rewards", "Reward save");
   assertReasonBeforeWrite(js, "const reason = validateReason(els.claimStatusReason", "encodeURIComponent(target.reward.id)}/status", "Reward claim status save");
+  assertReasonBeforeWrite(js, "const reason = validateReason(els.statusReason", "encodeURIComponent(reward.id)", "Reward status save");
   assertNoFrontendSpinSelection(js);
   assertNoFrontendSpinPayload(js);
+  assertNoAdminForceControls(html, js);
   assertNoUnsafeLogging(js);
   assertIncludes("Admin Wheel CSS", css, [".tab-button.active", ".summary-grid", ".table-section", ".badge", ".safe-json"]);
+  assertNoRenderedPlaceholderText("Admin Wheel HTML", html);
+  assertNoRenderedSensitiveCopy("Admin Wheel HTML", html);
   assertNoStaticSecret("Admin Wheel HTML", html);
   assertNoStaticSecret("Admin Wheel JS", js);
   assertNoStaticSecret("Admin Wheel CSS", css);
 
+  console.log("Admin Wheel UI manual QA checklist static route /admin-wheel: PASS");
+  console.log("Admin Wheel UI manual QA checklist title/tabs: PASS");
+  console.log("Admin Wheel UI manual QA checklist reason/modal selectors: PASS");
+  console.log("Admin Wheel UI manual QA checklist no undefined/NaN/[object Object] rendered copy: PASS");
+  console.log("Admin Wheel UI manual QA checklist no sensitive rendered copy/static secret values: PASS");
+  console.log("Admin Wheel UI manual QA checklist no member spin endpoint or force controls: PASS");
   console.log("Admin Wheel UI static route contract: PASS");
   console.log("Admin Wheel UI endpoint contract: PASS");
   console.log("Admin Wheel UI reason validation contract: PASS");

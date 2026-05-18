@@ -27,10 +27,10 @@ Do not deploy this backend as a static site. Do not use Netlify static hosting f
 
 | Platform | เหมาะกับอะไร | สิ่งที่ต้องเตรียม | Build command | Start command | Health check path | Env secret manager | Rollback method | ข้อควรระวัง |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Render | Managed web service พร้อม deploy history | Web Service, staging PostgreSQL, staging domain, env variables | `npm ci && npx prisma generate` | `npm run start` | `/api/health` | Render Environment Variables/Environment Group | Redeploy previous successful deploy | ห้ามใช้ production DB หรือ live provider env ร่วมกับ staging service |
-| Railway | Setup เร็วสำหรับ API + DB ใน project เดียว | Railway service, staging PostgreSQL, public domain, variables | `npm ci && npx prisma generate` | `npm run start` | `/api/health` | Railway Variables | Redeploy previous deployment หรือ pin previous commit | ตรวจ project/env ไม่ reuse production และ domain ไม่ production-like |
-| Fly.io | ต้องการ release rollback และ region control | Fly app, staging DB access, secrets, health check config | `npm ci && npx prisma generate` | `npm run start` | `/api/health` | Fly secrets | Rollback to previous release | ตรวจ DB reachability, region, TLS, และไม่ใส่ live credentials |
-| VPS | ต้องการควบคุม OS/network/process เอง | Node.js 18.18+, process manager, reverse proxy, staging DB, secret store | `npm ci && npx prisma generate` | `npm run start` | `/api/health` | systemd/PM2/vault outside git | Switch release dir/commit and restart | ต้องดูแล patching, firewall, TLS, logs, backup, restart policy เอง |
+| Render | Managed web service พร้อม deploy history | Web Service, staging PostgreSQL, staging domain, env variables | `npm ci && npx prisma generate` | `npm start` | `/api/health` | Render Environment Variables/Environment Group | Redeploy previous successful deploy | ห้ามใช้ production DB หรือ live provider env ร่วมกับ staging service |
+| Railway | Setup เร็วสำหรับ API + DB ใน project เดียว | Railway service, staging PostgreSQL, public domain, variables | `npm ci && npx prisma generate` | `npm start` | `/api/health` | Railway Variables | Redeploy previous deployment หรือ pin previous commit | ตรวจ project/env ไม่ reuse production และ domain ไม่ production-like |
+| Fly.io | ต้องการ release rollback และ region control | Fly app, staging DB access, secrets, health check config | `npm ci && npx prisma generate` | `npm start` | `/api/health` | Fly secrets | Rollback to previous release | ตรวจ DB reachability, region, TLS, และไม่ใส่ live credentials |
+| VPS | ต้องการควบคุม OS/network/process เอง | Node.js 18.18+, process manager, reverse proxy, staging DB, secret store | `npm ci && npx prisma generate` | `npm start` | `/api/health` | systemd/PM2/vault outside git | Switch release dir/commit and restart | ต้องดูแล patching, firewall, TLS, logs, backup, restart policy เอง |
 
 ## Render Staging Quick Setup
 
@@ -155,6 +155,7 @@ Strict boundaries:
 
 Lucky Wheel staging notes:
 
+- Phase C is Admin Wheel UI Manual QA + Handoff. The handoff URL is `https://stukuto-real-core-staging.onrender.com/admin-wheel`; use `docs/ADMIN_WHEEL_HANDOFF.md` for the operator/admin browser checklist.
 - Lucky Wheel is mock/staging/sandbox only in this phase.
 - Member wheel config/spin/history/my-rewards and Admin Lucky Wheel config/rewards/spins/member-rewards/reports/audit may be checked in staging only after `/api/health` and the staging safety guard pass.
 - `POST /api/member/wheel/spin` must send only `campaignId`; the backend chooses `prizeIndex` and reward result.
@@ -162,6 +163,7 @@ Lucky Wheel staging notes:
 - Reward Claims is staging/mock only. `GET /api/admin/wheel/member-rewards` is read-only reporting data; `PATCH /api/admin/wheel/member-rewards/:id/status` may mark pending item rewards as `claimed` or pending rewards as `cancelled` with a reason. It must not perform real payout, wallet credit, point/ticket mutation, live provider calls, real payment rails, bank rails, SMS, or Slip OCR.
 - Lucky Wheel must not trigger real payout, real wallet payout, live provider calls, real payment rails, bank rails, SMS, or Slip OCR.
 - Use `npm run smoke:admin-wheel-runtime`, `npm run smoke:wheel`, and `npm run smoke:staging-uat` only against local/staging/test targets with mock/sandbox modes. Missing local runtime env may skip safely, but production-like targets must remain blocked.
+- Use `node src\local-smoke-tests\adminWheelUiSmoke.js` for the Admin Wheel static/manual-QA contract before browser handoff.
 
 ## Required ENV Checklist
 
@@ -320,8 +322,10 @@ After deploy:
 - Confirm the Render service reaches healthy state.
 - Confirm `GET /api/health` returns `success: true`, `data.ok: true`, and boolean `data.databaseConnected`.
 - Confirm external mode labels are `mock`, `sandbox`, or `disabled`.
+- Open `https://stukuto-real-core-staging.onrender.com/admin-wheel` for Phase C Admin Wheel UI Manual QA + Handoff.
 - Run staging preflight and staging smoke against the Render staging API.
 - Run guarded DB migration, demo seed if needed, DB check, and UAT smoke before UAT handoff.
+- After every staging deploy that affects Admin Wheel UI or wheel APIs, run `npm run smoke:staging-uat`.
 - On Render Free, run `staging:seed-demo` only through a temporary deploy command, then revert the command back to `npm start`.
 
 Smoke command template:
@@ -331,6 +335,7 @@ set BASE_URL=https://<render-staging-domain>/api
 npm run staging:preflight
 npm run smoke:staging
 npm run staging:db:check
+node src\local-smoke-tests\adminWheelUiSmoke.js
 npm run smoke:admin-wheel-runtime
 npm run smoke:wheel
 npm run smoke:staging-uat

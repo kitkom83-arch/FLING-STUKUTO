@@ -50,12 +50,12 @@
           Staging / Mock Admin Console. No real money / no live provider. No real payout, payment, bank, SMS, Slip OCR, or frontend reward selection is used here.
         </section>
         <section class="notice leak-boundary">
-          Response leak warning: sanitized UI only. No password, token, secret, DATABASE_URL, Authorization header, JWT, raw session, or raw connection string is rendered.
+          Response leak warning: sanitized UI only. Raw credentials, connection strings, request headers, and session values are not rendered.
         </section>
 
         <nav class="tab-list" aria-label="Lucky Wheel tabs">
           <button class="tab-button active" type="button" data-tab="campaign">Campaign settings</button>
-          <button class="tab-button" type="button" data-tab="rewards">Rewards</button>
+          <button class="tab-button" type="button" data-tab="rewards">Rewards management</button>
           <button class="tab-button" type="button" data-tab="spins">Spin history</button>
           <button class="tab-button" type="button" data-tab="reports">Reports</button>
           <button class="tab-button" type="button" data-tab="audit">Audit history</button>
@@ -502,11 +502,11 @@
       </form>
     </dialog>
 
-    <dialog id="detail-modal">
+    <dialog id="detail-modal" data-modal="detail" data-testid="detail-modal">
       <article class="modal-card">
         <header>
           <h2 id="detail-title">Details</h2>
-          <button type="button" class="icon-button" data-close-modal="detail-modal" aria-label="Close">x</button>
+          <button type="button" class="icon-button" data-close-modal="detail-modal" data-testid="detail-modal-close" aria-label="Close">x</button>
         </header>
         <dl class="detail-grid" id="detail-grid"></dl>
         <pre id="detail-json" class="safe-json">{}</pre>

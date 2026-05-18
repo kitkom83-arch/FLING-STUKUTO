@@ -68,11 +68,14 @@ Never paste real tokens, passwords, API keys, provider secrets, callback secrets
 Use this checklist when handing staging to testers. It authorizes staging UAT only, with no production database, no live provider/payment/bank/SMS/Slip OCR mode, and no real-money flow.
 
 - Staging URL: `https://stukuto-real-core-staging.onrender.com`.
+- Admin Wheel Phase C URL: `https://stukuto-real-core-staging.onrender.com/admin-wheel`.
+- Phase C handoff doc: `docs/ADMIN_WHEEL_HANDOFF.md`.
 - API base URL for smoke commands: `https://stukuto-real-core-staging.onrender.com/api`.
 - Health check path: `GET /api/health`.
 - Health check must show `success: true`, `data.ok: true`, `data.databaseConnected: true`, and external modes only as `mock`, `sandbox`, or `disabled`.
 - Smoke commands before handoff:
   - `npm run check`
+  - `node src\local-smoke-tests\adminWheelUiSmoke.js`
   - `npm run staging:preflight`
   - `npm run staging:db:check`
   - `npm run smoke:staging`
@@ -123,6 +126,22 @@ Stop UAT immediately if health fails, `databaseConnected` is not `true`, an exte
 ## Admin Lucky Wheel UAT Checklist
 
 Use this checklist only with approved staging/mock admin and member accounts. Do not use production DB, live provider/payment/bank/SMS/Slip OCR modes, real money, or real payout flows.
+
+Phase C is Admin Wheel UI Manual QA + Handoff. Use `docs/ADMIN_WHEEL_HANDOFF.md` as the operator/admin browser checklist before handing `/admin-wheel` to testers.
+
+### Admin Wheel UI Manual QA Checklist
+
+- Open `https://stukuto-real-core-staging.onrender.com/admin-wheel` and confirm `Lucky Wheel Admin Console` renders.
+- Confirm all tabs open: Campaign settings, Rewards management, Spin history, Reports, Audit history, and Reward Claims.
+- Confirm Campaign settings save rejects blank `Reason`, then saves with a staging-safe reason and creates `wheel.campaign.update`.
+- Confirm Rewards management add/edit/enable/disable rejects blank `Reason` and creates the expected reward audit action.
+- Confirm Reward Claims filter by status, detail modal opens/closes, claim is available only for pending item rewards, cancel is available only for pending rewards, and both actions require `Reason`.
+- Confirm Reports show summary cards, top rewards, stock usage, claim status summary, reward type summary, daily spin count, and member reward summary from staging/mock data.
+- Confirm Audit history filters actions and can show `wheel.campaign.update`, `wheel.reward.create`, `wheel.reward.update`, `wheel.reward.status.update`, and `wheel.memberReward.status.update`.
+- Confirm browser Console has no red errors, modals do not overflow, desktop tables scroll horizontally when needed, and empty states show `ไม่พบข้อมูล`.
+- Confirm the UI does not call member spin endpoints and does not expose force reward, force spin, or set-prize-index controls.
+- Confirm responses, details, docs, logs, and screenshots do not expose real credentials, connection strings, raw request headers, raw stacks, or raw unmasked IPs.
+- Run `node src\local-smoke-tests\adminWheelUiSmoke.js` before browser UAT. If DB-backed runtime env is safe and complete, also run `node src\local-smoke-tests\adminWheelRuntimeSmoke.js`; SKIPPED by safety guard is acceptable only when the script reports the missing local env reason and confirms no production DB/no real provider/no real money.
 
 ### Lucky Wheel Runtime UAT Checklist
 

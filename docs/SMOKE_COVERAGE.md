@@ -10,6 +10,7 @@ The smoke suite does not send real money, does not connect real provider/payment
 
 Latest staging handoff status:
 
+- Phase C Admin Wheel UI Manual QA + Handoff: ready for staging/manual checklist after `adminWheelUiSmoke.js`, safe runtime smoke or SKIP-SAFE, `npm run check`, and `npm run smoke:staging-uat`.
 - Render staging deploy: PASS.
 - `/api/health`: PASS.
 - Staging DB connected: PASS with `databaseConnected=true`.
@@ -39,7 +40,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `adminWorkScheduleSmoke.js` | `npm run smoke:admin-work-schedule` | Yes | Yes | Yes | Syntax check only | Admin work schedule UI/API checks for schedule list/read/update, permission guards, login block/allow, emergency override, expired override, audit history, rollback, and leak scan. |
 | `adminWorkScheduleUiSmoke.js` | `npm run smoke:admin-work-schedule-ui` | Yes | Yes | Yes | Syntax check only | Static admin schedule UI route/assets, owner flow, no-permission block, emergency override, masked audit history, and leak scan. |
 | `adminAuditSecuritySmoke.js` | `npm run smoke:admin-audit-security` | Yes | Yes | Yes | Syntax check only | Static audit/security UI route/assets, UX markers, report endpoints, filters, permission block, empty response shape, masked IP, raw user-agent omission, and leak scan. |
-| `adminWheelUiSmoke.js` | `npm run smoke:admin-wheel-ui` | No | No | No | Syntax check plus static contract | Static Admin Lucky Wheel UI source contract, campaign summary, reward modal/table fields, Reward Claims queue fields/actions, spin empty state, reports/audit fields, endpoint usage, reason validation, 401/403 safe handling, audit placeholder/wiring, report zero guards, redaction markers, masked IP handling, and frontend spin-safety guard. |
+| `adminWheelUiSmoke.js` | `npm run smoke:admin-wheel-ui` | No | No | No | Syntax check plus static contract | Static Admin Lucky Wheel UI source contract for `/admin-wheel` and `/admin/lucky-wheel/`, title/tabs, campaign summary, reward modal/table fields, Reward Claims queue fields/actions, detail/status/claim modal selectors, spin empty state, reports/audit fields, endpoint usage, reason validation, 401/403 safe handling, audit placeholder/wiring, report zero guards, rendered-copy placeholder checks, static leak-shape checks, masked IP handling, no member spin endpoint call, and no force reward/spin controls. |
 | `adminWheelRuntimeSmoke.js` | `npm run smoke:admin-wheel-runtime` | Yes | Yes | Yes | Syntax check only | Admin Lucky Wheel runtime route/assets, unauth `401`, no-permission `403`, admin config/spins/member-rewards reads, member config/spin/history/my-rewards checks, claim/cancel reason validation, write audit creation, audit read sanitization, and leak scan. Skips safely when local admin/member env is not configured. |
 | `wheelSmoke.js` | `npm run smoke:wheel` | Yes | Yes | Yes | Syntax check only | Lucky Wheel mock config/spin/history/rewards, missing auth, invalid campaign, backend result selection, admin reason/audit checks, stock-zero exclusion, fail-safe guards, and leak scan. Skips safely when local runtime env is missing; blocks unsafe targets. |
 | `stagingPreflight.js` | `npm run staging:preflight` | No local Prisma access | Optional | No | Runs local-test dry run | Staging readiness guard for env boundary, database/API target labels, external modes, health contract, and response leak scan. |
@@ -297,14 +298,15 @@ The audit/security smoke uses only static frontend assets and local/staging/test
 
 ## 15. smoke:admin-wheel-ui Coverage
 
-- Static source contract check for `/admin/lucky-wheel/` route mount and `src/admin-wheel-ui` assets.
-- Confirms page markers for Admin > Lucky Wheel, `Lucky Wheel Admin Console`, `Staging / Mock Admin Console`, `No real money / no live provider`, response leak warning, tabs, campaign summary/status/site/last-updated fields, readonly campaign ID, campaign settings, rewards, spin history, reports, audit history, Reward Claims, reason fields, create/edit reward modal, reward status modal, claim status modal, confirm modal, safe loading/empty states, and safe audit placeholder.
+- Static source contract check for `/admin-wheel` and `/admin/lucky-wheel/` route mounts plus `src/admin-wheel-ui` assets.
+- Confirms Phase C manual QA markers for Admin > Lucky Wheel, `Lucky Wheel Admin Console`, `Staging / Mock Admin Console`, `No real money / no live provider`, response leak warning, tabs, campaign summary/status/site/last-updated fields, readonly campaign ID, Campaign settings, Rewards management, Spin history, Reports, Audit history, Reward Claims, reason fields, create/edit reward modal, reward status modal, claim/cancel status modal, detail modal selectors, confirm modal, safe loading/empty states, and safe audit placeholder.
 - Confirms UI script references wheel/admin endpoints: `/admin/wheel/config`, `/admin/wheel/campaign`, `/admin/wheel/rewards`, `/admin/wheel/rewards/:id`, `/admin/wheel/spins`, `/admin/wheel/member-rewards`, `/admin/wheel/member-rewards/:id/status`, and read-only `/admin/audit-logs`.
 - Confirms campaign/reward/status and Reward Claims claim/cancel writes validate reason and show a confirm modal before API submission.
 - Confirms reward field validation markers for required label/type, non-negative probability weight, `stockLimit >= stockUsed`, and default segment color fallback.
-- Confirms source markers for safe `401`, `403`, and `404` handling; config/reward/spin/member-reward adapters; sanitized spin/reward detail summaries; masked IP and user-agent hash handling; audit action filtering including `wheel.reward.status.update` and `wheel.memberReward.status.update`; report zero-division guards; and no `NaN`/`undefined` rendering path markers.
-- Confirms frontend script does not include member spin calls, random reward selection, or frontend-submitted spin result fields.
-- Confirms static assets do not contain JWT-like values, PostgreSQL credential URLs, env assignment markers, or auth/session/secret console logging.
+- Confirms source markers for safe `401`, `403`, and `404` handling; config/reward/spin/member-reward adapters; sanitized spin/reward detail summaries; masked IP and user-agent hash handling; audit action filtering including `wheel.reward.status.update` and `wheel.memberReward.status.update`; report zero-division guards; and no visible `NaN`, `undefined`, or `[object Object]` rendered copy.
+- Confirms frontend script does not include member spin calls, random reward selection, frontend-submitted spin result fields, or force reward/force spin/set-prize-index button labels.
+- Confirms static assets do not contain JWT-like values, PostgreSQL credential URLs, env assignment markers, or sensitive console logging.
+- Documents browser-only manual checks in `docs/ADMIN_WHEEL_HANDOFF.md`, including browser Console, visual modal fit, desktop table overflow, empty states, and loading/error states.
 
 The Admin Wheel UI smoke is static/source-only. It does not require a database, does not call a backend, does not use production credentials, and does not create real payout.
 
