@@ -49,6 +49,7 @@
     "staging:preflight": "node src/local-smoke-tests/stagingPreflight.js",
     "smoke:staging": "node src/local-smoke-tests/stagingSmoke.js",
     "smoke:staging-uat": "node src/staging-scripts/stagingUatSmoke.js",
+    "smoke:staging-role-permission-uat": "node src/staging-scripts/stagingRolePermissionUatSmoke.js",
     "smoke:all-local": "node src/local-smoke-tests/runAllLocalSmoke.js"
   },
   "prisma": {

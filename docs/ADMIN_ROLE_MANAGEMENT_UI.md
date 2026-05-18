@@ -189,6 +189,16 @@ Current implemented Phase E API coverage:
 - `GET /api/admin/roles/:role` returns one role summary.
 - `PATCH /api/admin/roles/:role/permissions` assigns/revokes permissions for existing site access rows on that role, requires `reason`, writes `admin.role.permissions.update`, blocks owner/super_admin protected-role edits, blocks `admin.manage` grants through the matrix, and sanitizes before/after audit payloads.
 
+Phase G runtime UAT coverage:
+
+- `npm run smoke:staging-role-permission-uat` is the hosted staging/mock runtime smoke for the role matrix.
+- Required env: `BASE_URL` pointing at the HTTPS staging API, `STAGING_DEMO_ADMIN_EMAIL`, and `STAGING_DEMO_ADMIN_PASSWORD`. Optional env for authenticated no-permission `403`: `STAGING_NO_PERMISSION_ADMIN_EMAIL` or `STAGING_NO_PERMISSION_ADMIN_USERNAME`, plus `STAGING_NO_PERMISSION_ADMIN_PASSWORD`.
+- Safety guard: `APP_ENV`/`STAGING_MODE` must be staging/test/QA/sandbox labels, `NODE_ENV` must not be production, `DATABASE_URL` if present must not look production-like, and game/payment/bank/SMS/Slip OCR modes must remain `mock`, `sandbox`, or `disabled`.
+- Runtime endpoints covered: `GET /api/admin/permissions/me`, `GET /api/admin/permissions/catalog`, `GET /api/admin/roles`, `GET /api/admin/roles/:role`, `PATCH /api/admin/roles/:role/permissions`, and `GET /api/admin/audit-logs?action=admin.role.permissions.update`.
+- Negative paths covered: no auth, optional authenticated no permission, missing `reason`, invalid permission key, forbidden `admin.manage`, protected `owner`, and protected `super_admin`.
+- Valid update path runs only against a non-owner/super_admin role that is not the current demo admin role and has assigned staging admins. The smoke restores the original permissions immediately and then checks the `admin.role.permissions.update` audit log. If no such safe role exists, only the valid update section reports `SKIPPED` with a clear reason.
+- Response leak scan rejects password, token, secret, `DATABASE_URL`, raw authorization/JWT-shaped values, raw stack traces, and credential-shaped PostgreSQL URLs.
+
 Current gaps in API coverage for the page:
 
 - `GET /api/admin/admins` list endpoint is proposed.
@@ -435,6 +445,7 @@ Related smoke scripts:
 - `src/local-smoke-tests/adminPermissionSmoke.js`
 - `src/local-smoke-tests/adminWorkScheduleUiSmoke.js`
 - `src/local-smoke-tests/adminBrowserRoutesSmoke.js`
+- `src/staging-scripts/stagingRolePermissionUatSmoke.js`
 
 ## 19. Browser Route QA
 

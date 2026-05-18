@@ -19,6 +19,7 @@ Latest staging handoff status:
 - `npm run staging:seed-demo`: PASS when staging demo admin env is present; SKIP-SAFE when it is absent locally.
 - `npm run smoke:staging`: PASS.
 - `npm run smoke:staging-uat`: PASS when staging demo admin env is present; SKIP-SAFE when it is absent.
+- `npm run smoke:staging-role-permission-uat`: PASS when staging demo admin env is present and safe role runtime checks complete; SKIP-SAFE when credentialed staging demo admin env is absent.
 - Invalid admin login negative test: PASS, failed closed without returning `500`.
 - External modes: mock/sandbox/disabled only.
 - Production DB/live money/live provider/payment/bank/SMS/Slip OCR: NOT enabled.
@@ -49,6 +50,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `stagingDbCheck.js` | `npm run staging:db:check` | Staging/test DB | No | No | Syntax check only | Staging DB connection, required tables, demo site/admin/member readiness, fixture counts, and safe output. |
 | `stagingDemoSeed.js` | `npm run staging:seed-demo` | Staging/test DB | No | `STAGING_DEMO_ADMIN_PASSWORD` | Syntax check only | Staging-safe UAT demo admin upsert from `STAGING_DEMO_ADMIN_EMAIL`, super-admin site access, sanitized audit log, SKIP-SAFE on missing local demo admin env, and no credential output. |
 | `stagingUatSmoke.js` | `npm run smoke:staging-uat` | No local Prisma access | Hosted staging API | Optional; skips safely if absent | Syntax check only | Render staging health/database/mode contract, admin auth leak checks, admin work schedule read, audit/security read endpoints, Admin Lucky Wheel config/spins/member-rewards, optional member wheel config/spin/history/my-rewards when staging member env exists, and response leak scan. |
+| `stagingRolePermissionUatSmoke.js` | `npm run smoke:staging-role-permission-uat` | No local Prisma access | Hosted staging API | Optional; skips safely if absent | Syntax check only | Render staging role-permission runtime UAT for `/admin/permissions/me`, `/admin/permissions/catalog`, `/admin/roles`, `/admin/roles/:role`, protected-role and permission negative paths, optional no-permission admin `403`, valid non-owner role update/restore when safe, `admin.role.permissions.update` audit lookup, and response leak scan. |
 | `runAllLocalSmoke.js` | `npm run smoke:all-local` | Yes | Yes | Yes | Syntax check only | Guarded local runner for syntax, project checks, all local smokes, secret grep, and diff check. |
 
 GitHub Actions also scans `src/local-smoke-tests` for secret-shaped values. It does not run DB-backed smoke commands.
@@ -57,9 +59,9 @@ GitHub Actions also scans `src/local-smoke-tests` for secret-shaped values. It d
 
 - Staging Deploy Mock/Sandbox Preflight covers platform-neutral deploy readiness before any real staging deploy.
 - Render Staging Deploy Setup covers the Render Web Service, branch `main`, staging-only service name, Render PostgreSQL staging database, Render dashboard env-only secret handling, build command `npm ci && npx prisma generate`, start command `npm start`, health path `/api/health`, manual deploy control, rollback, and log leak checks.
-- Local commands before Render deploy: `node --check src/local-smoke-tests/stagingPreflight.js`, `node --check src/staging-scripts/stagingSafety.js`, `node --check src/staging-scripts/stagingDemoSeed.js`, `node --check src/staging-scripts/stagingUatSmoke.js`, `npm run staging:preflight`, `npm run smoke:admin-wheel-runtime`, `npm run smoke:wheel`, and `npm run check`.
-- Post-Render commands after the service is healthy: set `BASE_URL` to the Render staging API, then run `npm run staging:preflight`, `npm run smoke:staging`, `npm run staging:db:check`, `npm run staging:seed-demo` when demo admin env is set, `npm run smoke:admin-wheel-runtime`, `npm run smoke:wheel`, and `npm run smoke:staging-uat`.
-- Required preflight commands: `node --check src/staging-scripts/stagingSafety.js`, `node --check src/staging-scripts/stagingDemoSeed.js`, `node --check src/staging-scripts/stagingUatSmoke.js`, `npm run staging:preflight`, `npm run staging:seed-demo`, `npm run smoke:staging`, `npm run staging:db:check`, `npm run smoke:admin-wheel-runtime`, `npm run smoke:wheel`, `npm run smoke:staging-uat`, and `npm run check`.
+- Local commands before Render deploy: `node --check src/local-smoke-tests/stagingPreflight.js`, `node --check src/staging-scripts/stagingSafety.js`, `node --check src/staging-scripts/stagingDemoSeed.js`, `node --check src/staging-scripts/stagingUatSmoke.js`, `node --check src/staging-scripts/stagingRolePermissionUatSmoke.js`, `npm run staging:preflight`, `npm run smoke:admin-wheel-runtime`, `npm run smoke:wheel`, and `npm run check`.
+- Post-Render commands after the service is healthy: set `BASE_URL` to the Render staging API, then run `npm run staging:preflight`, `npm run smoke:staging`, `npm run staging:db:check`, `npm run staging:seed-demo` when demo admin env is set, `npm run smoke:admin-wheel-runtime`, `npm run smoke:wheel`, `npm run smoke:staging-uat`, and `npm run smoke:staging-role-permission-uat`.
+- Required preflight commands: `node --check src/staging-scripts/stagingSafety.js`, `node --check src/staging-scripts/stagingDemoSeed.js`, `node --check src/staging-scripts/stagingUatSmoke.js`, `node --check src/staging-scripts/stagingRolePermissionUatSmoke.js`, `npm run staging:preflight`, `npm run staging:seed-demo`, `npm run smoke:staging`, `npm run staging:db:check`, `npm run smoke:admin-wheel-runtime`, `npm run smoke:wheel`, `npm run smoke:staging-uat`, `npm run smoke:staging-role-permission-uat`, and `npm run check`.
 - Skip-safe conditions: missing local shell `DATABASE_URL` for staging preflight when no `BASE_URL` is available, missing local/staging demo admin password, missing local wheel runtime env, missing local wheel DB/env for smoke, or absent optional staging member env. These skip with exit `0` only when the target is otherwise safe and no production-like target or live mode is detected.
 - Block conditions: production-like DB/API targets, `NODE_ENV` production for mock/sandbox preflight, live provider/payment/bank/SMS/Slip OCR modes, embedded URL credentials, unsafe external mode labels, or secret-shaped values in responses.
 - Secret-shaped scan covers database URL shapes, authorization scheme markers, JWT-shaped values, API-key-shaped values, DB assignment text, sensitive response keys, docs, staging scripts, local smoke scripts, controllers, routes, services, middleware, and sensitive env values echoed in output.
@@ -72,6 +74,10 @@ GitHub Actions also scans `src/local-smoke-tests` for secret-shaped values. It d
 - `smoke:staging-uat` defaults to `https://stukuto-real-core-staging.onrender.com/api` when `BASE_URL` is not set.
 - It skips safely with exit `0` when the staging demo admin password env is absent, without printing secret values or calling authenticated UAT endpoints.
 - When staging demo admin env is present, it verifies `/api/health`, confirms `databaseConnected=true`, confirms all external modes are non-live, verifies admin auth negative leak behavior, logs in without printing the token, reads work schedule/audit/security endpoints, reads Admin Lucky Wheel config/spins, and optionally runs member wheel config/spin/history/my-rewards when staging demo member env is present.
+- `smoke:staging-role-permission-uat` defaults to `https://stukuto-real-core-staging.onrender.com/api` when `BASE_URL` is not set and requires an HTTPS staging/QA/sandbox API URL.
+- It skips safely with exit `0` when staging demo admin env is absent, without printing secret values or calling authenticated role-management endpoints.
+- When staging demo admin env is present, it logs in without printing the token, reads `/api/admin/permissions/me`, `/api/admin/permissions/catalog`, `/api/admin/roles`, and `/api/admin/roles/:role`, verifies required permission catalog keys, checks no-auth/missing-reason/invalid-permission/`admin.manage` forbidden/protected `owner` and `super_admin` failures, optionally checks authenticated no-permission `403` when no-permission admin env exists, performs and restores a valid non-owner role permission update only when a safe staging role with assigned admins exists, confirms `admin.role.permissions.update` audit rows for successful updates, and scans every response for leaks.
+- The valid role update may report `SKIPPED` when there is no safe non-owner staging/demo role with assigned admins. This skip must not lower auth guard, permission guard, staging safety guard, owner/super_admin protection, reason requirements, audit requirements, or response leak scanning.
 
 ## 3. smoke:money-flow Coverage
 
@@ -498,6 +504,7 @@ Run these only after the backend and safe local/staging/test environment are rea
 npm run smoke:all-local
 npm run staging:preflight
 npm run smoke:staging
+npm run smoke:staging-role-permission-uat
 npm run smoke:money-flow
 npm run smoke:core-api
 npm run smoke:financial-negative
@@ -524,6 +531,7 @@ npm run check
 - SMS is a mock placeholder.
 - Slip OCR is a mock placeholder.
 - Admin RBAC smoke uses mock/local admin fixtures and backend permission guards only.
+- Admin role permission staging UAT uses the hosted staging API, staging demo credentials from env only, optional no-permission staging admin credentials from env only, and temporary non-owner role permission updates that are restored immediately.
 - Admin work schedule smoke uses mock/local admin fixtures and backend login guards only.
 - Admin work schedule UI smoke uses static local frontend assets and mock/local admin fixtures only.
 - Admin audit/security smoke uses static local frontend assets, safe audit rows, and mock/local admin fixtures only.

@@ -51,3 +51,40 @@ Owner and `super_admin` keep the existing bypass behavior and receive every perm
 - `owner` and `super_admin` are allowed by guard and are not edited through the role-permission matrix. Normal roles are deny by default and use only catalog keys stored in `AdminSiteAccess.permissions` for the current site.
 - Read views must not display raw tokens, auth headers, passwords, secrets, database URLs, raw stacks, raw user-agent strings, or raw unmasked IPs.
 - Member spin result and `prizeIndex` remain backend-selected only.
+
+## Phase G Role Runtime UAT
+
+Run the hosted staging role-permission smoke only against staging/mock/sandbox:
+
+```powershell
+$env:BASE_URL = "https://stukuto-real-core-staging.onrender.com/api"
+npm run smoke:staging-role-permission-uat
+```
+
+Required env values:
+
+- `STAGING_DEMO_ADMIN_EMAIL`
+- `STAGING_DEMO_ADMIN_PASSWORD`
+- Optional `STAGING_NO_PERMISSION_ADMIN_EMAIL` or `STAGING_NO_PERMISSION_ADMIN_USERNAME`
+- Optional `STAGING_NO_PERMISSION_ADMIN_PASSWORD`
+
+Safety guard requirements:
+
+- `BASE_URL` must be an HTTPS staging/QA/sandbox API URL.
+- `NODE_ENV` must not be `production`; `APP_ENV` and `STAGING_MODE` must be explicit safe staging/test labels.
+- `DATABASE_URL`, if present, must not target production or a production-like host/name/user.
+- Game provider, payment provider, bank statement, SMS, and Slip OCR modes must be unset, `mock`, `sandbox`, or `disabled`.
+- No real provider, payment, bank, SMS, Slip OCR, wallet payout, or production DB path is part of this smoke.
+
+Runtime coverage:
+
+- Reads current effective permissions through `GET /api/admin/permissions/me`.
+- Reads the permission catalog through `GET /api/admin/permissions/catalog` and requires `wheel.view`, `wheel.claims.view`, `wheel.reports.view`, `admin.roles.view`, `admin.roles.update`, and `admin.audit.view`.
+- Reads roles through `GET /api/admin/roles` and one safe non-owner role through `GET /api/admin/roles/:role`.
+- Verifies `PATCH /api/admin/roles/:role/permissions` fails safely for no auth, missing reason, invalid permission key, `admin.manage`, `owner`, and `super_admin`.
+- Verifies an authenticated no-permission `403` when optional no-permission staging admin env is provided.
+- Performs a valid minimal permission change only for a safe non-owner role with assigned staging admins, then restores the original permission list immediately.
+- Confirms `GET /api/admin/audit-logs?action=admin.role.permissions.update` includes the role permission update or restore audit row after a successful valid update.
+- Scans every response for password/token/secret markers, `DATABASE_URL`, raw authorization/JWT-shaped values, raw stack traces, and credential-shaped PostgreSQL URLs.
+
+The valid update section may report `SKIPPED` when no safe role exists. That skip is acceptable only for the valid update section; negative path, catalog, role detail, protected-role checks, staging safety guard, reason guard, audit requirement, and leak scan must not be weakened.

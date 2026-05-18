@@ -35,6 +35,7 @@ Never paste real tokens, passwords, API keys, provider secrets, callback secrets
 - `src/staging-scripts/stagingDbSeed.js` runs the demo seed behind the staging safety guard. It requires a staging-only admin password env for `APP_ENV=staging` and never prints password values.
 - `src/staging-scripts/stagingDemoSeed.js` creates or refreshes the staging demo admin from `STAGING_DEMO_ADMIN_EMAIL` and `STAGING_DEMO_ADMIN_PASSWORD` only after the staging safety guard passes. It requires `STAGING_DEMO_MEMBER_USERNAME`, `STAGING_DEMO_MEMBER_PHONE`, and `STAGING_DEMO_MEMBER_PASSWORD` before writing the Lucky Wheel demo member, wallet, points, active status, and refreshed password hash. Missing demo member env fails with a safe message and never prints credential values.
 - `src/staging-scripts/stagingUatSmoke.js` targets the Render staging API by default, skips safely with exit `0` when staging demo admin password env is absent, verifies health/database/modes when env is present, checks admin auth leak behavior, logs in the Lucky Wheel member through `POST /api/auth/login` with body `{ phone: <username-or-phone>, password: <password> }`, and reads admin schedule/audit/security endpoints.
+- `src/staging-scripts/stagingRolePermissionUatSmoke.js` targets the Render staging API by default, skips safely with exit `0` when staging demo admin env is absent, verifies the role-permission runtime endpoints, checks negative role-matrix paths, restores any temporary non-owner role permission update, confirms `admin.role.permissions.update` audit history when a safe role update runs, and scans responses for secret-shaped values.
 - `src/local-smoke-tests/adminAuditSecuritySmoke.js` checks the audit/security report UI contract and API responses against local/staging/test targets only, including permission guard, filters, empty responses, masked IP, omitted raw user-agent, and response leak scan.
 - `src/local-smoke-tests/runAllLocalSmoke.js` blocks unsafe `NODE_ENV`, missing required local credentials, unsafe database targets, production-like API base URLs, embedded URL credentials, and provider modes outside `mock` or `sandbox` before running the smoke suite.
 - Individual local smoke scripts also perform their own safety checks for production-like database/API targets and non-mock provider modes before creating fixtures or calling API flows.
@@ -64,6 +65,7 @@ Never paste real tokens, passwords, API keys, provider secrets, callback secrets
 - Confirm demo admin/member seed ran through `npm run staging:seed-demo` only after `STAGING_DEMO_ADMIN_EMAIL`, `STAGING_DEMO_ADMIN_PASSWORD`, `STAGING_DEMO_MEMBER_USERNAME`, `STAGING_DEMO_MEMBER_PHONE`, and `STAGING_DEMO_MEMBER_PASSWORD` were set in Render Environment.
 - Confirm `npm run staging:db:check` passes with required schema and demo fixtures.
 - Confirm `npm run smoke:staging-uat` passes against the Render staging API when staging demo admin env is present. Without that env, the command must return the documented SKIP-SAFE output and exit `0`.
+- Confirm `npm run smoke:staging-role-permission-uat` passes against the Render staging API when staging demo admin env is present. Without that env, the command must return the documented SKIP-SAFE output and exit `0`.
 
 ## UAT Handoff Checklist
 
@@ -86,16 +88,19 @@ Use this checklist when handing staging to testers. It authorizes staging UAT on
   - `npm run staging:db:check`
   - `npm run smoke:staging`
   - `npm run smoke:staging-uat`
+  - `npm run smoke:staging-role-permission-uat`
 - Login test scope: staging demo admin/member only, with credentials supplied through the secret manager or another approved out-of-repo channel.
 - Safe negative login test: invalid admin login must return a controlled JSON failure such as `401`/auth failure and must not return `500`, token values, password hints, stack traces, or secret-shaped data.
 - Admin schedule UI scope: testers may verify schedule list/read/update behavior, emergency override behavior, schedule-blocked login behavior, and masked audit history for staging demo admins only.
 - Audit/security UI scope: testers may verify audit log filters, security event filters, summary counts, empty states, masked IP values, and safe detail modals only.
 - Role Management UI scope: testers may open `/admin/roles`, review grouped permission matrix rows, preview effective permissions, assign/revoke permissions for non-owner roles only, enter a required reason, confirm `admin.role.permissions.update` audit history, and verify Save stays disabled without a change plus reason.
+- Role Permission Runtime UAT scope: testers may run `npm run smoke:staging-role-permission-uat` only against the staging API. The smoke uses `STAGING_DEMO_ADMIN_EMAIL` and `STAGING_DEMO_ADMIN_PASSWORD`, never prints the token, checks catalog/roles/detail reads, validates `401` no-auth, missing-reason, invalid-key, `admin.manage` forbidden, and owner/super_admin protected-role failures, then performs a temporary non-owner role permission change only when a safe staging/demo role with assigned admins exists.
 - Admin browser route scope: testers may open `/admin`, `/admin/roles`, and `/admin-wheel` directly, refresh each route, verify static assets load, and confirm the browser Console has no red errors.
 - Rollback condition: stop handoff and roll back or disable staging access if health fails, DB disconnects, smoke fails, an invalid login returns `500`, any secret-shaped value appears, any external mode is `live`, or any real-money/provider/bank path is reachable.
 - NO live money/provider mode: game provider, payment, bank statement, SMS, and Slip OCR must stay `mock`, `sandbox`, or `disabled`; live mode is not approved for this handoff.
 - Demo credentials must live in Render Environment/Secrets, a password manager, or another approved secret manager only. Do not write them into docs, logs, commits, screenshots, issue trackers, or chat.
 - UAT smoke uses `STAGING_DEMO_ADMIN_EMAIL` and `STAGING_DEMO_ADMIN_PASSWORD` when they are present. Lucky Wheel member UAT calls `POST /api/auth/login`; the API request body key is `phone`, and the value may be the configured member username or phone because member auth searches both columns. The smoke prefers `STAGING_DEMO_MEMBER_USERNAME`, falls back to `STAGING_DEMO_MEMBER_PHONE`, and requires `STAGING_DEMO_MEMBER_PASSWORD`. `STAGING_DEMO_MEMBER_PHONE` is still required by `staging:seed-demo` because the member table requires a phone value.
+- Role permission UAT can optionally use `STAGING_NO_PERMISSION_ADMIN_EMAIL` or `STAGING_NO_PERMISSION_ADMIN_USERNAME` with `STAGING_NO_PERMISSION_ADMIN_PASSWORD` to verify an authenticated `403` no-permission path. If those optional env values are absent, only that sub-check reports `SKIPPED`; no guard is lowered.
 - If any credential was exposed outside the approved secret channel, rotate it before tester handoff.
 - If a DB-backed runtime smoke reports SKIP-SAFE, SKIPPED, or BLOCKED because the safe local/staging env guard is not satisfied, record the reason and continue only with the checks that are valid for the configured environment. Do not lower auth, permission, staging, or provider-mode guards to force a pass.
 - Do not screenshot Render ENV, database settings, shell output, request headers, or any page that shows raw secret values.
@@ -119,16 +124,22 @@ npm run staging:preflight
 npm run smoke:staging-uat
 ```
 
-5. If credentialed UAT smoke skips because demo admin env is missing, set `STAGING_DEMO_ADMIN_EMAIL` and `STAGING_DEMO_ADMIN_PASSWORD` in Render Environment and run the guarded seed.
-6. If Lucky Wheel member UAT skips or login fails after a password change, set `STAGING_DEMO_MEMBER_USERNAME`, `STAGING_DEMO_MEMBER_PHONE`, and `STAGING_DEMO_MEMBER_PASSWORD` in Render Environment, rerun `npm run staging:seed-demo` so the member password hash/status/points/wallet are refreshed, then rerun `npm run smoke:staging-uat`.
-7. Check Lucky Wheel member config through `GET /api/member/wheel/config` using staging member auth only.
-8. Check Lucky Wheel spin through `POST /api/member/wheel/spin` with only `campaignId`; this must stay mock/sandbox and backend-selected.
-9. Check member wheel history and my rewards through `/api/member/wheel/history` and `/api/member/wheel/my-rewards`.
-10. Check admin Lucky Wheel config, rewards, spins, reports, and audit through staging admin auth only.
-11. Confirm no real money movement, no real payout, and no production ledger action occurred.
-12. Confirm game provider, payment, bank statement, SMS, and Slip OCR are not live.
-13. Run the local secret-shaped scan before reporting handoff results.
-14. Record the Safe CI Run ID, commit hash, Render deploy ID or timestamp, and staging URL. Do not record secret values, DB URLs, request headers, passwords, tokens, or provider credentials.
+5. Run the role permission runtime UAT smoke:
+
+```powershell
+npm run smoke:staging-role-permission-uat
+```
+
+6. If credentialed UAT smoke skips because demo admin env is missing, set `STAGING_DEMO_ADMIN_EMAIL` and `STAGING_DEMO_ADMIN_PASSWORD` in Render Environment and run the guarded seed.
+7. If Lucky Wheel member UAT skips or login fails after a password change, set `STAGING_DEMO_MEMBER_USERNAME`, `STAGING_DEMO_MEMBER_PHONE`, and `STAGING_DEMO_MEMBER_PASSWORD` in Render Environment, rerun `npm run staging:seed-demo` so the member password hash/status/points/wallet are refreshed, then rerun `npm run smoke:staging-uat`.
+8. Check Lucky Wheel member config through `GET /api/member/wheel/config` using staging member auth only.
+9. Check Lucky Wheel spin through `POST /api/member/wheel/spin` with only `campaignId`; this must stay mock/sandbox and backend-selected.
+10. Check member wheel history and my rewards through `/api/member/wheel/history` and `/api/member/wheel/my-rewards`.
+11. Check admin Lucky Wheel config, rewards, spins, reports, and audit through staging admin auth only.
+12. Confirm no real money movement, no real payout, and no production ledger action occurred.
+13. Confirm game provider, payment, bank statement, SMS, and Slip OCR are not live.
+14. Run the local secret-shaped scan before reporting handoff results.
+15. Record the Safe CI Run ID, commit hash, Render deploy ID or timestamp, and staging URL. Do not record secret values, DB URLs, request headers, passwords, tokens, or provider credentials.
 
 Stop UAT immediately if health fails, `databaseConnected` is not `true`, an external mode is `live`, a response leaks secret-shaped data, or any real-money/provider/bank path becomes reachable.
 
@@ -254,6 +265,7 @@ Verify hosted UAT readiness against Render:
 
 ```bash
 BASE_URL=https://stukuto-real-core-staging.onrender.com/api npm run smoke:staging-uat
+BASE_URL=https://stukuto-real-core-staging.onrender.com/api npm run smoke:staging-role-permission-uat
 ```
 
 PowerShell equivalent:
@@ -261,9 +273,20 @@ PowerShell equivalent:
 ```powershell
 $env:BASE_URL = "https://stukuto-real-core-staging.onrender.com/api"
 npm run smoke:staging-uat
+npm run smoke:staging-role-permission-uat
 ```
 
 Required env values must live only in Render Environment/Secrets or an ignored local shell. Do not commit or paste `DATABASE_URL`, admin password, JWT secret, tokens, provider keys, callback secrets, or bearer values.
+
+Role permission runtime UAT requires:
+
+- `BASE_URL` pointing at the HTTPS staging API.
+- `APP_ENV`/`STAGING_MODE` set to staging, mock, sandbox, QA, or another safe non-production label.
+- Provider modes for game, payment, bank statement, SMS, and Slip OCR unset, `mock`, `sandbox`, or `disabled`.
+- `STAGING_DEMO_ADMIN_EMAIL` and `STAGING_DEMO_ADMIN_PASSWORD` for credentialed checks.
+- Optional `STAGING_NO_PERMISSION_ADMIN_EMAIL` or `STAGING_NO_PERMISSION_ADMIN_USERNAME` plus `STAGING_NO_PERMISSION_ADMIN_PASSWORD` for the authenticated no-permission `403` check.
+
+The script never edits `owner` or `super_admin` through the role matrix. It only attempts a valid temporary update for a non-owner role that is not the current demo admin role and has assigned staging admins. If no such role exists, the valid update section reports `SKIPPED` with a reason, while catalog, role detail, protected-role, missing-reason, invalid-permission, and `admin.manage` forbidden checks still run. Any successful temporary update must be restored immediately and followed by an `admin.role.permissions.update` audit-log check plus response leak scan.
 
 ## UAT GO / NO-GO
 
@@ -274,6 +297,7 @@ GO for staging UAT only when all items are true:
 - `npm run staging:db:check` passes.
 - `npm run smoke:staging` passes.
 - `npm run smoke:staging-uat` passes with staging demo admin env present. A local SKIP-SAFE result is acceptable only before credentialed UAT handoff.
+- `npm run smoke:staging-role-permission-uat` passes with staging demo admin env present. A SKIPPED valid-update section is acceptable only when no safe non-owner staging role with assigned admins is available.
 - Demo admin and demo member exist with staging-only credentials known through a secure channel, not docs/log/chat.
 - No secret-shaped values appear in responses, logs, docs, commits, screenshots, or chat.
 
