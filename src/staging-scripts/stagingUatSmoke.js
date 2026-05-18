@@ -334,7 +334,15 @@ async function assertLuckyWheelAdminEndpoints(baseUrl, authValue) {
   if (spins.status !== 200 || !Array.isArray(spins.data)) {
     throw new Error(`Admin wheel spins returned ${spins.status}, expected array.`);
   }
-  console.log("Admin Lucky Wheel config/rewards/spins: PASS");
+
+  const memberRewards = await apiRequest(baseUrl, "/admin/wheel/member-rewards?limit=20", {
+    authValue,
+    label: "staging admin wheel member rewards",
+  });
+  if (memberRewards.status !== 200 || !memberRewards.data || !Array.isArray(memberRewards.data.rows)) {
+    throw new Error(`Admin wheel member rewards returned ${memberRewards.status}, expected rows.`);
+  }
+  console.log("Admin Lucky Wheel config/rewards/spins/member-rewards: PASS");
 }
 
 async function assertLuckyWheelMemberEndpoints(baseUrl, authValue) {

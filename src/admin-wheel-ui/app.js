@@ -7,7 +7,8 @@
   const COST_TYPES = ["point", "ticket"];
   const REWARD_TYPES = ["credit", "point", "ticket", "item", "no_reward"];
   const REWARD_STATUSES = ["active", "inactive"];
-  const WHEEL_AUDIT_ACTIONS = ["wheel.campaign.update", "wheel.reward.create", "wheel.reward.update", "wheel.reward.status.update"];
+  const MEMBER_REWARD_STATUSES = ["pending", "claimed", "expired", "cancelled"];
+  const WHEEL_AUDIT_ACTIONS = ["wheel.campaign.update", "wheel.reward.create", "wheel.reward.update", "wheel.reward.status.update", "wheel.memberReward.status.update"];
   const SENSITIVE_KEY_PATTERN = /(pass(word|code)?|token|secret|api[_-]?key|authorization|session|cookie|database[_-]?url|refresh|headers?)/i;
   const IP_KEY_PATTERN = /^(ip|ipAddress|rawIp|clientIp|remoteAddress)$/i;
   const RAW_IPV4_PATTERN = /\b(?:\d{1,3}\.){3}\d{1,3}\b/;
@@ -22,10 +23,12 @@
     credential: "",
     config: null,
     spins: [],
+    memberRewards: [],
     auditRows: [],
     activeTab: "campaign",
     editingReward: null,
     statusReward: null,
+    memberRewardStatus: null,
   };
 
   const els = {
@@ -62,6 +65,7 @@
     campaignDateError: document.getElementById("campaign-date-error"),
     campaignReasonError: document.getElementById("campaign-reason-error"),
     saveCampaign: document.getElementById("save-campaign"),
+    refreshCampaign: document.getElementById("refresh-campaign"),
     createReward: document.getElementById("create-reward"),
     refreshRewards: document.getElementById("refresh-rewards"),
     rewardRows: document.getElementById("reward-rows"),
@@ -99,20 +103,38 @@
     filterStatus: document.getElementById("filter-status"),
     filterSite: document.getElementById("filter-site"),
     applySpinFilters: document.getElementById("apply-spin-filters"),
+    refreshReports: document.getElementById("refresh-reports"),
     reportTotalSpins: document.getElementById("report-total-spins"),
+    reportUniqueMembers: document.getElementById("report-unique-members"),
     reportIssued: document.getElementById("report-issued"),
+    reportPendingRewards: document.getElementById("report-pending-rewards"),
+    reportClaimedRewards: document.getElementById("report-claimed-rewards"),
+    reportExpiredCancelledRewards: document.getElementById("report-expired-cancelled-rewards"),
     reportStockUsed: document.getElementById("report-stock-used"),
     reportTopReward: document.getElementById("report-top-reward"),
-    reportCostUsed: document.getElementById("report-cost-used"),
+    reportPointCost: document.getElementById("report-point-cost"),
+    reportTicketCost: document.getElementById("report-ticket-cost"),
     reportEmptyCount: document.getElementById("report-empty-count"),
+    reportTopStockReward: document.getElementById("report-top-stock-reward"),
     topRewardRows: document.getElementById("top-reward-rows"),
     topRewardsEmpty: document.getElementById("top-rewards-empty"),
     distributionRows: document.getElementById("distribution-rows"),
     distributionEmpty: document.getElementById("distribution-empty"),
     stockRows: document.getElementById("stock-rows"),
+    stockEmpty: document.getElementById("stock-empty"),
     dailyRows: document.getElementById("daily-rows"),
     dailyEmpty: document.getElementById("daily-empty"),
+    claimStatusRows: document.getElementById("claim-status-rows"),
+    claimStatusEmpty: document.getElementById("claim-status-empty"),
+    memberRewardSummaryRows: document.getElementById("member-reward-summary-rows"),
+    memberRewardSummaryEmpty: document.getElementById("member-reward-summary-empty"),
     refreshAudit: document.getElementById("refresh-audit"),
+    auditFilterAction: document.getElementById("audit-filter-action"),
+    auditFilterActor: document.getElementById("audit-filter-actor"),
+    auditFilterTarget: document.getElementById("audit-filter-target"),
+    auditFilterFrom: document.getElementById("audit-filter-from"),
+    auditFilterTo: document.getElementById("audit-filter-to"),
+    applyAuditFilters: document.getElementById("apply-audit-filters"),
     auditRows: document.getElementById("audit-rows"),
     auditEmpty: document.getElementById("audit-empty"),
     auditPlaceholder: document.getElementById("audit-placeholder"),
@@ -134,6 +156,32 @@
     confirmMessage: document.getElementById("confirm-message"),
     confirmCancel: document.getElementById("confirm-cancel"),
     confirmOk: document.getElementById("confirm-ok"),
+    refreshClaims: document.getElementById("refresh-claims"),
+    claimRows: document.getElementById("claim-rows"),
+    claimsEmpty: document.getElementById("claims-empty"),
+    claimsLoading: document.getElementById("claims-loading"),
+    claimLastUpdated: document.getElementById("claim-last-updated"),
+    claimFilterFrom: document.getElementById("claim-filter-from"),
+    claimFilterTo: document.getElementById("claim-filter-to"),
+    claimFilterMember: document.getElementById("claim-filter-member"),
+    claimFilterType: document.getElementById("claim-filter-type"),
+    claimFilterStatus: document.getElementById("claim-filter-status"),
+    claimFilterCampaign: document.getElementById("claim-filter-campaign"),
+    claimFilterSpin: document.getElementById("claim-filter-spin"),
+    applyClaimFilters: document.getElementById("apply-claim-filters"),
+    claimTotalIssued: document.getElementById("claim-total-issued"),
+    claimPending: document.getElementById("claim-pending"),
+    claimClaimed: document.getElementById("claim-claimed"),
+    claimExpired: document.getElementById("claim-expired"),
+    claimCancelled: document.getElementById("claim-cancelled"),
+    claimTypeCounts: document.getElementById("claim-type-counts"),
+    claimStatusModal: document.getElementById("claim-status-modal"),
+    claimStatusForm: document.getElementById("claim-status-form"),
+    claimStatusTitle: document.getElementById("claim-status-title"),
+    claimStatusCopy: document.getElementById("claim-status-copy"),
+    claimStatusReason: document.getElementById("claim-status-reason"),
+    claimStatusReasonError: document.getElementById("claim-status-reason-error"),
+    confirmClaimStatus: document.getElementById("confirm-claim-status"),
   };
 
   function safeText(value) {
@@ -454,6 +502,32 @@
     };
   }
 
+  function normalizeMemberReward(row) {
+    const source = row && typeof row === "object" ? row : {};
+    const member = source.member && typeof source.member === "object" ? source.member : {};
+    const campaign = source.campaign && typeof source.campaign === "object" ? source.campaign : {};
+    return {
+      id: source.id ? safeText(source.id) : "-",
+      siteCode: source.siteCode ? safeText(source.siteCode) : SITE_CODE,
+      memberId: source.memberId ? safeText(source.memberId) : member.id ? safeText(member.id) : "-",
+      member: sanitizeValue(member),
+      campaignId: source.campaignId ? safeText(source.campaignId) : campaign.id ? safeText(campaign.id) : "-",
+      campaign: sanitizeValue(campaign),
+      source: source.source ? safeText(source.source) : "wheel",
+      sourceId: source.sourceId ? safeText(source.sourceId) : source.spinId ? safeText(source.spinId) : "-",
+      spinId: source.spinId ? safeText(source.spinId) : source.sourceId ? safeText(source.sourceId) : "-",
+      label: source.label ? safeText(source.label) : "Unknown",
+      rewardType: safeEnum(source.rewardType, REWARD_TYPES, "no_reward"),
+      rewardValue: numberValue(source.rewardValue).toFixed(2),
+      status: safeEnum(source.status, MEMBER_REWARD_STATUSES, "pending"),
+      claimedAt: source.claimedAt || null,
+      expiresAt: source.expiresAt || null,
+      createdAt: source.createdAt || null,
+      updatedAt: source.updatedAt || null,
+      resultSnapshot: sanitizeValue(source.resultSnapshot || {}),
+    };
+  }
+
   function normalizeAuditRow(row) {
     const source = row && typeof row === "object" ? row : {};
     return {
@@ -469,6 +543,7 @@
   async function loadAll() {
     await loadConfig();
     await loadSpins();
+    await loadMemberRewards();
     await loadAudit();
   }
 
@@ -672,11 +747,13 @@
   function drawRewardTypeFilter() {
     const existing = new Set(rewards().map((reward) => reward.rewardType).filter(Boolean));
     els.filterReward.innerHTML = '<option value="">All</option>';
+    if (els.claimFilterType) els.claimFilterType.innerHTML = '<option value="">All</option>';
     for (const type of new Set([...REWARD_TYPES, ...existing])) {
       const option = document.createElement("option");
       option.value = type;
       option.textContent = rewardTypeLabel(type);
       els.filterReward.appendChild(option);
+      if (els.claimFilterType) els.claimFilterType.appendChild(option.cloneNode(true));
     }
   }
 
@@ -890,9 +967,176 @@
     }
   }
 
+  async function loadMemberRewards() {
+    els.claimsLoading.classList.remove("hidden");
+    try {
+      const params = new URLSearchParams();
+      if (els.claimFilterCampaign.value.trim()) params.set("campaignId", els.claimFilterCampaign.value.trim());
+      if (els.claimFilterMember.value.trim()) {
+        const memberValue = els.claimFilterMember.value.trim();
+        if (/^member_|^user_|^cm/i.test(memberValue)) params.set("memberId", memberValue);
+        else params.set("username", memberValue);
+      }
+      if (els.claimFilterType.value) params.set("rewardType", els.claimFilterType.value);
+      if (els.claimFilterStatus.value) params.set("status", els.claimFilterStatus.value);
+      if (els.claimFilterSpin.value.trim()) params.set("spinId", els.claimFilterSpin.value.trim());
+      if (els.claimFilterFrom.value) params.set("dateFrom", els.claimFilterFrom.value);
+      if (els.claimFilterTo.value) params.set("dateTo", `${els.claimFilterTo.value}T23:59:59.999Z`);
+      params.set("limit", "100");
+      const data = await api(`/admin/wheel/member-rewards?${params.toString()}`);
+      const rows = data && Array.isArray(data.rows) ? data.rows : Array.isArray(data) ? data : [];
+      state.memberRewards = rows.map(normalizeMemberReward);
+      els.claimLastUpdated.textContent = formatDate(new Date());
+      renderMemberRewards();
+      renderReports();
+      setGlobalError("");
+    } finally {
+      els.claimsLoading.classList.add("hidden");
+    }
+  }
+
   function memberLabel(member) {
     if (!member) return "-";
     return member.username || member.phone || member.id || "-";
+  }
+
+  function claimStatusTone(status) {
+    if (status === "claimed") return "ok";
+    if (status === "expired" || status === "cancelled") return "danger";
+    return "warn";
+  }
+
+  function canManualClaim(reward) {
+    return reward && reward.status === "pending" && reward.rewardType === "item";
+  }
+
+  function canCancelReward(reward) {
+    return reward && reward.status === "pending";
+  }
+
+  function renderClaimSummary() {
+    const summary = state.memberRewards.reduce(
+      (acc, reward) => {
+        acc.total += 1;
+        acc[reward.status] = (acc[reward.status] || 0) + 1;
+        acc.byType[reward.rewardType] = (acc.byType[reward.rewardType] || 0) + 1;
+        return acc;
+      },
+      { total: 0, pending: 0, claimed: 0, expired: 0, cancelled: 0, byType: {} }
+    );
+    els.claimTotalIssued.textContent = formatNumber(summary.total);
+    els.claimPending.textContent = formatNumber(summary.pending);
+    els.claimClaimed.textContent = formatNumber(summary.claimed);
+    els.claimExpired.textContent = formatNumber(summary.expired);
+    els.claimCancelled.textContent = formatNumber(summary.cancelled);
+    els.claimTypeCounts.textContent = REWARD_TYPES
+      .filter((type) => type !== "no_reward")
+      .map((type) => `${rewardTypeLabel(type)} ${formatNumber(summary.byType[type] || 0)}`)
+      .join(", ");
+  }
+
+  function renderMemberRewards() {
+    els.claimRows.innerHTML = "";
+    els.claimsEmpty.classList.toggle("hidden", state.memberRewards.length > 0);
+    renderClaimSummary();
+    for (const reward of state.memberRewards) {
+      const tr = document.createElement("tr");
+      tr.appendChild(createCell(formatDate(reward.createdAt)));
+      tr.appendChild(createCell(memberLabel(reward.member) || reward.memberId));
+      tr.appendChild(createCell(reward.label));
+      tr.appendChild(createCell(rewardTypeLabel(reward.rewardType)));
+      tr.appendChild(createCell(reward.rewardValue));
+      tr.appendChild(createCell(reward.source));
+      tr.appendChild(createCell(reward.spinId || reward.sourceId));
+      const status = document.createElement("td");
+      status.appendChild(createBadge(reward.status, claimStatusTone(reward.status)));
+      tr.appendChild(status);
+      tr.appendChild(createCell(formatDate(reward.claimedAt)));
+      tr.appendChild(createCell(formatDate(reward.expiresAt)));
+      const actions = document.createElement("td");
+      actions.className = "button-row";
+      actions.appendChild(actionButton("View detail", () => openRewardClaimDetail(reward)));
+      actions.appendChild(actionButton("Mark claimed", () => openClaimStatusModal(reward, "claimed"), !canManualClaim(reward)));
+      actions.appendChild(actionButton("Cancel", () => openClaimStatusModal(reward, "cancelled"), !canCancelReward(reward)));
+      tr.appendChild(actions);
+      els.claimRows.appendChild(tr);
+    }
+  }
+
+  function openRewardClaimDetail(reward) {
+    const auditRows = state.auditRows.filter((row) => row.targetId === reward.id || (row.metadata && row.metadata.targetMemberRewardId === reward.id));
+    openDetail("Reward detail", [
+      ["reward id", reward.id],
+      ["member id", reward.memberId],
+      ["member", memberLabel(reward.member)],
+      ["campaign id", reward.campaignId],
+      ["source spin id", reward.spinId],
+      ["reward label", reward.label],
+      ["reward type", rewardTypeLabel(reward.rewardType)],
+      ["reward value", reward.rewardValue],
+      ["status", reward.status],
+      ["createdAt", formatDate(reward.createdAt)],
+      ["claimedAt", formatDate(reward.claimedAt)],
+      ["expiresAt", formatDate(reward.expiresAt)],
+      ["audit summary", auditRows.length ? `${formatNumber(auditRows.length)} event(s)` : "ไม่พบข้อมูล"],
+    ], {
+      resultSnapshot: reward.resultSnapshot || {},
+      auditSummary: auditRows.map((row) => ({
+        time: row.createdAt,
+        actor: auditActor(row),
+        action: row.action,
+        reason: auditReason(row),
+      })),
+    });
+  }
+
+  function openClaimStatusModal(reward, status) {
+    state.memberRewardStatus = { reward, status };
+    els.claimStatusTitle.textContent = status === "claimed" ? "Mark reward as claimed" : "Cancel reward";
+    els.claimStatusCopy.textContent =
+      status === "claimed"
+        ? `Mark item reward ${safeText(reward.label)} as manually claimed. No real payout or wallet credit is performed.`
+        : `Cancel reward ${safeText(reward.label)} in staging/mock mode. No real payout is performed.`;
+    els.claimStatusReason.value = "";
+    setFieldError(els.claimStatusReasonError, "");
+    els.confirmClaimStatus.textContent = status === "claimed" ? "Mark claimed" : "Cancel reward";
+    els.claimStatusModal.showModal();
+  }
+
+  async function saveClaimStatus(event) {
+    event.preventDefault();
+    const target = state.memberRewardStatus;
+    if (!target || !target.reward) return;
+    const reason = validateReason(els.claimStatusReason, els.claimStatusReasonError);
+    if (!reason) {
+      setToast("Reason is required");
+      return;
+    }
+    const confirmed = await confirmAction(
+      "Confirm reward claim status",
+      `${target.status === "claimed" ? "Mark claimed" : "Cancel"} reward ${safeText(target.reward.label)}. Reason: ${safeText(reason)}`
+    );
+    if (!confirmed) return;
+    await withLoading(els.confirmClaimStatus, async () => {
+      try {
+        await api(`/admin/wheel/member-rewards/${encodeURIComponent(target.reward.id)}/status`, {
+          method: "PATCH",
+          body: { status: target.status, reason },
+          safeError: "บันทึกไม่สำเร็จ กรุณาตรวจสอบข้อมูลอีกครั้ง",
+        });
+        els.claimStatusModal.close();
+        state.memberRewardStatus = null;
+        setToast("บันทึกสถานะ Reward Claims สำเร็จ");
+        await loadMemberRewards();
+        await loadAudit();
+      } catch (_error) {
+        const message = _error && (_error.status === 401 || _error.status === 403 || _error.status === 404)
+          ? _error.message
+          : "บันทึกไม่สำเร็จ กรุณาตรวจสอบข้อมูลอีกครั้ง";
+        setGlobalError(message);
+        setToast(message);
+      }
+    });
   }
 
   function spinResultLabel(spin) {
@@ -953,7 +1197,11 @@
     const rows = rewards();
     const counts = rewardCounts();
     const totalSpins = state.spins.length;
-    const issued = state.spins.filter((spin) => spin.reward && spin.reward.status !== "no_reward").length;
+    const issued = state.memberRewards.length;
+    const uniqueMembers = new Set(state.spins.map((spin) => spin.member && spin.member.id).filter(Boolean)).size;
+    const pendingRewards = state.memberRewards.filter((reward) => reward.status === "pending").length;
+    const claimedRewards = state.memberRewards.filter((reward) => reward.status === "claimed").length;
+    const expiredCancelledRewards = state.memberRewards.filter((reward) => reward.status === "expired" || reward.status === "cancelled").length;
     const emptyCount = state.spins.filter((spin) => spin.reward && spin.reward.rewardType === "no_reward").length;
     const totalStockUsed = rows.reduce((sum, reward) => sum + intValue(reward.stockUsed), 0);
     const topRewards = Array.from(counts.entries()).sort((a, b) => b[1] - a[1]).slice(0, 3);
@@ -962,22 +1210,31 @@
       acc[type] = (acc[type] || 0) + numberValue(spin.cost && spin.cost.amount);
       return acc;
     }, {});
+    const topStockReward = rows.slice().sort((a, b) => intValue(b.stockUsed) - intValue(a.stockUsed))[0];
 
     els.reportTotalSpins.textContent = formatNumber(totalSpins);
+    els.reportUniqueMembers.textContent = formatNumber(uniqueMembers);
     els.reportIssued.textContent = formatNumber(issued);
+    els.reportPendingRewards.textContent = formatNumber(pendingRewards);
+    els.reportClaimedRewards.textContent = formatNumber(claimedRewards);
+    els.reportExpiredCancelledRewards.textContent = formatNumber(expiredCancelledRewards);
     els.reportStockUsed.textContent = formatNumber(totalStockUsed);
     els.reportTopReward.textContent = topRewards.length
       ? topRewards.map(([label, count]) => `${safeText(label)} (${formatNumber(count)})`).join(", ")
       : "ไม่พบข้อมูล";
-    els.reportCostUsed.textContent = Object.keys(costByType).length
-      ? Object.entries(costByType).map(([type, value]) => `${formatNumber(value)} ${safeText(type)}`).join(", ")
-      : "0";
+    els.reportPointCost.textContent = formatNumber(costByType.point || 0);
+    els.reportTicketCost.textContent = formatNumber(costByType.ticket || 0);
     els.reportEmptyCount.textContent = formatNumber(emptyCount);
+    els.reportTopStockReward.textContent = topStockReward && intValue(topStockReward.stockUsed) > 0
+      ? `${safeText(topStockReward.label)} (${formatNumber(topStockReward.stockUsed)})`
+      : "ไม่พบข้อมูล";
 
     renderTopRewards(counts, totalSpins);
     renderRewardTypeSummary();
     renderStockUsage();
     renderDailySpinCount();
+    renderClaimStatusSummary();
+    renderMemberRewardSummary();
   }
 
   function renderTopRewards(counts, totalSpins) {
@@ -1019,6 +1276,7 @@
 
   function renderStockUsage() {
     els.stockRows.innerHTML = "";
+    els.stockEmpty.classList.toggle("hidden", rewards().length > 0);
     for (const reward of rewards()) {
       const tr = document.createElement("tr");
       tr.appendChild(createCell(reward.label));
@@ -1026,6 +1284,47 @@
       tr.appendChild(createCell(reward.stockUsed || 0));
       tr.appendChild(createCell(remainingStock(reward)));
       els.stockRows.appendChild(tr);
+    }
+  }
+
+  function renderClaimStatusSummary() {
+    els.claimStatusRows.innerHTML = "";
+    const byStatus = state.memberRewards.reduce((acc, reward) => {
+      acc[reward.status] = (acc[reward.status] || 0) + 1;
+      return acc;
+    }, {});
+    const entries = MEMBER_REWARD_STATUSES.map((status) => [status, byStatus[status] || 0]).filter(([, count]) => count > 0);
+    els.claimStatusEmpty.classList.toggle("hidden", entries.length > 0);
+    for (const [status, count] of entries) {
+      const tr = document.createElement("tr");
+      tr.appendChild(createCell(status));
+      tr.appendChild(createCell(count));
+      tr.appendChild(createCell(state.memberRewards.length > 0 ? `${formatNumber((count / state.memberRewards.length) * 100)} %` : "0 %"));
+      els.claimStatusRows.appendChild(tr);
+    }
+  }
+
+  function renderMemberRewardSummary() {
+    els.memberRewardSummaryRows.innerHTML = "";
+    const byMember = state.memberRewards.reduce((acc, reward) => {
+      const key = reward.memberId || memberLabel(reward.member);
+      if (!acc[key]) acc[key] = { member: memberLabel(reward.member), total: 0, pending: 0, claimed: 0, cancelledExpired: 0 };
+      acc[key].total += 1;
+      if (reward.status === "pending") acc[key].pending += 1;
+      if (reward.status === "claimed") acc[key].claimed += 1;
+      if (reward.status === "cancelled" || reward.status === "expired") acc[key].cancelledExpired += 1;
+      return acc;
+    }, {});
+    const entries = Object.values(byMember).sort((a, b) => b.total - a.total);
+    els.memberRewardSummaryEmpty.classList.toggle("hidden", entries.length > 0);
+    for (const row of entries) {
+      const tr = document.createElement("tr");
+      tr.appendChild(createCell(row.member));
+      tr.appendChild(createCell(row.total));
+      tr.appendChild(createCell(row.pending));
+      tr.appendChild(createCell(row.claimed));
+      tr.appendChild(createCell(row.cancelledExpired));
+      els.memberRewardSummaryRows.appendChild(tr);
     }
   }
 
@@ -1098,8 +1397,9 @@
 
   function renderAudit() {
     els.auditRows.innerHTML = "";
-    els.auditEmpty.classList.toggle("hidden", state.auditRows.length > 0 || !els.auditPlaceholder.classList.contains("hidden"));
-    for (const row of state.auditRows) {
+    const rows = filteredAuditRows();
+    els.auditEmpty.classList.toggle("hidden", rows.length > 0 || !els.auditPlaceholder.classList.contains("hidden"));
+    for (const row of rows) {
       const tr = document.createElement("tr");
       tr.appendChild(createCell(formatDate(row.createdAt)));
       tr.appendChild(createCell(auditActor(row)));
@@ -1114,6 +1414,23 @@
       tr.appendChild(detail);
       els.auditRows.appendChild(tr);
     }
+  }
+
+  function filteredAuditRows() {
+    const action = els.auditFilterAction.value;
+    const actor = els.auditFilterActor.value.trim().toLowerCase();
+    const target = els.auditFilterTarget.value.trim().toLowerCase();
+    const from = els.auditFilterFrom.value ? new Date(els.auditFilterFrom.value) : null;
+    const to = els.auditFilterTo.value ? new Date(`${els.auditFilterTo.value}T23:59:59.999Z`) : null;
+    return state.auditRows.filter((row) => {
+      const created = row.createdAt ? new Date(row.createdAt) : null;
+      if (action && row.action !== action) return false;
+      if (actor && !String(auditActor(row)).toLowerCase().includes(actor)) return false;
+      if (target && !String(row.targetId || "").toLowerCase().includes(target)) return false;
+      if (from && created && created < from) return false;
+      if (to && created && created > to) return false;
+      return true;
+    });
   }
 
   function openAuditDetail(row) {
@@ -1149,17 +1466,21 @@
     state.credential = "";
     state.config = null;
     state.spins = [];
+    state.memberRewards = [];
     state.auditRows = [];
     state.statusReward = null;
+    state.memberRewardStatus = null;
     els.credential.value = "";
     els.sessionState.textContent = "No session loaded";
     setGlobalError("");
     els.rewardsLoading.classList.add("hidden");
     els.spinsLoading.classList.add("hidden");
+    els.claimsLoading.classList.add("hidden");
     els.auditLoading.classList.add("hidden");
     renderCampaign();
     renderRewards();
     renderSpins();
+    renderMemberRewards();
     renderReports();
     renderAudit();
   }
@@ -1189,6 +1510,11 @@
     els.saveToken.addEventListener("click", () => withLoading(els.saveToken, bootWithCredential));
     els.clearToken.addEventListener("click", clearSession);
     els.campaignForm.addEventListener("submit", (event) => saveCampaign(event));
+    els.refreshCampaign.addEventListener("click", () => withLoading(els.refreshCampaign, loadConfig).catch((error) => {
+      const message = error && error.message ? error.message : "โหลดข้อมูลไม่สำเร็จ";
+      setGlobalError(message);
+      setToast(message);
+    }));
     els.createReward.addEventListener("click", () => openRewardModal(null));
     els.refreshRewards.addEventListener("click", () => withLoading(els.refreshRewards, loadConfig).catch((error) => {
       const message = error && error.message ? error.message : "โหลดข้อมูลไม่สำเร็จ";
@@ -1207,11 +1533,31 @@
       setGlobalError(message);
       setToast(message);
     }));
+    els.refreshReports.addEventListener("click", () => withLoading(els.refreshReports, async () => {
+      await loadSpins();
+      await loadMemberRewards();
+    }).catch((error) => {
+      const message = error && error.message ? error.message : "โหลดข้อมูลไม่สำเร็จ";
+      setGlobalError(message);
+      setToast(message);
+    }));
+    els.refreshClaims.addEventListener("click", () => withLoading(els.refreshClaims, loadMemberRewards).catch((error) => {
+      const message = error && error.message ? error.message : "โหลดข้อมูลไม่สำเร็จ";
+      setGlobalError(message);
+      setToast(message);
+    }));
+    els.applyClaimFilters.addEventListener("click", () => withLoading(els.applyClaimFilters, loadMemberRewards).catch((error) => {
+      const message = error && error.message ? error.message : "โหลดข้อมูลไม่สำเร็จ";
+      setGlobalError(message);
+      setToast(message);
+    }));
+    els.claimStatusForm.addEventListener("submit", (event) => saveClaimStatus(event));
     els.refreshAudit.addEventListener("click", () => withLoading(els.refreshAudit, loadAudit).catch((error) => {
       const message = error && error.message ? error.message : "โหลดข้อมูลไม่สำเร็จ";
       setGlobalError(message);
       setToast(message);
     }));
+    els.applyAuditFilters.addEventListener("click", renderAudit);
     document.querySelectorAll("[data-close-modal]").forEach((button) => {
       button.addEventListener("click", () => {
         const modal = document.getElementById(button.dataset.closeModal);
@@ -1224,6 +1570,7 @@
     bindEvents();
     renderRewards();
     renderSpins();
+    renderMemberRewards();
     renderReports();
     renderAudit();
   }

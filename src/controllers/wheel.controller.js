@@ -103,6 +103,31 @@ async function adminSpins(req, res) {
   );
 }
 
+async function adminMemberRewards(req, res) {
+  return success(
+    res,
+    await wheelService.listAdminMemberRewards({
+      siteId: req.siteId,
+      siteCode: req.siteCode,
+      query: req.query,
+    })
+  );
+}
+
+async function updateMemberRewardStatus(req, res) {
+  return success(
+    res,
+    await wheelService.updateMemberRewardStatus({
+      siteId: req.siteId,
+      siteCode: req.siteCode,
+      admin: req.admin,
+      rewardId: req.params.id,
+      body: req.body,
+      req,
+    })
+  );
+}
+
 module.exports = {
   memberConfig,
   spin,
@@ -113,4 +138,6 @@ module.exports = {
   createReward,
   updateReward,
   adminSpins,
+  adminMemberRewards,
+  updateMemberRewardStatus,
 };

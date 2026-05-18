@@ -93,6 +93,7 @@ function main() {
     "End date",
     "Rules text",
     "Rewards",
+    "Reward Claims",
     "Sort order",
     "Reward type",
     "Reward value",
@@ -113,14 +114,22 @@ function main() {
     "Spin ID",
     "Reports",
     "Total spins",
+    "Unique members spun",
     "Rewards issued",
-    "Total point/ticket cost",
+    "Pending rewards",
+    "Claimed rewards",
+    "Expired/cancelled rewards",
+    "Total point cost",
+    "Total ticket cost",
     "Stock used",
     "Top reward",
+    "Top reward by stock used",
     "Empty/no reward count",
     "Reward type summary",
     "Reward stock usage",
     "Daily spin count",
+    "Claim status summary",
+    "Member reward summary",
     "Audit history",
     "Actor/admin",
     "Target type",
@@ -129,6 +138,7 @@ function main() {
     "Before/after summary",
     "Reason",
     "Add reward",
+    'id="claim-status-modal" data-modal="claim-status" data-testid="claim-status-modal"',
     'id="reward-modal" data-modal="reward" data-testid="reward-modal"',
     'id="status-modal" data-modal="status" data-testid="status-modal"',
     'id="confirm-modal" data-modal="confirm" data-testid="confirm-modal"',
@@ -136,6 +146,8 @@ function main() {
     "ไม่พบข้อมูล",
     "กำลังโหลดข้อมูล",
     "Audit history จะเชื่อมกับ admin audit log endpoint เมื่อพร้อม",
+    "GET /api/admin/wheel/member-rewards",
+    "Manual claim is limited to item rewards",
   ]);
   assertIncludes("Admin Wheel JS endpoints", js, [
     "/admin/wheel/config",
@@ -144,6 +156,8 @@ function main() {
     "encodeURIComponent(state.editingReward.id)",
     "encodeURIComponent(reward.id)",
     "/admin/wheel/spins",
+    "/admin/wheel/member-rewards",
+    "encodeURIComponent(target.reward.id)",
     "/admin/audit-logs?limit=100",
   ]);
   assertIncludes("Admin Wheel JS safety", js, [
@@ -182,6 +196,12 @@ function main() {
     "wheel.reward.create",
     "wheel.reward.update",
     "wheel.reward.status.update",
+    "wheel.memberReward.status.update",
+    "normalizeMemberReward",
+    "renderMemberRewards",
+    "openRewardClaimDetail",
+    "saveClaimStatus",
+    "No real payout or wallet credit is performed",
   ]);
   assertIncludes("Admin Wheel JS validation", js, [
     "Campaign name is required",
@@ -195,6 +215,7 @@ function main() {
   ]);
   assertReasonBeforeWrite(js, "const reason = validateCampaign();", "/admin/wheel/campaign", "Campaign save");
   assertReasonBeforeWrite(js, "const reason = validateReward();", "/admin/wheel/rewards", "Reward save");
+  assertReasonBeforeWrite(js, "const reason = validateReason(els.claimStatusReason", "encodeURIComponent(target.reward.id)}/status", "Reward claim status save");
   assertNoFrontendSpinSelection(js);
   assertNoFrontendSpinPayload(js);
   assertNoUnsafeLogging(js);

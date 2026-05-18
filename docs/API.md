@@ -408,18 +408,29 @@ Admin endpoints:
 | POST | `/admin/wheel/rewards` | Admin + site access | `settings.website.update` | reward fields plus required `reason` | sanitized reward | `wheel.reward.create` |
 | PATCH | `/admin/wheel/rewards/:id` | Admin + site access | `settings.website.update` | reward fields plus required `reason` | sanitized reward | `wheel.reward.update`; status-only changes write `wheel.reward.status.update` |
 | GET | `/admin/wheel/spins` | Admin + site access | `reports.view` | `campaignId`, `memberId`, `username`, `rewardType`, `rewardId`, `dateFrom`, `dateTo`, `page`, `limit` | sanitized spin rows with masked IP and user-agent hash when present | None |
+| GET | `/admin/wheel/member-rewards` | Admin + site access | `reports.view` | `campaignId`, `memberId`, `username`, `rewardType`, `status`, `spinId`/`sourceId`, `dateFrom`, `dateTo`, `page`, `limit` | `{ rows, summary }` for sanitized member reward claims | None |
+| PATCH | `/admin/wheel/member-rewards/:id/status` | Admin + site access | `settings.website.update` | `status` as `claimed` or `cancelled`, plus required `reason` | sanitized member reward with unchanged reward value | `wheel.memberReward.status.update` |
+
+Reward status flow:
+
+- Member spins create `member_rewards` rows with `status: pending` for non-`no_reward` results.
+- Admin Reward Claims can mark only pending `item` rewards as `claimed`. This is a manual staging/mock handoff only and does not credit wallets, points, tickets, provider balances, banks, payments, SMS, or Slip OCR.
+- Admin Reward Claims can cancel pending rewards with a required `reason`.
+- `expired` is reported from stored reward state but is not set by the current admin UI action.
+- The claim/cancel endpoint never accepts `rewardValue`, payout amount, wallet amount, points amount, ticket amount, `rewardId`, `prizeIndex`, or probability fields from the UI.
 
 Admin Wheel UI API usage:
 
 - Static page: `/admin/lucky-wheel/`.
-- The UI uses only existing wheel/admin APIs listed above plus existing read-only `GET /admin/audit-logs?limit=100` for the Audit history tab when that report endpoint is available.
+- The UI uses only wheel/admin APIs listed above plus existing read-only `GET /admin/audit-logs?limit=100` for the Audit history tab when that report endpoint is available.
 - Permission guard is backend-enforced: config reads require `settings.website.view`, campaign/reward writes require `settings.website.update`, spin history requires `reports.view`, and audit history requires `reports.view` through the existing audit endpoint. UI menu visibility is advisory only.
 - Admin UI maps auth/permission failures to safe messages: `401` shows `กรุณาเข้าสู่ระบบแอดมิน`, `403` shows `ไม่มีสิทธิ์ใช้งานเมนู Lucky Wheel`, `404` shows `ยังไม่พบข้อมูล Lucky Wheel`, and other load failures show `โหลดข้อมูลไม่สำเร็จ`.
 - Campaign settings loads `GET /admin/wheel/config`, shows read-only `campaignId`, active/inactive status, site code, last updated, cost, daily-limit, and date-window summary, and writes `PATCH /admin/wheel/campaign` with only `status`, `name`, `costType`, `costAmount`, `dailySpinLimit`, `startAt`, `endAt`, `rulesText`, and required `reason`.
 - Rewards management loads rewards from `GET /admin/wheel/config`, creates with `POST /admin/wheel/rewards`, and edits/toggles status with `PATCH /admin/wheel/rewards/:id`. Reward writes send `label`, `rewardType`, `rewardValue`, `displayValue`, `probabilityWeight`, `stockLimit`, `segmentColor`, `imageUrl`, `sortOrder`, `status`, and required `reason`. The UI labels backend `no_reward` as `empty`, validates label/type, non-negative probability weight, and `stockLimit >= stockUsed` when editing an existing reward, and falls back invalid segment colors to the default safe color.
 - Spin history uses `GET /admin/wheel/spins` with supported filters: `campaignId`, `username`, `memberId`, `rewardType`, `rewardId`, `dateFrom`, `dateTo`, and `limit`. The UI filters status client-side from the sanitized reward status returned by the endpoint and renders reward type, cost type/amount, prize index, masked IP, user-agent hash when present, and spin ID only.
-- Reports are frontend summaries derived from `GET /admin/wheel/config` and `GET /admin/wheel/spins`; there is no report endpoint and no report write endpoint. Reports show total spins, rewards issued, total point/ticket cost, stock used, top reward, empty/no reward count, top rewards, reward stock usage, reward type summary, and daily spin counts. Zero-spin reports must render `0 %`, `0`, `ไม่จำกัด`, or `ไม่พบข้อมูล` instead of `NaN`/`undefined`.
-- Audit history filters existing admin audit rows client-side to `wheel.campaign.update`, `wheel.reward.create`, `wheel.reward.update`, and `wheel.reward.status.update`, then renders time, actor/admin, action, target type, target ID, reason, before/after summary, and site code. If the report endpoint is unavailable, the tab shows a read-only placeholder. If auth/permission fails, it shows the safe 401/403 message instead of fake audit data.
+- Reward Claims uses `GET /admin/wheel/member-rewards` and `PATCH /admin/wheel/member-rewards/:id/status`. Claim/cancel writes require a confirm modal and non-empty `reason`, call guarded admin APIs, create `wheel.memberReward.status.update`, and never perform real payout or live credit/point/ticket changes.
+- Reports are frontend summaries derived from `GET /admin/wheel/config`, `GET /admin/wheel/spins`, and `GET /admin/wheel/member-rewards`; there is no report endpoint and no report write endpoint. Reports show total spins, unique members spun, rewards issued, pending rewards, claimed rewards, expired/cancelled rewards, total point cost, total ticket cost, empty/no reward count, top reward by count, top reward by stock used, daily spin count, reward type summary, reward stock usage, top rewards, claim status summary, and member reward summary. Zero-state reports must render `0 %`, `0`, `ไม่จำกัด`, or `ไม่พบข้อมูล` instead of `NaN`/`undefined`.
+- Audit history filters existing admin audit rows client-side to `wheel.campaign.update`, `wheel.reward.create`, `wheel.reward.update`, `wheel.reward.status.update`, and `wheel.memberReward.status.update`, then renders time, actor/admin, action, target type, target ID, reason, before summary, after summary, and site code. If the report endpoint is unavailable, the tab shows a read-only placeholder. If auth/permission fails, it shows the safe 401/403 message instead of fake audit data.
 - Every write action requires a non-empty `reason` before submit. The UI does not send `stockUsed`, `rewardId`, `prizeIndex`, `probabilityWeight`, or reward value to member spin endpoints. Member spin remains `{ "campaignId": "wheel_main" }` only and backend-selected.
 - The UI redacts secret-shaped values in details/diff displays and must not render raw tokens, passwords, secrets, database URLs, authorization headers, raw internal stack traces, or raw unmasked IPs.
 
@@ -435,8 +446,8 @@ Mock seed: campaign `wheel_main`, name `กงล้อนำโชค`, active,
 
 Smoke coverage:
 
-- `npm run smoke:admin-wheel-ui` covers static Admin Lucky Wheel UI source contract, campaign summary fields, reward table/modal fields, spin history empty state, audit history fields, existing endpoint usage, reason validation before writes, safe auth/permission messages, report zero guards, redaction markers, masked IP handling, and frontend spin-safety guard.
-- `npm run smoke:admin-wheel-runtime` covers static HTTP route/assets, unauthenticated `401`, no-permission `403`, admin config/spins reads, member config/spin/history/my-rewards runtime shape, unsafe spin payload rejection, write-without-reason rejection, write-with-reason success, audit creation/read through the existing audit endpoint, and response leak scan. It skips safely when local admin/member env is not configured.
+- `npm run smoke:admin-wheel-ui` covers static Admin Lucky Wheel UI source contract, campaign summary fields, reward table/modal fields, Reward Claims fields/actions, spin history empty state, reports/audit fields, endpoint usage, reason validation before writes, safe auth/permission messages, report zero guards, redaction markers, masked IP handling, and frontend spin-safety guard.
+- `npm run smoke:admin-wheel-runtime` covers static HTTP route/assets, unauthenticated `401`, no-permission `403`, admin config/spins/member-rewards reads, member config/spin/history/my-rewards runtime shape, unsafe spin payload rejection, write-without-reason rejection, write-with-reason success for campaign/reward/reward-claim status, audit creation/read through the existing audit endpoint, and response leak scan. It skips safely when local admin/member env is not configured.
 - `npm run smoke:wheel` covers the local/staging safety guard, member config, missing auth, invalid campaign, member result field injection rejection, backend-selected spin result, history, my rewards, daily limit, insufficient points, inactive campaign, stock-zero exclusion, admin reason validation, admin audit reason, admin config/spins, and response leak scan. It skips safely when local runtime env is missing and blocks production-like targets.
 
 ## 12. Safety / Negative Contract
@@ -560,4 +571,4 @@ Secret rules:
 - Admin audit/security static frontend is implemented at `/admin/audit-security`; it is a backend-served static page and uses backend `reports.view` guard as the source of truth.
 - Production deployment smoke is not covered.
 - Full frontend end-to-end coverage is not covered.
-- Lucky Wheel frontend Phaser integration and real reward claiming are not implemented in this MVP.
+- Lucky Wheel frontend Phaser integration and real payout claiming are not implemented. Reward Claims in this phase is a staging/mock admin queue for manual item handoff or cancellation only.

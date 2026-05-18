@@ -59,6 +59,7 @@
           <button class="tab-button" type="button" data-tab="spins">Spin history</button>
           <button class="tab-button" type="button" data-tab="reports">Reports</button>
           <button class="tab-button" type="button" data-tab="audit">Audit history</button>
+          <button class="tab-button" type="button" data-tab="claims">Reward Claims</button>
         </nav>
 
         <section id="global-error" class="error-state hidden">โหลดข้อมูลไม่สำเร็จ</section>
@@ -70,7 +71,10 @@
                 <h2>Campaign settings</h2>
                 <p>Loaded from GET /api/admin/wheel/config</p>
               </div>
-              <button id="save-campaign" type="submit">Save</button>
+              <div class="button-row">
+                <button id="refresh-campaign" type="button" class="secondary">Refresh</button>
+                <button id="save-campaign" type="submit">Save</button>
+              </div>
             </div>
             <div class="campaign-summary" aria-label="Current campaign summary">
               <span class="summary-pill">Status <strong id="campaign-summary-status">inactive</strong></span>
@@ -220,20 +224,35 @@
         </section>
 
         <section class="tab-panel" id="tab-reports">
+          <section class="panel table-section">
+            <div class="section-heading">
+              <div>
+                <h2>Reports</h2>
+                <p>Client-side summary from config, spins, and member rewards APIs.</p>
+              </div>
+              <button id="refresh-reports" type="button">Refresh</button>
+            </div>
+          </section>
           <section class="summary-grid" aria-label="Lucky Wheel report summary">
             <article class="summary-card"><span>Total spins</span><strong id="report-total-spins">0</strong></article>
+            <article class="summary-card"><span>Unique members spun</span><strong id="report-unique-members">0</strong></article>
             <article class="summary-card"><span>Rewards issued</span><strong id="report-issued">0</strong></article>
-            <article class="summary-card"><span>Total point/ticket cost</span><strong id="report-cost-used">0</strong></article>
+            <article class="summary-card"><span>Pending rewards</span><strong id="report-pending-rewards">0</strong></article>
+            <article class="summary-card"><span>Claimed rewards</span><strong id="report-claimed-rewards">0</strong></article>
+            <article class="summary-card"><span>Expired/cancelled rewards</span><strong id="report-expired-cancelled-rewards">0</strong></article>
+            <article class="summary-card"><span>Total point cost</span><strong id="report-point-cost">0</strong></article>
+            <article class="summary-card"><span>Total ticket cost</span><strong id="report-ticket-cost">0</strong></article>
             <article class="summary-card"><span>Stock used</span><strong id="report-stock-used">0</strong></article>
             <article class="summary-card"><span>Top reward</span><strong id="report-top-reward">ไม่พบข้อมูล</strong></article>
+            <article class="summary-card"><span>Top reward by stock used</span><strong id="report-top-stock-reward">ไม่พบข้อมูล</strong></article>
             <article class="summary-card"><span>Empty/no reward count</span><strong id="report-empty-count">0</strong></article>
           </section>
-          <section class="notice">Reports are client-side summaries from GET /api/admin/wheel/config and GET /api/admin/wheel/spins. Reports do not calculate random rewards and do not write data.</section>
+          <section class="notice">Reports are client-side summaries from GET /api/admin/wheel/config, GET /api/admin/wheel/spins, and GET /api/admin/wheel/member-rewards. Reports do not calculate random rewards and do not write data.</section>
           <section class="report-grid">
             <article class="panel table-section">
-              <div class="section-heading"><h2>Top rewards</h2></div>
-              <div id="top-rewards-empty" class="empty-state hidden">ไม่พบข้อมูล</div>
-              <div class="table-scroll"><table><thead><tr><th>Reward</th><th>Count</th><th>Percent</th><th>Stock used</th></tr></thead><tbody id="top-reward-rows"></tbody></table></div>
+              <div class="section-heading"><h2>Daily spin count</h2></div>
+              <div id="daily-empty" class="empty-state hidden">ไม่พบข้อมูล</div>
+              <div class="table-scroll"><table><thead><tr><th>Date</th><th>Spin count</th><th>Rewards issued</th><th>Point/ticket cost</th></tr></thead><tbody id="daily-rows"></tbody></table></div>
             </article>
             <article class="panel table-section">
               <div class="section-heading"><h2>Reward type summary</h2></div>
@@ -242,12 +261,23 @@
             </article>
             <article class="panel table-section">
               <div class="section-heading"><h2>Reward stock usage</h2></div>
+              <div id="stock-empty" class="empty-state hidden">ไม่พบข้อมูล</div>
               <div class="table-scroll"><table><thead><tr><th>Reward label</th><th>Stock limit</th><th>Stock used</th><th>Remaining</th></tr></thead><tbody id="stock-rows"></tbody></table></div>
             </article>
             <article class="panel table-section">
-              <div class="section-heading"><h2>Daily spin count</h2></div>
-              <div id="daily-empty" class="empty-state hidden">ไม่พบข้อมูล</div>
-              <div class="table-scroll"><table><thead><tr><th>Date</th><th>Spin count</th><th>Rewards issued</th><th>Point/ticket cost</th></tr></thead><tbody id="daily-rows"></tbody></table></div>
+              <div class="section-heading"><h2>Top rewards</h2></div>
+              <div id="top-rewards-empty" class="empty-state hidden">ไม่พบข้อมูล</div>
+              <div class="table-scroll"><table><thead><tr><th>Reward</th><th>Count</th><th>Percent</th><th>Stock used</th></tr></thead><tbody id="top-reward-rows"></tbody></table></div>
+            </article>
+            <article class="panel table-section">
+              <div class="section-heading"><h2>Claim status summary</h2></div>
+              <div id="claim-status-empty" class="empty-state hidden">ไม่พบข้อมูล</div>
+              <div class="table-scroll"><table><thead><tr><th>Status</th><th>Count</th><th>Percent</th></tr></thead><tbody id="claim-status-rows"></tbody></table></div>
+            </article>
+            <article class="panel table-section">
+              <div class="section-heading"><h2>Member reward summary</h2></div>
+              <div id="member-reward-summary-empty" class="empty-state hidden">ไม่พบข้อมูล</div>
+              <div class="table-scroll"><table><thead><tr><th>Member</th><th>Total rewards</th><th>Pending</th><th>Claimed</th><th>Expired/cancelled</th></tr></thead><tbody id="member-reward-summary-rows"></tbody></table></div>
             </article>
           </section>
         </section>
@@ -260,6 +290,14 @@
                 <p id="audit-help">Loads existing admin audit logs when the report endpoint is available.</p>
               </div>
               <button id="refresh-audit" type="button">Refresh</button>
+            </div>
+            <div class="filter-bar">
+              <label>Action <select id="audit-filter-action"><option value="">All</option><option value="wheel.campaign.update">wheel.campaign.update</option><option value="wheel.reward.create">wheel.reward.create</option><option value="wheel.reward.update">wheel.reward.update</option><option value="wheel.reward.status.update">wheel.reward.status.update</option><option value="wheel.memberReward.status.update">wheel.memberReward.status.update</option></select></label>
+              <label>Actor <input id="audit-filter-actor" type="search" placeholder="admin username" /></label>
+              <label>Target ID <input id="audit-filter-target" type="search" placeholder="target id" /></label>
+              <label>Date from <input id="audit-filter-from" type="date" /></label>
+              <label>Date to <input id="audit-filter-to" type="date" /></label>
+              <button id="apply-audit-filters" type="button">Apply</button>
             </div>
             <div id="audit-placeholder" class="notice hidden">Audit history จะเชื่อมกับ admin audit log endpoint เมื่อพร้อม</div>
             <div id="audit-empty" class="empty-state hidden">ไม่พบข้อมูล</div>
@@ -280,6 +318,59 @@
                   </tr>
                 </thead>
                 <tbody id="audit-rows"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section class="tab-panel" id="tab-claims">
+          <section class="summary-grid" aria-label="Reward Claims summary">
+            <article class="summary-card"><span>Total issued rewards</span><strong id="claim-total-issued">0</strong></article>
+            <article class="summary-card"><span>Pending rewards</span><strong id="claim-pending">0</strong></article>
+            <article class="summary-card"><span>Claimed rewards</span><strong id="claim-claimed">0</strong></article>
+            <article class="summary-card"><span>Expired rewards</span><strong id="claim-expired">0</strong></article>
+            <article class="summary-card"><span>Cancelled rewards</span><strong id="claim-cancelled">0</strong></article>
+            <article class="summary-card"><span>Credit/point/ticket/item counts</span><strong id="claim-type-counts">credit 0, point 0, ticket 0, item 0</strong></article>
+          </section>
+          <section class="panel table-section">
+            <div class="section-heading">
+              <div>
+                <h2>Reward Claims</h2>
+                <p>Staging/mock reward queue only. Manual claim is limited to item rewards and never performs real payout.</p>
+                <p>Last updated <strong id="claim-last-updated">-</strong></p>
+              </div>
+              <button id="refresh-claims" type="button">Refresh</button>
+            </div>
+            <div class="filter-bar">
+              <label>Date from <input id="claim-filter-from" type="date" /></label>
+              <label>Date to <input id="claim-filter-to" type="date" /></label>
+              <label>Member <input id="claim-filter-member" type="search" placeholder="username or member id" /></label>
+              <label>Reward type <select id="claim-filter-type"><option value="">All</option></select></label>
+              <label>Status <select id="claim-filter-status"><option value="">All</option><option value="pending">pending</option><option value="claimed">claimed</option><option value="expired">expired</option><option value="cancelled">cancelled</option></select></label>
+              <label>Campaign <input id="claim-filter-campaign" type="text" placeholder="wheel_main" /></label>
+              <label>Source spinId <input id="claim-filter-spin" type="text" placeholder="spin id" /></label>
+              <button id="apply-claim-filters" type="button">Apply</button>
+            </div>
+            <div id="claims-empty" class="empty-state hidden">ไม่พบข้อมูล</div>
+            <div id="claims-loading" class="loading-state hidden">กำลังโหลดข้อมูล...</div>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>CreatedAt</th>
+                    <th>Member</th>
+                    <th>Reward label</th>
+                    <th>Reward type</th>
+                    <th>Reward value</th>
+                    <th>Source</th>
+                    <th>SourceId/spinId</th>
+                    <th>Status</th>
+                    <th>ClaimedAt</th>
+                    <th>ExpiresAt</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="claim-rows"></tbody>
               </table>
             </div>
           </section>
@@ -374,6 +465,25 @@
         <footer>
           <button type="button" class="secondary" data-close-modal="status-modal">Cancel</button>
           <button id="confirm-status" type="submit">Confirm</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog id="claim-status-modal" data-modal="claim-status" data-testid="claim-status-modal">
+      <form method="dialog" class="modal-card" id="claim-status-form">
+        <header>
+          <h2 id="claim-status-title">Confirm reward claim status</h2>
+          <button type="button" class="icon-button" data-close-modal="claim-status-modal" aria-label="Close">x</button>
+        </header>
+        <p id="claim-status-copy">Confirm this staging/mock reward status update.</p>
+        <div class="field">
+          <label for="claim-status-reason">Reason</label>
+          <textarea id="claim-status-reason" rows="3" maxlength="500" placeholder="Required for audit log"></textarea>
+          <p id="claim-status-reason-error" class="field-error hidden"></p>
+        </div>
+        <footer>
+          <button type="button" class="secondary" data-close-modal="claim-status-modal">Cancel</button>
+          <button id="confirm-claim-status" type="submit">Confirm</button>
         </footer>
       </form>
     </dialog>

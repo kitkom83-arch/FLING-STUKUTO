@@ -13,11 +13,60 @@ process.env.SLIP_OCR_MODE = "mock";
 const prismaPath = require.resolve("../config/prisma");
 const passwordPath = require.resolve("../utils/password");
 const DEMO_ADMIN_USERNAME = "demo-admin@example.test";
+const NO_PERMISSION_ADMIN_USERNAME = "wheel-viewer@example.test";
 const DEMO_ADMIN_PASSWORD = "admin-wheel-route-test-password";
+const auditLogs = [];
+const memberRewards = [
+  {
+    id: "member_reward_1",
+    siteId: "test_site",
+    memberId: "member_1",
+    source: "wheel",
+    sourceId: "spin_1",
+    rewardType: "item",
+    rewardValue: "0.00",
+    label: "Mock Item Reward",
+    status: "pending",
+    claimedAt: null,
+    expiresAt: null,
+    createdAt: new Date("2026-01-01T00:00:00.000Z"),
+    updatedAt: new Date("2026-01-01T00:00:00.000Z"),
+    member: {
+      id: "member_1",
+      username: "staging_member",
+      phone: "0800000099",
+    },
+    spin: {
+      id: "spin_1",
+      campaignId: "wheel_main",
+      resultSnapshot: {
+        label: "Mock Item Reward",
+        rewardType: "item",
+        noRealPayout: true,
+      },
+      campaign: {
+        id: "wheel_main",
+        name: "Staging Mock Lucky Wheel",
+      },
+    },
+  },
+];
 
 const prismaMock = {
+  $transaction: async (callback) => callback(prismaMock),
   admin: {
     findUnique: async ({ where }) => {
+      if (where.id === "admin_viewer" || where.username === NO_PERMISSION_ADMIN_USERNAME) {
+        return {
+          id: "admin_viewer",
+          username: NO_PERMISSION_ADMIN_USERNAME,
+          role: "viewer",
+          status: "active",
+          passwordHash: "mock-password-hash",
+          createdAt: new Date("2026-01-01T00:00:00.000Z"),
+          updatedAt: new Date("2026-01-01T00:00:00.000Z"),
+        };
+      }
       if (where.id && where.id !== "admin_1") return null;
       if (where.username && where.username !== DEMO_ADMIN_USERNAME) return null;
       return {
@@ -30,24 +79,47 @@ const prismaMock = {
         updatedAt: new Date("2026-01-01T00:00:00.000Z"),
       };
     },
-    update: async ({ data }) => ({
-      id: "admin_1",
-      username: DEMO_ADMIN_USERNAME,
-      role: "super_admin",
-      status: "active",
-      lastLoginAt: data.lastLoginAt,
-      createdAt: new Date("2026-01-01T00:00:00.000Z"),
-      updatedAt: new Date("2026-01-01T00:00:00.000Z"),
-    }),
+    update: async ({ where, data }) => {
+      const admin = await prismaMock.admin.findUnique({ where });
+      return {
+        ...admin,
+        lastLoginAt: data.lastLoginAt,
+      };
+    },
   },
   adminLog: {
-    create: async () => ({ id: "log_1" }),
+    create: async ({ data }) => {
+      const row = { id: `log_${auditLogs.length + 1}`, ...data };
+      auditLogs.push(row);
+      return row;
+    },
   },
   adminSiteAccess: {
-    findUnique: async () => null,
+    findUnique: async ({ where }) => {
+      if (where.adminId_siteId.adminId === "admin_viewer") {
+        return {
+          id: "access_viewer",
+          adminId: "admin_viewer",
+          siteId: "test_site",
+          role: "viewer",
+          permissions: [],
+        };
+      }
+      return null;
+    },
   },
   memberReward: {
     count: async () => 0,
+    findMany: async () => memberRewards,
+    findFirst: async ({ where }) => {
+      const row = memberRewards.find((item) => item.id === where.id && item.siteId === where.siteId);
+      return row || null;
+    },
+    update: async ({ where, data }) => {
+      const row = memberRewards.find((item) => item.id === where.id);
+      Object.assign(row, data, { updatedAt: new Date("2026-01-02T00:00:00.000Z") });
+      return row;
+    },
   },
   site: {
     findUnique: async () => ({
@@ -163,6 +235,71 @@ async function main() {
     "admin wheel config must include summary.totalSpins"
   );
   assertNoSecretLeak("authenticated admin wheel config", authenticated.payload);
+
+  const unauthenticatedRewards = await requestJson("/api/admin/wheel/member-rewards");
+  assert.notStrictEqual(unauthenticatedRewards.statusCode, 200, "admin member rewards list must require auth");
+  assert.strictEqual(unauthenticatedRewards.payload.success, false, "admin member rewards list unauth must fail safely");
+  assertNoSecretLeak("unauthenticated admin member rewards", unauthenticatedRewards.payload);
+
+  const rewardsList = await requestJson("/api/admin/wheel/member-rewards?limit=20", {
+    headers: {
+      Authorization: `Bearer ${login.payload.data.token}`,
+    },
+  });
+  assert.strictEqual(rewardsList.statusCode, 200, "admin member rewards list must return 200");
+  assert.strictEqual(rewardsList.payload.success, true, "admin member rewards list must succeed");
+  assert(rewardsList.payload.data && Array.isArray(rewardsList.payload.data.rows), "admin member rewards list must include rows");
+  assert(
+    rewardsList.payload.data.summary && typeof rewardsList.payload.data.summary.pendingRewards === "number",
+    "admin member rewards list must include summary"
+  );
+  assertNoSecretLeak("admin member rewards list", rewardsList.payload);
+
+  const missingReason = await requestJson("/api/admin/wheel/member-rewards/member_reward_1/status", {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${login.payload.data.token}`,
+    },
+    body: { status: "claimed", reason: "" },
+  });
+  assert.strictEqual(missingReason.statusCode, 400, "reward claim/cancel must require reason");
+  assert.strictEqual(missingReason.payload.success, false, "reward claim missing reason must fail safely");
+  assertNoSecretLeak("admin member reward missing reason", missingReason.payload);
+
+  const noPermissionLogin = await requestJson("/api/admin/auth/login", {
+    method: "POST",
+    body: {
+      username: NO_PERMISSION_ADMIN_USERNAME,
+      password: DEMO_ADMIN_PASSWORD,
+    },
+  });
+  assert.strictEqual(noPermissionLogin.statusCode, 200, "no-permission admin login must return 200");
+  const forbiddenUpdate = await requestJson("/api/admin/wheel/member-rewards/member_reward_1/status", {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${noPermissionLogin.payload.data.token}`,
+    },
+    body: { status: "claimed", reason: "viewer cannot claim reward" },
+  });
+  assert.strictEqual(forbiddenUpdate.statusCode, 403, "unauthorized admin reward status update must fail closed");
+  assert.strictEqual(forbiddenUpdate.payload.success, false, "unauthorized admin reward status update must fail safely");
+  assertNoSecretLeak("unauthorized admin member reward status", forbiddenUpdate.payload);
+
+  const claimed = await requestJson("/api/admin/wheel/member-rewards/member_reward_1/status", {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${login.payload.data.token}`,
+    },
+    body: { status: "claimed", reason: "manual item handoff in staging" },
+  });
+  assert.strictEqual(claimed.statusCode, 200, "reward claim with reason must return 200");
+  assert.strictEqual(claimed.payload.success, true, "reward claim with reason must succeed");
+  assert.strictEqual(claimed.payload.data.status, "claimed", "reward claim response must include updated status");
+  assert(
+    auditLogs.some((row) => row.action === "wheel.memberReward.status.update" && row.targetId === "member_reward_1"),
+    "reward claim/cancel must create audit log"
+  );
+  assertNoSecretLeak("admin member reward claimed", claimed.payload);
 
   console.log("Admin wheel config route test: PASS");
 }

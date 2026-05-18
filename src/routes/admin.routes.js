@@ -112,6 +112,13 @@ router.patch("/wheel/campaign", protectedSite, can("settings.website.update"), a
 router.post("/wheel/rewards", protectedSite, can("settings.website.update"), asyncHandler(wheelController.createReward));
 router.patch("/wheel/rewards/:id", protectedSite, can("settings.website.update"), asyncHandler(wheelController.updateReward));
 router.get("/wheel/spins", protectedSite, can("reports.view"), asyncHandler(wheelController.adminSpins));
+router.get("/wheel/member-rewards", protectedSite, can("reports.view"), asyncHandler(wheelController.adminMemberRewards));
+router.patch(
+  "/wheel/member-rewards/:id/status",
+  protectedSite,
+  can("settings.website.update"),
+  asyncHandler(wheelController.updateMemberRewardStatus)
+);
 
 router.get("/sites", protectedSite, can("settings.website.view"), asyncHandler(adminSiteController.listSites));
 router.get("/sites/current/config", protectedSite, can("settings.website.view"), asyncHandler(adminSiteController.currentConfig));

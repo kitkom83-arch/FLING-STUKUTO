@@ -13,7 +13,13 @@ const OWNER_USERNAME = process.env.LOCAL_ADMIN_USERNAME || "local_wheel_runtime_
 const NO_PERMISSION_USERNAME = "local_wheel_runtime_no_permission";
 const MEMBER_PASSWORD = process.env.LOCAL_MEMBER_PASSWORD || "local-wheel-runtime-member-only";
 const RUNTIME_REASON = "admin wheel runtime smoke reason";
-const WHEEL_AUDIT_ACTIONS = ["wheel.campaign.update", "wheel.reward.create", "wheel.reward.update", "wheel.reward.status.update"];
+const WHEEL_AUDIT_ACTIONS = [
+  "wheel.campaign.update",
+  "wheel.reward.create",
+  "wheel.reward.update",
+  "wheel.reward.status.update",
+  "wheel.memberReward.status.update",
+];
 const issuedAuthValues = new Set();
 
 function tokenize(value) {
@@ -342,6 +348,38 @@ async function ensureFixtures() {
     },
   });
 
+  await prisma.wheelReward.upsert({
+    where: { id: "wheel_runtime_item_reward" },
+    update: {
+      campaignId: "wheel_main",
+      label: "Runtime Item Reward",
+      rewardType: "item",
+      rewardValue: new Prisma.Decimal("0.00"),
+      displayValue: "mock item",
+      probabilityWeight: 1,
+      stockLimit: null,
+      segmentColor: "#0f766e",
+      imageUrl: null,
+      sortOrder: 81,
+      status: "active",
+    },
+    create: {
+      id: "wheel_runtime_item_reward",
+      campaignId: "wheel_main",
+      label: "Runtime Item Reward",
+      rewardType: "item",
+      rewardValue: new Prisma.Decimal("0.00"),
+      displayValue: "mock item",
+      probabilityWeight: 1,
+      stockLimit: null,
+      stockUsed: 0,
+      segmentColor: "#0f766e",
+      imageUrl: null,
+      sortOrder: 81,
+      status: "active",
+    },
+  });
+
   const runId = makeRunId();
   const member = await prisma.user.create({
     data: {
@@ -364,7 +402,7 @@ async function ensureFixtures() {
     },
   });
 
-  return { prisma, memberPhone: member.phone };
+  return { prisma, siteId: site.id, memberId: member.id, memberPhone: member.phone };
 }
 
 async function loginAdmin(baseUrl, username) {
@@ -461,6 +499,90 @@ async function assertMemberWheelRuntime(baseUrl, memberToken) {
   console.log("Admin Wheel frontend result injection guard: PASS");
 }
 
+async function createMemberRewardClaimFixture(prisma, { siteId, memberId }) {
+  const runId = makeRunId();
+  const spin = await prisma.wheelSpin.create({
+    data: {
+      siteId,
+      memberId,
+      campaignId: "wheel_main",
+      rewardId: "wheel_runtime_item_reward",
+      prizeIndex: 0,
+      spinCostType: "point",
+      spinCostAmount: new Prisma.Decimal("0.00"),
+      resultSnapshot: {
+        label: "Runtime Item Reward",
+        rewardType: "item",
+        rewardValue: "0.00",
+        displayValue: "mock item",
+        noRealPayout: true,
+      },
+      ipAddressMasked: "127.0.x.x",
+      userAgentHash: "runtime-claim-fixture",
+    },
+  });
+  const memberReward = await prisma.memberReward.create({
+    data: {
+      siteId,
+      memberId,
+      source: "wheel",
+      sourceId: spin.id,
+      rewardType: "item",
+      rewardValue: new Prisma.Decimal("0.00"),
+      label: `Runtime Claim Fixture ${runId}`,
+      status: "pending",
+    },
+  });
+  return memberReward;
+}
+
+async function assertAdminMemberRewardRuntime(baseUrl, ownerToken, noPermissionToken, rewardId) {
+  await apiRequest(baseUrl, "/admin/wheel/member-rewards?limit=20", {
+    expectedStatus: 401,
+    expectSuccess: false,
+    label: "admin wheel member rewards missing auth",
+  });
+  await apiRequest(baseUrl, "/admin/wheel/member-rewards?limit=20", {
+    authValue: noPermissionToken,
+    expectedStatus: 403,
+    expectSuccess: false,
+    label: "admin wheel member rewards no permission",
+  });
+  const rewards = await apiRequest(baseUrl, "/admin/wheel/member-rewards?limit=20", {
+    authValue: ownerToken,
+    label: "admin wheel member rewards read",
+  });
+  if (!rewards.data || !Array.isArray(rewards.data.rows) || !rewards.data.summary) {
+    throw new Error("Admin wheel member rewards response shape invalid.");
+  }
+  await apiRequest(baseUrl, `/admin/wheel/member-rewards/${encodeURIComponent(rewardId)}/status`, {
+    method: "PATCH",
+    authValue: ownerToken,
+    expectedStatus: 400,
+    expectSuccess: false,
+    label: "admin wheel member reward status missing reason",
+    body: { status: "claimed", reason: "" },
+  });
+  await apiRequest(baseUrl, `/admin/wheel/member-rewards/${encodeURIComponent(rewardId)}/status`, {
+    method: "PATCH",
+    authValue: noPermissionToken,
+    expectedStatus: 403,
+    expectSuccess: false,
+    label: "admin wheel member reward status no permission",
+    body: { status: "claimed", reason: RUNTIME_REASON },
+  });
+  const claimed = await apiRequest(baseUrl, `/admin/wheel/member-rewards/${encodeURIComponent(rewardId)}/status`, {
+    method: "PATCH",
+    authValue: ownerToken,
+    label: "admin wheel member reward status claimed",
+    body: { status: "claimed", reason: RUNTIME_REASON },
+  });
+  if (!claimed.data || claimed.data.status !== "claimed" || claimed.data.rewardValue === undefined) {
+    throw new Error("Admin wheel member reward status response shape invalid.");
+  }
+  console.log("Admin Wheel reward claims read/write runtime: PASS");
+}
+
 function assertAuditRow(row, action) {
   if (!row) throw new Error(`Audit row missing for ${action}.`);
   if (!row.metadata || row.metadata.reason !== RUNTIME_REASON) throw new Error(`${action} audit row missing reason.`);
@@ -532,6 +654,11 @@ async function main() {
     console.log("Admin Wheel spins read: PASS");
 
     await assertMemberWheelRuntime(baseUrl, memberToken);
+    const claimFixture = await createMemberRewardClaimFixture(fixtures.prisma, {
+      siteId: fixtures.siteId,
+      memberId: fixtures.memberId,
+    });
+    await assertAdminMemberRewardRuntime(baseUrl, ownerToken, noPermissionToken, claimFixture.id);
 
     await apiRequest(baseUrl, "/admin/wheel/campaign", {
       method: "PATCH",

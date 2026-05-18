@@ -15,6 +15,8 @@ const CAMPAIGN_STATUSES = new Set(["active", "inactive", "draft"]);
 const COST_TYPES = new Set(["point", "ticket", "mock_credit"]);
 const REWARD_TYPES = new Set(["credit", "point", "ticket", "item", "no_reward"]);
 const REWARD_STATUSES = new Set(["active", "inactive"]);
+const MEMBER_REWARD_STATUSES = new Set(["pending", "claimed", "expired", "cancelled"]);
+const ADMIN_MEMBER_REWARD_STATUS_UPDATES = new Set(["claimed", "cancelled"]);
 const FORBIDDEN_SPIN_INPUTS = ["rewardId", "reward_id", "prizeIndex", "prize_index", "probabilityWeight", "probability_weight", "rewardValue", "reward_value"];
 const SECRET_VALUE_PATTERNS = [
   /postgres(?:ql)?:\/\/[^\s"']+/i,
@@ -207,6 +209,44 @@ function adminCampaign(campaign) {
     createdAt: campaign.createdAt,
     updatedAt: campaign.updatedAt,
   };
+}
+
+function adminMemberReward(row, { siteCode = null } = {}) {
+  const spin = row.spin && typeof row.spin === "object" ? row.spin : null;
+  const member = row.member && typeof row.member === "object" ? row.member : null;
+  const campaign = spin && spin.campaign ? spin.campaign : null;
+  return sanitizeAdminLogData({
+    id: row.id,
+    siteId: row.siteId,
+    siteCode,
+    memberId: row.memberId,
+    member: member
+      ? {
+          id: member.id,
+          username: member.username,
+          phone: member.phone,
+        }
+      : null,
+    campaignId: campaign ? campaign.id : spin ? spin.campaignId : null,
+    campaign: campaign
+      ? {
+          id: campaign.id,
+          name: campaign.name,
+        }
+      : null,
+    source: row.source,
+    sourceId: row.sourceId,
+    spinId: row.source === "wheel" ? row.sourceId : null,
+    rewardType: row.rewardType,
+    rewardValue: decimalString(row.rewardValue),
+    label: row.label,
+    status: row.status,
+    claimedAt: row.claimedAt,
+    expiresAt: row.expiresAt,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+    resultSnapshot: spin ? spin.resultSnapshot : null,
+  });
 }
 
 function stagingMockRewards(campaignId) {
@@ -893,6 +933,150 @@ async function listAdminSpins({ siteId, siteCode = null, query = {} }) {
   }));
 }
 
+function summarizeMemberRewards(rows) {
+  const zero = {
+    totalIssuedRewards: 0,
+    pendingRewards: 0,
+    claimedRewards: 0,
+    expiredRewards: 0,
+    cancelledRewards: 0,
+    byType: {
+      credit: 0,
+      point: 0,
+      ticket: 0,
+      item: 0,
+      no_reward: 0,
+    },
+  };
+  return rows.reduce((summary, row) => {
+    summary.totalIssuedRewards += 1;
+    if (row.status === "pending") summary.pendingRewards += 1;
+    if (row.status === "claimed") summary.claimedRewards += 1;
+    if (row.status === "expired") summary.expiredRewards += 1;
+    if (row.status === "cancelled") summary.cancelledRewards += 1;
+    if (!summary.byType[row.rewardType]) summary.byType[row.rewardType] = 0;
+    summary.byType[row.rewardType] += 1;
+    return summary;
+  }, zero);
+}
+
+async function listAdminMemberRewards({ siteId, siteCode = null, query = {} }) {
+  assertWheelSafeRuntime();
+  const { skip, take } = pagination(query, { limit: 50, maxLimit: 100 });
+  const where = { siteId, source: "wheel" };
+  if (query.memberId || query.member_id) where.memberId = String(query.memberId || query.member_id);
+  if (query.sourceId || query.source_id || query.spinId || query.spin_id) {
+    where.sourceId = String(query.sourceId || query.source_id || query.spinId || query.spin_id);
+  }
+  if (query.rewardType) where.rewardType = String(query.rewardType);
+  if (query.status) {
+    assertAllowed(String(query.status), MEMBER_REWARD_STATUSES, "status");
+    where.status = String(query.status);
+  }
+  if (query.username) {
+    where.member = { is: { username: { contains: String(query.username), mode: "insensitive" } } };
+  }
+  if (query.campaignId || query.campaign_id) {
+    where.spin = { is: { campaignId: String(query.campaignId || query.campaign_id) } };
+  }
+  const dateFrom = parseDateOrNull(query.dateFrom || query.date_from, "dateFrom");
+  const dateTo = parseDateOrNull(query.dateTo || query.date_to, "dateTo");
+  if (dateFrom || dateTo) {
+    where.createdAt = {};
+    if (dateFrom) where.createdAt.gte = dateFrom;
+    if (dateTo) where.createdAt.lte = dateTo;
+  }
+
+  const rows = await prisma.memberReward.findMany({
+    where,
+    include: {
+      member: { select: { id: true, username: true, phone: true } },
+      spin: {
+        include: {
+          campaign: { select: { id: true, name: true } },
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    skip,
+    take,
+  });
+
+  const formatted = rows.map((row) => adminMemberReward(row, { siteCode }));
+  return {
+    rows: formatted,
+    summary: summarizeMemberRewards(formatted),
+  };
+}
+
+async function updateMemberRewardStatus({ siteId, siteCode, admin, rewardId, body, req }) {
+  assertWheelSafeRuntime();
+  const reason = normalizeReason(body && body.reason);
+  const status = String((body && body.status) || "").trim();
+  assertAllowed(status, ADMIN_MEMBER_REWARD_STATUS_UPDATES, "status");
+
+  return prisma.$transaction(async (tx) => {
+    const before = await tx.memberReward.findFirst({
+      where: { id: rewardId, siteId, source: "wheel" },
+      include: {
+        member: { select: { id: true, username: true, phone: true } },
+        spin: { include: { campaign: { select: { id: true, name: true } } } },
+      },
+    });
+    if (!before) {
+      const error = new Error("Member reward not found");
+      error.statusCode = 404;
+      throw error;
+    }
+    if (before.status !== "pending") {
+      const error = new Error("Only pending rewards can be updated by this staging action");
+      error.statusCode = 400;
+      throw error;
+    }
+    if (status === "claimed" && before.rewardType !== "item") {
+      const error = new Error("Manual claim is allowed only for item rewards in staging/mock mode");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const after = await tx.memberReward.update({
+      where: { id: before.id },
+      data: {
+        status,
+        claimedAt: status === "claimed" ? new Date() : null,
+      },
+      include: {
+        member: { select: { id: true, username: true, phone: true } },
+        spin: { include: { campaign: { select: { id: true, name: true } } } },
+      },
+    });
+    const beforePublic = adminMemberReward(before, { siteCode });
+    const afterPublic = adminMemberReward(after, { siteCode });
+    await logAdminAction({
+      tx,
+      admin,
+      action: "wheel.memberReward.status.update",
+      targetType: "member_reward",
+      targetId: before.id,
+      before: beforePublic,
+      after: afterPublic,
+      metadata: {
+        reason,
+        targetMemberRewardId: before.id,
+        targetSpinId: before.sourceId,
+        targetMemberId: before.memberId,
+        status,
+        actor: { id: admin.id, username: admin.username, role: admin.role },
+        siteCode,
+        noRealPayout: true,
+      },
+      req,
+      siteId,
+    });
+    return afterPublic;
+  });
+}
+
 module.exports = {
   DEFAULT_CAMPAIGN_ID,
   assertWheelSafeRuntime,
@@ -905,4 +1089,6 @@ module.exports = {
   createReward,
   updateReward,
   listAdminSpins,
+  listAdminMemberRewards,
+  updateMemberRewardStatus,
 };

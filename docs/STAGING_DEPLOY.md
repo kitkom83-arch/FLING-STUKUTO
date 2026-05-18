@@ -156,9 +156,10 @@ Strict boundaries:
 Lucky Wheel staging notes:
 
 - Lucky Wheel is mock/staging/sandbox only in this phase.
-- Member wheel config/spin/history/my-rewards and Admin Lucky Wheel config/rewards/spins/reports/audit may be checked in staging only after `/api/health` and the staging safety guard pass.
+- Member wheel config/spin/history/my-rewards and Admin Lucky Wheel config/rewards/spins/member-rewards/reports/audit may be checked in staging only after `/api/health` and the staging safety guard pass.
 - `POST /api/member/wheel/spin` must send only `campaignId`; the backend chooses `prizeIndex` and reward result.
-- Admin Lucky Wheel write actions must include `reason` and must produce sanitized audit rows through the existing admin audit log service.
+- Admin Lucky Wheel write actions must include `reason` and must produce sanitized audit rows through the existing admin audit log service, including `wheel.memberReward.status.update` for Reward Claims claim/cancel.
+- Reward Claims is staging/mock only. `GET /api/admin/wheel/member-rewards` is read-only reporting data; `PATCH /api/admin/wheel/member-rewards/:id/status` may mark pending item rewards as `claimed` or pending rewards as `cancelled` with a reason. It must not perform real payout, wallet credit, point/ticket mutation, live provider calls, real payment rails, bank rails, SMS, or Slip OCR.
 - Lucky Wheel must not trigger real payout, real wallet payout, live provider calls, real payment rails, bank rails, SMS, or Slip OCR.
 - Use `npm run smoke:admin-wheel-runtime`, `npm run smoke:wheel`, and `npm run smoke:staging-uat` only against local/staging/test targets with mock/sandbox modes. Missing local runtime env may skip safely, but production-like targets must remain blocked.
 
