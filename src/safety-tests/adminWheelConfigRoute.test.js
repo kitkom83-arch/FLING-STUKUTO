@@ -93,6 +93,16 @@ const prismaMock = {
       auditLogs.push(row);
       return row;
     },
+    findMany: async () =>
+      auditLogs.map((row) => ({
+        ...row,
+        admin: {
+          id: row.adminId,
+          username: DEMO_ADMIN_USERNAME,
+          role: "super_admin",
+          status: "active",
+        },
+      })),
   },
   adminSiteAccess: {
     findUnique: async ({ where }) => {
@@ -266,6 +276,17 @@ async function main() {
   assert.strictEqual(missingReason.payload.success, false, "reward claim missing reason must fail safely");
   assertNoSecretLeak("admin member reward missing reason", missingReason.payload);
 
+  const missingCampaignReason = await requestJson("/api/admin/wheel/campaign", {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${login.payload.data.token}`,
+    },
+    body: { name: "Staging Mock Lucky Wheel", reason: "" },
+  });
+  assert.strictEqual(missingCampaignReason.statusCode, 400, "campaign update must require reason");
+  assert.strictEqual(missingCampaignReason.payload.success, false, "campaign update missing reason must fail safely");
+  assertNoSecretLeak("admin campaign missing reason", missingCampaignReason.payload);
+
   const noPermissionLogin = await requestJson("/api/admin/auth/login", {
     method: "POST",
     body: {
@@ -274,6 +295,26 @@ async function main() {
     },
   });
   assert.strictEqual(noPermissionLogin.statusCode, 200, "no-permission admin login must return 200");
+  const forbiddenCampaign = await requestJson("/api/admin/wheel/campaign", {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${noPermissionLogin.payload.data.token}`,
+    },
+    body: { name: "Forbidden Campaign", reason: "viewer cannot update campaign" },
+  });
+  assert.strictEqual(forbiddenCampaign.statusCode, 403, "unauthorized campaign update must fail closed");
+  assert.strictEqual(forbiddenCampaign.payload.success, false, "unauthorized campaign update must fail safely");
+  assertNoSecretLeak("unauthorized campaign update", forbiddenCampaign.payload);
+
+  const forbiddenAudit = await requestJson("/api/admin/audit-logs?limit=20", {
+    headers: {
+      Authorization: `Bearer ${noPermissionLogin.payload.data.token}`,
+    },
+  });
+  assert.strictEqual(forbiddenAudit.statusCode, 403, "unauthorized admin audit view must fail closed");
+  assert.strictEqual(forbiddenAudit.payload.success, false, "unauthorized admin audit view must fail safely");
+  assertNoSecretLeak("unauthorized admin audit view", forbiddenAudit.payload);
+
   const forbiddenUpdate = await requestJson("/api/admin/wheel/member-rewards/member_reward_1/status", {
     method: "PATCH",
     headers: {

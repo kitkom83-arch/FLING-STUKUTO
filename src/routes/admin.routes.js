@@ -29,29 +29,55 @@ const canAny = (permissions) => async (req, res, next) => {
     return next(error);
   }
 };
+const canWheelRewardUpdate = async (req, res, next) => {
+  try {
+    const body = req.body && typeof req.body === "object" ? req.body : {};
+    const keys = Object.keys(body).filter((key) => key !== "reason");
+    const permission =
+      keys.length === 1 && keys[0] === "status"
+        ? "wheel.rewards.status.update"
+        : "wheel.rewards.update";
+    if (await adminHasPermission(req.admin, req.siteId, permission)) return next();
+    return fail(res, "Admin permission denied", 403, { permission });
+  } catch (error) {
+    return next(error);
+  }
+};
+const canAuditLogs = async (req, res, next) => {
+  try {
+    if (await adminHasPermission(req.admin, req.siteId, "admin.audit.view")) return next();
+    if (await adminHasPermission(req.admin, req.siteId, "wheel.audit.view")) {
+      req.auditWheelOnly = true;
+      return next();
+    }
+    return fail(res, "Admin permission denied", 403, { permissions: ["admin.audit.view", "wheel.audit.view"] });
+  } catch (error) {
+    return next(error);
+  }
+};
 
 router.get("/me", protectedSite, asyncHandler(adminController.me));
 router.get("/permissions/me", protectedSite, asyncHandler(adminPermissionController.me));
-router.get("/permissions", protectedSite, can("admin.manage"), asyncHandler(adminPermissionController.listPermissions));
-router.get("/roles", protectedSite, can("admin.manage"), asyncHandler(adminPermissionController.listRoles));
-router.get("/admins/:id/permissions", protectedSite, can("admin.manage"), asyncHandler(adminPermissionController.getAdmin));
-router.patch("/admins/:id/role", protectedSite, can("admin.manage"), asyncHandler(adminPermissionController.assignAdminRole));
+router.get("/permissions", protectedSite, canAny(["admin.roles.view", "admin.manage"]), asyncHandler(adminPermissionController.listPermissions));
+router.get("/roles", protectedSite, canAny(["admin.roles.view", "admin.manage"]), asyncHandler(adminPermissionController.listRoles));
+router.get("/admins/:id/permissions", protectedSite, canAny(["admin.roles.view", "admin.manage"]), asyncHandler(adminPermissionController.getAdmin));
+router.patch("/admins/:id/role", protectedSite, canAny(["admin.roles.update", "admin.manage"]), asyncHandler(adminPermissionController.assignAdminRole));
 router.get(
   "/work-schedules",
   protectedSite,
-  canAny(["admin.schedule.view", "admin.manage"]),
+  canAny(["admin.workSchedule.view", "admin.schedule.view", "admin.manage"]),
   asyncHandler(adminPermissionController.listWorkSchedules)
 );
 router.get(
   "/work-schedules/:adminId",
   protectedSite,
-  canAny(["admin.schedule.view", "admin.manage"]),
+  canAny(["admin.workSchedule.view", "admin.schedule.view", "admin.manage"]),
   asyncHandler(adminPermissionController.getWorkSchedule)
 );
 router.patch(
   "/work-schedules/:adminId",
   protectedSite,
-  canAny(["admin.schedule.update", "admin.manage"]),
+  canAny(["admin.workSchedule.update", "admin.schedule.update", "admin.manage"]),
   asyncHandler(adminPermissionController.patchWorkSchedule)
 );
 router.post(
@@ -69,19 +95,19 @@ router.delete(
 router.get(
   "/work-schedules/:adminId/audit-logs",
   protectedSite,
-  canAny(["admin.schedule.view", "admin.manage"]),
+  canAny(["admin.workSchedule.view", "admin.schedule.view", "admin.manage"]),
   asyncHandler(adminPermissionController.listWorkScheduleAuditLogs)
 );
 router.get(
   "/admins/:id/work-schedule",
   protectedSite,
-  canAny(["admin.schedule.view", "admin.manage"]),
+  canAny(["admin.workSchedule.view", "admin.schedule.view", "admin.manage"]),
   asyncHandler(adminPermissionController.getWorkSchedule)
 );
 router.patch(
   "/admins/:id/work-schedule",
   protectedSite,
-  canAny(["admin.schedule.update", "admin.manage"]),
+  canAny(["admin.workSchedule.update", "admin.schedule.update", "admin.manage"]),
   asyncHandler(adminPermissionController.patchWorkSchedule)
 );
 router.post(
@@ -97,26 +123,26 @@ router.delete(
   asyncHandler(adminPermissionController.deleteWorkScheduleOverride)
 );
 router.get("/logs", protectedSite, can("reports.view"), asyncHandler(adminController.logs));
-router.get("/audit-logs", protectedSite, can("reports.view"), asyncHandler(adminAuditController.auditLogs));
-router.get("/audit-logs/summary", protectedSite, can("reports.view"), asyncHandler(adminAuditController.auditLogsSummary));
-router.get("/security-events", protectedSite, can("reports.view"), asyncHandler(adminAuditController.securityEvents));
+router.get("/audit-logs", protectedSite, canAuditLogs, asyncHandler(adminAuditController.auditLogs));
+router.get("/audit-logs/summary", protectedSite, canAuditLogs, asyncHandler(adminAuditController.auditLogsSummary));
+router.get("/security-events", protectedSite, can("admin.security.view"), asyncHandler(adminAuditController.securityEvents));
 router.get(
   "/security-events/summary",
   protectedSite,
-  can("reports.view"),
+  can("admin.security.view"),
   asyncHandler(adminAuditController.securityEventsSummary)
 );
 
-router.get("/wheel/config", protectedSite, can("settings.website.view"), asyncHandler(wheelController.adminConfig));
-router.patch("/wheel/campaign", protectedSite, can("settings.website.update"), asyncHandler(wheelController.updateCampaign));
-router.post("/wheel/rewards", protectedSite, can("settings.website.update"), asyncHandler(wheelController.createReward));
-router.patch("/wheel/rewards/:id", protectedSite, can("settings.website.update"), asyncHandler(wheelController.updateReward));
-router.get("/wheel/spins", protectedSite, can("reports.view"), asyncHandler(wheelController.adminSpins));
-router.get("/wheel/member-rewards", protectedSite, can("reports.view"), asyncHandler(wheelController.adminMemberRewards));
+router.get("/wheel/config", protectedSite, canAny(["wheel.view", "wheel.campaign.view"]), asyncHandler(wheelController.adminConfig));
+router.patch("/wheel/campaign", protectedSite, can("wheel.campaign.update"), asyncHandler(wheelController.updateCampaign));
+router.post("/wheel/rewards", protectedSite, can("wheel.rewards.create"), asyncHandler(wheelController.createReward));
+router.patch("/wheel/rewards/:id", protectedSite, canWheelRewardUpdate, asyncHandler(wheelController.updateReward));
+router.get("/wheel/spins", protectedSite, can("wheel.spins.view"), asyncHandler(wheelController.adminSpins));
+router.get("/wheel/member-rewards", protectedSite, can("wheel.claims.view"), asyncHandler(wheelController.adminMemberRewards));
 router.patch(
   "/wheel/member-rewards/:id/status",
   protectedSite,
-  can("settings.website.update"),
+  can("wheel.claims.status.update"),
   asyncHandler(wheelController.updateMemberRewardStatus)
 );
 

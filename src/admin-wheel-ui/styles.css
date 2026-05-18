@@ -60,6 +60,10 @@ button:disabled {
   cursor: not-allowed;
 }
 
+button.permission-disabled {
+  border: 1px solid #bdc9c4;
+}
+
 .app-shell {
   display: grid;
   grid-template-columns: 260px minmax(0, 1fr);
@@ -264,6 +268,62 @@ p {
   padding: 14px 16px;
   border-bottom: 1px solid var(--line);
   background: #f8fbfa;
+}
+
+.permission-panel {
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.permission-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 16px;
+}
+
+.permission-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #f8fbfa;
+  padding: 0 12px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.permission-item strong {
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.permission-item strong.allowed {
+  color: var(--ok);
+}
+
+.permission-item strong.denied {
+  color: var(--danger);
+}
+
+.access-denied {
+  border: 1px solid #f0caca;
+  border-radius: 8px;
+  background: #fff7f7;
+  padding: 22px;
+  color: var(--danger);
+}
+
+.access-denied p {
+  color: #7c4b4b;
+}
+
+.tab-panel.permission-denied > :not(.access-denied) {
+  display: none !important;
 }
 
 .summary-pill {
@@ -601,6 +661,7 @@ dialog::backdrop {
 
   .form-grid,
   .filter-bar,
+  .permission-grid,
   .summary-grid,
   .detail-grid {
     grid-template-columns: 1fr;

@@ -41,9 +41,29 @@ These permissions exist in `src/services/adminPermission.service.js` and are enf
 | `settings.promotion.view` | Role/catalog permission currently available for promotion views. | Promotion settings read views. |
 | `assets.upload` | Role/catalog permission currently available for asset upload UI. | Logo, favicon, banner, and asset upload controls. |
 | `admin.manage` | List roles/permissions, read target admin permissions, and assign admin roles. | Admin and permission management. |
+| `admin.audit.view` | Read full safe audit logs and summary. | Audit/security report. |
+| `admin.security.view` | Read security event logs and summary. | Audit/security report. |
+| `admin.roles.view` | Read permission and role catalogs plus target admin permissions. | Admin role/permission screens. |
+| `admin.roles.update` | Assign admin roles and site permission overrides with reason. | Admin role assignment. |
 | `admin.schedule.view` | Read a target admin work schedule. `admin.manage` is also accepted by backend. | Admin work schedule detail. |
 | `admin.schedule.update` | Update a target admin work schedule. `admin.manage` is also accepted by backend. | Work from home and shift controls. |
 | `admin.schedule.override` | Enable or disable temporary emergency schedule override. `admin.manage` is also accepted by backend. | Emergency admin access modal. |
+| `admin.workSchedule.view` | Read admin work schedules. Existing `admin.schedule.view` remains accepted. | Work schedule screens. |
+| `admin.workSchedule.update` | Update admin work schedules. Existing `admin.schedule.update` remains accepted. | Work schedule update controls. |
+| `wheel.view` | Shared Lucky Wheel admin config read entry. | `/admin-wheel` permission panel and config load. |
+| `wheel.campaign.view` | View campaign settings. | Lucky Wheel campaign tab. |
+| `wheel.campaign.update` | Update campaign settings with required reason. | Lucky Wheel campaign save. |
+| `wheel.rewards.view` | View admin reward configuration. | Lucky Wheel rewards tab. |
+| `wheel.rewards.create` | Create rewards with required reason. | Add reward. |
+| `wheel.rewards.update` | Edit rewards with required reason. | Edit reward. |
+| `wheel.rewards.status.update` | Enable/disable rewards with required reason. | Reward status action. |
+| `wheel.spins.view` | View sanitized spin history. | Lucky Wheel spin history tab. |
+| `wheel.reports.view` | View client-side Lucky Wheel reports. | Lucky Wheel reports tab. |
+| `wheel.claims.view` | View sanitized reward claims. | Reward Claims tab. |
+| `wheel.claims.status.update` | Mark/cancel reward claims with required reason. | Reward Claims actions. |
+| `wheel.audit.view` | View wheel audit actions only. | Lucky Wheel audit history tab. |
+
+Phase D detailed matrix: see `docs/ADMIN_PERMISSION_MATRIX.md`.
 
 ### Proposed for Frontend Contract
 
@@ -135,7 +155,9 @@ The permissions below are not backend permissions today. Do not send them to the
 - Frontend must call `GET /api/admin/permissions/me` after admin login or site switch and use the returned effective permissions for UI gating.
 - Frontend role-management screens must use `GET /api/admin/permissions`, `GET /api/admin/roles`, `GET /api/admin/admins/:id/permissions`, and `PATCH /api/admin/admins/:id/role`; all require `admin.manage` except current-admin permission read.
 - Frontend work-schedule screen is served at `/admin/work-schedules` and uses `GET /api/admin/work-schedules`, `GET /api/admin/work-schedules/:adminId`, `PATCH /api/admin/work-schedules/:adminId`, `POST /api/admin/work-schedules/:adminId/override`, `DELETE /api/admin/work-schedules/:adminId/override`, and `GET /api/admin/work-schedules/:adminId/audit-logs`; backend accepts the schedule-specific permission or `admin.manage`.
-- Frontend audit/security screen is served at `/admin/audit-security` and uses `GET /api/admin/permissions/me`, `GET /api/admin/audit-logs`, `GET /api/admin/audit-logs/summary`, `GET /api/admin/security-events`, and `GET /api/admin/security-events/summary`; backend requires `reports.view`.
+- Frontend audit/security screen is served at `/admin/audit-security` and uses `GET /api/admin/permissions/me`, `GET /api/admin/audit-logs`, `GET /api/admin/audit-logs/summary`, `GET /api/admin/security-events`, and `GET /api/admin/security-events/summary`; backend requires `admin.audit.view` or `wheel.audit.view` for audit logs and `admin.security.view` for security events.
+- Admin Lucky Wheel screen is served at `/admin-wheel` and `/admin/lucky-wheel/`. It uses `GET /api/admin/permissions/me` for the permission summary panel. Missing view permission shows `ไม่มีสิทธิ์เข้าถึง`; missing write permission disables Save/Add/Edit/Claim/Cancel with `ไม่มีสิทธิ์ดำเนินการนี้`.
+- Lucky Wheel backend guards use `wheel.view`/`wheel.campaign.view` for config, `wheel.campaign.update` for campaign writes, `wheel.rewards.create/update/status.update` for reward writes, `wheel.spins.view` for spin history, `wheel.claims.view` and `wheel.claims.status.update` for claims, and `wheel.audit.view` or `admin.audit.view` for audit history.
 - Audit/security detail modals must show only safe metadata, masked IP, actor/target/action/module/result/severity, and created time. They must not render raw user-agent, session payloads, auth values, database URLs, passwords, or secrets.
 - Frontend must not treat hidden menus as security. Every protected action must still expect backend `401` or `403`.
 

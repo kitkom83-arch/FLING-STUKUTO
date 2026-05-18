@@ -15,6 +15,15 @@ Phase C covers Admin Wheel UI manual QA and operator handoff for staging only. I
 - View reports.
 - View audit history.
 - View reward claims.
+- Show the current admin Lucky Wheel permission summary for the selected site.
+
+## Permission Panel Check
+
+1. Open `/admin-wheel` with a staging/mock admin credential.
+2. Confirm `Permission summary` shows current role, site, campaign view/update, reward manage, claims view/update, reports view, and audit view.
+3. Confirm an admin without write permission sees disabled Save/Add/Edit/Claim/Cancel buttons with `ไม่มีสิทธิ์ดำเนินการนี้`.
+4. Confirm an admin without a tab view permission sees `ไม่มีสิทธิ์เข้าถึง` and `กรุณาติดต่อผู้ดูแลระบบ`.
+5. Confirm denied tabs do not load or render API data for that surface.
 
 ## Campaign Settings Check
 
@@ -77,14 +86,19 @@ Phase C covers Admin Wheel UI manual QA and operator handoff for staging only. I
 - Admin UI must not call member spin endpoints.
 - Admin UI must not force reward, force spin, or set member prize index.
 - Every admin write action must require a reason and create an audit log.
+- Permission panel must not show raw permission objects, raw headers, request IDs, tokens, passwords, secrets, or database URLs.
 
 ## Manual Browser Checklist
 
 - Open `/admin-wheel`.
 - Open browser dev tools and confirm the Console has no red errors.
 - Confirm every tab opens: Campaign settings, Rewards management, Spin history, Reports, Audit history, Reward Claims.
+- Confirm the permission summary panel renders and updates after credential load.
+- Confirm denied tabs show the safe access-denied state.
+- Confirm write buttons disable when the loaded admin lacks the matching `wheel.*` write permission.
 - Confirm reward, status, claim/cancel, and detail modals open and close.
 - Confirm reason validation works for campaign save, reward save, reward enable/disable, claim, and cancel.
+- Confirm successful writes appear in audit history with reason, actor/admin, target type, target ID, site code, and sanitized before/after summary.
 - Confirm tables do not break on desktop widths.
 - Confirm empty states show `ไม่พบข้อมูล`.
 - Confirm loading states show while API requests are running.
@@ -111,6 +125,8 @@ npm run smoke:staging-uat
 ```
 
 `adminWheelUiSmoke.js` covers static route aliases, title/tabs, modal selectors, reason validation markers, no visible placeholder text, static asset leak shapes, no member spin endpoint call, and no force reward/spin controls. Browser-only checks such as Console red errors, actual table overflow, and visual modal fit remain manual checklist items.
+
+Phase D also covers permission summary markers, disabled write buttons, access-denied copy, `GET /api/admin/permissions/me`, and granular Lucky Wheel permission keys. Runtime smoke verifies owner/super-admin allow paths, no-permission `403`, missing-reason rejection, audit read guard, response leak scan, and member spin result injection rejection when a safe local/staging runtime is available.
 
 ## Known Mock/Sandbox Limits
 

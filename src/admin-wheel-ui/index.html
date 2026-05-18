@@ -52,6 +52,25 @@
         <section class="notice leak-boundary">
           Response leak warning: sanitized UI only. Raw credentials, connection strings, request headers, and session values are not rendered.
         </section>
+        <section class="panel permission-panel" aria-label="Lucky Wheel permission summary">
+          <div class="section-heading">
+            <div>
+              <h2>Permission summary</h2>
+              <p>Effective admin access for this site. Backend guards remain the source of truth.</p>
+            </div>
+          </div>
+          <div class="permission-grid">
+            <span class="permission-item">Role <strong id="permission-role">-</strong></span>
+            <span class="permission-item">Site <strong id="permission-site">PG77</strong></span>
+            <span class="permission-item">View campaign <strong id="permission-campaign-view">No</strong></span>
+            <span class="permission-item">Update campaign <strong id="permission-campaign-update">No</strong></span>
+            <span class="permission-item">Manage rewards <strong id="permission-rewards-manage">No</strong></span>
+            <span class="permission-item">View claims <strong id="permission-claims-view">No</strong></span>
+            <span class="permission-item">Update claims <strong id="permission-claims-update">No</strong></span>
+            <span class="permission-item">View reports <strong id="permission-reports-view">No</strong></span>
+            <span class="permission-item">View audit <strong id="permission-audit-view">No</strong></span>
+          </div>
+        </section>
 
         <nav class="tab-list" aria-label="Lucky Wheel tabs">
           <button class="tab-button active" type="button" data-tab="campaign">Campaign settings</button>
@@ -65,6 +84,10 @@
         <section id="global-error" class="error-state hidden">โหลดข้อมูลไม่สำเร็จ</section>
 
         <section class="tab-panel active" id="tab-campaign">
+          <div class="access-denied hidden">
+            <h2>ไม่มีสิทธิ์เข้าถึง</h2>
+            <p>กรุณาติดต่อผู้ดูแลระบบ</p>
+          </div>
           <form id="campaign-form" class="panel form-panel">
             <div class="section-heading">
               <div>
@@ -140,6 +163,10 @@
         </section>
 
         <section class="tab-panel" id="tab-rewards">
+          <div class="access-denied hidden">
+            <h2>ไม่มีสิทธิ์เข้าถึง</h2>
+            <p>กรุณาติดต่อผู้ดูแลระบบ</p>
+          </div>
           <section class="panel table-section">
             <div class="section-heading">
               <div>
@@ -178,6 +205,10 @@
         </section>
 
         <section class="tab-panel" id="tab-spins">
+          <div class="access-denied hidden">
+            <h2>ไม่มีสิทธิ์เข้าถึง</h2>
+            <p>กรุณาติดต่อผู้ดูแลระบบ</p>
+          </div>
           <section class="panel table-section">
             <div class="section-heading">
               <div>
@@ -224,6 +255,10 @@
         </section>
 
         <section class="tab-panel" id="tab-reports">
+          <div class="access-denied hidden">
+            <h2>ไม่มีสิทธิ์เข้าถึง</h2>
+            <p>กรุณาติดต่อผู้ดูแลระบบ</p>
+          </div>
           <section class="panel table-section">
             <div class="section-heading">
               <div>
@@ -283,6 +318,10 @@
         </section>
 
         <section class="tab-panel" id="tab-audit">
+          <div class="access-denied hidden">
+            <h2>ไม่มีสิทธิ์เข้าถึง</h2>
+            <p>กรุณาติดต่อผู้ดูแลระบบ</p>
+          </div>
           <section class="panel table-section">
             <div class="section-heading">
               <div>
@@ -324,6 +363,10 @@
         </section>
 
         <section class="tab-panel" id="tab-claims">
+          <div class="access-denied hidden">
+            <h2>ไม่มีสิทธิ์เข้าถึง</h2>
+            <p>กรุณาติดต่อผู้ดูแลระบบ</p>
+          </div>
           <section class="summary-grid" aria-label="Reward Claims summary">
             <article class="summary-card"><span>Total issued rewards</span><strong id="claim-total-issued">0</strong></article>
             <article class="summary-card"><span>Pending rewards</span><strong id="claim-pending">0</strong></article>

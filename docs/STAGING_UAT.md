@@ -133,6 +133,9 @@ Phase C is Admin Wheel UI Manual QA + Handoff. Use `docs/ADMIN_WHEEL_HANDOFF.md`
 
 - Open `https://stukuto-real-core-staging.onrender.com/admin-wheel` and confirm `Lucky Wheel Admin Console` renders.
 - Confirm all tabs open: Campaign settings, Rewards management, Spin history, Reports, Audit history, and Reward Claims.
+- Confirm the `Permission summary` panel shows current role, site code, campaign view/update, reward manage, claims view/update, reports view, and audit view.
+- Confirm an account without a view permission sees `ไม่มีสิทธิ์เข้าถึง` and `กรุณาติดต่อผู้ดูแลระบบ` on that tab.
+- Confirm an account without write permission sees Save campaign, Add reward, Edit reward, Mark claimed, and Cancel disabled with `ไม่มีสิทธิ์ดำเนินการนี้`.
 - Confirm Campaign settings save rejects blank `Reason`, then saves with a staging-safe reason and creates `wheel.campaign.update`.
 - Confirm Rewards management add/edit/enable/disable rejects blank `Reason` and creates the expected reward audit action.
 - Confirm Reward Claims filter by status, detail modal opens/closes, claim is available only for pending item rewards, cancel is available only for pending rewards, and both actions require `Reason`.
@@ -159,6 +162,7 @@ Phase C is Admin Wheel UI Manual QA + Handoff. Use `docs/ADMIN_WHEEL_HANDOFF.md`
 - Admin Reward Claims check: `GET /api/admin/wheel/member-rewards` must return sanitized `{ rows, summary }`; claim/cancel uses `PATCH /api/admin/wheel/member-rewards/:id/status` with required `reason`, admin auth, site access, permission guard, and `wheel.memberReward.status.update` audit. Manual `claimed` is for staging/mock `item` rewards only and must not perform real payout, wallet credit, point/ticket mutation, provider, bank, payment, SMS, or Slip OCR action.
 - Admin reports check: the Admin Lucky Wheel reports tab must derive only from admin config/spins/member-rewards and show total spins, unique members spun, rewards issued, pending/claimed/expired/cancelled rewards, total point cost, total ticket cost, stock used, top reward, top stock-used reward, empty/no reward count, stock usage, reward type summary, daily spin count, claim status summary, and member reward summary without `NaN` or `undefined`.
 - Audit history check: audit history must come from the existing admin audit endpoint and show safe time, actor/admin, action, target type, target ID, site code, reason, before summary, and after summary only, including `wheel.memberReward.status.update`.
+- Permission contract check: Lucky Wheel routes must use `wheel.view`/`wheel.campaign.view`, `wheel.campaign.update`, `wheel.rewards.create`, `wheel.rewards.update`, `wheel.rewards.status.update`, `wheel.spins.view`, `wheel.claims.view`, `wheel.claims.status.update`, and `wheel.audit.view`/`admin.audit.view` as documented in `docs/ADMIN_PERMISSION_MATRIX.md`.
 - Secret leak check: responses, UI details, docs, logs, and smoke output must not expose raw tokens, auth headers, passwords, provider secrets, database URLs, raw stack traces, or raw unmasked IPs.
 - Rollback note: if any Lucky Wheel check fails, disable staging tester access or roll back the staging deploy; keep provider modes mock/sandbox and do not switch to production DB as a workaround.
 
@@ -169,6 +173,7 @@ Phase C is Admin Wheel UI Manual QA + Handoff. Use `docs/ADMIN_WHEEL_HANDOFF.md`
 - Member wheel history: verify `GET /api/member/wheel/history` returns sanitized rows or an empty array.
 - Member my rewards: verify `GET /api/member/wheel/my-rewards` returns sanitized pending/claimed/expired rows or an empty array.
 - Admin wheel campaign config: verify `GET /api/admin/wheel/config` and campaign edits require staging admin auth plus non-empty `reason`.
+- Admin wheel permission panel: verify `/admin-wheel` reads `GET /api/admin/permissions/me`, shows only safe role/site/can-do summary values, and does not render raw permission objects.
 - Admin rewards: verify create/edit reward uses staging/mock data only and rejects empty `reason`.
 - Admin Reward Claims: verify list filters for date range, member, reward type, status, campaign, and source spin ID; verify claim/cancel rejects empty `reason`, creates audit, and never changes reward value or performs live payout.
 - Admin spin history: verify `GET /api/admin/wheel/spins` returns sanitized rows, supports reward ID filtering, and shows masked IP plus user-agent hash only when available.

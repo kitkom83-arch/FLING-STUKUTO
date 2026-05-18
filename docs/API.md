@@ -118,6 +118,8 @@ Admin role matrix:
 | `graphic` | `settings.website.view`, `settings.website.update`, `settings.promotion.view`, `assets.upload` |
 | `viewer` | `members.view`, `deposits.view`, `withdrawals.view`, `bank.view`, `reports.view`, `settings.website.view`, `settings.promotion.view` |
 
+Lucky Wheel Phase D adds granular `wheel.*` permissions to the same catalog. Owner and `super_admin` receive all of them. Role defaults are documented in `docs/ADMIN_PERMISSION_MATRIX.md`; site-level `AdminSiteAccess.permissions` may override them per site.
+
 Permission catalog:
 
 - `members.view`
@@ -134,9 +136,27 @@ Permission catalog:
 - `settings.promotion.view`
 - `assets.upload`
 - `admin.manage`
+- `admin.audit.view`
+- `admin.security.view`
+- `admin.roles.view`
+- `admin.roles.update`
 - `admin.schedule.view`
 - `admin.schedule.update`
 - `admin.schedule.override`
+- `admin.workSchedule.view`
+- `admin.workSchedule.update`
+- `wheel.view`
+- `wheel.campaign.view`
+- `wheel.campaign.update`
+- `wheel.rewards.view`
+- `wheel.rewards.create`
+- `wheel.rewards.update`
+- `wheel.rewards.status.update`
+- `wheel.spins.view`
+- `wheel.reports.view`
+- `wheel.claims.view`
+- `wheel.claims.status.update`
+- `wheel.audit.view`
 
 Current implementation uses existing schema:
 
@@ -151,21 +171,21 @@ Permission failures return `403` with the standard error envelope and must not r
 | POST | `/admin/auth/login` | No | Active admin; work schedule guard for non-owner admins | `username`, `password` | token and public admin | `400` invalid credentials, `403` inactive admin or outside allowed work schedule | `admin.login.success` when login passes; `admin.login.blocked_outside_schedule` when schedule blocks login |
 | GET | `/admin/me` | Admin | Site access | None | public admin | `401`, `403` | None |
 | GET | `/admin/permissions/me` | Admin | Site access | None | current admin summary, current role, permission list, owner flag, source, and site code | `401`, `403` | None |
-| GET | `/admin/permissions` | Admin | `admin.manage` | None | permission catalog | `401`, `403` | None |
-| GET | `/admin/roles` | Admin | `admin.manage` | None | role catalog and permissions | `401`, `403` | None |
-| GET | `/admin/admins/:id/permissions` | Admin | `admin.manage` | None | target admin public profile, effective role, permission list, owner flag, and source | `401`, `403`, `404` | None |
-| PATCH | `/admin/admins/:id/role` | Admin | `admin.manage` | `role`, required trimmed `reason` length 1-500, optional `permissions` array or `null` | assigned admin role and effective permissions | `400` for invalid role, empty reason, same role, or self role change; `401`, `403`, `404` | `admin.role.update`; audit metadata includes actor, target admin id/username, beforeRole, afterRole, reason, before/after, and site code. Secret-shaped reason text is redacted. |
-| GET | `/admin/work-schedules` | Admin | `admin.schedule.view` or `admin.manage` | None | list of site admin schedules with public admin summary, site access role, schedule, summary, last schedule audit timestamp, and last schedule audit actor | `401`, `403` | None |
-| GET | `/admin/work-schedules/:adminId` | Admin | `admin.schedule.view` or `admin.manage` | None | target admin public profile, site id, schedule, and emergency override state | `401`, `403`, `404` | None |
-| PATCH | `/admin/work-schedules/:adminId` | Admin | `admin.schedule.update` or `admin.manage` | required `reason`; schedule fields: `enabled`, `timezone`, `allowedDays`, `startTime`, `endTime`, `forceLogoutWhenScheduleEnds`, `idleTimeoutMinutes`, optional `emergencyOverride` | updated schedule | `400`, `401`, `403`, `404` | `admin.schedule.update`; also `admin.schedule.enable` or `admin.schedule.disable` on enabled-state changes. Audit metadata includes `reason`, `targetAdminId`, and target username. |
+| GET | `/admin/permissions` | Admin | `admin.roles.view` or `admin.manage` | None | permission catalog | `401`, `403` | None |
+| GET | `/admin/roles` | Admin | `admin.roles.view` or `admin.manage` | None | role catalog and permissions | `401`, `403` | None |
+| GET | `/admin/admins/:id/permissions` | Admin | `admin.roles.view` or `admin.manage` | None | target admin public profile, effective role, permission list, owner flag, and source | `401`, `403`, `404` | None |
+| PATCH | `/admin/admins/:id/role` | Admin | `admin.roles.update` or `admin.manage` | `role`, required trimmed `reason` length 1-500, optional `permissions` array or `null` | assigned admin role and effective permissions | `400` for invalid role, empty reason, same role, or self role change; `401`, `403`, `404` | `admin.role.update`; audit metadata includes actor, target admin id/username, beforeRole, afterRole, reason, before/after, and site code. Secret-shaped reason text is redacted. |
+| GET | `/admin/work-schedules` | Admin | `admin.workSchedule.view`, `admin.schedule.view`, or `admin.manage` | None | list of site admin schedules with public admin summary, site access role, schedule, summary, last schedule audit timestamp, and last schedule audit actor | `401`, `403` | None |
+| GET | `/admin/work-schedules/:adminId` | Admin | `admin.workSchedule.view`, `admin.schedule.view`, or `admin.manage` | None | target admin public profile, site id, schedule, and emergency override state | `401`, `403`, `404` | None |
+| PATCH | `/admin/work-schedules/:adminId` | Admin | `admin.workSchedule.update`, `admin.schedule.update`, or `admin.manage` | required `reason`; schedule fields: `enabled`, `timezone`, `allowedDays`, `startTime`, `endTime`, `forceLogoutWhenScheduleEnds`, `idleTimeoutMinutes`, optional `emergencyOverride` | updated schedule | `400`, `401`, `403`, `404` | `admin.schedule.update`; also `admin.schedule.enable` or `admin.schedule.disable` on enabled-state changes. Audit metadata includes `reason`, `targetAdminId`, and target username. |
 | POST | `/admin/work-schedules/:adminId/override` | Admin | `admin.schedule.override` or `admin.manage` | `expiresAt`, required `reason` | active emergency override inside schedule response | `400`, `401`, `403`, `404` | `admin.schedule.override_enable`; audit metadata includes `reason`, `targetAdminId`, and target username |
 | DELETE | `/admin/work-schedules/:adminId/override` | Admin | `admin.schedule.override` or `admin.manage` | required `reason` | disabled emergency override inside schedule response | `400`, `401`, `403`, `404` | `admin.schedule.override_disable`; audit metadata includes `reason`, `targetAdminId`, and target username |
-| GET | `/admin/work-schedules/:adminId/audit-logs` | Admin | `admin.schedule.view` or `admin.manage` | None | schedule/override/login-block audit history for the target admin with masked IP, redacted user-agent, and safe reason metadata when present | `401`, `403`, `404` | None |
+| GET | `/admin/work-schedules/:adminId/audit-logs` | Admin | `admin.workSchedule.view`, `admin.schedule.view`, or `admin.manage` | None | schedule/override/login-block audit history for the target admin with masked IP, redacted user-agent, and safe reason metadata when present | `401`, `403`, `404` | None |
 | GET | `/admin/logs` | Admin | `reports.view` | None | admin logs with admin summary, module/result/severity classification, masked IP, and no raw user-agent | `401`, `403` | None |
-| GET | `/admin/audit-logs` | Admin | `reports.view` | None | `{ rows, summary }` for safe admin audit logs with masked IP, no raw user-agent, safe metadata, module/result/severity badges, and zero summary for empty results | `400`, `401`, `403` | None |
-| GET | `/admin/audit-logs/summary` | Admin | `reports.view` | None | audit summary counts: `totalEvents`, `blockedLogins`, `emergencyOverrides`, `permissionChanges`, `roleChanges`, `scheduleChanges`, `failedAttempts`, `highSeverityCount` | `400`, `401`, `403` | None |
-| GET | `/admin/security-events` | Admin | `reports.view` | None | `{ rows, summary }` for sensitive admin/security events such as role changes, schedule changes, emergency override, and login guard events | `400`, `401`, `403` | None |
-| GET | `/admin/security-events/summary` | Admin | `reports.view` | None | security-event summary counts with the same safe summary contract | `400`, `401`, `403` | None |
+| GET | `/admin/audit-logs` | Admin | `admin.audit.view` or `wheel.audit.view` | None | `{ rows, summary }` for safe admin audit logs with masked IP, no raw user-agent, safe metadata, module/result/severity badges, and zero summary for empty results. `wheel.audit.view` is scoped to Lucky Wheel actions only. | `400`, `401`, `403` | None |
+| GET | `/admin/audit-logs/summary` | Admin | `admin.audit.view` or `wheel.audit.view` | None | audit summary counts: `totalEvents`, `blockedLogins`, `emergencyOverrides`, `permissionChanges`, `roleChanges`, `scheduleChanges`, `failedAttempts`, `highSeverityCount`; wheel-only access is scoped to Lucky Wheel actions. | `400`, `401`, `403` | None |
+| GET | `/admin/security-events` | Admin | `admin.security.view` | None | `{ rows, summary }` for sensitive admin/security events such as role changes, schedule changes, emergency override, and login guard events | `400`, `401`, `403` | None |
+| GET | `/admin/security-events/summary` | Admin | `admin.security.view` | None | security-event summary counts with the same safe summary contract | `400`, `401`, `403` | None |
 | GET | `/admin/members` | Admin | `members.view` | None | member list with wallet and bank accounts | `401`, `403` | None |
 | GET | `/admin/members/:id` | Admin | `members.view` | None | member detail with wallet, bank accounts, recent deposits, recent withdrawals | `403`, `404` member not found | None |
 | POST | `/admin/members/:id/block` | Admin | `members.update` | None | blocked member | `403`, `404` member not found | `user.block` |
@@ -403,13 +423,13 @@ Admin endpoints:
 
 | Method | Path | Auth | Permission | Body/query | Response summary | Admin log |
 | --- | --- | --- | --- | --- | --- | --- |
-| GET | `/admin/wheel/config` | Admin + site access | `settings.website.view` | None | campaign, rewards with weight/stock fields, summary counts | None |
-| PATCH | `/admin/wheel/campaign` | Admin + site access | `settings.website.update` | allowed campaign fields plus required `reason` | sanitized campaign | `wheel.campaign.update` |
-| POST | `/admin/wheel/rewards` | Admin + site access | `settings.website.update` | reward fields plus required `reason` | sanitized reward | `wheel.reward.create` |
-| PATCH | `/admin/wheel/rewards/:id` | Admin + site access | `settings.website.update` | reward fields plus required `reason` | sanitized reward | `wheel.reward.update`; status-only changes write `wheel.reward.status.update` |
-| GET | `/admin/wheel/spins` | Admin + site access | `reports.view` | `campaignId`, `memberId`, `username`, `rewardType`, `rewardId`, `dateFrom`, `dateTo`, `page`, `limit` | sanitized spin rows with masked IP and user-agent hash when present | None |
-| GET | `/admin/wheel/member-rewards` | Admin + site access | `reports.view` | `campaignId`, `memberId`, `username`, `rewardType`, `status`, `spinId`/`sourceId`, `dateFrom`, `dateTo`, `page`, `limit` | `{ rows, summary }` for sanitized member reward claims | None |
-| PATCH | `/admin/wheel/member-rewards/:id/status` | Admin + site access | `settings.website.update` | `status` as `claimed` or `cancelled`, plus required `reason` | sanitized member reward with unchanged reward value | `wheel.memberReward.status.update` |
+| GET | `/admin/wheel/config` | Admin + site access | `wheel.view` or `wheel.campaign.view` | None | campaign, rewards with weight/stock fields, summary counts | None |
+| PATCH | `/admin/wheel/campaign` | Admin + site access | `wheel.campaign.update` | allowed campaign fields plus required `reason` | sanitized campaign | `wheel.campaign.update` |
+| POST | `/admin/wheel/rewards` | Admin + site access | `wheel.rewards.create` | reward fields plus required `reason` | sanitized reward | `wheel.reward.create` |
+| PATCH | `/admin/wheel/rewards/:id` | Admin + site access | `wheel.rewards.update` or `wheel.rewards.status.update` for status-only body | reward fields plus required `reason` | sanitized reward | `wheel.reward.update`; status-only changes write `wheel.reward.status.update` |
+| GET | `/admin/wheel/spins` | Admin + site access | `wheel.spins.view` | `campaignId`, `memberId`, `username`, `rewardType`, `rewardId`, `dateFrom`, `dateTo`, `page`, `limit` | sanitized spin rows with masked IP and user-agent hash when present | None |
+| GET | `/admin/wheel/member-rewards` | Admin + site access | `wheel.claims.view` | `campaignId`, `memberId`, `username`, `rewardType`, `status`, `spinId`/`sourceId`, `dateFrom`, `dateTo`, `page`, `limit` | `{ rows, summary }` for sanitized member reward claims | None |
+| PATCH | `/admin/wheel/member-rewards/:id/status` | Admin + site access | `wheel.claims.status.update` | `status` as `claimed` or `cancelled`, plus required `reason` | sanitized member reward with unchanged reward value | `wheel.memberReward.status.update` |
 
 Reward status flow:
 
@@ -423,7 +443,7 @@ Admin Wheel UI API usage:
 
 - Static page: `/admin/lucky-wheel/`.
 - The UI uses only wheel/admin APIs listed above plus existing read-only `GET /admin/audit-logs?limit=100` for the Audit history tab when that report endpoint is available.
-- Permission guard is backend-enforced: config reads require `settings.website.view`, campaign/reward writes require `settings.website.update`, spin history requires `reports.view`, and audit history requires `reports.view` through the existing audit endpoint. UI menu visibility is advisory only.
+- Permission guard is backend-enforced: config reads require `wheel.view` or `wheel.campaign.view`, campaign writes require `wheel.campaign.update`, reward writes require `wheel.rewards.create`, `wheel.rewards.update`, or `wheel.rewards.status.update`, spin history requires `wheel.spins.view`, reward claims require `wheel.claims.view` / `wheel.claims.status.update`, and audit history requires `wheel.audit.view` or `admin.audit.view`. UI menu visibility is advisory only.
 - Admin UI maps auth/permission failures to safe messages: `401` shows `กรุณาเข้าสู่ระบบแอดมิน`, `403` shows `ไม่มีสิทธิ์ใช้งานเมนู Lucky Wheel`, `404` shows `ยังไม่พบข้อมูล Lucky Wheel`, and other load failures show `โหลดข้อมูลไม่สำเร็จ`.
 - Campaign settings loads `GET /admin/wheel/config`, shows read-only `campaignId`, active/inactive status, site code, last updated, cost, daily-limit, and date-window summary, and writes `PATCH /admin/wheel/campaign` with only `status`, `name`, `costType`, `costAmount`, `dailySpinLimit`, `startAt`, `endAt`, `rulesText`, and required `reason`.
 - Rewards management loads rewards from `GET /admin/wheel/config`, creates with `POST /admin/wheel/rewards`, and edits/toggles status with `PATCH /admin/wheel/rewards/:id`. Reward writes send `label`, `rewardType`, `rewardValue`, `displayValue`, `probabilityWeight`, `stockLimit`, `segmentColor`, `imageUrl`, `sortOrder`, `status`, and required `reason`. The UI labels backend `no_reward` as `empty`, validates label/type, non-negative probability weight, and `stockLimit >= stockUsed` when editing an existing reward, and falls back invalid segment colors to the default safe color.

@@ -152,7 +152,8 @@ function buildAuditWhere(query = {}, securityOnly = false) {
 
   if (query.siteId) where.siteId = query.siteId;
   if (query.action) where.action = query.action;
-  if (!query.action && actionSet) where.action = { in: [...actionSet] };
+  if (!query.action && Array.isArray(query.actions)) where.action = { in: query.actions };
+  if (!query.action && !query.actions && actionSet) where.action = { in: [...actionSet] };
   if (query.status) where.action = query.status;
   if (query.adminId || query.admin_id) where.adminId = query.adminId || query.admin_id;
   if (query.targetAdminId || query.target_admin_id) {

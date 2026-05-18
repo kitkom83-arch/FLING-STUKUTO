@@ -635,6 +635,20 @@ async function main() {
       expectSuccess: false,
       label: "admin wheel config no permission",
     });
+    await apiRequest(baseUrl, "/admin/wheel/campaign", {
+      method: "PATCH",
+      authValue: noPermissionToken,
+      expectedStatus: 403,
+      expectSuccess: false,
+      label: "admin wheel campaign no permission",
+      body: { name: "Runtime Forbidden Campaign", reason: RUNTIME_REASON },
+    });
+    await apiRequest(baseUrl, "/admin/audit-logs?limit=20", {
+      authValue: noPermissionToken,
+      expectedStatus: 403,
+      expectSuccess: false,
+      label: "admin wheel audit no permission",
+    });
     console.log("Admin Wheel 401/403 permission behavior: PASS");
 
     const config = await apiRequest(baseUrl, "/admin/wheel/config", {

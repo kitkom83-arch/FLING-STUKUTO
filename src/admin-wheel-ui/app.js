@@ -9,6 +9,8 @@
   const REWARD_STATUSES = ["active", "inactive"];
   const MEMBER_REWARD_STATUSES = ["pending", "claimed", "expired", "cancelled"];
   const WHEEL_AUDIT_ACTIONS = ["wheel.campaign.update", "wheel.reward.create", "wheel.reward.update", "wheel.reward.status.update", "wheel.memberReward.status.update"];
+  const DENIED_ACTION_MESSAGE = "ไม่มีสิทธิ์ดำเนินการนี้";
+  const DENIED_VIEW_MESSAGE = "ไม่มีสิทธิ์เข้าถึง";
   const SENSITIVE_KEY_PATTERN = /(pass(word|code)?|token|secret|api[_-]?key|authorization|session|cookie|database[_-]?url|refresh|headers?)/i;
   const IP_KEY_PATTERN = /^(ip|ipAddress|rawIp|clientIp|remoteAddress)$/i;
   const RAW_IPV4_PATTERN = /\b(?:\d{1,3}\.){3}\d{1,3}\b/;
@@ -25,6 +27,7 @@
     spins: [],
     memberRewards: [],
     auditRows: [],
+    permissions: null,
     activeTab: "campaign",
     editingReward: null,
     statusReward: null,
@@ -43,6 +46,15 @@
     consoleStatusBadge: document.getElementById("console-status-badge"),
     consoleSiteCode: document.getElementById("console-site-code"),
     consoleLastUpdated: document.getElementById("console-last-updated"),
+    permissionRole: document.getElementById("permission-role"),
+    permissionSite: document.getElementById("permission-site"),
+    permissionCampaignView: document.getElementById("permission-campaign-view"),
+    permissionCampaignUpdate: document.getElementById("permission-campaign-update"),
+    permissionRewardsManage: document.getElementById("permission-rewards-manage"),
+    permissionClaimsView: document.getElementById("permission-claims-view"),
+    permissionClaimsUpdate: document.getElementById("permission-claims-update"),
+    permissionReportsView: document.getElementById("permission-reports-view"),
+    permissionAuditView: document.getElementById("permission-audit-view"),
     campaignForm: document.getElementById("campaign-form"),
     campaignId: document.getElementById("campaign-id"),
     campaignStatus: document.getElementById("campaign-status"),
@@ -358,13 +370,85 @@
     return span;
   }
 
+  function setButtonPermission(button, allowed) {
+    if (!button) return;
+    const denied = !allowed;
+    button.disabled = denied;
+    button.dataset.permissionDisabled = denied ? "true" : "false";
+    button.classList.toggle("permission-disabled", denied);
+    button.title = denied ? DENIED_ACTION_MESSAGE : "";
+    button.setAttribute("aria-disabled", denied ? "true" : "false");
+  }
+
   function actionButton(label, handler, disabled) {
     const button = document.createElement("button");
     button.type = "button";
     button.textContent = label;
-    button.disabled = Boolean(disabled);
+    setButtonPermission(button, !disabled);
     button.addEventListener("click", handler);
     return button;
+  }
+
+  function hasPermission(permission) {
+    if (!state.permissions || !permission) return false;
+    if (state.permissions.owner) return true;
+    return Array.isArray(state.permissions.permissions) && state.permissions.permissions.includes(permission);
+  }
+
+  function hasAnyPermission(permissions) {
+    return permissions.some((permission) => hasPermission(permission));
+  }
+
+  const access = {
+    viewCampaign: () => hasAnyPermission(["wheel.view", "wheel.campaign.view"]),
+    updateCampaign: () => hasPermission("wheel.campaign.update"),
+    viewRewards: () => hasPermission("wheel.rewards.view"),
+    createRewards: () => hasPermission("wheel.rewards.create"),
+    updateRewards: () => hasPermission("wheel.rewards.update"),
+    updateRewardStatus: () => hasPermission("wheel.rewards.status.update"),
+    viewSpins: () => hasPermission("wheel.spins.view"),
+    viewReports: () => hasPermission("wheel.reports.view"),
+    viewClaims: () => hasPermission("wheel.claims.view"),
+    updateClaims: () => hasPermission("wheel.claims.status.update"),
+    viewAudit: () => hasPermission("wheel.audit.view") || hasPermission("admin.audit.view"),
+  };
+
+  function setPermissionText(el, allowed) {
+    el.textContent = allowed ? "Yes" : "No";
+    el.className = allowed ? "allowed" : "denied";
+  }
+
+  function updatePermissionPanel() {
+    const current = state.permissions || {};
+    els.permissionRole.textContent = safeText(current.role || "-");
+    els.permissionSite.textContent = safeText(current.siteCode || SITE_CODE);
+    setPermissionText(els.permissionCampaignView, access.viewCampaign());
+    setPermissionText(els.permissionCampaignUpdate, access.updateCampaign());
+    setPermissionText(els.permissionRewardsManage, access.createRewards() || access.updateRewards() || access.updateRewardStatus());
+    setPermissionText(els.permissionClaimsView, access.viewClaims());
+    setPermissionText(els.permissionClaimsUpdate, access.updateClaims());
+    setPermissionText(els.permissionReportsView, access.viewReports());
+    setPermissionText(els.permissionAuditView, access.viewAudit());
+  }
+
+  function updateDeniedState(panelId, allowed) {
+    const panel = document.getElementById(panelId);
+    if (!panel) return;
+    panel.classList.toggle("permission-denied", !allowed);
+    const denied = panel.querySelector(".access-denied");
+    if (denied) denied.classList.toggle("hidden", allowed);
+  }
+
+  function updateAccessStates() {
+    updatePermissionPanel();
+    updateDeniedState("tab-campaign", access.viewCampaign());
+    updateDeniedState("tab-rewards", access.viewRewards());
+    updateDeniedState("tab-spins", access.viewSpins());
+    updateDeniedState("tab-reports", access.viewReports());
+    updateDeniedState("tab-audit", access.viewAudit());
+    updateDeniedState("tab-claims", access.viewClaims());
+    setButtonPermission(els.saveCampaign, access.updateCampaign());
+    setButtonPermission(els.createReward, access.createRewards());
   }
 
   function rewardTypeLabel(value) {
@@ -408,7 +492,7 @@
       return await fn();
     } finally {
       button.classList.remove("is-loading");
-      button.disabled = false;
+      button.disabled = button.dataset.permissionDisabled === "true";
     }
   }
 
@@ -416,6 +500,7 @@
     state.activeTab = tab;
     for (const button of els.tabButtons) button.classList.toggle("active", button.dataset.tab === tab);
     for (const panel of els.tabPanels) panel.classList.toggle("active", panel.id === `tab-${tab}`);
+    updateAccessStates();
   }
 
   function campaign() {
@@ -540,14 +625,38 @@
     };
   }
 
+  async function loadPermissions() {
+    const data = await api("/admin/permissions/me");
+    state.permissions = {
+      role: data && data.role ? safeText(data.role) : "-",
+      siteCode: data && data.siteCode ? safeText(data.siteCode) : SITE_CODE,
+      owner: Boolean(data && data.owner),
+      permissions: data && Array.isArray(data.permissions) ? data.permissions.map(safeText) : [],
+    };
+    updateAccessStates();
+  }
+
   async function loadAll() {
-    await loadConfig();
-    await loadSpins();
-    await loadMemberRewards();
-    await loadAudit();
+    await loadPermissions();
+    if (access.viewCampaign() || access.viewRewards() || access.viewReports()) await loadConfig();
+    else {
+      renderCampaign();
+      renderRewards();
+    }
+    if (access.viewSpins() || access.viewReports()) await loadSpins();
+    else renderSpins();
+    if (access.viewClaims() || access.viewReports()) await loadMemberRewards();
+    else renderMemberRewards();
+    if (access.viewAudit()) await loadAudit();
+    else renderAudit();
+    updateAccessStates();
   }
 
   async function loadConfig() {
+    if (!(access.viewCampaign() || access.viewRewards() || access.viewReports())) {
+      updateAccessStates();
+      return;
+    }
     els.rewardsLoading.classList.remove("hidden");
     try {
       const data = await api("/admin/wheel/config");
@@ -563,6 +672,7 @@
   }
 
   function renderCampaign() {
+    updateAccessStates();
     const row = campaign();
     els.campaignId.value = row.id || "wheel_main";
     els.campaignStatus.value = safeEnum(row.status, CAMPAIGN_STATUSES, "inactive");
@@ -656,6 +766,10 @@
 
   async function saveCampaign(event) {
     event.preventDefault();
+    if (!access.updateCampaign()) {
+      setToast(DENIED_ACTION_MESSAGE);
+      return;
+    }
     const reason = validateCampaign();
     if (!reason) {
       setToast("Reason is required");
@@ -697,6 +811,7 @@
   }
 
   function renderRewards() {
+    updateAccessStates();
     const rows = rewards();
     els.rewardRows.innerHTML = "";
     els.rewardsEmpty.classList.toggle("hidden", rows.length > 0);
@@ -737,8 +852,8 @@
       tr.appendChild(status);
       const actions = document.createElement("td");
       actions.className = "button-row";
-      actions.appendChild(actionButton("Edit", () => openRewardModal(reward)));
-      actions.appendChild(actionButton(reward.status === "active" ? "Disable" : "Enable", () => openStatusModal(reward)));
+      actions.appendChild(actionButton("Edit", () => openRewardModal(reward), !access.updateRewards()));
+      actions.appendChild(actionButton(reward.status === "active" ? "Disable" : "Enable", () => openStatusModal(reward), !access.updateRewardStatus()));
       tr.appendChild(actions);
       els.rewardRows.appendChild(tr);
     });
@@ -762,6 +877,10 @@
   }
 
   function openRewardModal(reward) {
+    if ((reward && !access.updateRewards()) || (!reward && !access.createRewards())) {
+      setToast(DENIED_ACTION_MESSAGE);
+      return;
+    }
     state.editingReward = reward || null;
     els.rewardModalTitle.textContent = reward ? "Edit reward" : "Add reward";
     els.rewardId.value = reward ? reward.id : "";
@@ -853,6 +972,10 @@
 
   async function saveReward(event) {
     event.preventDefault();
+    if ((state.editingReward && !access.updateRewards()) || (!state.editingReward && !access.createRewards())) {
+      setToast(DENIED_ACTION_MESSAGE);
+      return;
+    }
     const reason = validateReward();
     if (!reason) {
       setToast("Reason is required");
@@ -893,6 +1016,10 @@
   }
 
   function openStatusModal(reward) {
+    if (!access.updateRewardStatus()) {
+      setToast(DENIED_ACTION_MESSAGE);
+      return;
+    }
     state.statusReward = reward || null;
     if (!state.statusReward) return;
     const nextStatus = reward.status === "active" ? "inactive" : "active";
@@ -906,6 +1033,10 @@
 
   async function saveStatus(event) {
     event.preventDefault();
+    if (!access.updateRewardStatus()) {
+      setToast(DENIED_ACTION_MESSAGE);
+      return;
+    }
     const reward = state.statusReward;
     if (!reward) return;
     const reason = validateReason(els.statusReason, els.statusReasonError);
@@ -941,6 +1072,12 @@
   }
 
   async function loadSpins() {
+    if (!(access.viewSpins() || access.viewReports())) {
+      state.spins = [];
+      renderSpins();
+      updateAccessStates();
+      return;
+    }
     els.spinsLoading.classList.remove("hidden");
     try {
       const params = new URLSearchParams();
@@ -968,6 +1105,12 @@
   }
 
   async function loadMemberRewards() {
+    if (!(access.viewClaims() || access.viewReports())) {
+      state.memberRewards = [];
+      renderMemberRewards();
+      updateAccessStates();
+      return;
+    }
     els.claimsLoading.classList.remove("hidden");
     try {
       const params = new URLSearchParams();
@@ -1036,6 +1179,7 @@
   }
 
   function renderMemberRewards() {
+    updateAccessStates();
     els.claimRows.innerHTML = "";
     els.claimsEmpty.classList.toggle("hidden", state.memberRewards.length > 0);
     renderClaimSummary();
@@ -1056,8 +1200,8 @@
       const actions = document.createElement("td");
       actions.className = "button-row";
       actions.appendChild(actionButton("View detail", () => openRewardClaimDetail(reward)));
-      actions.appendChild(actionButton("Mark claimed", () => openClaimStatusModal(reward, "claimed"), !canManualClaim(reward)));
-      actions.appendChild(actionButton("Cancel", () => openClaimStatusModal(reward, "cancelled"), !canCancelReward(reward)));
+      actions.appendChild(actionButton("Mark claimed", () => openClaimStatusModal(reward, "claimed"), !access.updateClaims() || !canManualClaim(reward)));
+      actions.appendChild(actionButton("Cancel", () => openClaimStatusModal(reward, "cancelled"), !access.updateClaims() || !canCancelReward(reward)));
       tr.appendChild(actions);
       els.claimRows.appendChild(tr);
     }
@@ -1091,6 +1235,10 @@
   }
 
   function openClaimStatusModal(reward, status) {
+    if (!access.updateClaims()) {
+      setToast(DENIED_ACTION_MESSAGE);
+      return;
+    }
     state.memberRewardStatus = { reward, status };
     els.claimStatusTitle.textContent = status === "claimed" ? "Mark reward as claimed" : "Cancel reward";
     els.claimStatusCopy.textContent =
@@ -1105,6 +1253,10 @@
 
   async function saveClaimStatus(event) {
     event.preventDefault();
+    if (!access.updateClaims()) {
+      setToast(DENIED_ACTION_MESSAGE);
+      return;
+    }
     const target = state.memberRewardStatus;
     if (!target || !target.reward) return;
     const reason = validateReason(els.claimStatusReason, els.claimStatusReasonError);
@@ -1145,6 +1297,7 @@
   }
 
   function renderSpins() {
+    updateAccessStates();
     els.spinRows.innerHTML = "";
     els.spinsEmpty.classList.toggle("hidden", state.spins.length > 0);
     for (const spin of state.spins) {
@@ -1194,6 +1347,8 @@
   }
 
   function renderReports() {
+    updateAccessStates();
+    if (!access.viewReports()) return;
     const rows = rewards();
     const counts = rewardCounts();
     const totalSpins = state.spins.length;
@@ -1354,6 +1509,12 @@
   }
 
   async function loadAudit() {
+    if (!access.viewAudit()) {
+      state.auditRows = [];
+      renderAudit();
+      updateAccessStates();
+      return;
+    }
     els.auditLoading.classList.remove("hidden");
     try {
       const data = await api("/admin/audit-logs?limit=100");
@@ -1396,6 +1557,7 @@
   }
 
   function renderAudit() {
+    updateAccessStates();
     els.auditRows.innerHTML = "";
     const rows = filteredAuditRows();
     els.auditEmpty.classList.toggle("hidden", rows.length > 0 || !els.auditPlaceholder.classList.contains("hidden"));
@@ -1468,6 +1630,7 @@
     state.spins = [];
     state.memberRewards = [];
     state.auditRows = [];
+    state.permissions = null;
     state.statusReward = null;
     state.memberRewardStatus = null;
     els.credential.value = "";
@@ -1483,6 +1646,7 @@
     renderMemberRewards();
     renderReports();
     renderAudit();
+    updateAccessStates();
   }
 
   async function bootWithCredential() {

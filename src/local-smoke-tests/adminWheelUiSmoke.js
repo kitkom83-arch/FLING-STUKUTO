@@ -116,6 +116,17 @@ function main() {
     "Staging / Mock Admin Console",
     "No real money / no live provider",
     "Response leak warning",
+    "Permission summary",
+    "Effective admin access for this site",
+    "View campaign",
+    "Update campaign",
+    "Manage rewards",
+    "View claims",
+    "Update claims",
+    "View reports",
+    "View audit",
+    "ไม่มีสิทธิ์เข้าถึง",
+    "กรุณาติดต่อผู้ดูแลระบบ",
     "Site code",
     "Last updated",
     "Campaign settings",
@@ -189,6 +200,7 @@ function main() {
     "Manual claim is limited to item rewards",
   ]);
   assertIncludes("Admin Wheel JS endpoints", js, [
+    "/admin/permissions/me",
     "/admin/wheel/config",
     "/admin/wheel/campaign",
     "/admin/wheel/rewards",
@@ -211,7 +223,14 @@ function main() {
     "SafeApiError",
     "กรุณาเข้าสู่ระบบแอดมิน",
     "ไม่มีสิทธิ์ใช้งานเมนู Lucky Wheel",
+    "ไม่มีสิทธิ์ดำเนินการนี้",
+    "DENIED_VIEW_MESSAGE",
     "ยังไม่พบข้อมูล Lucky Wheel",
+    "loadPermissions",
+    "updatePermissionPanel",
+    "updateAccessStates",
+    "permission-denied",
+    "setButtonPermission",
     "validateReason",
     "renderCampaignSummary",
     "บันทึกการตั้งค่าแคมเปญสำเร็จ",
@@ -242,6 +261,21 @@ function main() {
     "saveClaimStatus",
     "No real payout or wallet credit is performed",
   ]);
+  assertIncludes("Admin Wheel JS permissions", js, [
+    "wheel.view",
+    "wheel.campaign.view",
+    "wheel.campaign.update",
+    "wheel.rewards.view",
+    "wheel.rewards.create",
+    "wheel.rewards.update",
+    "wheel.rewards.status.update",
+    "wheel.spins.view",
+    "wheel.reports.view",
+    "wheel.claims.view",
+    "wheel.claims.status.update",
+    "wheel.audit.view",
+    "admin.audit.view",
+  ]);
   assertIncludes("Admin Wheel JS validation", js, [
     "Campaign name is required",
     "CAMPAIGN_STATUSES.includes",
@@ -260,7 +294,7 @@ function main() {
   assertNoFrontendSpinPayload(js);
   assertNoAdminForceControls(html, js);
   assertNoUnsafeLogging(js);
-  assertIncludes("Admin Wheel CSS", css, [".tab-button.active", ".summary-grid", ".table-section", ".badge", ".safe-json"]);
+  assertIncludes("Admin Wheel CSS", css, [".tab-button.active", ".summary-grid", ".permission-panel", ".access-denied", ".permission-disabled", ".table-section", ".badge", ".safe-json"]);
   assertNoRenderedPlaceholderText("Admin Wheel HTML", html);
   assertNoRenderedSensitiveCopy("Admin Wheel HTML", html);
   assertNoStaticSecret("Admin Wheel HTML", html);
