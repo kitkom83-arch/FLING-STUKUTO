@@ -27,6 +27,12 @@ gh run list --branch main --limit 10
 ```
 
 - Safe CI must be PASS before staging deploy.
+- Run static release readiness before commit or release:
+
+```powershell
+npm run smoke:staging-release-readiness
+```
+
 - Render Build Command must be `npm install && npx prisma generate`.
 - Render Start Command must be `npm start`.
 - Seed command is temporary only. Do not leave it in the Render Start Command.
@@ -63,6 +69,14 @@ Release gate policy:
 - Does not consume member wheel spin.
 - Does not patch role permissions.
 - Checks health, database connectivity, external modes, admin read-only endpoints, browser routes, member wheel read-only endpoints, role-permission audit reads, and response leak safety.
+
+Release readiness policy:
+
+- `npm run smoke:staging-release-readiness` is a static/local policy smoke.
+- It runs before deploy and can run in Safe CI without staging credentials.
+- It does not call the staging API.
+- It checks package scripts, runbook/docs policy, CI-safe static wording, and secret-shaped value safety.
+- It does not replace `npm run smoke:staging-release-gate`, which is the runtime staging smoke after deploy.
 
 ## 5. Full UAT Policy
 
@@ -229,6 +243,7 @@ Clear-History
 
 ## Final Boundary
 
+- Release readiness = static/local policy smoke before deploy.
 - Release gate = run after every deploy.
 - Full UAT = run after seed/reset only.
 - Role Permission UAT = run after role permission changes.

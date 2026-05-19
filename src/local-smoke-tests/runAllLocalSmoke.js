@@ -28,6 +28,7 @@ const RELATED_FILES = [
   "src/local-smoke-tests/adminWheelUiSmoke.js",
   "src/local-smoke-tests/adminWheelRuntimeSmoke.js",
   "src/local-smoke-tests/adminBrowserRoutesSmoke.js",
+  "src/local-smoke-tests/stagingReleaseReadinessSmoke.js",
   "src/local-smoke-tests/wheelSmoke.js",
   "src/admin-wheel-ui/index.html",
   "src/admin-wheel-ui/app.js",
@@ -69,6 +70,7 @@ const summary = [
   { key: "adminWheelUi", label: "admin-wheel-ui", status: "PENDING" },
   { key: "adminWheelRuntime", label: "admin-wheel-runtime", status: "PENDING" },
   { key: "adminBrowserRoutes", label: "admin-browser-routes", status: "PENDING" },
+  { key: "stagingReleaseReadiness", label: "staging-release-readiness", status: "PENDING" },
   { key: "wheel", label: "wheel", status: "PENDING" },
   { key: "responseScan", label: "response leak scan", status: "PENDING" },
   { key: "secretGrep", label: "secret grep", status: "PENDING" },
@@ -164,6 +166,12 @@ const steps = [
     name: "node --check adminBrowserRoutesSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/adminBrowserRoutesSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check stagingReleaseReadinessSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/stagingReleaseReadinessSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -287,6 +295,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:admin-browser-routes"]),
     summaryKey: "adminBrowserRoutes",
+  },
+  {
+    name: "npm run smoke:staging-release-readiness",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:staging-release-readiness"]),
+    summaryKey: "stagingReleaseReadiness",
   },
   {
     name: "npm run smoke:wheel",

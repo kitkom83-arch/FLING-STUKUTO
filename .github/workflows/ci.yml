@@ -49,9 +49,13 @@ jobs:
       - name: Staging preflight dry run
         run: npm run staging:preflight
 
+      - name: Staging release readiness static smoke
+        run: npm run smoke:staging-release-readiness
+
       - name: Local smoke syntax check
         run: |
           node --check src/local-smoke-tests/stagingPreflight.js
+          node --check src/local-smoke-tests/stagingReleaseReadinessSmoke.js
           node --check src/local-smoke-tests/moneyFlowSmoke.js
           node --check src/local-smoke-tests/coreApiSmoke.js
           node --check src/local-smoke-tests/financialNegativeSmoke.js

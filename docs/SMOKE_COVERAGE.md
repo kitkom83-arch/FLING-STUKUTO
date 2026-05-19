@@ -47,6 +47,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `wheelSmoke.js` | `npm run smoke:wheel` | Yes | Yes | Yes | Syntax check only | Lucky Wheel mock config/spin/history/rewards, missing auth, invalid campaign, backend result selection, admin reason/audit checks, stock-zero exclusion, fail-safe guards, and leak scan. Skips safely when local runtime env is missing; blocks unsafe targets. |
 | `stagingPreflight.js` | `npm run staging:preflight` | No local Prisma access | Optional | No | Runs local-test dry run | Staging readiness guard for env boundary, database/API target labels, external modes, health contract, and response leak scan. |
 | `stagingSmoke.js` | `npm run smoke:staging` | No local Prisma access | Yes | No | Syntax check only | Hosted staging health contract, safe external mode labels, admin auth negative leak check, and response leak scan. |
+| `stagingReleaseReadinessSmoke.js` | `npm run smoke:staging-release-readiness` | No | No | No | Runs static contract | CI-safe static release readiness guard for package scripts, runbook/docs policy, rollback/incident checklist wording, release gate/full UAT/role UAT command separation, and secret-shaped value scan. It does not call staging. |
 | `stagingReleaseGateSmoke.js` | `npm run smoke:staging-release-gate` | No local Prisma access | Hosted staging API | Yes | Syntax check only | Non-destructive hosted staging release gate for health/database/modes, admin auth negative, demo admin auth, admin read-only endpoints, browser route contract, demo member auth, member Lucky Wheel read-only config/history/my-rewards, role-permission read-only audit checks, and leak scan. It does not consume member spin and does not PATCH role permissions. |
 | `stagingDbCheck.js` | `npm run staging:db:check` | Staging/test DB | No | No | Syntax check only | Staging DB connection, required tables, demo site/admin/member readiness, fixture counts, and safe output. |
 | `stagingDemoSeed.js` | `npm run staging:seed-demo` | Staging/test DB | No | `STAGING_DEMO_ADMIN_PASSWORD` | Syntax check only | Staging-safe UAT demo admin upsert from `STAGING_DEMO_ADMIN_EMAIL`, super-admin site access, Lucky Wheel demo member refresh, optional Phase H no-permission admin fixture, optional Phase H safe role/admin fixture, sanitized audit log, SKIP-SAFE on missing local demo admin env, and no credential output. |
@@ -427,6 +428,7 @@ Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not 
   - `adminWheelUiSmoke.js`
   - `adminWheelRuntimeSmoke.js`
   - `adminBrowserRoutesSmoke.js`
+  - `stagingReleaseReadinessSmoke.js`
   - `wheelSmoke.js`
   - `stagingPreflight.js`
   - `stagingSmoke.js`
@@ -446,6 +448,7 @@ Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not 
 - `npm run smoke:admin-wheel-ui`.
 - `npm run smoke:admin-wheel-runtime`.
 - `npm run smoke:admin-browser-routes`.
+- `npm run smoke:staging-release-readiness`.
 - `npm run smoke:wheel`.
 - Secret grep over package/docs/README/local-smoke related files.
 - `git diff --check`.
@@ -462,8 +465,10 @@ Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not 
 - `npx prisma generate`.
 - `npm run check`.
 - `npm run staging:preflight` with local-test CI env and no real secrets.
+- `npm run smoke:staging-release-readiness` with no staging secrets and no staging API calls.
 - Direct smoke syntax checks for:
   - `stagingPreflight.js`
+  - `stagingReleaseReadinessSmoke.js`
   - `moneyFlowSmoke.js`
   - `coreApiSmoke.js`
   - `financialNegativeSmoke.js`
@@ -505,6 +510,7 @@ Run these only after the backend and safe local/staging/test environment are rea
 npm run smoke:all-local
 npm run staging:preflight
 npm run smoke:staging
+npm run smoke:staging-release-readiness
 npm run smoke:staging-role-permission-uat
 npm run smoke:money-flow
 npm run smoke:core-api
@@ -666,3 +672,35 @@ Smoke policy:
 - Role Permission UAT = run after role permission changes.
 - Seed command = temporary only.
 - Start Command final = `npm start`.
+
+## 31. smoke:staging-release-readiness Coverage
+
+Phase L status: Staging Release Gate Automation + CI Guard.
+
+Script:
+
+- `src/local-smoke-tests/stagingReleaseReadinessSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:staging-release-readiness
+```
+
+Use before commit or before release. This smoke is static/local only and can run in Safe CI without staging credentials.
+
+Coverage:
+
+- Confirms package scripts exist for `smoke:staging-release-gate`, `smoke:staging-uat`, `smoke:staging-role-permission-uat`, `smoke:admin-operator-handoff`, and `smoke:staging-release-readiness`.
+- Confirms `npm run check` syntax-checks `src/staging-scripts/stagingReleaseGateSmoke.js` and `src/local-smoke-tests/stagingReleaseReadinessSmoke.js`.
+- Confirms release/runbook docs exist.
+- Confirms runbook policy says release gate runs after every deploy, Full UAT runs after seed/reset, Role Permission UAT is separate, Build Command is `npm install && npx prisma generate`, Start Command is `npm start`, seed command is temporary only, Start Command is restored after seed, rollback checklist exists, and incident checklist exists.
+- Confirms safety wording for no production DB, no real money, no live provider/payment/bank/SMS/Slip OCR, secret leak safety, and member spin not consumed in release gate.
+- Scans related docs/scripts for credential-shaped values, raw connection strings, and unexpected placeholder copy.
+
+Command separation:
+
+- Release readiness = static/local policy smoke before deploy.
+- Release gate = runtime staging smoke after deploy.
+- Full UAT = after seed/reset only.
+- Role Permission UAT = after role/permission changes.

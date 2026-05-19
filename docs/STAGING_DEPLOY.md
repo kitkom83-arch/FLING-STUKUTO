@@ -307,6 +307,7 @@ Render-specific pre-deploy checks:
 - Confirm Render service type is Web Service.
 - Confirm Render runtime is Node.js.
 - Confirm Render branch is `main`.
+- Run `npm run smoke:staging-release-readiness` before release. This is a static/local policy check and does not use staging credentials.
 - Confirm Render build command is `npm install && npx prisma generate`.
 - Confirm Render start command is `npm start`.
 - Confirm Render health check path is `/api/health`.
@@ -721,3 +722,22 @@ Known incident quick checks:
 - Member spin `400`: reset demo member/wheel state and run Full UAT once.
 - No-permission admin credential mismatch: verify Render Environment values and reseed fixture.
 - Seed command left in Start Command: change back to `npm start` immediately and redeploy.
+
+## Phase L Staging Release Readiness Automation
+
+Phase L adds the CI-safe static release readiness smoke:
+
+```powershell
+npm run smoke:staging-release-readiness
+```
+
+Use it before commit or before release to confirm scripts, runbook policy, rollback/incident checklist wording, and static secret-shaped value safety. It does not require staging secrets, does not call the Render staging API, and is safe for Safe CI.
+
+Command separation:
+
+- Release readiness = static/local policy smoke before deploy.
+- Release gate = runtime staging smoke after deploy with `npm run smoke:staging-release-gate`.
+- Full UAT = run after seed/reset only with `npm run smoke:staging-uat`.
+- Role permission UAT = run after role permission changes with `npm run smoke:staging-role-permission-uat`.
+- Seed command = temporary only.
+- Start Command final = `npm start`.

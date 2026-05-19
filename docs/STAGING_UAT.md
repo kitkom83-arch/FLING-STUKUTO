@@ -490,3 +490,26 @@ Rollback and incidents:
 - Check `/api/health`.
 - Rerun `npm run smoke:staging-release-gate`.
 - Use the Phase K runbook for 502 HTML auth responses, missing `express`, no open ports, member spin `400`, no-permission admin credential mismatch, and accidental seed Start Command incidents.
+
+## Phase L Release Readiness Static Smoke
+
+Run this before commit or before release:
+
+```powershell
+npm run smoke:staging-release-readiness
+```
+
+Release readiness is static/local:
+
+- It checks package scripts, runbook/docs policy, rollback/incident checklist coverage, and secret-shaped value safety.
+- It does not require staging credentials.
+- It does not call the staging API.
+- It is safe to run in Safe CI.
+
+Release gate remains runtime staging:
+
+```powershell
+npm run smoke:staging-release-gate
+```
+
+Run the release gate after every deploy. Full UAT remains after seed/reset only, and Role Permission UAT remains after role/permission changes.
