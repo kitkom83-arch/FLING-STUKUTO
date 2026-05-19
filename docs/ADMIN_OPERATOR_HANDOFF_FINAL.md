@@ -126,3 +126,48 @@ If local runtime smoke is blocked or skipped by a safety guard, record the guard
 - No live provider, payment, bank, SMS, or Slip OCR.
 - No real payout.
 - Admin UI is advisory only. Backend auth, permission, staging, and safety guards remain the source of truth.
+
+## Phase J Release Gate
+
+Run after every staging deploy:
+
+```powershell
+npm run smoke:staging-release-gate
+```
+
+This is the default post-deploy gate. It is non-destructive, does not consume member wheel spin, and does not PATCH role permissions.
+
+Use Full UAT only after seed reset or before closing a major phase:
+
+```powershell
+npm run smoke:staging-uat
+```
+
+Full UAT may consume a staging/mock member wheel spin. If spin returns `400`, reset the staging demo member/wheel state through the guarded seed and run Full UAT once.
+
+Use Role Permission UAT when role/permission logic changes:
+
+```powershell
+npm run smoke:staging-role-permission-uat
+```
+
+It mutates the safe staging role fixture only when configured, restores state immediately, and checks audit history.
+
+Render reminders:
+
+- Build Command: `npm install && npx prisma generate`.
+- Start Command: `npm start`.
+- Seed commands are temporary only.
+- After seed, always set Start Command back to `npm start`.
+- Server bind must use `0.0.0.0` and `process.env.PORT`.
+
+Release gate ENV names:
+
+- `BASE_URL`
+- `STAGING_DEMO_ADMIN_EMAIL` or `STAGING_DEMO_ADMIN_USERNAME`
+- `STAGING_DEMO_ADMIN_PASSWORD`
+- `STAGING_DEMO_MEMBER_USERNAME` or `STAGING_DEMO_MEMBER_PHONE`
+- `STAGING_DEMO_MEMBER_PASSWORD`
+- Optional: `STAGING_SAFE_ROLE_NAME`
+
+Do not write real credential values in docs.

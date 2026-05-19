@@ -421,3 +421,48 @@ Render Start Command reminder:
 - Do not keep `npm run staging:seed-demo && npm start` as the permanent service command.
 
 Phase I remains staging/mock/sandbox only. No production DB, no real money, no live provider/payment/bank/SMS/Slip OCR, and no real payout are approved.
+
+## Phase J Release Gate Smoke
+
+Use this after every staging deploy:
+
+```powershell
+npm run smoke:staging-release-gate
+```
+
+Release Gate Smoke is non-destructive:
+
+- It checks safety guard, `/api/health`, database connectivity, and external mode labels.
+- It checks admin auth negative behavior and demo admin login without printing credential values.
+- It reads admin permissions, role catalog, Admin Wheel config/spins/member-rewards, and audit logs.
+- It checks browser routes `/admin`, `/admin/roles`, `/admin-wheel`, `/admin/audit-security`, and `/admin/work-schedules`.
+- It logs in the demo member and reads Lucky Wheel config, history, and my-rewards.
+- It does not consume a member wheel spin.
+- It does not PATCH role permissions.
+
+Full UAT Smoke remains:
+
+```powershell
+npm run smoke:staging-uat
+```
+
+Use Full UAT after seed reset or before closing a major phase. It may consume a staging/mock member wheel spin. If member spin returns `400`, check the sanitized reason. Common safe causes are daily limit reached, not enough points, inactive campaign, or no active campaign. Reset the staging demo member/wheel state through the guarded seed and run Full UAT once.
+
+Role Permission UAT remains:
+
+```powershell
+npm run smoke:staging-role-permission-uat
+```
+
+Use Role Permission UAT when role/permission behavior changes. It mutates a safe non-owner role only when the fixture exists, restores state immediately, and verifies `admin.role.permissions.update` audit history.
+
+Release gate ENV names:
+
+- `BASE_URL`
+- `STAGING_DEMO_ADMIN_EMAIL` or `STAGING_DEMO_ADMIN_USERNAME`
+- `STAGING_DEMO_ADMIN_PASSWORD`
+- `STAGING_DEMO_MEMBER_USERNAME` or `STAGING_DEMO_MEMBER_PHONE`
+- `STAGING_DEMO_MEMBER_PASSWORD`
+- Optional: `STAGING_SAFE_ROLE_NAME`
+
+Do not put real credential values in docs. Values must live only in Render Environment/Secrets or an approved secret manager.

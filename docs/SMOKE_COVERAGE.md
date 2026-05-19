@@ -47,6 +47,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `wheelSmoke.js` | `npm run smoke:wheel` | Yes | Yes | Yes | Syntax check only | Lucky Wheel mock config/spin/history/rewards, missing auth, invalid campaign, backend result selection, admin reason/audit checks, stock-zero exclusion, fail-safe guards, and leak scan. Skips safely when local runtime env is missing; blocks unsafe targets. |
 | `stagingPreflight.js` | `npm run staging:preflight` | No local Prisma access | Optional | No | Runs local-test dry run | Staging readiness guard for env boundary, database/API target labels, external modes, health contract, and response leak scan. |
 | `stagingSmoke.js` | `npm run smoke:staging` | No local Prisma access | Yes | No | Syntax check only | Hosted staging health contract, safe external mode labels, admin auth negative leak check, and response leak scan. |
+| `stagingReleaseGateSmoke.js` | `npm run smoke:staging-release-gate` | No local Prisma access | Hosted staging API | Yes | Syntax check only | Non-destructive hosted staging release gate for health/database/modes, admin auth negative, demo admin auth, admin read-only endpoints, browser route contract, demo member auth, member Lucky Wheel read-only config/history/my-rewards, role-permission read-only audit checks, and leak scan. It does not consume member spin and does not PATCH role permissions. |
 | `stagingDbCheck.js` | `npm run staging:db:check` | Staging/test DB | No | No | Syntax check only | Staging DB connection, required tables, demo site/admin/member readiness, fixture counts, and safe output. |
 | `stagingDemoSeed.js` | `npm run staging:seed-demo` | Staging/test DB | No | `STAGING_DEMO_ADMIN_PASSWORD` | Syntax check only | Staging-safe UAT demo admin upsert from `STAGING_DEMO_ADMIN_EMAIL`, super-admin site access, Lucky Wheel demo member refresh, optional Phase H no-permission admin fixture, optional Phase H safe role/admin fixture, sanitized audit log, SKIP-SAFE on missing local demo admin env, and no credential output. |
 | `stagingUatSmoke.js` | `npm run smoke:staging-uat` | No local Prisma access | Hosted staging API | Optional; skips safely if absent | Syntax check only | Render staging health/database/mode contract, admin auth leak checks, admin work schedule read, audit/security read endpoints, Admin Lucky Wheel config/spins/member-rewards, optional member wheel config/spin/history/my-rewards when staging member env exists, and response leak scan. |
@@ -600,3 +601,40 @@ Coverage:
 - Runs `adminBrowserRoutesSmoke.js` as a dependency so the route contract for the five Phase I browser routes remains covered.
 
 This smoke is static/contract only. It does not log in, run migrations, seed data, connect to production DB, call live provider/payment/bank/SMS/Slip OCR, or move money. DB-backed runtime smoke may still report BLOCKED or SKIPPED by safety guard when the safe local/staging env is absent.
+
+## 29. smoke:staging-release-gate Coverage
+
+Phase J status: Staging Release Gate + Non-Destructive Regression Smoke.
+
+Script:
+
+- `src/staging-scripts/stagingReleaseGateSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:staging-release-gate
+```
+
+Use after every staging deploy. This smoke is non-destructive and must not replace Full UAT.
+
+Coverage:
+
+- Safety guard blocks production-like API/database env and live provider/payment/bank/SMS/Slip OCR modes.
+- Health/database/mode contract checks `GET /api/health`, `databaseConnected=true`, safe app env, and mock/sandbox/disabled external modes.
+- Admin auth negative checks unknown admin returns JSON safe failure, not HTML.
+- Demo admin auth uses staging demo admin env and never prints the returned credential.
+- Admin read-only regression covers `/api/admin/permissions/me`, `/api/admin/permissions/catalog`, `/api/admin/roles`, `/api/admin/wheel/config`, `/api/admin/wheel/spins`, `/api/admin/wheel/member-rewards`, and `/api/admin/audit-logs?limit=10`.
+- Browser route contract checks `/admin`, `/admin/roles`, `/admin-wheel`, `/admin/audit-security`, `/admin/work-schedules`, `/api/*` static boundary, and `/admin/auth/login` JSON boundary.
+- Demo member auth uses staging demo member env and never prints the returned credential.
+- Member Lucky Wheel read-only regression covers `/api/member/wheel/config`, `/api/member/wheel/history`, and `/api/member/wheel/my-rewards`.
+- It intentionally does not call member wheel spin.
+- Role permission read-only regression optionally reads `/api/admin/roles/:safeRole` when `STAGING_SAFE_ROLE_NAME` is set and always reads `/api/admin/audit-logs?action=admin.role.permissions.update`.
+- It intentionally does not PATCH role permissions.
+- Response leak scan rejects password/token/secret markers, `DATABASE_URL`, raw authorization/JWT-shaped values, raw connection strings, raw internal stacks, and sensitive env values.
+
+Command separation:
+
+- `smoke:staging-release-gate` is non-destructive and should run after every deploy.
+- `smoke:staging-uat` is Full UAT, may consume member wheel spin, and should run after seed reset or before closing major phases.
+- `smoke:staging-role-permission-uat` mutates a safe role fixture and restores state immediately; run it when role/permission behavior changes.

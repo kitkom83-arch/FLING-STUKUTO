@@ -79,6 +79,15 @@ function safePayloadSummary(payload) {
   return serialized.length > 800 ? `${serialized.slice(0, 800)}...` : serialized;
 }
 
+function safeWheelSpinFailureReason(payload) {
+  const serialized = JSON.stringify(sanitizeForLog(payload)).toLowerCase();
+  if (/daily|limit|remaining/.test(serialized)) return "daily limit reached";
+  if (/point|balance|insufficient|not enough/.test(serialized)) return "not enough points";
+  if (/inactive/.test(serialized)) return "campaign inactive";
+  if (/campaign|not found|missing/.test(serialized)) return "no active campaign";
+  return "see sanitized response body";
+}
+
 async function safeNonJsonSummary(response) {
   let body = "";
   try {
@@ -407,7 +416,9 @@ async function assertLuckyWheelMemberEndpoints(baseUrl, authValue) {
     !Object.prototype.hasOwnProperty.call(spin.data, "remainingSpinsToday")
   ) {
     throw new Error(
-      `Member wheel spin returned ${spin.status}, expected backend-selected result. Sanitized response body: ${safePayloadSummary(
+      `Member wheel spin returned ${spin.status}, expected backend-selected result. Safe reason: ${safeWheelSpinFailureReason(
+        spin.payload
+      )}. Sanitized response body: ${safePayloadSummary(
         spin.payload
       )}`
     );

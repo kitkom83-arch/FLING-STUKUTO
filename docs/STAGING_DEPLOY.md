@@ -638,3 +638,57 @@ Render command reminders:
 - After any temporary seed deploy, change Start Command back to `npm start` and redeploy.
 
 Do not use production DB, real money, live provider/payment/bank/SMS/Slip OCR, or real payout for this phase.
+
+## Phase J Staging Release Gate
+
+After every Render staging deploy, run the non-destructive release gate before running heavier UAT:
+
+```powershell
+$env:BASE_URL = "https://stukuto-real-core-staging.onrender.com/api"
+npm run smoke:staging-release-gate
+```
+
+Release Gate Smoke:
+
+- Does not consume member wheel spin.
+- Does not PATCH role permissions.
+- Checks health/database/mode contract.
+- Checks admin read-only regression.
+- Checks browser route contract.
+- Checks member Lucky Wheel read-only regression.
+- Checks role permission read-only audit regression.
+
+Full UAT Smoke:
+
+```powershell
+npm run smoke:staging-uat
+```
+
+Run Full UAT after seed reset or before closing a major phase. It may consume a member wheel spin. If spin returns `400`, reset the staging demo member/wheel state through the guarded seed and run Full UAT once.
+
+Role Permission UAT:
+
+```powershell
+npm run smoke:staging-role-permission-uat
+```
+
+Run this when role/permission behavior changes. It mutates only the safe staging role fixture and restores state immediately.
+
+Render checklist:
+
+- Build Command: `npm install && npx prisma generate`.
+- Start Command: `npm start`.
+- Seed command is temporary only.
+- After seed, always set Start Command back to `npm start`.
+- Server must bind `0.0.0.0` and use `process.env.PORT`.
+
+Release gate ENV names:
+
+- `BASE_URL`
+- `STAGING_DEMO_ADMIN_EMAIL` or `STAGING_DEMO_ADMIN_USERNAME`
+- `STAGING_DEMO_ADMIN_PASSWORD`
+- `STAGING_DEMO_MEMBER_USERNAME` or `STAGING_DEMO_MEMBER_PHONE`
+- `STAGING_DEMO_MEMBER_PASSWORD`
+- Optional: `STAGING_SAFE_ROLE_NAME`
+
+Keep real values only in Render Environment/Secrets. Do not paste them into docs, logs, screenshots, tickets, commits, or chat.
