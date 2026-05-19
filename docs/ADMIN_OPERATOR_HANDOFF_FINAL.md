@@ -171,3 +171,32 @@ Release gate ENV names:
 - Optional: `STAGING_SAFE_ROLE_NAME`
 
 Do not write real credential values in docs.
+
+## Phase K Release Runbook
+
+Use `docs/STAGING_RELEASE_RUNBOOK.md` for the final staging release, rollback, incident, seed/reset, and smoke policy checklist.
+
+Release policy:
+
+- Run `npm run smoke:staging-release-gate` after every deploy.
+- Run `npm run smoke:staging-uat` only after seed/reset or before closing a major phase.
+- Run `npm run smoke:staging-role-permission-uat` after role/permission changes.
+- Keep the Render Start Command as `npm start` after any seed/reset.
+- Keep the Render Build Command as `npm install && npx prisma generate`.
+- Treat seed commands as temporary only.
+
+Rollback policy:
+
+- Roll back to the previous live Render deploy.
+- Check `/api/health`.
+- Rerun `npm run smoke:staging-release-gate`.
+- If rollback still fails, check Render Build Command, Start Command, and logs.
+
+Incident reminders:
+
+- 502 HTML from `/admin/auth/login`: check health twice, wait for service stability, rerun release gate, then redeploy latest commit if needed.
+- Missing `express`: verify Build Command and clear build cache.
+- No open ports: verify `0.0.0.0` bind and `process.env.PORT`.
+- Member spin `400`: reset demo member/wheel state and run Full UAT once.
+- No-permission admin credential mismatch: verify Render Environment values and refresh fixture through guarded seed.
+- Seed command left in Start Command: change back to `npm start` immediately and redeploy.

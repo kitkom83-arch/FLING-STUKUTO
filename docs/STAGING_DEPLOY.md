@@ -19,7 +19,7 @@ Backup platform options:
 - VPS or VM with Node.js 18.18+ and a dedicated staging PostgreSQL.
 - Docker-ready host if the image runs `npm run start`, has Node.js 18.18+, receives environment variables from a secret store, and connects only to staging PostgreSQL.
 
-Use `docs/STAGING_RENDER.md` for the recommended Render setup, env checklist, deploy checklist, GO/NO-GO criteria, rollback note, and optional placeholder `render.yaml` template. Use `docs/STAGING_PLATFORM_CHECKLIST.md` for backup platform build/start/env/rollback steps. Use `docs/STAGING_DEPLOY_DECISION.md` for go/no-go approval. Use `docs/STAGING_ROLLBACK.md` for the rollback and incident runbook.
+Use `docs/STAGING_RENDER.md` for the recommended Render setup, env checklist, deploy checklist, GO/NO-GO criteria, rollback note, and optional placeholder `render.yaml` template. Use `docs/STAGING_PLATFORM_CHECKLIST.md` for backup platform build/start/env/rollback steps. Use `docs/STAGING_DEPLOY_DECISION.md` for go/no-go approval. Use `docs/STAGING_ROLLBACK.md` for the rollback and incident runbook. Use `docs/STAGING_RELEASE_RUNBOOK.md` for the Phase K staging release, rollback, incident, seed/reset, and smoke policy checklist.
 
 Do not deploy this backend as a static site. Do not use Netlify static hosting for the API process.
 
@@ -692,3 +692,32 @@ Release gate ENV names:
 - Optional: `STAGING_SAFE_ROLE_NAME`
 
 Keep real values only in Render Environment/Secrets. Do not paste them into docs, logs, screenshots, tickets, commits, or chat.
+
+## Phase K Staging Release Runbook
+
+Phase K status: staging release runbook and rollback checklist are documented in `docs/STAGING_RELEASE_RUNBOOK.md`.
+
+Release policy:
+
+- Release gate = run after every deploy with `npm run smoke:staging-release-gate`.
+- Full UAT = run after seed/reset only with `npm run smoke:staging-uat`.
+- Role permission UAT = run after role permission changes with `npm run smoke:staging-role-permission-uat`.
+- Seed command = temporary only.
+- Start Command final = `npm start`.
+- Build Command final = `npm install && npx prisma generate`.
+
+Render rollback policy:
+
+- Roll back to the previous live deploy.
+- Check `/api/health`.
+- Rerun `npm run smoke:staging-release-gate`.
+- If rollback still fails, check Render Build Command, Start Command, and logs.
+
+Known incident quick checks:
+
+- 502 HTML from `/admin/auth/login`: check health twice, wait for stable service, rerun release gate, then redeploy latest commit if needed.
+- Missing `express`: verify Build Command and clear build cache.
+- No open ports: verify `0.0.0.0` bind and `process.env.PORT`.
+- Member spin `400`: reset demo member/wheel state and run Full UAT once.
+- No-permission admin credential mismatch: verify Render Environment values and reseed fixture.
+- Seed command left in Start Command: change back to `npm start` immediately and redeploy.

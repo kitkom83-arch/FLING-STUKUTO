@@ -638,3 +638,31 @@ Command separation:
 - `smoke:staging-release-gate` is non-destructive and should run after every deploy.
 - `smoke:staging-uat` is Full UAT, may consume member wheel spin, and should run after seed reset or before closing major phases.
 - `smoke:staging-role-permission-uat` mutates a safe role fixture and restores state immediately; run it when role/permission behavior changes.
+
+## 30. Phase K Staging Release Runbook Coverage
+
+Runbook:
+
+- `docs/STAGING_RELEASE_RUNBOOK.md`
+
+Static guard:
+
+- `npm run smoke:admin-operator-handoff`
+
+Coverage:
+
+- Confirms the Phase K runbook exists.
+- Confirms the runbook documents `npm run smoke:staging-release-gate`, `npm run smoke:staging-uat`, and `npm run smoke:staging-role-permission-uat`.
+- Confirms the runbook documents Render Build Command `npm install && npx prisma generate`.
+- Confirms the runbook documents Render Start Command `npm start`.
+- Confirms the runbook documents seed command temporary-only policy.
+- Confirms the runbook has no unexpected `undefined`, `NaN`, or `[object Object]` copy.
+- Confirms the runbook does not include static credential-shaped values.
+
+Smoke policy:
+
+- Release gate = run after every deploy.
+- Full UAT = run after seed/reset only.
+- Role Permission UAT = run after role permission changes.
+- Seed command = temporary only.
+- Start Command final = `npm start`.

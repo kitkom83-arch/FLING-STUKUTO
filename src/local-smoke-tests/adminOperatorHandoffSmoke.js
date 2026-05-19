@@ -5,6 +5,7 @@ const path = require("path");
 const ROOT = path.resolve(__dirname, "..", "..");
 const HANDOFF_DOC = path.join(ROOT, "docs", "ADMIN_OPERATOR_HANDOFF_FINAL.md");
 const BROWSER_QA_DOC = path.join(ROOT, "docs", "STAGING_ADMIN_BROWSER_QA.md");
+const RELEASE_RUNBOOK_DOC = path.join(ROOT, "docs", "STAGING_RELEASE_RUNBOOK.md");
 const ADMIN_HTML = path.join(ROOT, "src", "admin-ui", "index.html");
 const ADMIN_JS = path.join(ROOT, "src", "admin-ui", "app.js");
 const WHEEL_HTML = path.join(ROOT, "src", "admin-wheel-ui", "index.html");
@@ -72,9 +73,11 @@ function assertNoAdminForceControls(html, js) {
 
 async function main() {
   assert(fs.existsSync(HANDOFF_DOC), "docs/ADMIN_OPERATOR_HANDOFF_FINAL.md must exist.");
+  assert(fs.existsSync(RELEASE_RUNBOOK_DOC), "docs/STAGING_RELEASE_RUNBOOK.md must exist.");
 
   const handoff = read(HANDOFF_DOC);
   const browserQa = read(BROWSER_QA_DOC);
+  const releaseRunbook = read(RELEASE_RUNBOOK_DOC);
   const adminHtml = read(ADMIN_HTML);
   const adminJs = read(ADMIN_JS);
   const wheelHtml = read(WHEEL_HTML);
@@ -108,10 +111,30 @@ async function main() {
     "F12 Console",
     "Reason is required",
   ]);
+  assertIncludes("Release runbook smoke policy", releaseRunbook, [
+    "npm run smoke:staging-release-gate",
+    "npm run smoke:staging-uat",
+    "npm run smoke:staging-role-permission-uat",
+    "Build Command final = `npm install && npx prisma generate`",
+    "Start Command final = `npm start`",
+    "Seed command = temporary only",
+    "Release gate = run after every deploy",
+    "Full UAT = run after seed/reset only",
+    "Role Permission UAT = run after role permission changes",
+  ]);
+  assertIncludes("Release runbook incident policy", releaseRunbook, [
+    "502 HTML from `/admin/auth/login`",
+    "Cannot find module `express`",
+    "No open ports detected",
+    "Member spin `400`",
+    "No-permission admin credential mismatch",
+    "Start Command is still a seed command",
+  ]);
 
   for (const [label, text] of [
     ["operator handoff doc", handoff],
     ["browser QA doc", browserQa],
+    ["staging release runbook", releaseRunbook],
     ["admin HTML", adminHtml],
     ["admin wheel HTML", wheelHtml],
     ["admin audit HTML", auditHtml],
@@ -165,6 +188,7 @@ async function main() {
 
   assertNoRenderedSensitiveValue("operator handoff doc", handoff);
   assertNoRenderedSensitiveValue("browser QA doc", browserQa);
+  assertNoRenderedSensitiveValue("staging release runbook", releaseRunbook);
   assertNoRenderedSensitiveValue("admin HTML", adminHtml);
   assertNoRenderedSensitiveValue("admin wheel HTML", wheelHtml);
   assertNoRenderedSensitiveValue("admin audit HTML", auditHtml);
@@ -173,6 +197,8 @@ async function main() {
   await runBrowserRoutesSmoke();
 
   console.log("Admin operator handoff doc exists: PASS");
+  console.log("Staging release runbook doc exists: PASS");
+  console.log("Staging release runbook smoke policy: PASS");
   console.log("Admin operator handoff URLs: PASS");
   console.log("Admin operator handoff no static secret values: PASS");
   console.log("Admin operator handoff no unexpected placeholder copy: PASS");
