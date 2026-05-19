@@ -7,6 +7,10 @@ const ROUTES = [
   "/admin/",
   "/admin/roles",
   "/admin/roles/",
+  "/admin/audit-security",
+  "/admin/audit-security/",
+  "/admin/work-schedules",
+  "/admin/work-schedules/",
   "/admin-wheel",
   "/admin-wheel/",
   "/admin/lucky-wheel",
@@ -18,6 +22,8 @@ const REQUIRED_ASSETS = [
   "/admin/work-schedules/styles.css",
   "/admin/roles/app.js",
   "/admin/roles/styles.css",
+  "/admin/audit-security/app.js",
+  "/admin/audit-security/styles.css",
   "/admin-wheel/app.js",
   "/admin-wheel/styles.css",
   "/admin/lucky-wheel/app.js",
@@ -159,8 +165,11 @@ async function main() {
 
     const adminHtml = htmlByRoute.get("/admin");
     const rolesHtml = htmlByRoute.get("/admin/roles");
+    const auditHtml = htmlByRoute.get("/admin/audit-security");
+    const scheduleHtml = htmlByRoute.get("/admin/work-schedules");
     const wheelHtml = htmlByRoute.get("/admin-wheel");
     const adminJs = assets.get("/admin/work-schedules/app.js");
+    const auditJs = assets.get("/admin/audit-security/app.js");
     const wheelJs = assets.get("/admin-wheel/app.js");
 
     assertIncludes("/admin HTML", adminHtml, [
@@ -169,8 +178,17 @@ async function main() {
       "Permission Guard",
       "Role Management",
       "Work Schedule",
+      "Audit Security",
       "Audit History",
+      "/admin-wheel/",
       "Response leak warning",
+    ]);
+    assertIncludes("/admin/work-schedules HTML", scheduleHtml, [
+      "Admin Role Management",
+      "Admin schedule list",
+      "Emergency override",
+      "Audit history",
+      "Confirm schedule change",
     ]);
     assertIncludes("/admin/roles HTML", rolesHtml, [
       "Admin Role Management",
@@ -192,6 +210,24 @@ async function main() {
       "wheel.view",
       "confirmAction",
       "validateReasonBeforeConfirm",
+    ]);
+    assertIncludes("/admin/audit-security HTML", auditHtml, [
+      'data-page="admin-audit-security"',
+      "Audit Security Report",
+      "Admin audit logs",
+      "Security Events",
+      "Safe metadata",
+      "audit-filter-toolbar",
+      "audit-secret-redaction",
+    ]);
+    assertIncludes("Admin audit security JS", auditJs, [
+      "/admin/permissions/me",
+      "/admin/audit-logs",
+      "/admin/audit-logs/summary",
+      "/admin/security-events",
+      "/admin/security-events/summary",
+      "sanitizeValue",
+      "reasonFor",
     ]);
     assertIncludes("/admin-wheel HTML", wheelHtml, [
       'data-page="admin-lucky-wheel"',
@@ -237,6 +273,8 @@ async function main() {
 
     console.log("Admin browser route /admin contract: PASS");
     console.log("Admin browser route /admin/roles contract: PASS");
+    console.log("Admin browser route /admin/audit-security contract: PASS");
+    console.log("Admin browser route /admin/work-schedules contract: PASS");
     console.log("Admin browser route /admin-wheel contract: PASS");
     console.log("Admin browser static asset contract: PASS");
     console.log("Admin browser no forbidden rendered copy/static secret values: PASS");
@@ -250,8 +288,12 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  console.error("Admin browser routes smoke: FAIL");
-  console.error(error.message);
-  process.exitCode = 1;
-});
+if (require.main === module) {
+  main().catch((error) => {
+    console.error("Admin browser routes smoke: FAIL");
+    console.error(error.message);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = { main };

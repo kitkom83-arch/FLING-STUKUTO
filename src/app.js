@@ -12,6 +12,7 @@ const { asyncHandler, notFound, errorHandler } = require("./middleware/errorHand
 const app = express();
 const adminUiDir = path.join(__dirname, "admin-ui");
 const adminWheelUiDir = path.join(__dirname, "admin-wheel-ui");
+const adminAuditUiDir = path.join(__dirname, "admin-audit-ui");
 
 function corsOrigin(origin, callback) {
   if (!origin && env.nodeEnv === "development") return callback(null, true);
@@ -40,6 +41,10 @@ function sendAdminWheelUi(_req, res) {
   res.sendFile(path.join(adminWheelUiDir, "index.html"));
 }
 
+function sendAdminAuditUi(_req, res) {
+  res.sendFile(path.join(adminAuditUiDir, "index.html"));
+}
+
 function staticGetHead(route, dir, options) {
   const middleware = express.static(dir, options);
   app.use(route, (req, res, next) => {
@@ -58,10 +63,11 @@ app.use("/admin", (req, res, next) => {
 });
 
 app.get(["/admin", "/admin/", "/admin/roles", "/admin/roles/", "/admin/work-schedules", "/admin/work-schedules/"], sendAdminUi);
+app.get(["/admin/audit-security", "/admin/audit-security/"], sendAdminAuditUi);
 app.get(["/admin-wheel", "/admin-wheel/", "/admin/lucky-wheel", "/admin/lucky-wheel/"], sendAdminWheelUi);
 staticGetHead("/admin/work-schedules", adminUiDir, { index: "index.html" });
 staticGetHead("/admin/roles", adminUiDir, { index: "index.html" });
-staticGetHead("/admin/audit-security", path.join(__dirname, "admin-audit-ui"), { index: "index.html" });
+staticGetHead("/admin/audit-security", adminAuditUiDir, { index: "index.html" });
 staticGetHead("/admin-wheel", adminWheelUiDir, { index: "index.html" });
 staticGetHead("/admin/lucky-wheel", adminWheelUiDir, { index: "index.html" });
 app.use("/api", routes);

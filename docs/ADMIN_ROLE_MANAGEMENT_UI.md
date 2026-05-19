@@ -495,3 +495,36 @@ The route smoke does not require local admin credentials and does not touch prod
 - Force-logout of already-active sessions must be implemented in a later phase.
 - No schema or migration is added in this phase.
 - Schedule and override login behavior is enforced; force-logout behavior is not enforced until session handling is added.
+
+## 21. Phase I Operator Handoff Notes
+
+Phase I status: Role Management is part of the final admin operator manual browser QA and handoff.
+
+Operator handoff doc:
+
+- `docs/ADMIN_OPERATOR_HANDOFF_FINAL.md`
+
+Manual browser QA:
+
+- Open `/admin/roles`.
+- Confirm role list, permission matrix, `wheel.*` permissions, `admin.audit.view`, and `admin.roles.update`.
+- Confirm Save is disabled without both a permission change and reason.
+- Confirm Reset changes works.
+- Confirm the confirm modal appears before save.
+- Confirm effective permission preview updates before submit.
+- Confirm owner/super_admin protected warning or backend block remains in place.
+- Confirm `admin.role.permissions.update` audit history after a safe non-owner role update/restore.
+
+Role permission runtime UAT:
+
+```powershell
+npm run smoke:staging-role-permission-uat
+```
+
+Static handoff smoke:
+
+```powershell
+npm run smoke:admin-operator-handoff
+```
+
+Render reminder: Start Command must be `npm start`. Seed commands are temporary only and must be changed back to `npm start` after fixture refresh.

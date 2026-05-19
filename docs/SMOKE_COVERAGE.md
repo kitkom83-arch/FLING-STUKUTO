@@ -572,3 +572,31 @@ Confirmed from current docs and scripts:
 10. Run the secret-shaped value scan.
 11. Run `git diff --check`.
 12. Do not commit until checks and smokes pass.
+
+## 28. smoke:admin-operator-handoff Coverage
+
+Phase I status: Admin UI End-to-End Manual QA + Operator Handoff Final.
+
+Script:
+
+- `src/local-smoke-tests/adminOperatorHandoffSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:admin-operator-handoff
+```
+
+Coverage:
+
+- Confirms `docs/ADMIN_OPERATOR_HANDOFF_FINAL.md` exists.
+- Confirms the operator handoff and browser QA docs include `/admin`, `/admin/roles`, `/admin-wheel`, `/admin/audit-security`, and `/admin/work-schedules`.
+- Confirms handoff docs include staging/mock/sandbox scope, no real money, no production database, Render Build Command, Render Start Command, and the key audit actions.
+- Confirms admin UI route/link/selector markers for Role Management, Lucky Wheel, Audit Security, permission matrix, reason field, and confirm modal.
+- Confirms Role Management reason-required copy and protected owner/super_admin guard copy.
+- Confirms Admin Wheel Permission summary, tabs, Reward Claims reason field, reason validation, and confirm action markers.
+- Confirms no unexpected static placeholder copy and no static secret-shaped values in checked docs/assets.
+- Confirms Admin Wheel UI does not expose force reward, force spin, or set-prize-index controls.
+- Runs `adminBrowserRoutesSmoke.js` as a dependency so the route contract for the five Phase I browser routes remains covered.
+
+This smoke is static/contract only. It does not log in, run migrations, seed data, connect to production DB, call live provider/payment/bank/SMS/Slip OCR, or move money. DB-backed runtime smoke may still report BLOCKED or SKIPPED by safety guard when the safe local/staging env is absent.

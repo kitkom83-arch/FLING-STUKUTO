@@ -20,8 +20,9 @@
           <a href="#permissions" class="nav-link active">Permission Guard</a>
           <a href="/admin/roles/" class="nav-link">Role Management</a>
           <a href="#schedule" class="nav-link">Work Schedule</a>
+          <a href="/admin/audit-security/" class="nav-link">Audit Security</a>
           <a href="#audit" class="nav-link">Audit History</a>
-          <a href="/admin/lucky-wheel/" class="nav-link">Lucky Wheel</a>
+          <a href="/admin-wheel/" class="nav-link">Lucky Wheel</a>
         </nav>
       </aside>
 
@@ -163,6 +164,7 @@
                 </section>
               </div>
               <div class="role-save-panel">
+                <p class="note">Audit action: admin.role.permissions.update</p>
                 <div class="field">
                   <label for="role-permission-reason">Reason</label>
                   <textarea id="role-permission-reason" rows="3" maxlength="500" aria-describedby="role-permission-reason-error" placeholder="Required for audit context"></textarea>

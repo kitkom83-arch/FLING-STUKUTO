@@ -380,3 +380,44 @@ Controlled-live testing is not part of local smoke. Use this checklist only afte
 - Use placeholders such as `<STAGING_DATABASE_URL>` or `<PROVIDER_SANDBOX_KEY>` only when a shape is needed.
 - Rotate any secret immediately if it is printed, committed, screenshotted, or shared outside the approved secret store.
 - Confirm secret leak scans pass before handoff.
+
+## Phase I Admin Operator Handoff Final
+
+Phase I status: Admin UI End-to-End Manual QA + Operator Handoff Final is documented for staging/manual browser handoff.
+
+Operator handoff doc:
+
+- `docs/ADMIN_OPERATOR_HANDOFF_FINAL.md`
+
+Final browser pages:
+
+- `/admin`
+- `/admin/roles`
+- `/admin-wheel`
+- `/admin/audit-security`
+- `/admin/work-schedules`
+
+Final manual browser QA checklist:
+
+- Use `docs/STAGING_ADMIN_BROWSER_QA.md`.
+- Confirm route refresh does not return `404`.
+- Confirm tabs, modals, disabled states, access-denied states, and reason validation.
+- Confirm no `undefined`, `NaN`, `[object Object]`, raw credential value, DB connection value, request auth header value, or JWT-shaped value is visible.
+
+Required staging smoke before handoff:
+
+```powershell
+npm run smoke:staging-uat
+npm run smoke:staging-role-permission-uat
+npm run smoke:admin-browser-routes
+npm run smoke:admin-operator-handoff
+```
+
+Render Start Command reminder:
+
+- Normal service Start Command must be `npm start`.
+- Seed commands are temporary only.
+- After any seed deploy, change the Start Command back to `npm start` and redeploy.
+- Do not keep `npm run staging:seed-demo && npm start` as the permanent service command.
+
+Phase I remains staging/mock/sandbox only. No production DB, no real money, no live provider/payment/bank/SMS/Slip OCR, and no real payout are approved.

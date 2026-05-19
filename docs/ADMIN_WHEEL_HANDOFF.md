@@ -142,3 +142,31 @@ Phase F adds browser route QA for `/admin`, `/admin/roles`, and `/admin-wheel`. 
 - Runtime smoke may return SKIPPED when local env values are incomplete.
 - Reward Claims manual claim is limited to pending item rewards and does not perform payout.
 - Browser visual regression is manual for this phase.
+
+## Phase I Operator Handoff Final
+
+Phase I status: Admin Wheel is included in the final admin operator manual browser QA and handoff.
+
+Operator handoff doc:
+
+- `docs/ADMIN_OPERATOR_HANDOFF_FINAL.md`
+
+Final browser checklist for `/admin-wheel`:
+
+- Permission summary shows role and site code.
+- Campaign settings, Rewards management, Reward Claims, Spin history, Reports, and Audit history tabs open.
+- Claim and cancel require a reason.
+- Audit history can show `wheel.memberReward.status.update`, `wheel.reward.update`, and `wheel.campaign.update` when data exists.
+- No force reward, force spin, or set `prizeIndex` control is present.
+- Browser Console has no red errors.
+
+Run before handoff:
+
+```powershell
+npm run smoke:admin-wheel-ui
+npm run smoke:admin-browser-routes
+npm run smoke:admin-operator-handoff
+npm run smoke:staging-uat
+```
+
+Render Start Command must be `npm start`. Use seed commands only as a temporary fixture refresh, then change the Start Command back to `npm start`.

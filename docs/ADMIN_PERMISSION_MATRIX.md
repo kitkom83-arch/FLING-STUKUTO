@@ -89,3 +89,30 @@ Runtime coverage:
 - Scans every response for password/token/secret markers, `DATABASE_URL`, raw authorization/JWT-shaped values, raw stack traces, and credential-shaped PostgreSQL URLs.
 
 The fixture-dependent sections may report `SKIPPED` only when their env values are absent. For Phase H closure, run `npm run staging:seed-demo` after setting the fixture env so the no-permission negative reports `PASS (403)`, valid minimal change reports PASS, restore reports PASS, and audit log reports PASS. Negative path, catalog, role detail, protected-role checks, staging safety guard, reason guard, audit requirement, and leak scan must not be weakened.
+
+## Phase I Manual QA Matrix Notes
+
+Phase I status: final operator handoff uses this matrix as the permission reference for `/admin/roles`, `/admin-wheel`, `/admin/audit-security`, and `/admin/work-schedules`.
+
+Operator handoff doc:
+
+- `docs/ADMIN_OPERATOR_HANDOFF_FINAL.md`
+
+Manual browser QA must confirm:
+
+- `admin.roles.update` writes require reason and audit.
+- `admin.role.permissions.update` is visible in audit history after a safe role permission change/restore.
+- `wheel.claims.status.update` writes require reason and audit.
+- `wheel.memberReward.status.update`, `wheel.reward.update`, and `wheel.campaign.update` are visible in audit history when data exists.
+- `admin.workSchedule.update` and override writes require reason and audit.
+- Owner/super_admin permission assignment remains protected.
+- Normal roles cannot gain owner/super_admin behavior through the matrix.
+
+Smoke commands:
+
+```powershell
+npm run smoke:admin-operator-handoff
+npm run smoke:staging-role-permission-uat
+```
+
+Render Start Command must be `npm start`. Any seed command is temporary only and must be reverted to `npm start` after fixture setup.

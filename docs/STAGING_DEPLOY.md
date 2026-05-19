@@ -608,3 +608,33 @@ Do not deploy until the user provides and confirms:
 - Rollback owner and deploy owner.
 
 Do not proceed with live providers, production database, production credentials, real bank rails, real payment rails, or real-money transfer from this guide.
+
+## Phase I Admin Operator Handoff Final
+
+Phase I status: final admin operator browser QA/handoff is covered by `docs/ADMIN_OPERATOR_HANDOFF_FINAL.md` and `docs/STAGING_ADMIN_BROWSER_QA.md`.
+
+After deploy, open and refresh:
+
+- `/admin`
+- `/admin/roles`
+- `/admin-wheel`
+- `/admin/audit-security`
+- `/admin/work-schedules`
+
+Run:
+
+```powershell
+npm run smoke:admin-browser-routes
+npm run smoke:admin-operator-handoff
+npm run smoke:staging-uat
+npm run smoke:staging-role-permission-uat
+```
+
+Render command reminders:
+
+- Build Command: `npm install && npx prisma generate`.
+- Start Command: `npm start`.
+- Seed commands are temporary only.
+- After any temporary seed deploy, change Start Command back to `npm start` and redeploy.
+
+Do not use production DB, real money, live provider/payment/bank/SMS/Slip OCR, or real payout for this phase.
