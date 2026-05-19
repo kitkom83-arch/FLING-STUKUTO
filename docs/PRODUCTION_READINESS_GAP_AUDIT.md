@@ -133,10 +133,11 @@ Use placeholder names only in docs. Real values must live only in the approved p
 ## 6. Required smoke/test before production
 
 - `smoke:staging-release-readiness`
+- `smoke:production-safety-dry-run`
 - `smoke:staging-release-gate`
 - `smoke:staging-role-permission-uat`
 - `smoke:staging-uat` after seed/reset
-- New production dry-run smoke must be designed in a future phase and must not use real money.
+- Production safety dry-run smoke is static/local only in Phase N and must not use real money.
 - DB backup/restore drill.
 - Incident drill.
 - Role permission negative drill.
@@ -182,11 +183,21 @@ No-Go if admin RBAC negative tests fail.
 
 ## 9. Recommended next phases
 
-- Phase N: Production Safety Dry Run Design.
+- Phase N: Production Safety Dry Run Design (`docs/PRODUCTION_SAFETY_DRY_RUN.md` and `npm run smoke:production-safety-dry-run`).
 - Phase O: Monitoring + Backup Runbook.
 - Phase P: Financial Ledger Hardening.
 - Phase Q: Provider Integration Contract Tests.
 - Phase R: Operator Training Pack.
+
+## Phase N production safety dry-run
+
+`docs/PRODUCTION_SAFETY_DRY_RUN.md` is a dry-run design and planning artifact only. Run the static guard with:
+
+```powershell
+npm run smoke:production-safety-dry-run
+```
+
+This does not deploy production, does not run production smoke, does not use production DB, does not use real money, does not enable live provider/payment/bank/SMS/Slip OCR, and does not approve real payout. Status remains NOT production ready.
 
 ## Final boundary
 

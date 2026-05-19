@@ -41,6 +41,14 @@ npm run smoke:production-readiness-audit
 
 - `docs/PRODUCTION_READINESS_GAP_AUDIT.md` is a readiness audit only. It is not a production deployment, does not change the staging safety boundary, and does not approve production DB, real money, live provider/payment/bank/SMS/Slip OCR, or real payout.
 
+- Run the Phase N production safety dry-run guard when rehearsing the pre-production safety plan:
+
+```powershell
+npm run smoke:production-safety-dry-run
+```
+
+- `docs/PRODUCTION_SAFETY_DRY_RUN.md` is a dry-run design only. It is not a production deployment, not production smoke, and not approval for production DB, real money, live provider/payment/bank/SMS/Slip OCR, or real payout.
+
 - Render Build Command must be `npm install && npx prisma generate`.
 - Render Start Command must be `npm start`.
 - Seed command is temporary only. Do not leave it in the Render Start Command.
@@ -253,6 +261,7 @@ Clear-History
 
 - Release readiness = static/local policy smoke before deploy.
 - Production readiness audit = static/local pre-production planning artifact only.
+- Production safety dry-run = static/local planning artifact only.
 - Release gate = run after every deploy.
 - Full UAT = run after seed/reset only.
 - Role Permission UAT = run after role permission changes.
@@ -272,3 +281,15 @@ npm run smoke:production-readiness-audit
 ```
 
 This audit is not a production deployment and not a production smoke. It keeps provider/payment/bank/SMS/Slip OCR, Lucky Wheel payout, real money payout, production DB, and frontend-selected spin result boundaries off until later certified phases.
+
+## Phase N Production Safety Dry Run
+
+Phase N status: `docs/PRODUCTION_SAFETY_DRY_RUN.md` records the production safety dry-run design for checklist, ENV, smoke, rollback, incident, backup/restore, monitoring, RBAC, and financial safety rehearsal.
+
+Run the static guard:
+
+```powershell
+npm run smoke:production-safety-dry-run
+```
+
+This dry-run is not a production deployment and not a production smoke. It is a planning artifact only. It must not use production DB, real money, live provider/payment/bank/SMS/Slip OCR, or real payout, and it keeps staging mock/sandbox boundaries unchanged.
