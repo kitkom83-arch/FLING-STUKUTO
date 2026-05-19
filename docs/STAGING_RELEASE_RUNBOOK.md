@@ -73,6 +73,14 @@ npm run smoke:financial-ledger-runtime-contract
 
 - `docs/FINANCIAL_LEDGER_RUNTIME_DATA_CONTRACT.md` is a docs/static smoke contract only. It is not a runtime implementation, not a migration, not a production deployment, and not approval for production DB, real money, live provider/payment/bank/SMS/Slip OCR, or live payout.
 
+- Run the Phase R financial ledger schema dry-run guard when reviewing proposed ledger schema, migration dry-run, rollback, backfill, and Phase S Go/No-Go plans:
+
+```powershell
+npm run smoke:financial-ledger-schema-dry-run
+```
+
+- `docs/FINANCIAL_LEDGER_SCHEMA_DRY_RUN_PLAN.md` is a docs/static smoke plan only. It must not create Prisma migrations in Phase R, must not change `prisma/schema.prisma`, and is not approval for production DB, real money, live provider/payment/bank/SMS/Slip OCR, or live payout.
+
 - Render Build Command must be `npm install && npx prisma generate`.
 - Render Start Command must be `npm start`.
 - Seed command is temporary only. Do not leave it in the Render Start Command.
@@ -289,6 +297,7 @@ Clear-History
 - Monitoring + backup runbook = static/local planning artifact only.
 - Financial ledger hardening plan = static/local planning artifact only.
 - Financial ledger runtime data contract = static/local contract artifact only.
+- Financial ledger schema dry-run plan = static/local planning artifact only.
 - Release gate = run after every deploy.
 - Full UAT = run after seed/reset only.
 - Role Permission UAT = run after role permission changes.
@@ -356,3 +365,15 @@ npm run smoke:financial-ledger-runtime-contract
 ```
 
 This contract is docs/static smoke only. It does not require Render deploy because there is no runtime behavior change. It does not require seed because there is no DB, schema, or fixture change. It does not require staging runtime smoke because no runtime route, controller, service, provider, payment, bank, SMS, Slip OCR, or payout behavior changed.
+
+## Phase R Financial Ledger Schema Dry-Run Plan
+
+Phase R status: `docs/FINANCIAL_LEDGER_SCHEMA_DRY_RUN_PLAN.md` records proposed ledger schema, migration dry-run, rollback, data backfill, idempotency, reconciliation, admin adjustment dual-control, index/constraint, and Phase S Go/No-Go plans.
+
+Run the static guard:
+
+```powershell
+npm run smoke:financial-ledger-schema-dry-run
+```
+
+This plan is docs/static smoke only. It does not require Render deploy because there is no runtime behavior change. It does not require seed because there is no real DB, schema, fixture, or seed data change. It does not require staging runtime smoke because no runtime route, controller, service, provider, payment, bank, SMS, Slip OCR, or payout behavior changed. Prisma migration creation is forbidden in Phase R.

@@ -53,6 +53,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `monitoringBackupRunbookSmoke.js` | `npm run smoke:monitoring-backup-runbook` | No | No | No | Runs static contract | Phase O static guard for `docs/MONITORING_BACKUP_RUNBOOK.md`, monitoring targets, SEV1-SEV4 severity/routing, log retention, backup, restore drill, incident checklist/template, Go/No-Go monitoring criteria, next phases, and secret-shaped value scan. It is a planning artifact only and does not deploy production. |
 | `financialLedgerHardeningSmoke.js` | `npm run smoke:financial-ledger-hardening` | No | No | No | Runs static contract | Phase P static guard for `docs/FINANCIAL_LEDGER_HARDENING_PLAN.md`, financial safety boundaries, ledger model requirements, deposit/withdraw hardening, reconciliation, audit trail, dual control, financial Go/No-Go criteria, next phases, and secret-shaped value scan. It is a planning artifact only and does not deploy production. |
 | `financialLedgerRuntimeContractSmoke.js` | `npm run smoke:financial-ledger-runtime-contract` | No | No | No | Runs static contract | Phase Q static guard for `docs/FINANCIAL_LEDGER_RUNTIME_DATA_CONTRACT.md`, ledger account model, ledger entry data contract, transaction type contract, API contract draft, idempotency, dual control, reconciliation, audit event, error contract, Phase R Go/No-Go criteria, and secret-shaped value scan. It is docs/static smoke only and does not change runtime money flow. |
+| `financialLedgerSchemaDryRunSmoke.js` | `npm run smoke:financial-ledger-schema-dry-run` | No | No | No | Runs static contract | Phase R static guard for `docs/FINANCIAL_LEDGER_SCHEMA_DRY_RUN_PLAN.md`, proposed schema draft, ledger accounts/entries/transactions, idempotency schema, reconciliation schema, admin adjustment dual-control schema, index/constraint plan, migration dry-run plan, rollback plan, data backfill plan, Phase S Go/No-Go criteria, and secret-shaped value scan. It is docs/static smoke only and does not create a Prisma migration or change `schema.prisma`. |
 | `stagingReleaseGateSmoke.js` | `npm run smoke:staging-release-gate` | No local Prisma access | Hosted staging API | Yes | Syntax check only | Non-destructive hosted staging release gate for health/database/modes, admin auth negative, demo admin auth, admin read-only endpoints, browser route contract, demo member auth, member Lucky Wheel read-only config/history/my-rewards, role-permission read-only audit checks, and leak scan. It does not consume member spin and does not PATCH role permissions. |
 | `stagingDbCheck.js` | `npm run staging:db:check` | Staging/test DB | No | No | Syntax check only | Staging DB connection, required tables, demo site/admin/member readiness, fixture counts, and safe output. |
 | `stagingDemoSeed.js` | `npm run staging:seed-demo` | Staging/test DB | No | `STAGING_DEMO_ADMIN_PASSWORD` | Syntax check only | Staging-safe UAT demo admin upsert from `STAGING_DEMO_ADMIN_EMAIL`, super-admin site access, Lucky Wheel demo member refresh, optional Phase H no-permission admin fixture, optional Phase H safe role/admin fixture, sanitized audit log, SKIP-SAFE on missing local demo admin env, and no credential output. |
@@ -439,6 +440,7 @@ Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not 
   - `monitoringBackupRunbookSmoke.js`
   - `financialLedgerHardeningSmoke.js`
   - `financialLedgerRuntimeContractSmoke.js`
+  - `financialLedgerSchemaDryRunSmoke.js`
   - `wheelSmoke.js`
   - `stagingPreflight.js`
   - `stagingSmoke.js`
@@ -464,6 +466,7 @@ Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not 
 - `npm run smoke:monitoring-backup-runbook`.
 - `npm run smoke:financial-ledger-hardening`.
 - `npm run smoke:financial-ledger-runtime-contract`.
+- `npm run smoke:financial-ledger-schema-dry-run`.
 - `npm run smoke:wheel`.
 - Secret grep over package/docs/README/local-smoke related files.
 - `git diff --check`.
@@ -531,6 +534,7 @@ npm run smoke:production-safety-dry-run
 npm run smoke:monitoring-backup-runbook
 npm run smoke:financial-ledger-hardening
 npm run smoke:financial-ledger-runtime-contract
+npm run smoke:financial-ledger-schema-dry-run
 npm run smoke:staging-role-permission-uat
 npm run smoke:money-flow
 npm run smoke:core-api
@@ -886,6 +890,43 @@ Boundary:
 - It is not a production deployment and not production smoke.
 - It does not change runtime money flow.
 - It does not add a migration.
+- It does not require deploy.
+- It does not require seed.
+- It does not use production DB, real money, live provider/payment/bank/SMS/Slip OCR, or live payout.
+
+## 37. smoke:financial-ledger-schema-dry-run Coverage
+
+Phase R status: Ledger schema dry-run design + migration plan only.
+
+Document:
+
+- `docs/FINANCIAL_LEDGER_SCHEMA_DRY_RUN_PLAN.md`
+
+Script:
+
+- `src/local-smoke-tests/financialLedgerSchemaDryRunSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:financial-ledger-schema-dry-run
+```
+
+Coverage:
+
+- Confirms the Phase R schema dry-run plan exists.
+- Confirms the document says `NOT production ready`, schema dry-run design only, migration plan only, no Prisma migration, no `schema.prisma` change, no production DB, no real money, no live payout, and no live provider/payment/bank/SMS/Slip OCR.
+- Confirms proposed schema draft includes `ledger_accounts`, `ledger_entries`, `ledger_transactions`, `ledger_idempotency_keys`, `ledger_reconciliation_runs`, `ledger_reconciliation_items`, `ledger_admin_adjustment_requests`, `ledger_balance_snapshots`, and `ledger_audit_links`.
+- Confirms ledger account, ledger entry, ledger transaction, idempotency, reconciliation, admin adjustment dual-control, index/constraint, migration dry-run, rollback, data backfill, Phase S Go/No-Go, and Phase S/T/U/V next-phase sections are documented.
+- Scans the plan for secret-shaped values, rendered placeholder output, production-ready wording, live-payout-enabled wording, and production-DB-enabled wording.
+
+Boundary:
+
+- Scope is docs + static smoke only.
+- It is not a production deployment and not production smoke.
+- It does not change runtime money flow.
+- It does not create a Prisma migration.
+- It does not change `prisma/schema.prisma`.
 - It does not require deploy.
 - It does not require seed.
 - It does not use production DB, real money, live provider/payment/bank/SMS/Slip OCR, or live payout.
