@@ -192,7 +192,7 @@ Go is blocked until every P0 item is complete, reviewed, and backed by dry-run e
 ## 11. Next Actions After Dry-Run
 
 - Phase O: Monitoring + Backup Runbook.
-- Phase P: Financial Ledger Hardening.
+- Phase P: Financial Ledger Hardening (`docs/FINANCIAL_LEDGER_HARDENING_PLAN.md` and `npm run smoke:financial-ledger-hardening`).
 - Phase Q: Provider Integration Contract Tests.
 - Phase R: Operator Training Pack.
 
@@ -207,6 +207,18 @@ npm run smoke:monitoring-backup-runbook
 ```
 
 This runbook is a planning artifact only. It is not a production deployment, not production smoke, and not approval for production DB, real money, live provider/payment/bank/SMS/Slip OCR, or real payout. Status remains NOT production ready.
+
+## Phase P Financial Ledger Hardening Plan
+
+`docs/FINANCIAL_LEDGER_HARDENING_PLAN.md` records the financial ledger hardening, reconciliation, money-affecting audit trail, dual control, deposit/withdraw certification, and no-live-payout boundary design.
+
+Run the static guard:
+
+```powershell
+npm run smoke:financial-ledger-hardening
+```
+
+This plan is a planning artifact only. It is not a production deployment, not production smoke, and not approval for production DB, real money, live provider/payment/bank/SMS/Slip OCR, or live payout. Status remains NOT production ready.
 
 ## Final Boundary
 

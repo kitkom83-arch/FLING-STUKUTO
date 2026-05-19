@@ -196,9 +196,21 @@ Go remains blocked until monitoring, alerting, backup, restore drill, log retent
 
 ## 12. Next Phases
 
-- Phase P: Financial Ledger Hardening.
+- Phase P: Financial Ledger Hardening (`docs/FINANCIAL_LEDGER_HARDENING_PLAN.md` and `npm run smoke:financial-ledger-hardening`).
 - Phase Q: Provider Integration Contract Tests.
 - Phase R: Operator Training Pack.
+
+## Phase P Financial Ledger Hardening Plan
+
+`docs/FINANCIAL_LEDGER_HARDENING_PLAN.md` records the financial ledger hardening, reconciliation, money-affecting audit trail, dual control, deposit/withdraw certification, and no-live-payout planning artifact.
+
+Run the static guard:
+
+```powershell
+npm run smoke:financial-ledger-hardening
+```
+
+This plan is not a production deployment, not production smoke, and not approval for production DB, real money, live provider/payment/bank/SMS/Slip OCR, or live payout. It keeps the current staging/mock/sandbox boundary unchanged.
 
 ## Final Boundary
 

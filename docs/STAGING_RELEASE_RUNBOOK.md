@@ -57,6 +57,14 @@ npm run smoke:monitoring-backup-runbook
 
 - `docs/MONITORING_BACKUP_RUNBOOK.md` is a planning artifact only. It is not a production deployment, not production smoke, and not approval for production DB, real money, live provider/payment/bank/SMS/Slip OCR, or real payout.
 
+- Run the Phase P financial ledger hardening guard when planning reconciliation, audit trail, dual control, deposit/withdraw certification, and no-live-payout boundaries:
+
+```powershell
+npm run smoke:financial-ledger-hardening
+```
+
+- `docs/FINANCIAL_LEDGER_HARDENING_PLAN.md` is a planning artifact only. It is not a production deployment, not production smoke, and not approval for production DB, real money, live provider/payment/bank/SMS/Slip OCR, or live payout.
+
 - Render Build Command must be `npm install && npx prisma generate`.
 - Render Start Command must be `npm start`.
 - Seed command is temporary only. Do not leave it in the Render Start Command.
@@ -271,6 +279,7 @@ Clear-History
 - Production readiness audit = static/local pre-production planning artifact only.
 - Production safety dry-run = static/local planning artifact only.
 - Monitoring + backup runbook = static/local planning artifact only.
+- Financial ledger hardening plan = static/local planning artifact only.
 - Release gate = run after every deploy.
 - Full UAT = run after seed/reset only.
 - Role Permission UAT = run after role permission changes.
@@ -314,3 +323,15 @@ npm run smoke:monitoring-backup-runbook
 ```
 
 This runbook is not a production deployment and not a production smoke. It is a planning artifact only. It must not use production DB, real money, live provider/payment/bank/SMS/Slip OCR, or real payout, and it keeps staging mock/sandbox boundaries unchanged.
+
+## Phase P Financial Ledger Hardening Plan
+
+Phase P status: `docs/FINANCIAL_LEDGER_HARDENING_PLAN.md` records financial ledger hardening, reconciliation, money-affecting audit trail, dual control, deposit/withdraw certification, reports/tests required before production, and no-live-payout criteria.
+
+Run the static guard:
+
+```powershell
+npm run smoke:financial-ledger-hardening
+```
+
+This plan is not a production deployment and not a production smoke. It is a planning artifact only. It must not use production DB, real money, live provider/payment/bank/SMS/Slip OCR, or live payout, and it keeps staging mock/sandbox boundaries unchanged.

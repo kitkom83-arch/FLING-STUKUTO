@@ -51,6 +51,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `productionReadinessAuditSmoke.js` | `npm run smoke:production-readiness-audit` | No | No | No | Runs static contract | Phase M static guard for `docs/PRODUCTION_READINESS_GAP_AUDIT.md`, production blocker coverage, mock/sandbox boundary wording, Go/No-Go criteria, P0 checklist, recommended next phases, and secret-shaped value scan. It is a pre-production planning artifact only and does not deploy production. |
 | `productionSafetyDryRunSmoke.js` | `npm run smoke:production-safety-dry-run` | No | No | No | Runs static contract | Phase N static guard for `docs/PRODUCTION_SAFETY_DRY_RUN.md`, hard safety boundaries, ENV checklist, dry-run smoke plan, rollback, backup/restore, monitoring/alerting, financial safety, Go/No-Go rehearsal, next phases, and secret-shaped value scan. It is a planning artifact only and does not deploy production. |
 | `monitoringBackupRunbookSmoke.js` | `npm run smoke:monitoring-backup-runbook` | No | No | No | Runs static contract | Phase O static guard for `docs/MONITORING_BACKUP_RUNBOOK.md`, monitoring targets, SEV1-SEV4 severity/routing, log retention, backup, restore drill, incident checklist/template, Go/No-Go monitoring criteria, next phases, and secret-shaped value scan. It is a planning artifact only and does not deploy production. |
+| `financialLedgerHardeningSmoke.js` | `npm run smoke:financial-ledger-hardening` | No | No | No | Runs static contract | Phase P static guard for `docs/FINANCIAL_LEDGER_HARDENING_PLAN.md`, financial safety boundaries, ledger model requirements, deposit/withdraw hardening, reconciliation, audit trail, dual control, financial Go/No-Go criteria, next phases, and secret-shaped value scan. It is a planning artifact only and does not deploy production. |
 | `stagingReleaseGateSmoke.js` | `npm run smoke:staging-release-gate` | No local Prisma access | Hosted staging API | Yes | Syntax check only | Non-destructive hosted staging release gate for health/database/modes, admin auth negative, demo admin auth, admin read-only endpoints, browser route contract, demo member auth, member Lucky Wheel read-only config/history/my-rewards, role-permission read-only audit checks, and leak scan. It does not consume member spin and does not PATCH role permissions. |
 | `stagingDbCheck.js` | `npm run staging:db:check` | Staging/test DB | No | No | Syntax check only | Staging DB connection, required tables, demo site/admin/member readiness, fixture counts, and safe output. |
 | `stagingDemoSeed.js` | `npm run staging:seed-demo` | Staging/test DB | No | `STAGING_DEMO_ADMIN_PASSWORD` | Syntax check only | Staging-safe UAT demo admin upsert from `STAGING_DEMO_ADMIN_EMAIL`, super-admin site access, Lucky Wheel demo member refresh, optional Phase H no-permission admin fixture, optional Phase H safe role/admin fixture, sanitized audit log, SKIP-SAFE on missing local demo admin env, and no credential output. |
@@ -435,6 +436,7 @@ Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not 
   - `productionReadinessAuditSmoke.js`
   - `productionSafetyDryRunSmoke.js`
   - `monitoringBackupRunbookSmoke.js`
+  - `financialLedgerHardeningSmoke.js`
   - `wheelSmoke.js`
   - `stagingPreflight.js`
   - `stagingSmoke.js`
@@ -458,6 +460,7 @@ Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not 
 - `npm run smoke:production-readiness-audit`.
 - `npm run smoke:production-safety-dry-run`.
 - `npm run smoke:monitoring-backup-runbook`.
+- `npm run smoke:financial-ledger-hardening`.
 - `npm run smoke:wheel`.
 - Secret grep over package/docs/README/local-smoke related files.
 - `git diff --check`.
@@ -523,6 +526,7 @@ npm run smoke:staging-release-readiness
 npm run smoke:production-readiness-audit
 npm run smoke:production-safety-dry-run
 npm run smoke:monitoring-backup-runbook
+npm run smoke:financial-ledger-hardening
 npm run smoke:staging-role-permission-uat
 npm run smoke:money-flow
 npm run smoke:core-api
@@ -814,3 +818,35 @@ Boundary:
 - It is not a production deployment and not production smoke.
 - It does not use production DB, real money, live provider/payment/bank/SMS/Slip OCR, or real payout.
 - It does not change runtime behavior, auth guard, permission guard, staging safety guard, provider modes, NODE_ENV, or APP_ENV.
+
+## 35. smoke:financial-ledger-hardening Coverage
+
+Phase P status: Financial Ledger Hardening Plan.
+
+Document:
+
+- `docs/FINANCIAL_LEDGER_HARDENING_PLAN.md`
+
+Script:
+
+- `src/local-smoke-tests/financialLedgerHardeningSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:financial-ledger-hardening
+```
+
+Coverage:
+
+- Confirms the financial ledger hardening plan exists.
+- Confirms the document says `NOT production ready`, no production DB, no real money, no live provider/payment/bank/SMS/Slip OCR, and no live payout.
+- Confirms hard financial safety boundaries, ledger model requirements, double-entry/balance integrity, deposit hardening, withdraw hardening, admin credit adjustment hardening, promotion/bonus/reward hardening, reconciliation plan, audit trail requirements, dual control plan, reports required before production, tests required before production, Go/No-Go financial criteria, and next phases Phase Q/R/S/T are documented.
+- Scans the plan for secret-shaped values and rendered placeholder output.
+
+Boundary:
+
+- This is a static planning artifact only.
+- It is not a production deployment and not production smoke.
+- It does not use production DB, real money, live provider/payment/bank/SMS/Slip OCR, or live payout.
+- It does not change financial runtime logic, auth guard, permission guard, staging safety guard, provider modes, NODE_ENV, or APP_ENV.

@@ -135,6 +135,7 @@ Use placeholder names only in docs. Real values must live only in the approved p
 - `smoke:staging-release-readiness`
 - `smoke:production-safety-dry-run`
 - `smoke:monitoring-backup-runbook`
+- `smoke:financial-ledger-hardening`
 - `smoke:staging-release-gate`
 - `smoke:staging-role-permission-uat`
 - `smoke:staging-uat` after seed/reset
@@ -186,7 +187,7 @@ No-Go if admin RBAC negative tests fail.
 
 - Phase N: Production Safety Dry Run Design (`docs/PRODUCTION_SAFETY_DRY_RUN.md` and `npm run smoke:production-safety-dry-run`).
 - Phase O: Monitoring + Backup Runbook (`docs/MONITORING_BACKUP_RUNBOOK.md` and `npm run smoke:monitoring-backup-runbook`).
-- Phase P: Financial Ledger Hardening.
+- Phase P: Financial Ledger Hardening (`docs/FINANCIAL_LEDGER_HARDENING_PLAN.md` and `npm run smoke:financial-ledger-hardening`).
 - Phase Q: Provider Integration Contract Tests.
 - Phase R: Operator Training Pack.
 
@@ -209,6 +210,16 @@ npm run smoke:monitoring-backup-runbook
 ```
 
 This does not deploy production, does not run production smoke, does not use production DB, does not use real money, does not enable live provider/payment/bank/SMS/Slip OCR, and does not approve real payout. Monitoring, backup, restore drill, log retention, incident owner, rollback path, and response leak alert evidence remain required before any production approval.
+
+## Phase P financial ledger hardening plan
+
+`docs/FINANCIAL_LEDGER_HARDENING_PLAN.md` is a financial ledger, reconciliation, money-affecting audit trail, dual control, deposit/withdraw certification, and no-live-payout planning artifact only. Run the static guard with:
+
+```powershell
+npm run smoke:financial-ledger-hardening
+```
+
+This does not deploy production, does not run production smoke, does not use production DB, does not use real money, does not enable live provider/payment/bank/SMS/Slip OCR, and does not approve live payout. Financial ledger hardening remains required before any production approval.
 
 ## Final boundary
 
