@@ -48,6 +48,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `stagingPreflight.js` | `npm run staging:preflight` | No local Prisma access | Optional | No | Runs local-test dry run | Staging readiness guard for env boundary, database/API target labels, external modes, health contract, and response leak scan. |
 | `stagingSmoke.js` | `npm run smoke:staging` | No local Prisma access | Yes | No | Syntax check only | Hosted staging health contract, safe external mode labels, admin auth negative leak check, and response leak scan. |
 | `stagingReleaseReadinessSmoke.js` | `npm run smoke:staging-release-readiness` | No | No | No | Runs static contract | CI-safe static release readiness guard for package scripts, runbook/docs policy, rollback/incident checklist wording, release gate/full UAT/role UAT command separation, and secret-shaped value scan. It does not call staging. |
+| `productionReadinessAuditSmoke.js` | `npm run smoke:production-readiness-audit` | No | No | No | Runs static contract | Phase M static guard for `docs/PRODUCTION_READINESS_GAP_AUDIT.md`, production blocker coverage, mock/sandbox boundary wording, Go/No-Go criteria, P0 checklist, recommended next phases, and secret-shaped value scan. It is a pre-production planning artifact only and does not deploy production. |
 | `stagingReleaseGateSmoke.js` | `npm run smoke:staging-release-gate` | No local Prisma access | Hosted staging API | Yes | Syntax check only | Non-destructive hosted staging release gate for health/database/modes, admin auth negative, demo admin auth, admin read-only endpoints, browser route contract, demo member auth, member Lucky Wheel read-only config/history/my-rewards, role-permission read-only audit checks, and leak scan. It does not consume member spin and does not PATCH role permissions. |
 | `stagingDbCheck.js` | `npm run staging:db:check` | Staging/test DB | No | No | Syntax check only | Staging DB connection, required tables, demo site/admin/member readiness, fixture counts, and safe output. |
 | `stagingDemoSeed.js` | `npm run staging:seed-demo` | Staging/test DB | No | `STAGING_DEMO_ADMIN_PASSWORD` | Syntax check only | Staging-safe UAT demo admin upsert from `STAGING_DEMO_ADMIN_EMAIL`, super-admin site access, Lucky Wheel demo member refresh, optional Phase H no-permission admin fixture, optional Phase H safe role/admin fixture, sanitized audit log, SKIP-SAFE on missing local demo admin env, and no credential output. |
@@ -429,6 +430,7 @@ Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not 
   - `adminWheelRuntimeSmoke.js`
   - `adminBrowserRoutesSmoke.js`
   - `stagingReleaseReadinessSmoke.js`
+  - `productionReadinessAuditSmoke.js`
   - `wheelSmoke.js`
   - `stagingPreflight.js`
   - `stagingSmoke.js`
@@ -449,6 +451,7 @@ Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not 
 - `npm run smoke:admin-wheel-runtime`.
 - `npm run smoke:admin-browser-routes`.
 - `npm run smoke:staging-release-readiness`.
+- `npm run smoke:production-readiness-audit`.
 - `npm run smoke:wheel`.
 - Secret grep over package/docs/README/local-smoke related files.
 - `git diff --check`.
@@ -511,6 +514,7 @@ npm run smoke:all-local
 npm run staging:preflight
 npm run smoke:staging
 npm run smoke:staging-release-readiness
+npm run smoke:production-readiness-audit
 npm run smoke:staging-role-permission-uat
 npm run smoke:money-flow
 npm run smoke:core-api
@@ -704,3 +708,35 @@ Command separation:
 - Release gate = runtime staging smoke after deploy.
 - Full UAT = after seed/reset only.
 - Role Permission UAT = after role/permission changes.
+
+## 32. smoke:production-readiness-audit Coverage
+
+Phase M status: Production-Readiness Gap Audit.
+
+Document:
+
+- `docs/PRODUCTION_READINESS_GAP_AUDIT.md`
+
+Script:
+
+- `src/local-smoke-tests/productionReadinessAuditSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:production-readiness-audit
+```
+
+Coverage:
+
+- Confirms the production readiness audit document exists.
+- Confirms the document says `NOT production ready`.
+- Confirms production blockers, mock/sandbox boundaries, Go/No-Go criteria, P0 checklist, and recommended next phases are documented.
+- Confirms the document includes no real money, no production DB, and no live provider boundary wording.
+- Scans the audit doc for secret-shaped values and unexpected rendered placeholders.
+
+Boundary:
+
+- This is a static readiness audit only.
+- It is not a production deployment, not a production smoke, and not approval to connect live provider/payment/bank/SMS/Slip OCR.
+- It does not change the staging safety boundary and does not use production DB, real money, live integrations, or real payout.

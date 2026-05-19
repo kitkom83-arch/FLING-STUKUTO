@@ -33,6 +33,14 @@ gh run list --branch main --limit 10
 npm run smoke:staging-release-readiness
 ```
 
+- Run the Phase M production-readiness audit guard when planning pre-production gaps:
+
+```powershell
+npm run smoke:production-readiness-audit
+```
+
+- `docs/PRODUCTION_READINESS_GAP_AUDIT.md` is a readiness audit only. It is not a production deployment, does not change the staging safety boundary, and does not approve production DB, real money, live provider/payment/bank/SMS/Slip OCR, or real payout.
+
 - Render Build Command must be `npm install && npx prisma generate`.
 - Render Start Command must be `npm start`.
 - Seed command is temporary only. Do not leave it in the Render Start Command.
@@ -244,6 +252,7 @@ Clear-History
 ## Final Boundary
 
 - Release readiness = static/local policy smoke before deploy.
+- Production readiness audit = static/local pre-production planning artifact only.
 - Release gate = run after every deploy.
 - Full UAT = run after seed/reset only.
 - Role Permission UAT = run after role permission changes.
@@ -251,3 +260,15 @@ Clear-History
 - Start Command final = `npm start`.
 - Build Command final = `npm install && npx prisma generate`.
 - Staging remains mock/sandbox only.
+
+## Phase M Production-Readiness Gap Audit
+
+Phase M status: `docs/PRODUCTION_READINESS_GAP_AUDIT.md` records the remaining blockers before any production launch decision.
+
+Run the static guard:
+
+```powershell
+npm run smoke:production-readiness-audit
+```
+
+This audit is not a production deployment and not a production smoke. It keeps provider/payment/bank/SMS/Slip OCR, Lucky Wheel payout, real money payout, production DB, and frontend-selected spin result boundaries off until later certified phases.

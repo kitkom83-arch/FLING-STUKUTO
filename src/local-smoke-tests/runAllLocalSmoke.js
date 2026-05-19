@@ -29,7 +29,9 @@ const RELATED_FILES = [
   "src/local-smoke-tests/adminWheelRuntimeSmoke.js",
   "src/local-smoke-tests/adminBrowserRoutesSmoke.js",
   "src/local-smoke-tests/stagingReleaseReadinessSmoke.js",
+  "src/local-smoke-tests/productionReadinessAuditSmoke.js",
   "src/local-smoke-tests/wheelSmoke.js",
+  "docs/PRODUCTION_READINESS_GAP_AUDIT.md",
   "src/admin-wheel-ui/index.html",
   "src/admin-wheel-ui/app.js",
   "src/admin-wheel-ui/styles.css",
@@ -71,6 +73,7 @@ const summary = [
   { key: "adminWheelRuntime", label: "admin-wheel-runtime", status: "PENDING" },
   { key: "adminBrowserRoutes", label: "admin-browser-routes", status: "PENDING" },
   { key: "stagingReleaseReadiness", label: "staging-release-readiness", status: "PENDING" },
+  { key: "productionReadinessAudit", label: "production-readiness-audit", status: "PENDING" },
   { key: "wheel", label: "wheel", status: "PENDING" },
   { key: "responseScan", label: "response leak scan", status: "PENDING" },
   { key: "secretGrep", label: "secret grep", status: "PENDING" },
@@ -172,6 +175,12 @@ const steps = [
     name: "node --check stagingReleaseReadinessSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/stagingReleaseReadinessSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check productionReadinessAuditSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/productionReadinessAuditSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -301,6 +310,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:staging-release-readiness"]),
     summaryKey: "stagingReleaseReadiness",
+  },
+  {
+    name: "npm run smoke:production-readiness-audit",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:production-readiness-audit"]),
+    summaryKey: "productionReadinessAudit",
   },
   {
     name: "npm run smoke:wheel",
