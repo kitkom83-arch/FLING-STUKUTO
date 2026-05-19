@@ -49,6 +49,14 @@ npm run smoke:production-safety-dry-run
 
 - `docs/PRODUCTION_SAFETY_DRY_RUN.md` is a dry-run design only. It is not a production deployment, not production smoke, and not approval for production DB, real money, live provider/payment/bank/SMS/Slip OCR, or real payout.
 
+- Run the Phase O monitoring and backup runbook guard when rehearsing alerting, backup, restore, log retention, and incident escalation:
+
+```powershell
+npm run smoke:monitoring-backup-runbook
+```
+
+- `docs/MONITORING_BACKUP_RUNBOOK.md` is a planning artifact only. It is not a production deployment, not production smoke, and not approval for production DB, real money, live provider/payment/bank/SMS/Slip OCR, or real payout.
+
 - Render Build Command must be `npm install && npx prisma generate`.
 - Render Start Command must be `npm start`.
 - Seed command is temporary only. Do not leave it in the Render Start Command.
@@ -262,6 +270,7 @@ Clear-History
 - Release readiness = static/local policy smoke before deploy.
 - Production readiness audit = static/local pre-production planning artifact only.
 - Production safety dry-run = static/local planning artifact only.
+- Monitoring + backup runbook = static/local planning artifact only.
 - Release gate = run after every deploy.
 - Full UAT = run after seed/reset only.
 - Role Permission UAT = run after role permission changes.
@@ -293,3 +302,15 @@ npm run smoke:production-safety-dry-run
 ```
 
 This dry-run is not a production deployment and not a production smoke. It is a planning artifact only. It must not use production DB, real money, live provider/payment/bank/SMS/Slip OCR, or real payout, and it keeps staging mock/sandbox boundaries unchanged.
+
+## Phase O Monitoring + Backup Runbook
+
+Phase O status: `docs/MONITORING_BACKUP_RUNBOOK.md` records monitoring targets, alert severity/routing, log retention, backup, restore drill, incident response, incident templates, and monitoring Go/No-Go criteria.
+
+Run the static guard:
+
+```powershell
+npm run smoke:monitoring-backup-runbook
+```
+
+This runbook is not a production deployment and not a production smoke. It is a planning artifact only. It must not use production DB, real money, live provider/payment/bank/SMS/Slip OCR, or real payout, and it keeps staging mock/sandbox boundaries unchanged.

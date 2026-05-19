@@ -19,7 +19,7 @@ Backup platform options:
 - VPS or VM with Node.js 18.18+ and a dedicated staging PostgreSQL.
 - Docker-ready host if the image runs `npm run start`, has Node.js 18.18+, receives environment variables from a secret store, and connects only to staging PostgreSQL.
 
-Use `docs/STAGING_RENDER.md` for the recommended Render setup, env checklist, deploy checklist, GO/NO-GO criteria, rollback note, and optional placeholder `render.yaml` template. Use `docs/STAGING_PLATFORM_CHECKLIST.md` for backup platform build/start/env/rollback steps. Use `docs/STAGING_DEPLOY_DECISION.md` for go/no-go approval. Use `docs/STAGING_ROLLBACK.md` for the rollback and incident runbook. Use `docs/STAGING_RELEASE_RUNBOOK.md` for the Phase K staging release, rollback, incident, seed/reset, and smoke policy checklist. Use `docs/PRODUCTION_READINESS_GAP_AUDIT.md` only as a Phase M pre-production planning artifact; it is not a production deployment guide and does not change the staging safety boundary. Use `docs/PRODUCTION_SAFETY_DRY_RUN.md` only as a Phase N dry-run design and planning artifact; it is not a production deployment, does not use production DB, does not use real money, and does not enable live provider/payment/bank/SMS/Slip OCR.
+Use `docs/STAGING_RENDER.md` for the recommended Render setup, env checklist, deploy checklist, GO/NO-GO criteria, rollback note, and optional placeholder `render.yaml` template. Use `docs/STAGING_PLATFORM_CHECKLIST.md` for backup platform build/start/env/rollback steps. Use `docs/STAGING_DEPLOY_DECISION.md` for go/no-go approval. Use `docs/STAGING_ROLLBACK.md` for the rollback and incident runbook. Use `docs/STAGING_RELEASE_RUNBOOK.md` for the Phase K staging release, rollback, incident, seed/reset, and smoke policy checklist. Use `docs/PRODUCTION_READINESS_GAP_AUDIT.md` only as a Phase M pre-production planning artifact; it is not a production deployment guide and does not change the staging safety boundary. Use `docs/PRODUCTION_SAFETY_DRY_RUN.md` only as a Phase N dry-run design and planning artifact; it is not a production deployment, does not use production DB, does not use real money, and does not enable live provider/payment/bank/SMS/Slip OCR. Use `docs/MONITORING_BACKUP_RUNBOOK.md` only as a Phase O monitoring, alerting, backup, restore, log retention, and incident escalation planning artifact; it is not a production deployment and does not approve production DB, real money, or live provider/payment/bank/SMS/Slip OCR.
 
 Do not deploy this backend as a static site. Do not use Netlify static hosting for the API process.
 
@@ -769,3 +769,17 @@ npm run smoke:production-safety-dry-run
 ```
 
 This dry-run is a planning artifact only. It is not a production deployment, not production smoke, and not approval for production DB, real money, live provider/payment/bank/SMS/Slip OCR, or real payout. It rehearses checklist, ENV, smoke, rollback, backup/restore, monitoring, incident, RBAC, and financial safety planning while staging remains mock/sandbox only.
+
+## Phase O Monitoring + Backup Runbook
+
+Phase O adds a static monitoring and backup runbook:
+
+- `docs/MONITORING_BACKUP_RUNBOOK.md`
+
+Run the static guard:
+
+```powershell
+npm run smoke:monitoring-backup-runbook
+```
+
+This runbook is a planning artifact only. It is not a production deployment, not production smoke, and not approval for production DB, real money, live provider/payment/bank/SMS/Slip OCR, or real payout. It rehearses monitoring targets, alert severity/routing, log retention, backup, restore drill, incident response, and monitoring Go/No-Go criteria while staging remains mock/sandbox only.

@@ -134,6 +134,7 @@ Use placeholder names only in docs. Real values must live only in the approved p
 
 - `smoke:staging-release-readiness`
 - `smoke:production-safety-dry-run`
+- `smoke:monitoring-backup-runbook`
 - `smoke:staging-release-gate`
 - `smoke:staging-role-permission-uat`
 - `smoke:staging-uat` after seed/reset
@@ -184,7 +185,7 @@ No-Go if admin RBAC negative tests fail.
 ## 9. Recommended next phases
 
 - Phase N: Production Safety Dry Run Design (`docs/PRODUCTION_SAFETY_DRY_RUN.md` and `npm run smoke:production-safety-dry-run`).
-- Phase O: Monitoring + Backup Runbook.
+- Phase O: Monitoring + Backup Runbook (`docs/MONITORING_BACKUP_RUNBOOK.md` and `npm run smoke:monitoring-backup-runbook`).
 - Phase P: Financial Ledger Hardening.
 - Phase Q: Provider Integration Contract Tests.
 - Phase R: Operator Training Pack.
@@ -198,6 +199,16 @@ npm run smoke:production-safety-dry-run
 ```
 
 This does not deploy production, does not run production smoke, does not use production DB, does not use real money, does not enable live provider/payment/bank/SMS/Slip OCR, and does not approve real payout. Status remains NOT production ready.
+
+## Phase O monitoring + backup runbook
+
+`docs/MONITORING_BACKUP_RUNBOOK.md` is a monitoring, alerting, backup, restore drill, log retention, and incident escalation planning artifact only. Run the static guard with:
+
+```powershell
+npm run smoke:monitoring-backup-runbook
+```
+
+This does not deploy production, does not run production smoke, does not use production DB, does not use real money, does not enable live provider/payment/bank/SMS/Slip OCR, and does not approve real payout. Monitoring, backup, restore drill, log retention, incident owner, rollback path, and response leak alert evidence remain required before any production approval.
 
 ## Final boundary
 

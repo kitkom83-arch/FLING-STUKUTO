@@ -50,6 +50,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `stagingReleaseReadinessSmoke.js` | `npm run smoke:staging-release-readiness` | No | No | No | Runs static contract | CI-safe static release readiness guard for package scripts, runbook/docs policy, rollback/incident checklist wording, release gate/full UAT/role UAT command separation, and secret-shaped value scan. It does not call staging. |
 | `productionReadinessAuditSmoke.js` | `npm run smoke:production-readiness-audit` | No | No | No | Runs static contract | Phase M static guard for `docs/PRODUCTION_READINESS_GAP_AUDIT.md`, production blocker coverage, mock/sandbox boundary wording, Go/No-Go criteria, P0 checklist, recommended next phases, and secret-shaped value scan. It is a pre-production planning artifact only and does not deploy production. |
 | `productionSafetyDryRunSmoke.js` | `npm run smoke:production-safety-dry-run` | No | No | No | Runs static contract | Phase N static guard for `docs/PRODUCTION_SAFETY_DRY_RUN.md`, hard safety boundaries, ENV checklist, dry-run smoke plan, rollback, backup/restore, monitoring/alerting, financial safety, Go/No-Go rehearsal, next phases, and secret-shaped value scan. It is a planning artifact only and does not deploy production. |
+| `monitoringBackupRunbookSmoke.js` | `npm run smoke:monitoring-backup-runbook` | No | No | No | Runs static contract | Phase O static guard for `docs/MONITORING_BACKUP_RUNBOOK.md`, monitoring targets, SEV1-SEV4 severity/routing, log retention, backup, restore drill, incident checklist/template, Go/No-Go monitoring criteria, next phases, and secret-shaped value scan. It is a planning artifact only and does not deploy production. |
 | `stagingReleaseGateSmoke.js` | `npm run smoke:staging-release-gate` | No local Prisma access | Hosted staging API | Yes | Syntax check only | Non-destructive hosted staging release gate for health/database/modes, admin auth negative, demo admin auth, admin read-only endpoints, browser route contract, demo member auth, member Lucky Wheel read-only config/history/my-rewards, role-permission read-only audit checks, and leak scan. It does not consume member spin and does not PATCH role permissions. |
 | `stagingDbCheck.js` | `npm run staging:db:check` | Staging/test DB | No | No | Syntax check only | Staging DB connection, required tables, demo site/admin/member readiness, fixture counts, and safe output. |
 | `stagingDemoSeed.js` | `npm run staging:seed-demo` | Staging/test DB | No | `STAGING_DEMO_ADMIN_PASSWORD` | Syntax check only | Staging-safe UAT demo admin upsert from `STAGING_DEMO_ADMIN_EMAIL`, super-admin site access, Lucky Wheel demo member refresh, optional Phase H no-permission admin fixture, optional Phase H safe role/admin fixture, sanitized audit log, SKIP-SAFE on missing local demo admin env, and no credential output. |
@@ -433,6 +434,7 @@ Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not 
   - `stagingReleaseReadinessSmoke.js`
   - `productionReadinessAuditSmoke.js`
   - `productionSafetyDryRunSmoke.js`
+  - `monitoringBackupRunbookSmoke.js`
   - `wheelSmoke.js`
   - `stagingPreflight.js`
   - `stagingSmoke.js`
@@ -455,6 +457,7 @@ Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not 
 - `npm run smoke:staging-release-readiness`.
 - `npm run smoke:production-readiness-audit`.
 - `npm run smoke:production-safety-dry-run`.
+- `npm run smoke:monitoring-backup-runbook`.
 - `npm run smoke:wheel`.
 - Secret grep over package/docs/README/local-smoke related files.
 - `git diff --check`.
@@ -519,6 +522,7 @@ npm run smoke:staging
 npm run smoke:staging-release-readiness
 npm run smoke:production-readiness-audit
 npm run smoke:production-safety-dry-run
+npm run smoke:monitoring-backup-runbook
 npm run smoke:staging-role-permission-uat
 npm run smoke:money-flow
 npm run smoke:core-api
@@ -769,6 +773,40 @@ Coverage:
 - Confirms the document says `NOT production ready`, `dry-run design`, no production DB, no real money, and no live provider/payment/bank/SMS/Slip OCR.
 - Confirms hard safety boundaries, ENV checklist, dry-run smoke plan, rollback dry-run design, backup/restore dry-run design, monitoring/alerting dry-run design, financial safety dry-run, Go/No-Go rehearsal, and next phases Phase O/P/Q/R are documented.
 - Scans the dry-run doc for secret-shaped values and rendered placeholder output.
+
+Boundary:
+
+- This is a static planning artifact only.
+- It is not a production deployment and not production smoke.
+- It does not use production DB, real money, live provider/payment/bank/SMS/Slip OCR, or real payout.
+- It does not change runtime behavior, auth guard, permission guard, staging safety guard, provider modes, NODE_ENV, or APP_ENV.
+
+## 34. smoke:monitoring-backup-runbook Coverage
+
+Phase O status: Monitoring + Backup Runbook.
+
+Document:
+
+- `docs/MONITORING_BACKUP_RUNBOOK.md`
+
+Script:
+
+- `src/local-smoke-tests/monitoringBackupRunbookSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:monitoring-backup-runbook
+```
+
+Coverage:
+
+- Confirms the monitoring backup runbook exists.
+- Confirms the document says `NOT production ready`, no production DB, no real money, and no live provider/payment/bank/SMS/Slip OCR.
+- Confirms monitoring targets include uptime, `/api/health`, API 5xx rate, database connection status, latency, admin/auth/admin-write/role-permission spikes, Lucky Wheel spin failures, wallet/ledger, deposit/withdraw, provider callbacks, queue/job failures, response leak alerts, Render deploy failures, and port binding/no open ports issue.
+- Confirms alert severity levels SEV1-SEV4 and alert routing design are documented.
+- Confirms log retention, backup plan, restore drill plan, incident response checklist, incident templates, Go/No-Go monitoring criteria, and next phases Phase P/Q/R are documented.
+- Scans the runbook for secret-shaped values and rendered placeholder output.
 
 Boundary:
 
