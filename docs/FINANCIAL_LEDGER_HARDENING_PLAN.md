@@ -217,10 +217,10 @@ Go remains blocked until financial ledger invariants, reconciliation evidence, a
 
 ## 16. Next Phases
 
-- Phase Q: Provider Integration Contract Tests.
-- Phase R: Operator Training Pack.
-- Phase S: Financial Reconciliation Report Prototype.
-- Phase T: Dual Control Approval Design.
+- Phase Q: Financial Ledger Runtime Design / Data Contract (`docs/FINANCIAL_LEDGER_RUNTIME_DATA_CONTRACT.md` and `npm run smoke:financial-ledger-runtime-contract`).
+- Phase R: Ledger schema dry-run design + migration plan only.
+- Phase S: Ledger mock runtime harness, no real money.
+- Phase T: Reconciliation mock reports + admin read-only UI.
 
 ## Final Boundary
 

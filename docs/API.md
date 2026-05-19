@@ -473,7 +473,76 @@ Smoke coverage:
 - `npm run smoke:admin-wheel-runtime` covers static HTTP route/assets, unauthenticated `401`, no-permission `403`, admin config/spins/member-rewards reads, member config/spin/history/my-rewards runtime shape, unsafe spin payload rejection, write-without-reason rejection, write-with-reason success for campaign/reward/reward-claim status, audit creation/read through the existing audit endpoint, and response leak scan. It skips safely when local admin/member env is not configured.
 - `npm run smoke:wheel` covers the local/staging safety guard, member config, missing auth, invalid campaign, member result field injection rejection, backend-selected spin result, history, my rewards, daily limit, insufficient points, inactive campaign, stock-zero exclusion, admin reason validation, admin audit reason, admin config/spins, and response leak scan. It skips safely when local runtime env is missing and blocks production-like targets.
 
-## 12. Safety / Negative Contract
+## 12. Financial Ledger Runtime API Contract Draft
+
+Phase Q contract status: draft only, not implemented runtime.
+
+This section mirrors `docs/FINANCIAL_LEDGER_RUNTIME_DATA_CONTRACT.md`. It is docs/static smoke only. It does not enable real money, does not enable live payout, does not use production DB, does not add a Prisma migration, and does not implement runtime ledger routes.
+
+Safety boundaries:
+
+- No real money.
+- No live payout.
+- No production DB.
+- No live provider/payment/bank/SMS/Slip OCR.
+- No frontend money calculation authority.
+- No admin direct balance mutation without ledger, audit, and dual control.
+- No secret values, raw auth material, or database connection text in docs/logs/responses.
+
+Draft admin endpoints:
+
+| Method | Path | Auth | Permission | Contract notes |
+| --- | --- | --- | --- | --- |
+| GET | `/admin/ledger/entries` | Admin + site access | `ledger.view` or `reports.view` | Read-only ledger list. No idempotency key required. No secret response. |
+| GET | `/admin/ledger/entries/:id` | Admin + site access | `ledger.view` or `reports.view` | Read-only ledger entry detail. No secret response. |
+| GET | `/admin/ledger/reconciliation` | Admin + site access | `ledger.reconciliation.view` or `reports.view` | Read-only reconciliation summary draft. |
+| GET | `/admin/ledger/member/:memberId` | Admin + site access | `ledger.view` or `members.view` | Read-only member ledger/balance draft. |
+| POST | `/admin/ledger/admin-adjustment/request` | Admin + site access | `ledger.adjustment.request` | Money-affecting draft write. Requires idempotency key, reason, maker audit, and no direct balance mutation. |
+| POST | `/admin/ledger/admin-adjustment/:id/approve` | Admin + site access | `ledger.adjustment.approve` | Requires checker audit, no self-approval, idempotency, and dual control. |
+| POST | `/admin/ledger/admin-adjustment/:id/reject` | Admin + site access | `ledger.adjustment.approve` | Requires checker audit, no self-approval, idempotency, and reason. |
+
+Draft member endpoints:
+
+| Method | Path | Auth | Permission | Contract notes |
+| --- | --- | --- | --- | --- |
+| GET | `/member/ledger/history` | Member | Own member scope | Read-only member ledger history. Server-calculated values only. |
+| GET | `/member/wallet/balance` | Member | Own member scope | Read-only balance summary. Frontend must not calculate authoritative balance. |
+
+Draft internal/mock endpoints:
+
+| Method | Path | Auth | Permission | Contract notes |
+| --- | --- | --- | --- | --- |
+| POST | `/internal/mock-ledger/deposit-credit` | Internal mock guard | Mock-only internal permission | Mock/staging/sandbox only. Requires idempotency and audit. |
+| POST | `/internal/mock-ledger/withdraw-reserve` | Internal mock guard | Mock-only internal permission | Mock/staging/sandbox only. Requires idempotency and audit. |
+| POST | `/internal/mock-ledger/reversal` | Internal mock guard | Mock-only internal permission | Mock/staging/sandbox only. Creates explicit reversal entry draft. |
+
+Draft response shape:
+
+```json
+{
+  "success": true,
+  "data": {
+    "status": "draft_contract"
+  }
+}
+```
+
+Draft error shape:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "validation_error",
+    "message": "Safe error message",
+    "correlationId": "safe-correlation-reference"
+  }
+}
+```
+
+Draft error codes include `validation_error`, `unauthorized`, `forbidden`, `idempotency_conflict`, `insufficient_balance`, `ledger_write_failed`, `reconciliation_mismatch`, `dual_control_required`, `live_payout_disabled`, `provider_live_disabled`, and `production_db_blocked`.
+
+## 13. Safety / Negative Contract
 
 Verified by `src/local-smoke-tests/financialNegativeSmoke.js`:
 
@@ -491,7 +560,7 @@ Verified by `src/local-smoke-tests/financialNegativeSmoke.js`:
 - Admin logs exist once for `deposit.approve`, `withdraw.approve`, and `withdraw.mark_paid`.
 - Responses scanned by the script must not expose secret-shaped values, auth values, DB URLs, password/token/secret markers, `undefined`, or `NaN`.
 
-## 13. Smoke Test Coverage Map
+## 14. Smoke Test Coverage Map
 
 | Command | What it checks | Needs running API | Needs local DB | GitHub Actions status |
 | --- | --- | --- | --- | --- |
@@ -511,7 +580,7 @@ Verified by `src/local-smoke-tests/financialNegativeSmoke.js`:
 
 GitHub Actions does not run DB-backed local smoke flows because those require a running local API and safe local/test PostgreSQL fixture setup.
 
-## 14. Error Status Contract
+## 15. Error Status Contract
 
 Status codes verified from code:
 
@@ -524,7 +593,7 @@ Status codes verified from code:
 - `409`: no confirmed route currently returns `409`; duplicate/conflict behavior currently maps to `400`.
 - `500`: should not occur for expected validation and negative money-flow cases. Negative smoke treats 5xx as unsafe.
 
-## 15. Mock / Sandbox Boundaries
+## 16. Mock / Sandbox Boundaries
 
 - Game provider uses `MockGameProviderAdapter`.
 - Payment/bank money flow is manual local approval through API and admin actions.
@@ -538,7 +607,7 @@ Status codes verified from code:
 - Do not log or document real DB URLs, passwords, tokens, provider secrets, API keys, or raw provider payloads.
 - RBAC controls admin API access only. It does not enable real provider, payment, bank, SMS, Slip OCR, or production credential flows.
 
-## 16. Developer Notes
+## 17. Developer Notes
 
 Run local API:
 
@@ -585,7 +654,7 @@ Secret rules:
 - Do not connect real provider/payment/bank systems from local smoke or mock endpoints.
 - Do not run migrations, seed, smoke, or safety tests against production.
 
-## 17. Known Coverage Gaps
+## 18. Known Coverage Gaps
 
 - Config POST/PUT endpoints are intentionally not covered by `smoke:admin-reports-config` because that smoke is read-only for config safety.
 - Real provider integrations are not covered.
