@@ -38,6 +38,7 @@ const RELATED_FILES = [
   "src/local-smoke-tests/financialLedgerMockRuntimeHarnessSmoke.js",
   "src/local-smoke-tests/financialLedgerReconciliationMockReportsSmoke.js",
   "src/local-smoke-tests/financialLedgerLiveIntegrationCertificationSmoke.js",
+  "src/local-smoke-tests/financialLedgerStagingDryRunMigrationSmoke.js",
   "src/ledger-mock/financialLedgerMockHarness.js",
   "src/ledger-mock/financialLedgerReconciliationMockReports.js",
   "src/admin-reconciliation-readonly-ui/index.html",
@@ -109,6 +110,11 @@ const summary = [
   {
     key: "financialLedgerLiveIntegrationCertification",
     label: "financial-ledger-live-integration-certification",
+    status: "PENDING",
+  },
+  {
+    key: "financialLedgerStagingDryRunMigration",
+    label: "financial-ledger-staging-dry-run-migration",
     status: "PENDING",
   },
   { key: "wheel", label: "wheel", status: "PENDING" },
@@ -284,6 +290,12 @@ const steps = [
     name: "node --check financialLedgerLiveIntegrationCertificationSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/financialLedgerLiveIntegrationCertificationSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check financialLedgerStagingDryRunMigrationSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/financialLedgerStagingDryRunMigrationSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -467,6 +479,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:financial-ledger-live-integration-certification"]),
     summaryKey: "financialLedgerLiveIntegrationCertification",
+  },
+  {
+    name: "npm run smoke:financial-ledger-staging-dry-run-migration",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:financial-ledger-staging-dry-run-migration"]),
+    summaryKey: "financialLedgerStagingDryRunMigration",
   },
   {
     name: "npm run smoke:wheel",

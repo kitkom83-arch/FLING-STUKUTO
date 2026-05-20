@@ -105,6 +105,14 @@ npm run smoke:financial-ledger-live-integration-certification
 
 - `docs/FINANCIAL_LEDGER_LIVE_INTEGRATION_CERTIFICATION_CHECKLIST.md` is docs/checklist/static smoke only. Phase U does not require Render deploy because there is no runtime behavior change. It does not require seed because there is no DB, schema, or fixture change. It does not require staging runtime smoke because no route, controller, service, provider, payment, bank, SMS, Slip OCR, payout, deposit, withdraw, provider callback, admin-credit, migration, schema, seed, or runtime behavior changed. Do not use production DB, do not enable live payout, do not enable live provider/payment/bank/SMS/Slip OCR, and do not make migration/schema/seed/runtime changes. Phase V requires explicit approval before it can start.
 
+- Run the Phase V financial ledger staging dry-run migration guard when reviewing staging/disposable migration dry-run evidence:
+
+```powershell
+npm run smoke:financial-ledger-staging-dry-run-migration
+```
+
+- Phase V is dry-run only. `docs/FINANCIAL_LEDGER_STAGING_DRY_RUN_MIGRATION_PLAN.md`, `docs/FINANCIAL_LEDGER_STAGING_BACKUP_RESTORE_PROOF.md`, and `docs/FINANCIAL_LEDGER_STAGING_ROLLBACK_PROOF.md` are staging/disposable DB only artifacts. No deploy without explicit approval. No seed without explicit approval. No production DB. If a staging/disposable DB is missing, record NOT EXECUTED and do not fabricate migration, backup/restore, or rollback proof.
+
 - Render Build Command must be `npm install && npx prisma generate`.
 - Render Start Command must be `npm start`.
 - Seed command is temporary only. Do not leave it in the Render Start Command.
@@ -438,3 +446,41 @@ npm run smoke:financial-ledger-live-integration-certification
 ```
 
 This phase does not require Render deploy because it is docs/checklist/static smoke only and there is no runtime behavior change. It does not require seed because there is no DB, schema, fixture, or seed data change. It does not require staging runtime smoke because no route, controller, service, provider, payment, bank, SMS, Slip OCR, payout, deposit, withdraw, provider callback, admin-credit, migration, schema, seed, or runtime behavior changed. It must not use production DB, must not enable live payout, must not enable live provider/payment/bank/SMS/Slip OCR, and must not make migration/schema/seed/runtime changes. Phase V requires explicit approval before it can start.
+
+## Phase V Financial Ledger Staging Dry-Run Migration
+
+Phase V status: staging dry-run migration only after explicit approval.
+
+Run the static guard:
+
+```powershell
+npm run smoke:financial-ledger-staging-dry-run-migration
+```
+
+Phase V is dry-run only and staging/disposable DB only. It is not a Render deploy, not a seed/reset, not a production migration, not a runtime money-flow change, not real money, not live payout, and not live provider/payment/bank/SMS/Slip OCR.
+
+Evidence to collect:
+
+- repo preflight result
+- Safe CI PASS result
+- reviewed Phase P/Q/R/S/T/U docs
+- env classification as staging/disposable only
+- redacted connection info only
+- `prisma migrate diff` dry-run summary when safely executed
+- backup/restore proof result or NOT EXECUTED
+- rollback proof result or NOT EXECUTED
+- smoke result
+- no secret output confirmation
+
+If staging DB is missing, record NOT EXECUTED for dry-run, backup/restore proof, and rollback proof. Do not connect to another target as a substitute.
+
+Stop conditions:
+
+- target looks production-like
+- target cannot be classified as staging/disposable
+- schema diff is unexpected
+- backup/restore cannot be proven safely
+- rollback cannot be proven safely
+- any secret-shaped value would be printed
+- any deploy or seed would be required
+- any live provider/payment/bank/SMS/Slip OCR, live payout, or real-money path appears
