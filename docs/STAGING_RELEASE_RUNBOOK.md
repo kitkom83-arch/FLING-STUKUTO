@@ -97,6 +97,14 @@ npm run smoke:financial-ledger-reconciliation-mock-reports
 
 - `docs/FINANCIAL_LEDGER_RECONCILIATION_MOCK_REPORTS.md`, `src/ledger-mock/financialLedgerReconciliationMockReports.js`, and `src/admin-reconciliation-readonly-ui/` are isolated mock reports and static read-only UI artifacts only. Phase T does not require Render deploy because there is no runtime behavior change. It does not require seed because there is no DB, schema, or fixture change. It does not require staging runtime smoke because no route, controller, service, provider, payment, bank, SMS, Slip OCR, payout, deposit, withdraw, provider callback, or admin-credit runtime behavior changed. Do not use production DB, do not enable live payout, do not bind the report/UI to production route/controller/service code, and do not add a real admin write action.
 
+- Run the Phase U financial ledger live integration certification guard when reviewing the final checklist before any later live integration, staging dry-run migration, or DB-backed ledger prototype approval:
+
+```powershell
+npm run smoke:financial-ledger-live-integration-certification
+```
+
+- `docs/FINANCIAL_LEDGER_LIVE_INTEGRATION_CERTIFICATION_CHECKLIST.md` is docs/checklist/static smoke only. Phase U does not require Render deploy because there is no runtime behavior change. It does not require seed because there is no DB, schema, or fixture change. It does not require staging runtime smoke because no route, controller, service, provider, payment, bank, SMS, Slip OCR, payout, deposit, withdraw, provider callback, admin-credit, migration, schema, seed, or runtime behavior changed. Do not use production DB, do not enable live payout, do not enable live provider/payment/bank/SMS/Slip OCR, and do not make migration/schema/seed/runtime changes. Phase V requires explicit approval before it can start.
+
 - Render Build Command must be `npm install && npx prisma generate`.
 - Render Start Command must be `npm start`.
 - Seed command is temporary only. Do not leave it in the Render Start Command.
@@ -418,3 +426,15 @@ npm run smoke:financial-ledger-reconciliation-mock-reports
 ```
 
 This phase does not require Render deploy because the reports and UI are isolated and there is no runtime behavior change. It does not require seed because there is no DB, schema, fixture, or seed data change. It does not require staging runtime smoke because no route, controller, service, provider, payment, bank, SMS, Slip OCR, payout, deposit, withdraw, provider callback, or admin-credit runtime behavior changed. It must not use production DB, must not enable live payout, must not bind reports/UI to production route/controller/service code, and must not add a real admin write action.
+
+## Phase U Financial Ledger Live Integration Certification Checklist
+
+Phase U status: `docs/FINANCIAL_LEDGER_LIVE_INTEGRATION_CERTIFICATION_CHECKLIST.md` records the certification checklist before any live integration, staging dry-run migration, DB-backed ledger staging prototype, or provider/payment/bank sandbox certification approval.
+
+Run the static guard:
+
+```powershell
+npm run smoke:financial-ledger-live-integration-certification
+```
+
+This phase does not require Render deploy because it is docs/checklist/static smoke only and there is no runtime behavior change. It does not require seed because there is no DB, schema, fixture, or seed data change. It does not require staging runtime smoke because no route, controller, service, provider, payment, bank, SMS, Slip OCR, payout, deposit, withdraw, provider callback, admin-credit, migration, schema, seed, or runtime behavior changed. It must not use production DB, must not enable live payout, must not enable live provider/payment/bank/SMS/Slip OCR, and must not make migration/schema/seed/runtime changes. Phase V requires explicit approval before it can start.

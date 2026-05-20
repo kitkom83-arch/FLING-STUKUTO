@@ -56,6 +56,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `financialLedgerSchemaDryRunSmoke.js` | `npm run smoke:financial-ledger-schema-dry-run` | No | No | No | Runs static contract | Phase R static guard for `docs/FINANCIAL_LEDGER_SCHEMA_DRY_RUN_PLAN.md`, proposed schema draft, ledger accounts/entries/transactions, idempotency schema, reconciliation schema, admin adjustment dual-control schema, index/constraint plan, migration dry-run plan, rollback plan, data backfill plan, Phase S Go/No-Go criteria, and secret-shaped value scan. It is docs/static smoke only and does not create a Prisma migration or change `schema.prisma`. |
 | `financialLedgerMockRuntimeHarnessSmoke.js` | `npm run smoke:financial-ledger-mock-runtime-harness` | No | No | No | Runs isolated in-memory mock harness | Phase S runtime-harness guard for `docs/FINANCIAL_LEDGER_MOCK_RUNTIME_HARNESS.md` and `src/ledger-mock/financialLedgerMockHarness.js`, covering mock/in-memory ledger entries, balances, idempotency, dual control, audit redaction, reversal, provider callback sandbox guard, reconciliation, no production DB, no real money, no live payout, no live provider/payment/bank/SMS/Slip OCR, no Prisma migration, no `schema.prisma` change, no route/controller/service integration, no deploy required, and no seed required. |
 | `financialLedgerReconciliationMockReportsSmoke.js` | `npm run smoke:financial-ledger-reconciliation-mock-reports` | No | No | No | Runs isolated mock reports and static UI guard | Phase T reconciliation mock reports + admin read-only UI guard for `docs/FINANCIAL_LEDGER_RECONCILIATION_MOCK_REPORTS.md`, `src/ledger-mock/financialLedgerReconciliationMockReports.js`, and `src/admin-reconciliation-readonly-ui/`, covering mock/in-memory reports, static read-only UI only, no production DB, no real money, no live payout, no live provider/payment/bank/SMS/Slip OCR, no Prisma migration, no `schema.prisma` change, no route/controller/service integration, no deploy required, and no seed required. |
+| `financialLedgerLiveIntegrationCertificationSmoke.js` | `npm run smoke:financial-ledger-live-integration-certification` | No | No | No | Runs docs/checklist static guard | Phase U certification checklist guard for `docs/FINANCIAL_LEDGER_LIVE_INTEGRATION_CERTIFICATION_CHECKLIST.md`, covering docs/checklist/static smoke only, no production DB, no real money, no live payout, no live provider/payment/bank/SMS/Slip OCR, no Prisma migration, no `schema.prisma` change, no seed, no runtime money flow change, no route/controller/service integration, no deploy required, and no seed required. |
 | `stagingReleaseGateSmoke.js` | `npm run smoke:staging-release-gate` | No local Prisma access | Hosted staging API | Yes | Syntax check only | Non-destructive hosted staging release gate for health/database/modes, admin auth negative, demo admin auth, admin read-only endpoints, browser route contract, demo member auth, member Lucky Wheel read-only config/history/my-rewards, role-permission read-only audit checks, and leak scan. It does not consume member spin and does not PATCH role permissions. |
 | `stagingDbCheck.js` | `npm run staging:db:check` | Staging/test DB | No | No | Syntax check only | Staging DB connection, required tables, demo site/admin/member readiness, fixture counts, and safe output. |
 | `stagingDemoSeed.js` | `npm run staging:seed-demo` | Staging/test DB | No | `STAGING_DEMO_ADMIN_PASSWORD` | Syntax check only | Staging-safe UAT demo admin upsert from `STAGING_DEMO_ADMIN_EMAIL`, super-admin site access, Lucky Wheel demo member refresh, optional Phase H no-permission admin fixture, optional Phase H safe role/admin fixture, sanitized audit log, SKIP-SAFE on missing local demo admin env, and no credential output. |
@@ -1019,6 +1020,45 @@ Boundary:
 - No live provider/payment/bank/SMS/Slip OCR.
 - No Prisma migration.
 - No `schema.prisma` change.
+- No route/controller/service integration.
+- No deploy required.
+- No seed required.
+
+## 40. smoke:financial-ledger-live-integration-certification Coverage
+
+Phase U status: Certification checklist before any live integration.
+
+Document:
+
+- `docs/FINANCIAL_LEDGER_LIVE_INTEGRATION_CERTIFICATION_CHECKLIST.md`
+
+Script:
+
+- `src/local-smoke-tests/financialLedgerLiveIntegrationCertificationSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:financial-ledger-live-integration-certification
+```
+
+Coverage:
+
+- Confirms the Phase U live integration certification checklist exists and says `NOT production ready`.
+- Confirms the document covers production DB isolation, real-money/live payout boundaries, provider/payment/bank/SMS/Slip OCR certification, ledger runtime certification, dual control, audit/redaction, reconciliation, backup/restore, monitoring, API/response contracts, staging dry-run migration readiness, DB-backed ledger staging prototype readiness, final Go/No-Go matrix, and Phase V/W/X/Y next phases.
+- Scans the checklist for secret-shaped values, rendered placeholder output, production-ready wording, live-payout-enabled wording, production-DB-enabled wording, and real-money-enabled wording.
+
+Boundary:
+
+- Scope is docs/checklist/static smoke only.
+- No production DB.
+- No real money.
+- No live payout.
+- No live provider/payment/bank/SMS/Slip OCR.
+- No Prisma migration.
+- No `schema.prisma` change.
+- No seed.
+- No runtime money flow change.
 - No route/controller/service integration.
 - No deploy required.
 - No seed required.

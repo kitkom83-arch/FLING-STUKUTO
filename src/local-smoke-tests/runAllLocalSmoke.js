@@ -37,6 +37,7 @@ const RELATED_FILES = [
   "src/local-smoke-tests/financialLedgerSchemaDryRunSmoke.js",
   "src/local-smoke-tests/financialLedgerMockRuntimeHarnessSmoke.js",
   "src/local-smoke-tests/financialLedgerReconciliationMockReportsSmoke.js",
+  "src/local-smoke-tests/financialLedgerLiveIntegrationCertificationSmoke.js",
   "src/ledger-mock/financialLedgerMockHarness.js",
   "src/ledger-mock/financialLedgerReconciliationMockReports.js",
   "src/admin-reconciliation-readonly-ui/index.html",
@@ -51,6 +52,7 @@ const RELATED_FILES = [
   "docs/FINANCIAL_LEDGER_SCHEMA_DRY_RUN_PLAN.md",
   "docs/FINANCIAL_LEDGER_MOCK_RUNTIME_HARNESS.md",
   "docs/FINANCIAL_LEDGER_RECONCILIATION_MOCK_REPORTS.md",
+  "docs/FINANCIAL_LEDGER_LIVE_INTEGRATION_CERTIFICATION_CHECKLIST.md",
   "src/admin-wheel-ui/index.html",
   "src/admin-wheel-ui/app.js",
   "src/admin-wheel-ui/styles.css",
@@ -102,6 +104,11 @@ const summary = [
   {
     key: "financialLedgerReconciliationMockReports",
     label: "financial-ledger-reconciliation-mock-reports",
+    status: "PENDING",
+  },
+  {
+    key: "financialLedgerLiveIntegrationCertification",
+    label: "financial-ledger-live-integration-certification",
     status: "PENDING",
   },
   { key: "wheel", label: "wheel", status: "PENDING" },
@@ -271,6 +278,12 @@ const steps = [
     name: "node --check financialLedgerReconciliationMockReportsSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/financialLedgerReconciliationMockReportsSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check financialLedgerLiveIntegrationCertificationSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/financialLedgerLiveIntegrationCertificationSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -448,6 +461,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:financial-ledger-reconciliation-mock-reports"]),
     summaryKey: "financialLedgerReconciliationMockReports",
+  },
+  {
+    name: "npm run smoke:financial-ledger-live-integration-certification",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:financial-ledger-live-integration-certification"]),
+    summaryKey: "financialLedgerLiveIntegrationCertification",
   },
   {
     name: "npm run smoke:wheel",
