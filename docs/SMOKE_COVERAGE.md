@@ -54,6 +54,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `financialLedgerHardeningSmoke.js` | `npm run smoke:financial-ledger-hardening` | No | No | No | Runs static contract | Phase P static guard for `docs/FINANCIAL_LEDGER_HARDENING_PLAN.md`, financial safety boundaries, ledger model requirements, deposit/withdraw hardening, reconciliation, audit trail, dual control, financial Go/No-Go criteria, next phases, and secret-shaped value scan. It is a planning artifact only and does not deploy production. |
 | `financialLedgerRuntimeContractSmoke.js` | `npm run smoke:financial-ledger-runtime-contract` | No | No | No | Runs static contract | Phase Q static guard for `docs/FINANCIAL_LEDGER_RUNTIME_DATA_CONTRACT.md`, ledger account model, ledger entry data contract, transaction type contract, API contract draft, idempotency, dual control, reconciliation, audit event, error contract, Phase R Go/No-Go criteria, and secret-shaped value scan. It is docs/static smoke only and does not change runtime money flow. |
 | `financialLedgerSchemaDryRunSmoke.js` | `npm run smoke:financial-ledger-schema-dry-run` | No | No | No | Runs static contract | Phase R static guard for `docs/FINANCIAL_LEDGER_SCHEMA_DRY_RUN_PLAN.md`, proposed schema draft, ledger accounts/entries/transactions, idempotency schema, reconciliation schema, admin adjustment dual-control schema, index/constraint plan, migration dry-run plan, rollback plan, data backfill plan, Phase S Go/No-Go criteria, and secret-shaped value scan. It is docs/static smoke only and does not create a Prisma migration or change `schema.prisma`. |
+| `financialLedgerMockRuntimeHarnessSmoke.js` | `npm run smoke:financial-ledger-mock-runtime-harness` | No | No | No | Runs isolated in-memory mock harness | Phase S runtime-harness guard for `docs/FINANCIAL_LEDGER_MOCK_RUNTIME_HARNESS.md` and `src/ledger-mock/financialLedgerMockHarness.js`, covering mock/in-memory ledger entries, balances, idempotency, dual control, audit redaction, reversal, provider callback sandbox guard, reconciliation, no production DB, no real money, no live payout, no live provider/payment/bank/SMS/Slip OCR, no Prisma migration, no `schema.prisma` change, no route/controller/service integration, no deploy required, and no seed required. |
 | `stagingReleaseGateSmoke.js` | `npm run smoke:staging-release-gate` | No local Prisma access | Hosted staging API | Yes | Syntax check only | Non-destructive hosted staging release gate for health/database/modes, admin auth negative, demo admin auth, admin read-only endpoints, browser route contract, demo member auth, member Lucky Wheel read-only config/history/my-rewards, role-permission read-only audit checks, and leak scan. It does not consume member spin and does not PATCH role permissions. |
 | `stagingDbCheck.js` | `npm run staging:db:check` | Staging/test DB | No | No | Syntax check only | Staging DB connection, required tables, demo site/admin/member readiness, fixture counts, and safe output. |
 | `stagingDemoSeed.js` | `npm run staging:seed-demo` | Staging/test DB | No | `STAGING_DEMO_ADMIN_PASSWORD` | Syntax check only | Staging-safe UAT demo admin upsert from `STAGING_DEMO_ADMIN_EMAIL`, super-admin site access, Lucky Wheel demo member refresh, optional Phase H no-permission admin fixture, optional Phase H safe role/admin fixture, sanitized audit log, SKIP-SAFE on missing local demo admin env, and no credential output. |
@@ -535,6 +536,7 @@ npm run smoke:monitoring-backup-runbook
 npm run smoke:financial-ledger-hardening
 npm run smoke:financial-ledger-runtime-contract
 npm run smoke:financial-ledger-schema-dry-run
+npm run smoke:financial-ledger-mock-runtime-harness
 npm run smoke:staging-role-permission-uat
 npm run smoke:money-flow
 npm run smoke:core-api
@@ -930,3 +932,45 @@ Boundary:
 - It does not require deploy.
 - It does not require seed.
 - It does not use production DB, real money, live provider/payment/bank/SMS/Slip OCR, or live payout.
+
+## 38. smoke:financial-ledger-mock-runtime-harness Coverage
+
+Phase S status: Ledger mock runtime harness, no real money.
+
+Document:
+
+- `docs/FINANCIAL_LEDGER_MOCK_RUNTIME_HARNESS.md`
+
+Harness:
+
+- `src/ledger-mock/financialLedgerMockHarness.js`
+
+Script:
+
+- `src/local-smoke-tests/financialLedgerMockRuntimeHarnessSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:financial-ledger-mock-runtime-harness
+```
+
+Coverage:
+
+- Confirms the Phase S mock runtime harness document exists and says `NOT production ready`.
+- Confirms the harness exists and is isolated from Prisma, database access, network calls, Express routes, runtime controllers, and runtime services.
+- Runs the harness in memory for deposit credit, withdraw reserve failure, withdraw reserve success, paid mock live-payout guard, explicit reversal, idempotency replay, idempotency conflict, admin adjustment reason requirement, no self-approval, dual-control approval, audit redaction, Lucky Wheel reward liability, provider callback sandbox-only guard, and reconciliation report behavior.
+- Scans the doc, harness, smoke, and generated reconciliation report for secret-shaped values and invalid rendered markers.
+
+Boundary:
+
+- Scope is mock/in-memory harness only.
+- No production DB.
+- No real money.
+- No live payout.
+- No live provider/payment/bank/SMS/Slip OCR.
+- No Prisma migration.
+- No `schema.prisma` change.
+- No route/controller/service integration.
+- No deploy required.
+- No seed required.

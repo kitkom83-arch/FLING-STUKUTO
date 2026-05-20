@@ -81,6 +81,14 @@ npm run smoke:financial-ledger-schema-dry-run
 
 - `docs/FINANCIAL_LEDGER_SCHEMA_DRY_RUN_PLAN.md` is a docs/static smoke plan only. It must not create Prisma migrations in Phase R, must not change `prisma/schema.prisma`, and is not approval for production DB, real money, live provider/payment/bank/SMS/Slip OCR, or live payout.
 
+- Run the Phase S financial ledger mock runtime harness guard when reviewing isolated in-memory ledger logic:
+
+```powershell
+npm run smoke:financial-ledger-mock-runtime-harness
+```
+
+- `docs/FINANCIAL_LEDGER_MOCK_RUNTIME_HARNESS.md` and `src/ledger-mock/financialLedgerMockHarness.js` are isolated mock harness artifacts only. Phase S does not require Render deploy because there is no runtime behavior change. It does not require seed because there is no DB, schema, or fixture change. It does not require staging runtime smoke because no route, controller, service, provider, payment, bank, SMS, Slip OCR, or payout behavior changed. Do not use production DB, do not enable live payout, and do not bind the harness to production route/controller/service code.
+
 - Render Build Command must be `npm install && npx prisma generate`.
 - Render Start Command must be `npm start`.
 - Seed command is temporary only. Do not leave it in the Render Start Command.
@@ -298,6 +306,7 @@ Clear-History
 - Financial ledger hardening plan = static/local planning artifact only.
 - Financial ledger runtime data contract = static/local contract artifact only.
 - Financial ledger schema dry-run plan = static/local planning artifact only.
+- Financial ledger mock runtime harness = isolated in-memory local smoke only.
 - Release gate = run after every deploy.
 - Full UAT = run after seed/reset only.
 - Role Permission UAT = run after role permission changes.
@@ -377,3 +386,15 @@ npm run smoke:financial-ledger-schema-dry-run
 ```
 
 This plan is docs/static smoke only. It does not require Render deploy because there is no runtime behavior change. It does not require seed because there is no real DB, schema, fixture, or seed data change. It does not require staging runtime smoke because no runtime route, controller, service, provider, payment, bank, SMS, Slip OCR, or payout behavior changed. Prisma migration creation is forbidden in Phase R.
+
+## Phase S Financial Ledger Mock Runtime Harness
+
+Phase S status: `docs/FINANCIAL_LEDGER_MOCK_RUNTIME_HARNESS.md` records the isolated mock runtime harness for in-memory ledger logic only, and `src/ledger-mock/financialLedgerMockHarness.js` implements the local harness.
+
+Run the local guard:
+
+```powershell
+npm run smoke:financial-ledger-mock-runtime-harness
+```
+
+This phase does not require Render deploy because the harness is isolated and there is no runtime behavior change. It does not require seed because there is no DB, schema, fixture, or seed data change. It does not require staging runtime smoke because no route, controller, service, provider, payment, bank, SMS, Slip OCR, or payout behavior changed. It must not use production DB, must not enable live payout, and must not bind the harness to production route/controller/service code.
