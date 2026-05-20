@@ -89,6 +89,14 @@ npm run smoke:financial-ledger-mock-runtime-harness
 
 - `docs/FINANCIAL_LEDGER_MOCK_RUNTIME_HARNESS.md` and `src/ledger-mock/financialLedgerMockHarness.js` are isolated mock harness artifacts only. Phase S does not require Render deploy because there is no runtime behavior change. It does not require seed because there is no DB, schema, or fixture change. It does not require staging runtime smoke because no route, controller, service, provider, payment, bank, SMS, Slip OCR, or payout behavior changed. Do not use production DB, do not enable live payout, and do not bind the harness to production route/controller/service code.
 
+- Run the Phase T financial ledger reconciliation mock reports guard when reviewing isolated mock reports and the local static read-only admin UI:
+
+```powershell
+npm run smoke:financial-ledger-reconciliation-mock-reports
+```
+
+- `docs/FINANCIAL_LEDGER_RECONCILIATION_MOCK_REPORTS.md`, `src/ledger-mock/financialLedgerReconciliationMockReports.js`, and `src/admin-reconciliation-readonly-ui/` are isolated mock reports and static read-only UI artifacts only. Phase T does not require Render deploy because there is no runtime behavior change. It does not require seed because there is no DB, schema, or fixture change. It does not require staging runtime smoke because no route, controller, service, provider, payment, bank, SMS, Slip OCR, payout, deposit, withdraw, provider callback, or admin-credit runtime behavior changed. Do not use production DB, do not enable live payout, do not bind the report/UI to production route/controller/service code, and do not add a real admin write action.
+
 - Render Build Command must be `npm install && npx prisma generate`.
 - Render Start Command must be `npm start`.
 - Seed command is temporary only. Do not leave it in the Render Start Command.
@@ -398,3 +406,15 @@ npm run smoke:financial-ledger-mock-runtime-harness
 ```
 
 This phase does not require Render deploy because the harness is isolated and there is no runtime behavior change. It does not require seed because there is no DB, schema, fixture, or seed data change. It does not require staging runtime smoke because no route, controller, service, provider, payment, bank, SMS, Slip OCR, or payout behavior changed. It must not use production DB, must not enable live payout, and must not bind the harness to production route/controller/service code.
+
+## Phase T Financial Ledger Reconciliation Mock Reports
+
+Phase T status: `docs/FINANCIAL_LEDGER_RECONCILIATION_MOCK_REPORTS.md` records isolated reconciliation mock reports, and `src/admin-reconciliation-readonly-ui/` provides a local static read-only admin UI.
+
+Run the local guard:
+
+```powershell
+npm run smoke:financial-ledger-reconciliation-mock-reports
+```
+
+This phase does not require Render deploy because the reports and UI are isolated and there is no runtime behavior change. It does not require seed because there is no DB, schema, fixture, or seed data change. It does not require staging runtime smoke because no route, controller, service, provider, payment, bank, SMS, Slip OCR, payout, deposit, withdraw, provider callback, or admin-credit runtime behavior changed. It must not use production DB, must not enable live payout, must not bind reports/UI to production route/controller/service code, and must not add a real admin write action.

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Financial Reconciliation Mock Reports</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Phase T</p>
+        <h1>Financial Reconciliation Mock Reports</h1>
+      </div>
+      <div class="boundary-strip" aria-label="Safety boundary">
+        <span>Read-only mock</span>
+        <span>No production DB</span>
+        <span>No real money</span>
+        <span>Live payout disabled</span>
+      </div>
+    </header>
+
+    <main class="layout">
+      <nav
+        class="tabs"
+        id="tabs"
+        aria-label="Report tabs: Overview, Deposits, Withdrawals, Wallet snapshots, Provider variance, Lucky Wheel liability, Admin adjustments, Stale pending, Unmatched entries, Audit coverage"
+      ></nav>
+      <section class="panel">
+        <div class="warning">Mock/read-only only. Mock data only. No production DB. Provider live disabled.</div>
+        <section id="overview" class="overview"></section>
+        <section class="toolbar" aria-label="Mock filters">
+          <label>
+            Date range
+            <select id="dateRange">
+              <option value="today">Today mock</option>
+              <option value="week">7 days mock</option>
+              <option value="month">30 days mock</option>
+            </select>
+          </label>
+          <label>
+            Status
+            <select id="statusFilter">
+              <option value="all">All status</option>
+              <option value="matched">Matched</option>
+              <option value="variance">Variance</option>
+              <option value="stale">Stale</option>
+              <option value="unmatched">Unmatched</option>
+            </select>
+          </label>
+          <label>
+            Search
+            <input id="search" type="search" placeholder="Search mock rows" />
+          </label>
+          <button type="button" id="exportPreview">Export preview</button>
+        </section>
+        <section id="tableMount"></section>
+      </section>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>
