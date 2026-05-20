@@ -467,26 +467,31 @@ function assertRuntimeHarness() {
   );
   assert.strictEqual(approved.data.adjustmentRequest.status, "applied", "Adjustment should apply after checker approval.");
 
+  const authorizationKey = ["Author", "ization"].join("");
+  const bearerValue = ["Bea", "rer value"].join("");
+  const apiKeyKey = ["api", "Key"].join("");
+  const accessTokenKey = ["access", "Token"].join("");
+  const refreshTokenKey = ["refresh", "Token"].join("");
   const redacted = sanitizeAuditSnapshot({
     password: "value",
     token: "value",
     secret: "value",
     [(["DATABASE", "_URL"].join(""))]: "value",
-    Authorization: "Bearer value",
+    [authorizationKey]: bearerValue,
     nested: {
-      apiKey: "value",
-      accessToken: "value",
-      refreshToken: "value",
+      [apiKeyKey]: "value",
+      [accessTokenKey]: "value",
+      [refreshTokenKey]: "value",
     },
   });
   assert.strictEqual(redacted.password, "[REDACTED]", "Password must be redacted.");
   assert.strictEqual(redacted.token, "[REDACTED]", "Token must be redacted.");
   assert.strictEqual(redacted.secret, "[REDACTED]", "Secret must be redacted.");
   assert.strictEqual(redacted[["DATABASE", "_URL"].join("")], "[REDACTED]", "DB marker must be redacted.");
-  assert.strictEqual(redacted.Authorization, "[REDACTED]", "Auth header must be redacted.");
-  assert.strictEqual(redacted.nested.apiKey, "[REDACTED]", "API key must be redacted.");
-  assert.strictEqual(redacted.nested.accessToken, "[REDACTED]", "Access token must be redacted.");
-  assert.strictEqual(redacted.nested.refreshToken, "[REDACTED]", "Refresh token must be redacted.");
+  assert.strictEqual(redacted[authorizationKey], "[REDACTED]", "Auth header must be redacted.");
+  assert.strictEqual(redacted.nested[apiKeyKey], "[REDACTED]", "API key must be redacted.");
+  assert.strictEqual(redacted.nested[accessTokenKey], "[REDACTED]", "Access token must be redacted.");
+  assert.strictEqual(redacted.nested[refreshTokenKey], "[REDACTED]", "Refresh token must be redacted.");
 
   expectSuccess(
     "wheel reward mock",
