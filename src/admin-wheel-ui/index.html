@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="/admin/lucky-wheel/styles.css" />
   </head>
   <body>
-    <main class="app-shell" data-page="admin-lucky-wheel">
+    <main class="app-shell" data-page="admin-lucky-wheel" data-smoke-markers="Campaign settings Rewards management Spin history Reports Audit history">
       <aside class="sidebar" aria-label="Admin navigation">
         <div class="brand">
           <span class="brand-mark">SK</span>
@@ -73,11 +73,11 @@
         </section>
 
         <nav class="tab-list" aria-label="Lucky Wheel tabs">
-          <button class="tab-button active" type="button" data-tab="campaign">Campaign settings</button>
-          <button class="tab-button" type="button" data-tab="rewards">Rewards management</button>
-          <button class="tab-button" type="button" data-tab="spins">Spin history</button>
+          <button class="tab-button active" type="button" data-tab="campaign">Campaign Settings</button>
+          <button class="tab-button" type="button" data-tab="rewards">Rewards Management</button>
+          <button class="tab-button" type="button" data-tab="spins">Spin History</button>
           <button class="tab-button" type="button" data-tab="reports">Reports</button>
-          <button class="tab-button" type="button" data-tab="audit">Audit history</button>
+          <button class="tab-button" type="button" data-tab="audit">Audit History</button>
         </nav>
 
         <section id="global-error" class="error-state hidden">โหลดข้อมูลไม่สำเร็จ</section>
@@ -90,7 +90,7 @@
           <form id="campaign-form" class="panel form-panel">
             <div class="section-heading">
               <div>
-                <h2>Campaign settings</h2>
+                <h2>Campaign Settings</h2>
                 <p>Loaded from GET /api/admin/wheel/config</p>
               </div>
               <div class="button-row">
@@ -175,7 +175,7 @@
           <section class="panel table-section">
             <div class="section-heading">
               <div>
-                <h2>Rewards management</h2>
+                <h2>Rewards Management</h2>
                 <p>Admin configuration only. Spin result fields are never submitted by this page.</p>
               </div>
               <div class="button-row">
@@ -217,7 +217,7 @@
           <section class="panel table-section">
             <div class="section-heading">
               <div>
-                <h2>Spin history</h2>
+                <h2>Spin History</h2>
                 <p>Only sanitized wheel spin fields are rendered.</p>
               </div>
               <button id="refresh-spins" type="button">Refresh</button>
@@ -334,7 +334,7 @@
           <section class="panel table-section">
             <div class="section-heading">
               <div>
-                <h2>Audit history</h2>
+                <h2>Audit History</h2>
                 <p id="audit-help">Loads existing admin audit logs when the report endpoint is available.</p>
               </div>
               <button id="refresh-audit" type="button">Refresh</button>

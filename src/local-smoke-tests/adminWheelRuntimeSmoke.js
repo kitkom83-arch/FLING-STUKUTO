@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+const crypto = require("crypto");
 const { Prisma } = require("@prisma/client");
 const { evaluateDbSafetyGuard, PROVIDER_MODE_KEYS } = require("../db-safety-tests/dbSafetyGuard");
 
@@ -12,11 +13,13 @@ const SITE_CODE = process.env.LOCAL_SMOKE_SITE_CODE || "PG77";
 const OWNER_USERNAME = process.env.LOCAL_ADMIN_USERNAME || "local_wheel_runtime_owner";
 const NO_PERMISSION_USERNAME = "local_wheel_runtime_no_permission";
 const MEMBER_PASSWORD = process.env.LOCAL_MEMBER_PASSWORD || "local-wheel-runtime-member-only";
-const RUNTIME_REASON = "admin wheel runtime smoke reason";
+const RUNTIME_REASON_PREFIX = "admin wheel runtime smoke reason";
+let runtimeReason = RUNTIME_REASON_PREFIX;
 const WHEEL_AUDIT_ACTIONS = [
   "wheel.campaign.update",
   "wheel.reward.create",
   "wheel.reward.update",
+  "wheel.reward.enable",
   "wheel.reward.disable",
   "wheel.memberReward.status.update",
 ];
@@ -70,7 +73,7 @@ function webBaseFromApi(baseUrl) {
 }
 
 function makeRunId() {
-  const random = Math.floor(Math.random() * 10000).toString().padStart(4, "0");
+  const random = crypto.randomInt(0, 10000).toString().padStart(4, "0");
   return `${Date.now()}${random}`;
 }
 
@@ -169,14 +172,29 @@ function assertNoUnsafeKeys(label, value, { allowAuthToken = false } = {}) {
   }
 }
 
+function assertNoInvalidNumbers(label, value) {
+  if (typeof value === "number" && !Number.isFinite(value)) {
+    throw new Error(`${label} contains a non-finite number.`);
+  }
+  if (!value || typeof value !== "object") return;
+  if (Array.isArray(value)) {
+    for (const item of value) assertNoInvalidNumbers(label, item);
+    return;
+  }
+  for (const item of Object.values(value)) assertNoInvalidNumbers(label, item);
+}
+
 function assertNoUnsafeValues(label, payload, { allowAuthToken = false } = {}) {
+  assertNoInvalidNumbers(label, payload);
   const serialized = JSON.stringify(payload);
   const lower = serialized.toLowerCase();
   const authScheme = ["be", "arer"].join("");
   const jwtLike = /\b[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\b/;
   const postgresWithCredentials = /postgres(?:ql)?:\/\/[^:\s/]+:[^@\s/]+@/i;
 
-  if (serialized.includes("undefined") || serialized.includes("NaN")) throw new Error(`${label} response contains undefined or NaN.`);
+  if (serialized.includes("undefined") || serialized.includes("NaN") || serialized.includes("Infinity")) {
+    throw new Error(`${label} response contains undefined, NaN, or Infinity.`);
+  }
   if (lower.includes("database_url")) throw new Error(`${label} response leaked DATABASE_URL marker.`);
   if (!allowAuthToken && /(password|token|secret|refresh)/i.test(lower)) throw new Error(`${label} response included unsafe sensitive marker.`);
   if (lower.includes(authScheme)) throw new Error(`${label} response included authorization scheme text.`);
@@ -429,7 +447,7 @@ async function loginMember(baseUrl, phone) {
   return login.data.token;
 }
 
-async function assertMemberWheelRuntime(baseUrl, memberToken) {
+async function assertMemberWheelRuntime(baseUrl, memberToken, expectedCampaignId = "wheel_main") {
   await apiRequest(baseUrl, "/member/wheel/config", {
     expectedStatus: 401,
     expectSuccess: false,
@@ -442,6 +460,9 @@ async function assertMemberWheelRuntime(baseUrl, memberToken) {
   });
   if (!config.data.campaignId || !Array.isArray(config.data.rewards)) {
     throw new Error("Member wheel config response shape invalid.");
+  }
+  if (config.data.campaignId !== expectedCampaignId || config.data.rewards.length < 1) {
+    throw new Error("Member wheel config must expose the expected campaign and rewards.");
   }
   if (config.data.rewards.some((reward) => Object.prototype.hasOwnProperty.call(reward, "probabilityWeight"))) {
     throw new Error("Member wheel config exposed probabilityWeight.");
@@ -480,6 +501,16 @@ async function assertMemberWheelRuntime(baseUrl, memberToken) {
   if (!spin.data.spinId || !spin.data.rewardId || typeof spin.data.prizeIndex !== "number" || !spin.data.reward) {
     throw new Error("Member wheel spin response shape invalid.");
   }
+  if (spin.data.reward.probabilityWeight !== undefined) {
+    throw new Error("Member wheel spin response exposed probabilityWeight.");
+  }
+  if (
+    spin.data.remainingSpinsToday !== null &&
+    spin.data.remainingSpinsToday !== undefined &&
+    typeof spin.data.remainingSpinsToday !== "number"
+  ) {
+    throw new Error("Member wheel spin remainingSpinsToday must be number or safe nullable.");
+  }
 
   const history = await apiRequest(baseUrl, "/member/wheel/history?limit=20", {
     authValue: memberToken,
@@ -497,6 +528,7 @@ async function assertMemberWheelRuntime(baseUrl, memberToken) {
 
   console.log("Admin Wheel member config/spin/history/my-rewards runtime: PASS");
   console.log("Admin Wheel frontend result injection guard: PASS");
+  return spin.data;
 }
 
 async function createMemberRewardClaimFixture(prisma, { siteId, memberId }) {
@@ -569,13 +601,13 @@ async function assertAdminMemberRewardRuntime(baseUrl, ownerToken, noPermissionT
     expectedStatus: 403,
     expectSuccess: false,
     label: "admin wheel member reward status no permission",
-    body: { status: "claimed", reason: RUNTIME_REASON },
+    body: { status: "claimed", reason: runtimeReason },
   });
   const claimed = await apiRequest(baseUrl, `/admin/wheel/member-rewards/${encodeURIComponent(rewardId)}/status`, {
     method: "PATCH",
     authValue: ownerToken,
     label: "admin wheel member reward status claimed",
-    body: { status: "claimed", reason: RUNTIME_REASON },
+    body: { status: "claimed", reason: runtimeReason },
   });
   if (!claimed.data || claimed.data.status !== "claimed" || claimed.data.rewardValue === undefined) {
     throw new Error("Admin wheel member reward status response shape invalid.");
@@ -585,11 +617,43 @@ async function assertAdminMemberRewardRuntime(baseUrl, ownerToken, noPermissionT
 
 function assertAuditRow(row, action) {
   if (!row) throw new Error(`Audit row missing for ${action}.`);
-  if (!row.metadata || row.metadata.reason !== RUNTIME_REASON) throw new Error(`${action} audit row missing reason.`);
+  if (!row.metadata || row.metadata.reason !== runtimeReason) throw new Error(`${action} audit row missing reason.`);
   if (!row.metadata.actor || !row.metadata.actor.username) throw new Error(`${action} audit row missing actor.`);
   if (row.metadata.siteCode !== SITE_CODE) throw new Error(`${action} audit row missing siteCode.`);
   if (action !== "wheel.reward.create" && !row.beforeJson) throw new Error(`${action} audit row missing sanitized before state.`);
   if (!row.afterJson) throw new Error(`${action} audit row missing sanitized after state.`);
+}
+
+function decimalNumber(value) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function assertWheelReportSummary(config, spins, memberRewards) {
+  const rewards = Array.isArray(config.data.rewards) ? config.data.rewards : [];
+  const spinRows = Array.isArray(spins.data) ? spins.data : [];
+  const memberRewardRows = memberRewards.data && Array.isArray(memberRewards.data.rows) ? memberRewards.data.rows : [];
+  const totalSpins = spinRows.length;
+  const totalCostUsed = spinRows.reduce((sum, row) => sum + decimalNumber(row.cost && row.cost.amount), 0);
+  const rewardSummary = rewards.map((reward) => {
+    const spinCount = spinRows.filter((row) => row.reward && row.reward.id === reward.id).length;
+    return {
+      rewardId: reward.id,
+      spinCount,
+      stockUsed: decimalNumber(reward.stockUsed),
+      probabilityWeight: decimalNumber(reward.probabilityWeight),
+      actualPercent: totalSpins > 0 ? (spinCount / totalSpins) * 100 : 0,
+    };
+  });
+  const summary = {
+    totalSpins,
+    totalCostUsed,
+    issuedRewards: memberRewardRows.length,
+    pendingRewards: memberRewardRows.filter((row) => row.status === "pending").length,
+    claimedRewards: memberRewardRows.filter((row) => row.status === "claimed").length,
+    rewardSummary,
+  };
+  assertNoUnsafeValues("Admin Wheel E2E report summary", summary);
 }
 
 async function assertStaticRoutes(webBase) {
@@ -615,6 +679,9 @@ async function main() {
 
     const baseUrl = safety.baseUrl;
     const webBase = webBaseFromApi(baseUrl);
+    const runId = makeRunId();
+    const auditDateFrom = new Date(Date.now() - 60000).toISOString();
+    runtimeReason = `${RUNTIME_REASON_PREFIX} ${runId}`;
     console.log("Admin Wheel runtime smoke safety guard: PASS");
     await assertStaticRoutes(webBase);
 
@@ -641,7 +708,7 @@ async function main() {
       expectedStatus: 403,
       expectSuccess: false,
       label: "admin wheel campaign no permission",
-      body: { name: "Runtime Forbidden Campaign", reason: RUNTIME_REASON },
+      body: { name: "Runtime Forbidden Campaign", reason: runtimeReason },
     });
     await apiRequest(baseUrl, "/admin/audit-logs?limit=20", {
       authValue: noPermissionToken,
@@ -658,16 +725,32 @@ async function main() {
     if (!config.data.campaign || !Array.isArray(config.data.rewards) || !config.data.summary) {
       throw new Error("Admin wheel config response shape invalid.");
     }
+    if (config.data.campaign.id !== "wheel_main" || config.data.rewards.length < 1) {
+      throw new Error("Admin wheel config must expose wheel_main campaign and rewards.");
+    }
     console.log("Admin Wheel config read: PASS");
 
-    const spins = await apiRequest(baseUrl, "/admin/wheel/spins?limit=20", {
+    const initialSpins = await apiRequest(baseUrl, "/admin/wheel/spins?limit=20", {
       authValue: ownerToken,
       label: "admin wheel spins read",
     });
-    if (!Array.isArray(spins.data)) throw new Error("Admin wheel spins response shape invalid.");
+    if (!Array.isArray(initialSpins.data)) throw new Error("Admin wheel spins response shape invalid.");
     console.log("Admin Wheel spins read: PASS");
 
-    await assertMemberWheelRuntime(baseUrl, memberToken);
+    const memberSpin = await assertMemberWheelRuntime(baseUrl, memberToken, config.data.campaign.id);
+    const spinDateTo = new Date(Date.now() + 60000).toISOString();
+    const spins = await apiRequest(
+      baseUrl,
+      `/admin/wheel/spins?limit=100&dateFrom=${encodeURIComponent(auditDateFrom)}&dateTo=${encodeURIComponent(spinDateTo)}&rewardId=${encodeURIComponent(memberSpin.rewardId)}`,
+      {
+        authValue: ownerToken,
+        label: "admin wheel spins read latest member spin",
+      }
+    );
+    if (!Array.isArray(spins.data) || !spins.data.some((row) => row.id === memberSpin.spinId)) {
+      throw new Error("Admin wheel spin history did not include the latest backend-selected spin.");
+    }
+    console.log("Admin Wheel latest spin history read: PASS");
     const claimFixture = await createMemberRewardClaimFixture(fixtures.prisma, {
       siteId: fixtures.siteId,
       memberId: fixtures.memberId,
@@ -715,11 +798,11 @@ async function main() {
       method: "PATCH",
       authValue: ownerToken,
       label: "admin wheel campaign update with reason",
-      body: { name: config.data.campaign.name || "กงล้อนำโชค", reason: RUNTIME_REASON },
+      body: { name: config.data.campaign.name || "กงล้อนำโชค", reason: runtimeReason },
     });
 
-    const rewardId = `wheel_runtime_reward_${Date.now()}`;
-    const sortOrder = 100000 + Math.floor(Math.random() * 100000);
+    const rewardId = `wheel_runtime_reward_${runId}`;
+    const sortOrder = 100000 + crypto.randomInt(0, 100000);
     const createdReward = await apiRequest(baseUrl, "/admin/wheel/rewards", {
       method: "POST",
       authValue: ownerToken,
@@ -735,7 +818,7 @@ async function main() {
         segmentColor: "#0f766e",
         sortOrder,
         status: "active",
-        reason: RUNTIME_REASON,
+        reason: runtimeReason,
       },
     });
     if (!createdReward.data || createdReward.data.id !== rewardId) throw new Error("Reward create response shape invalid.");
@@ -744,23 +827,47 @@ async function main() {
       method: "PATCH",
       authValue: ownerToken,
       label: "admin wheel reward update with reason",
-      body: { label: "Runtime Smoke Reward Updated", probabilityWeight: 2, reason: RUNTIME_REASON },
+      body: { label: "Runtime Smoke Reward Updated", probabilityWeight: 2, reason: runtimeReason },
     });
     await apiRequest(baseUrl, `/admin/wheel/rewards/${encodeURIComponent(rewardId)}`, {
       method: "PATCH",
       authValue: ownerToken,
-      label: "admin wheel reward status update with reason",
-      body: { status: "inactive", reason: RUNTIME_REASON },
+      label: "admin wheel reward disable with reason",
+      body: { status: "inactive", reason: runtimeReason },
+    });
+    await apiRequest(baseUrl, `/admin/wheel/rewards/${encodeURIComponent(rewardId)}`, {
+      method: "PATCH",
+      authValue: ownerToken,
+      label: "admin wheel reward enable with reason",
+      body: { status: "active", reason: runtimeReason },
+    });
+    await apiRequest(baseUrl, `/admin/wheel/rewards/${encodeURIComponent(rewardId)}`, {
+      method: "PATCH",
+      authValue: ownerToken,
+      label: "admin wheel reward cleanup disable with reason",
+      body: { status: "inactive", reason: `${runtimeReason} cleanup` },
     });
     console.log("Admin Wheel writes with reason: PASS");
 
-    const audit = await apiRequest(baseUrl, "/admin/audit-logs?limit=100", {
+    const memberRewards = await apiRequest(
+      baseUrl,
+      `/admin/wheel/member-rewards?limit=100&dateFrom=${encodeURIComponent(auditDateFrom)}&dateTo=${encodeURIComponent(new Date(Date.now() + 60000).toISOString())}`,
+      {
+        authValue: ownerToken,
+        label: "admin wheel member rewards for report summary",
+      }
+    );
+    assertWheelReportSummary(config, spins, memberRewards);
+    console.log("Admin Wheel report summary finite values: PASS");
+
+    const auditDateTo = new Date(Date.now() + 60000).toISOString();
+    const audit = await apiRequest(baseUrl, `/admin/audit-logs?limit=100&dateFrom=${encodeURIComponent(auditDateFrom)}&dateTo=${encodeURIComponent(auditDateTo)}`, {
       authValue: ownerToken,
       label: "admin wheel audit read",
     });
     if (!audit.data || !Array.isArray(audit.data.rows)) throw new Error("Audit log response shape invalid.");
     for (const action of WHEEL_AUDIT_ACTIONS) {
-      const row = audit.data.rows.find((item) => item.action === action && item.metadata && item.metadata.reason === RUNTIME_REASON);
+      const row = audit.data.rows.find((item) => item.action === action && item.metadata && item.metadata.reason === runtimeReason);
       assertAuditRow(row, action);
     }
     console.log("Admin Wheel audit log read: PASS");

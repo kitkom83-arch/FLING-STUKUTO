@@ -106,15 +106,15 @@ function main() {
   assertIncludes("Express app", app, ["/admin-wheel", "/admin/lucky-wheel", "admin-wheel-ui"]);
 
   assertIncludes("Admin Wheel five sections", html, [
-    "Campaign settings",
-    "Rewards management",
-    "Spin history",
+    "Campaign Settings",
+    "Rewards Management",
+    "Spin History",
     "Reports",
-    "Audit history",
+    "Audit History",
   ]);
   if (/data-tab="claims"/.test(html)) throw new Error("Admin Wheel UI must expose five main tabs only.");
 
-  assertIncludes("Campaign settings", html + js, [
+  assertIncludes("Campaign Settings", html + js, [
     "campaign-status",
     "campaign-name",
     "campaign-cost-type",
@@ -132,7 +132,7 @@ function main() {
     "wheel.campaign.update",
   ]);
 
-  assertIncludes("Rewards management", html + js, [
+  assertIncludes("Rewards Management", html + js, [
     "Sort order",
     "Label",
     "Reward type",
@@ -163,7 +163,7 @@ function main() {
     "wheel.reward.disable",
   ]);
 
-  assertIncludes("Spin history", html + js, [
+  assertIncludes("Spin History", html + js, [
     "Date from",
     "Date to",
     "Member username/member ID",
@@ -193,7 +193,7 @@ function main() {
     "Actual percent",
     "Remaining stock",
     "totalSpins > 0",
-    "0 %",
+    "formatPercent",
     "renderRewardSummary",
   ]);
 
@@ -229,6 +229,11 @@ function main() {
     "wheel.spin.view",
     "wheel.report.view",
     "wheel.audit.view",
+    "wheel.rewards.create",
+    "wheel.rewards.update",
+    "wheel.rewards.status.update",
+    "wheel.spins.view",
+    "wheel.reports.view",
   ]);
 
   assertIncludes("Permission guards", adminRoutes, [

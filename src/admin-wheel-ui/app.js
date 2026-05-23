@@ -265,6 +265,10 @@
     return new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(numberValue(value));
   }
 
+  function formatPercent(value) {
+    return `${formatNumber(value)} %`;
+  }
+
   function formatDate(value) {
     if (!value) return "-";
     const date = new Date(value);
@@ -1432,7 +1436,7 @@
       const tr = document.createElement("tr");
       tr.appendChild(createCell(label));
       tr.appendChild(createCell(count));
-      tr.appendChild(createCell(totalSpins > 0 ? `${formatNumber((count / totalSpins) * 100)} %` : "0 %"));
+      tr.appendChild(createCell(totalSpins > 0 ? formatPercent((count / totalSpins) * 100) : formatPercent(0)));
       tr.appendChild(createCell(reward.stockUsed || 0));
       els.topRewardRows.appendChild(tr);
     }
@@ -1453,7 +1457,7 @@
       tr.appendChild(createCell(spinCount));
       tr.appendChild(createCell(reward.stockUsed || 0));
       tr.appendChild(createCell(reward.probabilityWeight || 0));
-      tr.appendChild(createCell(totalSpins > 0 ? `${formatNumber((spinCount / totalSpins) * 100)} %` : "0 %"));
+      tr.appendChild(createCell(totalSpins > 0 ? formatPercent((spinCount / totalSpins) * 100) : formatPercent(0)));
       tr.appendChild(createCell(remainingStock(reward)));
       els.rewardSummaryRows.appendChild(tr);
     }
@@ -1476,7 +1480,7 @@
       tr.appendChild(createCell(rewardTypeLabel(type)));
       tr.appendChild(createCell(summary.spinCount));
       tr.appendChild(createCell(summary.issuedCount));
-      tr.appendChild(createCell(totalSpins > 0 ? `${formatNumber((summary.spinCount / totalSpins) * 100)} %` : "0 %"));
+      tr.appendChild(createCell(totalSpins > 0 ? formatPercent((summary.spinCount / totalSpins) * 100) : formatPercent(0)));
       els.distributionRows.appendChild(tr);
     }
   }
@@ -1506,7 +1510,7 @@
       const tr = document.createElement("tr");
       tr.appendChild(createCell(status));
       tr.appendChild(createCell(count));
-      tr.appendChild(createCell(state.memberRewards.length > 0 ? `${formatNumber((count / state.memberRewards.length) * 100)} %` : "0 %"));
+      tr.appendChild(createCell(state.memberRewards.length > 0 ? formatPercent((count / state.memberRewards.length) * 100) : formatPercent(0)));
       els.claimStatusRows.appendChild(tr);
     }
   }

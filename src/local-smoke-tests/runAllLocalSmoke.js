@@ -54,6 +54,7 @@ const RELATED_FILES = [
   "docs/FINANCIAL_LEDGER_MOCK_RUNTIME_HARNESS.md",
   "docs/FINANCIAL_LEDGER_RECONCILIATION_MOCK_REPORTS.md",
   "docs/FINANCIAL_LEDGER_LIVE_INTEGRATION_CERTIFICATION_CHECKLIST.md",
+  "docs/LUCKY_WHEEL_E2E_LOCAL_RUNBOOK.md",
   "src/admin-wheel-ui/index.html",
   "src/admin-wheel-ui/app.js",
   "src/admin-wheel-ui/styles.css",
