@@ -51,6 +51,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `stagingSmoke.js` | `npm run smoke:staging` | No local Prisma access | Yes | No | Syntax check only | Hosted staging health contract, safe external mode labels, admin auth negative leak check, and response leak scan. |
 | `stagingReleaseReadinessSmoke.js` | `npm run smoke:staging-release-readiness` | No | No | No | Runs static contract | CI-safe static release readiness guard for package scripts, runbook/docs policy, rollback/incident checklist wording, release gate/full UAT/role UAT command separation, and secret-shaped value scan. It does not call staging. |
 | `stagingDeployReadinessPackSmoke.js` | `npm run smoke:staging-deploy-readiness-pack` | No | No | No | Runs static contract | Staging Deploy Readiness Pack Smoke checks staging deploy readiness docs, environment matrix, go/no-go gate, no production DB boundary, no real-money boundary, no live provider/payment/bank/SMS/Slip OCR boundary, static secret scan, and unsafe rendered placeholder copy scan. It does not call API, connect DB, require a server, read env secrets, deploy, migrate, or seed. |
+| `disposableStagingDbDryRunPackSmoke.js` | `npm run smoke:disposable-staging-db-dry-run-pack` | No | No | No | Runs static contract | Disposable Staging DB Dry-Run Pack Smoke checks disposable staging DB dry-run docs, staging DB safety evidence checklist, Phase AB Go/No-Go gate, no production DB boundary, no actual migration in Phase AB boundary, backup/restore/rollback evidence checklist, static secret scan, and unsafe rendered placeholder copy scan. It does not call API, connect DB, require a server, read env secrets, deploy, migrate, or seed. |
 | `productionReadinessAuditSmoke.js` | `npm run smoke:production-readiness-audit` | No | No | No | Runs static contract | Phase M static guard for `docs/PRODUCTION_READINESS_GAP_AUDIT.md`, production blocker coverage, mock/sandbox boundary wording, Go/No-Go criteria, P0 checklist, recommended next phases, and secret-shaped value scan. It is a pre-production planning artifact only and does not deploy production. |
 | `productionSafetyDryRunSmoke.js` | `npm run smoke:production-safety-dry-run` | No | No | No | Runs static contract | Phase N static guard for `docs/PRODUCTION_SAFETY_DRY_RUN.md`, hard safety boundaries, ENV checklist, dry-run smoke plan, rollback, backup/restore, monitoring/alerting, financial safety, Go/No-Go rehearsal, next phases, and secret-shaped value scan. It is a planning artifact only and does not deploy production. |
 | `monitoringBackupRunbookSmoke.js` | `npm run smoke:monitoring-backup-runbook` | No | No | No | Runs static contract | Phase O static guard for `docs/MONITORING_BACKUP_RUNBOOK.md`, monitoring targets, SEV1-SEV4 severity/routing, log retention, backup, restore drill, incident checklist/template, Go/No-Go monitoring criteria, next phases, and secret-shaped value scan. It is a planning artifact only and does not deploy production. |
@@ -444,6 +445,8 @@ Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not 
   - `adminWheelRuntimeSmoke.js`
   - `adminBrowserRoutesSmoke.js`
   - `stagingReleaseReadinessSmoke.js`
+  - `stagingDeployReadinessPackSmoke.js`
+  - `disposableStagingDbDryRunPackSmoke.js`
   - `productionReadinessAuditSmoke.js`
   - `productionSafetyDryRunSmoke.js`
   - `monitoringBackupRunbookSmoke.js`
@@ -470,6 +473,8 @@ Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not 
 - `npm run smoke:admin-wheel-runtime`.
 - `npm run smoke:admin-browser-routes`.
 - `npm run smoke:staging-release-readiness`.
+- `npm run smoke:staging-deploy-readiness-pack`.
+- `npm run smoke:disposable-staging-db-dry-run-pack`.
 - `npm run smoke:production-readiness-audit`.
 - `npm run smoke:production-safety-dry-run`.
 - `npm run smoke:monitoring-backup-runbook`.
@@ -538,6 +543,8 @@ npm run smoke:all-local
 npm run staging:preflight
 npm run smoke:staging
 npm run smoke:staging-release-readiness
+npm run smoke:staging-deploy-readiness-pack
+npm run smoke:disposable-staging-db-dry-run-pack
 npm run smoke:production-readiness-audit
 npm run smoke:production-safety-dry-run
 npm run smoke:monitoring-backup-runbook
@@ -1187,6 +1194,52 @@ Coverage:
 - Confirms no live provider/payment/bank/SMS/Slip OCR boundary wording.
 - Runs a static secret scan for credential-shaped values and raw credential URL/header shapes.
 - Runs an unsafe rendered placeholder copy scan using safe wording checks for missing-value placeholder, invalid-number placeholder, object-string placeholder, and unsafe rendered placeholder copy.
+
+Boundary:
+
+- Scope is docs/static smoke only.
+- No API calls.
+- No DB connection.
+- No server requirement.
+- No env secret reads.
+- No production DB.
+- No real money.
+- No live payout.
+- No live provider/payment/bank/SMS/Slip OCR.
+- No deploy.
+- No migration.
+- No seed.
+
+## 44. Disposable Staging DB Dry-Run Pack Smoke
+
+Phase AB status: Disposable Staging DB Dry-Run Pack for evidence and guardrail preparation only.
+
+Documents:
+
+- `docs/DISPOSABLE_STAGING_DB_DRY_RUN.md`
+- `docs/STAGING_DB_SAFETY_EVIDENCE_CHECKLIST.md`
+- `docs/PHASE_AB_GO_NO_GO.md`
+
+Script:
+
+- `src/local-smoke-tests/disposableStagingDbDryRunPackSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:disposable-staging-db-dry-run-pack
+```
+
+Coverage:
+
+- Confirms disposable staging DB dry-run docs exist.
+- Confirms staging DB safety evidence checklist exists.
+- Confirms Phase AB Go/No-Go gate exists.
+- Confirms no production DB boundary.
+- Confirms no actual migration in Phase AB boundary.
+- Confirms backup/restore/rollback evidence checklist.
+- Runs a static secret scan.
+- Runs an unsafe rendered placeholder copy scan.
 
 Boundary:
 

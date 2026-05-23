@@ -237,6 +237,7 @@ node --check src/local-smoke-tests/adminAuditSecuritySmoke.js
 node --check src/local-smoke-tests/stagingPreflight.js
 node --check src/local-smoke-tests/stagingSmoke.js
 node --check src/local-smoke-tests/stagingDeployReadinessPackSmoke.js
+node --check src/local-smoke-tests/disposableStagingDbDryRunPackSmoke.js
 node --check src/local-smoke-tests/runAllLocalSmoke.js
 ```
 
@@ -253,6 +254,7 @@ npm run smoke:admin-work-schedule
 npm run smoke:admin-work-schedule-ui
 npm run smoke:admin-audit-security
 npm run smoke:staging-deploy-readiness-pack
+npm run smoke:disposable-staging-db-dry-run-pack
 npm run smoke:staging
 npm run smoke:all-local
 ```
