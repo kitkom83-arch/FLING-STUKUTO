@@ -12,7 +12,7 @@ const PRODUCTION_MARKERS = ["prod", "production", "live", "primary", "main", "ma
 const SITE_CODE = process.env.LOCAL_SMOKE_SITE_CODE || "PG77";
 const ADMIN_USERNAME = "local_money_flow_admin";
 const MEMBER_PASSWORD = "localSmokeMember123";
-const DEFAULT_API_BASE_URL = "http://localhost:4000";
+const DEFAULT_API_BASE_URL = "http://localhost:4000/api";
 
 class ApiRequestError extends Error {
   constructor(message, statusCode) {
@@ -49,6 +49,31 @@ function parseUrl(value) {
   } catch (_error) {
     return null;
   }
+}
+
+function ensureApiPath(baseUrl) {
+  const trimmed = String(baseUrl || "").trim().replace(/\/+$/, "");
+  const parsed = parseUrl(trimmed);
+  if (!parsed) return trimmed;
+  if (parsed.pathname === "" || parsed.pathname === "/") return `${trimmed}/api`;
+  return trimmed;
+}
+
+function configuredBaseUrl() {
+  if (process.env.BASE_URL) return ensureApiPath(process.env.BASE_URL);
+  if (process.env.CORE_API_BASE_URL) return ensureApiPath(process.env.CORE_API_BASE_URL);
+  if (process.env.PUBLIC_API_BASE_URL) return ensureApiPath(process.env.PUBLIC_API_BASE_URL);
+  return DEFAULT_API_BASE_URL;
+}
+
+function requestPathForBase(apiBaseUrl, path) {
+  const normalizedPath = String(path || "");
+  const parsed = parseUrl(apiBaseUrl);
+  if (parsed && parsed.pathname.replace(/\/+$/, "") === "/api" && normalizedPath === "/api") return "";
+  if (parsed && parsed.pathname.replace(/\/+$/, "") === "/api" && normalizedPath.startsWith("/api/")) {
+    return normalizedPath.slice(4);
+  }
+  return normalizedPath;
 }
 
 function inspectDatabaseTarget(databaseUrl) {
@@ -93,20 +118,20 @@ function inspectDatabaseTarget(databaseUrl) {
 function inspectApiBaseUrl(apiBaseUrl) {
   const parsed = parseUrl(apiBaseUrl);
   if (!parsed || !["http:", "https:"].includes(parsed.protocol)) {
-    return { ok: false, reason: "PUBLIC_API_BASE_URL must be a valid HTTP(S) URL." };
+    return { ok: false, reason: "BASE_URL must be a valid HTTP(S) URL." };
   }
 
   if (parsed.username || parsed.password) {
-    return { ok: false, reason: "PUBLIC_API_BASE_URL must not contain embedded credentials." };
+    return { ok: false, reason: "BASE_URL must not contain embedded credentials." };
   }
 
   const host = parsed.hostname;
   if (hasAnyToken(host, PRODUCTION_MARKERS)) {
-    return { ok: false, reason: "PUBLIC_API_BASE_URL appears production-like and is blocked." };
+    return { ok: false, reason: "BASE_URL appears production-like and is blocked." };
   }
 
   if (!isLoopbackHost(host) && !hasAnyToken(host, SAFE_TARGET_MARKERS)) {
-    return { ok: false, reason: "PUBLIC_API_BASE_URL must target local/staging/test only." };
+    return { ok: false, reason: "BASE_URL must target local/staging/test only." };
   }
 
   return { ok: true, reason: null };
@@ -124,7 +149,7 @@ function assertLocalSafety() {
   const reasons = [];
   const nodeEnv = String(process.env.NODE_ENV || "").trim().toLowerCase();
   const databaseTarget = inspectDatabaseTarget(process.env.DATABASE_URL);
-  const apiBaseUrl = process.env.PUBLIC_API_BASE_URL || DEFAULT_API_BASE_URL;
+  const apiBaseUrl = configuredBaseUrl();
   const apiTarget = inspectApiBaseUrl(apiBaseUrl);
   const guardResult = evaluateDbSafetyGuard(normalizedGuardEnv());
 
@@ -162,7 +187,7 @@ function assertLocalSafety() {
   }
 
   console.log("Local money-flow smoke safety guard: PASS");
-  return apiBaseUrl.replace(/\/+$/, "");
+  return apiBaseUrl;
 }
 
 function requireString(value, label) {
@@ -199,7 +224,7 @@ async function apiRequest(apiBaseUrl, path, options = {}) {
 
   let response;
   try {
-    response = await fetch(`${apiBaseUrl}${path}`, {
+    response = await fetch(`${apiBaseUrl}${requestPathForBase(apiBaseUrl, path)}`, {
       method: options.method || "GET",
       headers,
       body: options.body === undefined ? undefined : JSON.stringify(options.body),
@@ -461,7 +486,7 @@ async function main() {
   let prisma = null;
   try {
     const apiBaseUrl = assertLocalSafety();
-    await apiRequest(apiBaseUrl, "/api/health");
+    await apiRequest(apiBaseUrl, "/health");
     console.log("Health check: PASS");
     prisma = await ensureLocalFixtures();
     await runSmoke(apiBaseUrl);

@@ -173,7 +173,23 @@
   };
 
   function text(value) {
-    return value === null || value === undefined || value === "" ? "-" : String(value);
+    if (typeof value === "number" && !Number.isFinite(value)) return "-";
+    return value === null || value === void 0 || value === "" ? "-" : String(value);
+  }
+
+  function toSafeNumber(value, fallback = 0) {
+    const number = Number(value);
+    return Number.isFinite(number) ? number : fallback;
+  }
+
+  function formatPercentSafe(value) {
+    const percent = Math.round(toSafeNumber(value, 0) * 100) / 100;
+    return `${percent} %`;
+  }
+
+  function formatCountSafe(value, fallback = 0) {
+    const count = Math.trunc(toSafeNumber(value, fallback));
+    return String(count < 0 ? 0 : count);
   }
 
   function sanitizeToken(value) {
@@ -247,7 +263,7 @@
     const response = await fetch(`${API_BASE}${path}`, {
       method: (options && options.method) || "GET",
       headers: authHeaders(),
-      body: options && options.body ? JSON.stringify(options.body) : undefined,
+      body: options && Object.prototype.hasOwnProperty.call(options, "body") ? JSON.stringify(options.body) : void 0,
     });
     const payload = await response.json().catch(() => ({ success: false, message: "Request returned an invalid response." }));
     assertNoLeak(path, payload);
@@ -288,7 +304,7 @@
     els.sessionRole.textContent = safeDisplay(data.role || "-");
     els.currentAdminUsername.textContent = safeDisplay(data.admin && data.admin.username ? data.admin.username : "-");
     els.currentSiteCode.textContent = safeDisplay(data.siteCode || SITE_CODE);
-    els.permissionSummary.textContent = `${state.permissions.length} granted`;
+    els.permissionSummary.textContent = `${formatCountSafe(state.permissions.length)} granted`;
     els.backendEnforced.textContent = `Yes / ${SITE_CODE}`;
     els.roleLastRefresh.textContent = formatDate(new Date().toISOString());
     els.responseLeakWarning.textContent = "Safe display only";
@@ -300,7 +316,7 @@
 
   function renderPermissionMatrix() {
     els.permissionMatrixRows.innerHTML = "";
-    els.permissionMatrixCount.textContent = `${PERMISSION_MATRIX.length} checks`;
+    els.permissionMatrixCount.textContent = `${formatCountSafe(PERMISSION_MATRIX.length)} checks`;
     const checkedAt = state.token ? formatDate(new Date().toISOString()) : "-";
     for (const [module, key, description, accessType, requiresReason, auditRequired] of PERMISSION_MATRIX) {
       const tr = document.createElement("tr");
@@ -322,7 +338,7 @@
 
   function roleAdminCount(role) {
     const rows = state.schedules.filter((row) => row.admin && (row.siteAccessRole === role || row.admin.role === role));
-    return state.schedules.length ? String(rows.length) : "-";
+    return state.schedules.length ? formatCountSafe(rows.length) : "0";
   }
 
   function rolePermissions(role) {
@@ -349,7 +365,7 @@
 
   function permissionCountText(list) {
     const permissions = Array.isArray(list) ? list : [];
-    return permissions.length ? `${permissions.length} permissions` : "0 permissions";
+    return `${formatCountSafe(permissions.length)} permissions`;
   }
 
   function roleIsProtected(role) {
@@ -422,7 +438,7 @@
       tr.appendChild(enabled);
       tr.appendChild(createCell(key));
       tr.appendChild(createCell(permission.label || key));
-      tr.appendChild(createCell(permission.group || "General Admin"));
+      tr.appendChild(createCell(permission.group || "Uncategorized"));
       tr.appendChild(createCell(permission.access || "read"));
       tr.appendChild(createCell(permission.requiresReason ? "Yes" : "No"));
       tr.appendChild(createCell(permission.auditRequired ? "Yes" : "No"));
@@ -453,13 +469,13 @@
       state.selectedRole = state.roles.find((role) => role.role === state.selectedRole.role) || null;
     }
     els.roleList.innerHTML = "";
-    els.roleCount.textContent = `${state.roles.length} roles`;
+    els.roleCount.textContent = `${formatCountSafe(state.roles.length)} roles`;
     els.roleEmpty.classList.toggle("hidden", state.roles.length > 0);
     for (const role of state.roles) {
       const button = document.createElement("button");
       button.type = "button";
       button.className = `role-item ${state.selectedRole && state.selectedRole.role === role.role ? "active" : ""}`.trim();
-      button.textContent = role.role;
+      button.textContent = safeDisplay(role.role || "Unnamed role");
       button.addEventListener("click", () => {
         state.selectedRole = role;
         renderRoles(state.roles);
@@ -490,11 +506,11 @@
     const permissions = rolePermissions(role);
     state.roleOriginalPermissions = permissions.slice();
     state.roleDraftPermissions = permissions.slice();
-    els.roleDetailName.textContent = safeDisplay(role.role);
-    els.roleDescription.textContent = safeDisplay(role.description || ROLE_DESCRIPTIONS[role.role] || "Backend role catalog");
+    els.roleDetailName.textContent = safeDisplay(role.role || "Unnamed role");
+    els.roleDescription.textContent = safeDisplay(role.description || ROLE_DESCRIPTIONS[role.role] || "No details");
     els.roleSiteCode.textContent = safeDisplay(role.siteCode || SITE_CODE);
-    els.rolePermissionCount.textContent = String(permissions.length);
-    els.roleAdminCount.textContent = role.adminCount === 0 || role.adminCount ? String(role.adminCount) : roleAdminCount(role.role);
+    els.rolePermissionCount.textContent = formatCountSafe(permissions.length);
+    els.roleAdminCount.textContent = role.adminCount === 0 || role.adminCount ? formatCountSafe(role.adminCount) : roleAdminCount(role.role);
     els.roleStatus.textContent = safeDisplay(role.status || "active");
     els.roleLastUpdated.textContent = formatDate(role.updatedAt) || "Role default";
     els.roleUpdatedBy.textContent = role.source === "site_override" ? "Site permission override" : "Backend role defaults";
@@ -587,7 +603,7 @@
   function formatDate(value) {
     if (!value) return "-";
     const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return "-";
+    if (!Number.isFinite(date.getTime())) return "-";
     return date.toLocaleString("en-GB", { hour12: false });
   }
 
@@ -603,7 +619,7 @@
     const emergency = schedule && schedule.emergencyOverride;
     if (!emergency || !emergency.enabled) return { label: "Inactive", cls: "" };
     const expires = emergency.expiresAt ? new Date(emergency.expiresAt) : null;
-    if (!expires || Number.isNaN(expires.getTime())) return { label: "Invalid expiration", cls: "danger" };
+    if (!expires || !Number.isFinite(expires.getTime())) return { label: "Invalid expiration", cls: "danger" };
     if (expires.getTime() <= Date.now()) return { label: "Expired", cls: "danger" };
     return { label: `Active until ${formatDate(emergency.expiresAt)}`, cls: "warn" };
   }
@@ -644,7 +660,7 @@
   function renderSchedules(rows) {
     state.schedules = rows || [];
     els.rows.innerHTML = "";
-    els.listCount.textContent = `${state.schedules.length} admins`;
+    els.listCount.textContent = `${formatCountSafe(state.schedules.length)} admins`;
     els.empty.classList.toggle("hidden", state.schedules.length > 0);
 
     for (const row of state.schedules) {
@@ -892,10 +908,17 @@
   async function saveRolePermissions(event) {
     if (event && event.preventDefault) event.preventDefault();
     if (!state.selectedRole) return setToast("Select a role");
-    const reasonInput = event && event.target === els.roleEditForm ? els.roleEditReason : els.rolePermissionReason;
-    const errorEl = event && event.target === els.roleEditForm ? els.roleEditReasonError : els.rolePermissionReasonError;
-    const reason = validateReasonBeforeConfirm(reasonInput, errorEl);
+    if (event && event.target === els.roleEditForm) {
+      const reason = validateReasonBeforeConfirm(els.roleEditReason, els.roleEditReasonError);
+      if (!reason) return;
+      return saveRolePermissionsWithReason(reason);
+    }
+    const reason = validateReasonBeforeConfirm(els.rolePermissionReason, els.rolePermissionReasonError);
     if (!reason) return;
+    return saveRolePermissionsWithReason(reason);
+  }
+
+  async function saveRolePermissionsWithReason(reason) {
     if (!rolePermissionChanged()) return setToast("No permission changes selected");
     if (roleIsProtected(state.selectedRole)) return setToast("owner/super_admin permissions are controlled by guard");
     if (selectedRoleHasCurrentAdmin()) return setToast("Self role permission update is blocked");
@@ -1012,7 +1035,7 @@
       endTime: schedule.endTime || "18:00",
       timezone: schedule.timezone || "Asia/Bangkok",
       forceLogoutWhenScheduleEnds: schedule.forceLogoutWhenScheduleEnds !== false,
-      idleTimeoutMinutes: Number.isFinite(Number(schedule.idleTimeoutMinutes)) ? Number(schedule.idleTimeoutMinutes) : 60,
+      idleTimeoutMinutes: toSafeNumber(schedule.idleTimeoutMinutes, 60),
     };
   }
 
@@ -1081,7 +1104,7 @@
     if (!reason) return;
     if (enabled && !els.overrideExpires.value) return setToast("Override expiration is required.");
     const expires = enabled ? new Date(els.overrideExpires.value) : null;
-    if (enabled && (!expires || Number.isNaN(expires.getTime()) || expires.getTime() <= Date.now())) {
+    if (enabled && (!expires || !Number.isFinite(expires.getTime()) || expires.getTime() <= Date.now())) {
       return setToast("Override expiration must be in the future.");
     }
     const confirmed = await confirmAction("Confirm emergency override", "Confirm emergency override update");
@@ -1157,7 +1180,7 @@
       const afterRole = row.metadata.afterRole || (row.metadata.after && (row.metadata.after.role || row.metadata.after.siteAccessRole));
       if (beforeRole || afterRole) return safeDisplay(`role ${text(beforeRole)} -> ${text(afterRole)}`);
       const after = row.metadata.after;
-      return safeDisplay(`role ${text(after.role || after.siteAccessRole)}; permissions ${Array.isArray(after.permissions) ? after.permissions.length : "-"}`);
+      return safeDisplay(`role ${text(after.role || after.siteAccessRole)}; permissions ${Array.isArray(after.permissions) ? formatCountSafe(after.permissions.length) : "-"}`);
     }
     if (!afterSchedule) return "-";
     const status = afterSchedule.enabled ? "enabled" : "disabled";
@@ -1173,7 +1196,7 @@
   function renderAudit(rows) {
     const safeRows = Array.isArray(rows) ? rows : [];
     els.auditRows.innerHTML = "";
-    els.auditCount.textContent = `${safeRows.length} events`;
+    els.auditCount.textContent = `${formatCountSafe(safeRows.length)} events`;
     els.auditEmpty.classList.toggle("hidden", safeRows.length > 0);
     for (const row of safeRows) {
       const actor = row.admin && row.admin.username ? row.admin.username : "-";

@@ -6,6 +6,7 @@ const env = require("./config/env");
 const routes = require("./routes");
 const adminRoutes = require("./routes/admin.routes");
 const adminController = require("./controllers/admin.controller");
+const healthController = require("./controllers/health.controller");
 const siteResolver = require("./middleware/siteResolver");
 const { asyncHandler, notFound, errorHandler } = require("./middleware/errorHandler");
 
@@ -32,6 +33,7 @@ app.use(
 );
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: false }));
+app.get(["/health", "/api/health"], asyncHandler(healthController.health));
 
 function sendAdminUi(_req, res) {
   res.sendFile(path.join(adminUiDir, "index.html"));

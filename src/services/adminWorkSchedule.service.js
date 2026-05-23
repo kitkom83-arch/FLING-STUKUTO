@@ -277,6 +277,13 @@ async function listAdminWorkScheduleAuditLogs({ targetAdminId, siteId, query = {
   if (query.action && SCHEDULE_AUDIT_ACTIONS.includes(String(query.action))) {
     where.action = String(query.action);
   }
+  const dateFrom = parseAuditDate(query.dateFrom || query.date_from, "dateFrom");
+  const dateTo = parseAuditDate(query.dateTo || query.date_to, "dateTo");
+  if (dateFrom || dateTo) {
+    where.createdAt = {};
+    if (dateFrom) where.createdAt.gte = dateFrom;
+    if (dateTo) where.createdAt.lte = dateTo;
+  }
   if (search) {
     where.OR = [
       { action: { contains: search, mode: "insensitive" } },
@@ -323,6 +330,13 @@ function maskIp(value) {
   const parts = text.split(".");
   if (parts.length === 4) return `${parts[0]}.${parts[1]}.***.***`;
   return "[REDACTED]";
+}
+
+function parseAuditDate(value, label) {
+  if (!value) return null;
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) throw error(`${label} must be a valid date`, 400);
+  return parsed;
 }
 
 function safeActor(actorAdmin) {

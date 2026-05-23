@@ -378,6 +378,18 @@ function allowingSchedule() {
   };
 }
 
+function disabledSchedule() {
+  return {
+    ...allowingSchedule(),
+    enabled: false,
+    emergencyOverride: {
+      enabled: false,
+      expiresAt: null,
+      reason: null,
+    },
+  };
+}
+
 async function ensureLocalFixtures() {
   const prisma = require("../config/prisma");
   const { hashPassword } = require("../utils/password");
@@ -553,8 +565,16 @@ async function runOwnerAccessChecks(baseUrl, ownerAuth, targetId) {
   console.log("Owner access: PASS");
 }
 
-async function assertAuditLog(baseUrl, ownerAuth, action, targetId) {
-  const logs = await apiRequest(baseUrl, `/admin/work-schedules/${encodeURIComponent(targetId)}/audit-logs?action=${encodeURIComponent(action)}&limit=20`, {
+function auditLogPath(targetId, params) {
+  const query = new URLSearchParams({ limit: "20", ...params });
+  return `/admin/work-schedules/${encodeURIComponent(targetId)}/audit-logs?${query.toString()}`;
+}
+
+async function assertAuditLog(baseUrl, ownerAuth, action, targetId, options = {}) {
+  const logs = await apiRequest(baseUrl, auditLogPath(targetId, {
+    action,
+    ...(options.dateFrom ? { dateFrom: options.dateFrom } : {}),
+  }), {
     authValue: ownerAuth,
     label: `${action} audit log`,
   });
@@ -564,8 +584,11 @@ async function assertAuditLog(baseUrl, ownerAuth, action, targetId) {
   }
 }
 
-async function assertAuditReason(baseUrl, ownerAuth, targetId, action, reason) {
-  const logs = await apiRequest(baseUrl, `/admin/work-schedules/${encodeURIComponent(targetId)}/audit-logs?action=${encodeURIComponent(action)}&limit=20`, {
+async function assertAuditReason(baseUrl, ownerAuth, targetId, action, reason, options = {}) {
+  const logs = await apiRequest(baseUrl, auditLogPath(targetId, {
+    action,
+    ...(options.dateFrom ? { dateFrom: options.dateFrom } : {}),
+  }), {
     authValue: ownerAuth,
     label: `${action} audit reason`,
   });
@@ -580,9 +603,21 @@ async function assertAuditReason(baseUrl, ownerAuth, targetId, action, reason) {
 }
 
 async function runLoginScheduleChecks(baseUrl, ownerAuth, targetAdmin) {
+  await updateSchedule(
+    baseUrl,
+    ownerAuth,
+    targetAdmin.id,
+    { ...disabledSchedule(), reason: "local smoke pre-enable schedule reset" },
+    "target pre-enable schedule reset"
+  );
+  const enableAuditStartedAt = new Date(Date.now() - 1000).toISOString();
   await updateSchedule(baseUrl, ownerAuth, targetAdmin.id, { ...blockingSchedule(), reason: "local smoke blocking schedule reason" }, "target blocking schedule");
-  await assertAuditReason(baseUrl, ownerAuth, targetAdmin.id, "admin.schedule.update", "local smoke blocking schedule reason");
-  await assertAuditReason(baseUrl, ownerAuth, targetAdmin.id, "admin.schedule.enable", "local smoke blocking schedule reason");
+  await assertAuditReason(baseUrl, ownerAuth, targetAdmin.id, "admin.schedule.update", "local smoke blocking schedule reason", {
+    dateFrom: enableAuditStartedAt,
+  });
+  await assertAuditReason(baseUrl, ownerAuth, targetAdmin.id, "admin.schedule.enable", "local smoke blocking schedule reason", {
+    dateFrom: enableAuditStartedAt,
+  });
   await loginAdmin(baseUrl, targetAdmin.username, { expectBlocked: true });
   await assertAuditLog(baseUrl, ownerAuth, "admin.login.blocked_outside_schedule", targetAdmin.id);
   console.log("Login outside schedule block: PASS");
@@ -692,8 +727,11 @@ async function main() {
     await runEmergencyOverrideChecks(baseUrl, ownerAuth, admins.target);
     await runExpiredOverrideChecks(baseUrl, ownerAuth, admins.target);
     runOvernightShiftChecks();
+    const cleanupStartedAt = new Date(Date.now() - 1000).toISOString();
     await cleanupSchedule(baseUrl, ownerAuth, admins.target.id);
-    await assertAuditReason(baseUrl, ownerAuth, admins.target.id, "admin.schedule.disable", "target cleanup schedule reason");
+    await assertAuditReason(baseUrl, ownerAuth, admins.target.id, "admin.schedule.disable", "target cleanup schedule reason", {
+      dateFrom: cleanupStartedAt,
+    });
 
     for (const action of [
       "admin.schedule.update",

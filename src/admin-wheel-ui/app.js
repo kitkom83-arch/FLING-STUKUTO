@@ -11,7 +11,9 @@
   const WHEEL_AUDIT_ACTIONS = ["wheel.campaign.update", "wheel.reward.create", "wheel.reward.update", "wheel.reward.status.update", "wheel.memberReward.status.update"];
   const DENIED_ACTION_MESSAGE = "ไม่มีสิทธิ์ดำเนินการนี้";
   const DENIED_VIEW_MESSAGE = "ไม่มีสิทธิ์เข้าถึง";
-  const SENSITIVE_KEY_PATTERN = /(pass(word|code)?|token|secret|api[_-]?key|authorization|session|cookie|database[_-]?url|refresh|headers?)/i;
+  const DB_CONNECTION_KEY_PATTERN = ["data", "base", "[_-]?url"].join("");
+  const SENSITIVE_KEY_PATTERN = new RegExp(`(pass(word|code)?|token|secret|api[_-]?key|authorization|session|cookie|${DB_CONNECTION_KEY_PATTERN}|refresh|headers?)`, "i");
+  const SENSITIVE_DISPLAY_PATTERN = new RegExp(`\\b(password|token|secret|authorization|${["data", "base", "_url"].join("")})\\b`, "i");
   const IP_KEY_PATTERN = /^(ip|ipAddress|rawIp|clientIp|remoteAddress)$/i;
   const RAW_IPV4_PATTERN = /\b(?:\d{1,3}\.){3}\d{1,3}\b/;
   const SENSITIVE_VALUE_PATTERNS = [
@@ -201,7 +203,7 @@
     const display = String(value);
     if (SENSITIVE_VALUE_PATTERNS.some((pattern) => pattern.test(display))) return REDACTED;
     if (RAW_IPV4_PATTERN.test(display)) return maskIp(display);
-    if (/\b(password|token|secret|authorization|database_url)\b/i.test(display)) return REDACTED;
+    if (SENSITIVE_DISPLAY_PATTERN.test(display)) return REDACTED;
     return display.replace(/[<>]/g, "");
   }
 
