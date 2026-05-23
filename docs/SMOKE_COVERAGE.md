@@ -266,7 +266,7 @@ Role-management smoke uses only local/staging/test PostgreSQL fixtures. It does 
 - Confirms `/admin` renders the admin shell and Role Management navigation.
 - Confirms `/admin/roles` renders the role list/detail shell, permission matrix container, effective permission preview, reason-required save/reset controls, confirm modal, and Role UI source markers for `wheel.view`, `admin.audit.view`, and `admin.roles.update`.
 - Confirms `/admin-wheel` renders permission summary, Campaign settings, Rewards management, Spin history, Reports, Audit history, Reward Claims, and reason-required claim/cancel controls.
-- Confirms rendered HTML has no `undefined`, `NaN`, `[object Object]`, or sensitive rendered keyword copy.
+- Confirms rendered HTML has no missing-value placeholder, invalid-number placeholder, object-string placeholder, or sensitive rendered keyword copy.
 - Confirms static HTML/JS/CSS do not contain JWT-shaped values, PostgreSQL credential URLs, or secret env assignment markers.
 - Confirms Role Management UI does not expose owner/super_admin bypass controls or wildcard permission controls.
 - Confirms Admin Wheel UI does not expose force reward, force spin, set-prize-index controls, or member spin endpoint calls.
@@ -344,7 +344,7 @@ The audit/security smoke uses only static frontend assets and local/staging/test
 - Confirms permission summary markers and singular Phase Y permission markers: `wheel.view`, `wheel.campaign.update`, `wheel.reward.create`, `wheel.reward.update`, `wheel.reward.enable`, `wheel.reward.disable`, `wheel.spin.view`, `wheel.report.view`, and `wheel.audit.view`, while preserving existing plural aliases such as `wheel.rewards.*`, `wheel.spins.view`, and `wheel.reports.view`.
 - Confirms campaign/reward/status writes validate required reason and show a confirm modal before API submission.
 - Confirms reward field validation markers for required label/type, non-negative probability weight, non-negative or blank stock limit, `stockLimit >= stockUsed`, and default segment color fallback.
-- Confirms source markers for safe `401`, `403`, and `404` handling; config/reward/spin/member-reward adapters; sanitized spin/reward detail summaries; masked IP and user-agent hash handling; audit action filtering including `wheel.reward.enable`, `wheel.reward.disable`, and `wheel.memberReward.status.update`; report zero-division guards; safe number/percent formatting; and no visible `NaN`, `undefined`, or `[object Object]` rendered copy.
+- Confirms source markers for safe `401`, `403`, and `404` handling; config/reward/spin/member-reward adapters; sanitized spin/reward detail summaries; masked IP and user-agent hash handling; audit action filtering including `wheel.reward.enable`, `wheel.reward.disable`, and `wheel.memberReward.status.update`; report zero-division guards; safe number/percent formatting; and no visible unsafe rendered placeholder copy.
 - Confirms frontend script does not include member spin calls, random reward selection, frontend-submitted spin result fields, or force reward/force spin/set-prize-index button labels.
 - Confirms static assets do not contain JWT-like values, PostgreSQL credential URLs, env assignment markers, or sensitive console logging.
 - Documents browser-only manual checks in `docs/ADMIN_WHEEL_HANDOFF.md`, including browser Console, visual modal fit, desktop table overflow, empty states, and loading/error states.
@@ -363,7 +363,7 @@ The Admin Wheel UI smoke is static/source-only. It does not require a database, 
 - Member runtime checks cover `GET /api/member/wheel/config`, `POST /api/member/wheel/spin`, `GET /api/member/wheel/history`, and `GET /api/member/wheel/my-rewards`.
 - Member runtime checks confirm config campaign/rewards shape, reject unsafe spin payloads containing frontend-selected result fields, reject invalid campaign id safely, and confirm backend-selected `spinId`, `rewardId`, `prizeIndex`, safe reward object, and safe `remainingSpinsToday`.
 - Latest admin spin history lookup uses `dateFrom`/`dateTo` plus `rewardId` and confirms the newest backend-created `spinId` is visible.
-- Report summary validation recomputes client-side Admin Wheel report inputs from config, spin rows, and member reward rows, then rejects `NaN`, `undefined`, and non-finite numbers.
+- Report summary validation recomputes client-side Admin Wheel report inputs from config, spin rows, and member reward rows, then rejects invalid-number placeholders, missing-value placeholders, and non-finite numbers.
 - `PATCH /api/admin/wheel/campaign`, `POST /api/admin/wheel/rewards`, `PATCH /api/admin/wheel/rewards/:id`, and `PATCH /api/admin/wheel/member-rewards/:id/status` reject empty `reason`; no-permission write attempts return `403`.
 - Successful campaign/reward/reward-claim writes use local/staging-safe fixtures only and create `wheel.campaign.update`, `wheel.reward.create`, `wheel.reward.update`, status-only `wheel.reward.enable`/`wheel.reward.disable`, and `wheel.memberReward.status.update` audit rows.
 - Audit read uses the existing `/api/admin/audit-logs` endpoint with `dateFrom`/`dateTo` bounds and verifies `reason`, `metadata.reason`, actor, site code, sanitized before/after data, masked IP behavior, and no raw user-agent.
@@ -694,7 +694,7 @@ Coverage:
 - Confirms the runbook documents Render Build Command `npm install && npx prisma generate`.
 - Confirms the runbook documents Render Start Command `npm start`.
 - Confirms the runbook documents seed command temporary-only policy.
-- Confirms the runbook has no unexpected `undefined`, `NaN`, or `[object Object]` copy.
+- Confirms the runbook has no unexpected missing-value placeholder, invalid-number placeholder, or object-string placeholder copy.
 - Confirms the runbook does not include static credential-shaped values.
 
 Smoke policy:
