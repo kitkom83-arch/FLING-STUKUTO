@@ -236,6 +236,7 @@ node --check src/local-smoke-tests/adminWorkScheduleUiSmoke.js
 node --check src/local-smoke-tests/adminAuditSecuritySmoke.js
 node --check src/local-smoke-tests/stagingPreflight.js
 node --check src/local-smoke-tests/stagingSmoke.js
+node --check src/local-smoke-tests/stagingDeployReadinessPackSmoke.js
 node --check src/local-smoke-tests/runAllLocalSmoke.js
 ```
 
@@ -251,6 +252,7 @@ npm run smoke:admin-permission
 npm run smoke:admin-work-schedule
 npm run smoke:admin-work-schedule-ui
 npm run smoke:admin-audit-security
+npm run smoke:staging-deploy-readiness-pack
 npm run smoke:staging
 npm run smoke:all-local
 ```
@@ -607,14 +609,14 @@ Error responses use:
 { "success": false, "message": "Error message", "errors": {} }
 ```
 
-All API responses are JSON. Prisma decimal money values are serialized as strings with two decimals, for example `"0.00"`. `passwordHash` is stripped from responses, `undefined` values are removed or converted to `null`, and invalid numeric values such as `NaN` are converted to `null`.
+All API responses are JSON. Prisma decimal money values are serialized as strings with two decimals, for example `"0.00"`. `passwordHash` is stripped from responses, missing-value fields are removed or converted to `null`, and invalid-number values are converted to `null`.
 
 ### Auth Header
 
 Member and admin protected endpoints require:
 
 ```http
-Authorization header with bearer token
+Auth header with issued token
 ```
 
 Member tokens are issued by `POST /api/auth/login`. Admin tokens are issued by `POST /api/admin/auth/login`.
@@ -858,10 +860,10 @@ Each command prints a short PASS/FAIL line only. Do not dump provider payloads, 
 ### Adapter Test Checklist
 
 - Payment: `createDepositOrder`, `getDepositStatus`, `verifyCallback`, and `normalizeCallback` must return a stable reference, Decimal-safe amount strings, valid status values, and duplicate callback normalization without applying credit.
-- Bank: `listTransactions`, `matchDeposit`, and `normalizeTransaction` must return `amount`, `date`, `reference`, and `account`, with explicit `match` or `no-match` results and no `NaN` amounts.
+- Bank: `listTransactions`, `matchDeposit`, and `normalizeTransaction` must return `amount`, `date`, `reference`, and `account`, with explicit `match` or `no-match` results and no invalid-number amounts.
 - SMS: `sendSms`, `getBalance`, and `normalizeResult` must return clear delivery status, safe numeric balance, and masked phone output when logging is needed.
 - Slip OCR: `verifySlip` and `normalizeResult` must return normalized `bank`, `account`, `amount`, `date`, and `reference`, plus a common error shape for invalid slips.
-- Game: provider/game listing, player creation, balance, transfer in/out, launch, and bet history must require transfer references, return mock launch URLs, and keep all amounts non-NaN.
+- Game: provider/game listing, player creation, balance, transfer in/out, launch, and bet history must require transfer references, return mock launch URLs, and keep all amounts finite and valid.
 
 ## Financial Safety Tests
 

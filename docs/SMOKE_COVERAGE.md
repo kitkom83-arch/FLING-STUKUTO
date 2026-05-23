@@ -50,6 +50,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `stagingPreflight.js` | `npm run staging:preflight` | No local Prisma access | Optional | No | Runs local-test dry run | Staging readiness guard for env boundary, database/API target labels, external modes, health contract, and response leak scan. |
 | `stagingSmoke.js` | `npm run smoke:staging` | No local Prisma access | Yes | No | Syntax check only | Hosted staging health contract, safe external mode labels, admin auth negative leak check, and response leak scan. |
 | `stagingReleaseReadinessSmoke.js` | `npm run smoke:staging-release-readiness` | No | No | No | Runs static contract | CI-safe static release readiness guard for package scripts, runbook/docs policy, rollback/incident checklist wording, release gate/full UAT/role UAT command separation, and secret-shaped value scan. It does not call staging. |
+| `stagingDeployReadinessPackSmoke.js` | `npm run smoke:staging-deploy-readiness-pack` | No | No | No | Runs static contract | Staging Deploy Readiness Pack Smoke checks staging deploy readiness docs, environment matrix, go/no-go gate, no production DB boundary, no real-money boundary, no live provider/payment/bank/SMS/Slip OCR boundary, static secret scan, and unsafe rendered placeholder copy scan. It does not call API, connect DB, require a server, read env secrets, deploy, migrate, or seed. |
 | `productionReadinessAuditSmoke.js` | `npm run smoke:production-readiness-audit` | No | No | No | Runs static contract | Phase M static guard for `docs/PRODUCTION_READINESS_GAP_AUDIT.md`, production blocker coverage, mock/sandbox boundary wording, Go/No-Go criteria, P0 checklist, recommended next phases, and secret-shaped value scan. It is a pre-production planning artifact only and does not deploy production. |
 | `productionSafetyDryRunSmoke.js` | `npm run smoke:production-safety-dry-run` | No | No | No | Runs static contract | Phase N static guard for `docs/PRODUCTION_SAFETY_DRY_RUN.md`, hard safety boundaries, ENV checklist, dry-run smoke plan, rollback, backup/restore, monitoring/alerting, financial safety, Go/No-Go rehearsal, next phases, and secret-shaped value scan. It is a planning artifact only and does not deploy production. |
 | `monitoringBackupRunbookSmoke.js` | `npm run smoke:monitoring-backup-runbook` | No | No | No | Runs static contract | Phase O static guard for `docs/MONITORING_BACKUP_RUNBOOK.md`, monitoring targets, SEV1-SEV4 severity/routing, log retention, backup, restore drill, incident checklist/template, Go/No-Go monitoring criteria, next phases, and secret-shaped value scan. It is a planning artifact only and does not deploy production. |
@@ -1137,6 +1138,53 @@ Coverage:
 - Confirms safety boundaries: no production DB, no real money, no live payout, and no live provider/payment/bank/SMS/Slip OCR.
 - Confirms Lucky Wheel backend result authority: backend decides `prizeIndex` and frontend must not decide reward.
 - Confirms admin operator may-do and must-not-do checklists are present.
+- Runs a static secret scan for credential-shaped values and raw credential URL/header shapes.
+- Runs an unsafe rendered placeholder copy scan using safe wording checks for missing-value placeholder, invalid-number placeholder, object-string placeholder, and unsafe rendered placeholder copy.
+
+Boundary:
+
+- Scope is docs/static smoke only.
+- No API calls.
+- No DB connection.
+- No server requirement.
+- No env secret reads.
+- No production DB.
+- No real money.
+- No live payout.
+- No live provider/payment/bank/SMS/Slip OCR.
+- No deploy.
+- No migration.
+- No seed.
+
+## 43. Staging Deploy Readiness Pack Smoke
+
+Phase AA status: Staging Deploy Readiness Pack for safe staging preparation only.
+
+Documents:
+
+- `docs/STAGING_DEPLOY_READINESS_PACK.md`
+- `docs/STAGING_ENVIRONMENT_MATRIX.md`
+- `docs/STAGING_DEPLOY_GO_NO_GO.md`
+
+Script:
+
+- `src/local-smoke-tests/stagingDeployReadinessPackSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:staging-deploy-readiness-pack
+```
+
+Coverage:
+
+- Confirms staging deploy readiness docs exist.
+- Confirms the environment matrix exists and includes mock/sandbox provider modes.
+- Confirms the go/no-go gate exists and includes explicit deploy approval gate wording.
+- Confirms no production DB boundary wording.
+- Confirms no real-money boundary wording.
+- Confirms no live payout boundary wording.
+- Confirms no live provider/payment/bank/SMS/Slip OCR boundary wording.
 - Runs a static secret scan for credential-shaped values and raw credential URL/header shapes.
 - Runs an unsafe rendered placeholder copy scan using safe wording checks for missing-value placeholder, invalid-number placeholder, object-string placeholder, and unsafe rendered placeholder copy.
 
