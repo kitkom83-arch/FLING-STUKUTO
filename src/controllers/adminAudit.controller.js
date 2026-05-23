@@ -10,7 +10,8 @@ const WHEEL_AUDIT_ACTIONS = [
   "wheel.campaign.update",
   "wheel.reward.create",
   "wheel.reward.update",
-  "wheel.reward.status.update",
+  "wheel.reward.enable",
+  "wheel.reward.disable",
   "wheel.memberReward.status.update",
 ];
 const WHEEL_AUDIT_ACTION_SET = new Set(WHEEL_AUDIT_ACTIONS);

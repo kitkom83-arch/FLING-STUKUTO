@@ -33,12 +33,16 @@ const canWheelRewardUpdate = async (req, res, next) => {
   try {
     const body = req.body && typeof req.body === "object" ? req.body : {};
     const keys = Object.keys(body).filter((key) => key !== "reason");
-    const permission =
+    const permissions =
       keys.length === 1 && keys[0] === "status"
-        ? "wheel.rewards.status.update"
-        : "wheel.rewards.update";
-    if (await adminHasPermission(req.admin, req.siteId, permission)) return next();
-    return fail(res, "Admin permission denied", 403, { permission });
+        ? body.status === "active"
+          ? ["wheel.reward.enable", "wheel.rewards.status.update"]
+          : ["wheel.reward.disable", "wheel.rewards.status.update"]
+        : ["wheel.reward.update", "wheel.rewards.update"];
+    for (const permission of permissions) {
+      if (await adminHasPermission(req.admin, req.siteId, permission)) return next();
+    }
+    return fail(res, "Admin permission denied", 403, { permissions });
   } catch (error) {
     return next(error);
   }
@@ -148,9 +152,9 @@ router.get(
 
 router.get("/wheel/config", protectedSite, canAny(["wheel.view", "wheel.campaign.view"]), asyncHandler(wheelController.adminConfig));
 router.patch("/wheel/campaign", protectedSite, can("wheel.campaign.update"), asyncHandler(wheelController.updateCampaign));
-router.post("/wheel/rewards", protectedSite, can("wheel.rewards.create"), asyncHandler(wheelController.createReward));
+router.post("/wheel/rewards", protectedSite, canAny(["wheel.reward.create", "wheel.rewards.create"]), asyncHandler(wheelController.createReward));
 router.patch("/wheel/rewards/:id", protectedSite, canWheelRewardUpdate, asyncHandler(wheelController.updateReward));
-router.get("/wheel/spins", protectedSite, can("wheel.spins.view"), asyncHandler(wheelController.adminSpins));
+router.get("/wheel/spins", protectedSite, canAny(["wheel.spin.view", "wheel.spins.view"]), asyncHandler(wheelController.adminSpins));
 router.get("/wheel/member-rewards", protectedSite, can("wheel.claims.view"), asyncHandler(wheelController.adminMemberRewards));
 router.patch(
   "/wheel/member-rewards/:id/status",

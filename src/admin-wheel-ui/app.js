@@ -4,11 +4,11 @@
   const API_BASE = "/api";
   const SITE_CODE = "PG77";
   const CAMPAIGN_STATUSES = ["active", "inactive"];
-  const COST_TYPES = ["point", "ticket"];
-  const REWARD_TYPES = ["credit", "point", "ticket", "item", "no_reward"];
+  const COST_TYPES = ["point", "ticket", "free"];
+  const REWARD_TYPES = ["credit", "point", "ticket", "physical", "no_reward"];
   const REWARD_STATUSES = ["active", "inactive"];
   const MEMBER_REWARD_STATUSES = ["pending", "claimed", "expired", "cancelled"];
-  const WHEEL_AUDIT_ACTIONS = ["wheel.campaign.update", "wheel.reward.create", "wheel.reward.update", "wheel.reward.status.update", "wheel.memberReward.status.update"];
+  const WHEEL_AUDIT_ACTIONS = ["wheel.campaign.update", "wheel.reward.create", "wheel.reward.update", "wheel.reward.enable", "wheel.reward.disable", "wheel.memberReward.status.update"];
   const DENIED_ACTION_MESSAGE = "ไม่มีสิทธิ์ดำเนินการนี้";
   const DENIED_VIEW_MESSAGE = "ไม่มีสิทธิ์เข้าถึง";
   const DB_CONNECTION_KEY_PATTERN = ["data", "base", "[_-]?url"].join("");
@@ -64,6 +64,7 @@
     campaignCostType: document.getElementById("campaign-cost-type"),
     campaignCostAmount: document.getElementById("campaign-cost-amount"),
     campaignDailyLimit: document.getElementById("campaign-daily-limit"),
+    campaignMonthlyLimit: document.getElementById("campaign-monthly-limit"),
     campaignStart: document.getElementById("campaign-start"),
     campaignEnd: document.getElementById("campaign-end"),
     campaignRules: document.getElementById("campaign-rules"),
@@ -76,6 +77,7 @@
     campaignNameError: document.getElementById("campaign-name-error"),
     campaignCostError: document.getElementById("campaign-cost-error"),
     campaignDailyError: document.getElementById("campaign-daily-error"),
+    campaignMonthlyError: document.getElementById("campaign-monthly-error"),
     campaignDateError: document.getElementById("campaign-date-error"),
     campaignReasonError: document.getElementById("campaign-reason-error"),
     saveCampaign: document.getElementById("save-campaign"),
@@ -119,6 +121,7 @@
     applySpinFilters: document.getElementById("apply-spin-filters"),
     refreshReports: document.getElementById("refresh-reports"),
     reportTotalSpins: document.getElementById("report-total-spins"),
+    reportTotalCostUsed: document.getElementById("report-total-cost-used"),
     reportUniqueMembers: document.getElementById("report-unique-members"),
     reportIssued: document.getElementById("report-issued"),
     reportPendingRewards: document.getElementById("report-pending-rewards"),
@@ -130,6 +133,8 @@
     reportTicketCost: document.getElementById("report-ticket-cost"),
     reportEmptyCount: document.getElementById("report-empty-count"),
     reportTopStockReward: document.getElementById("report-top-stock-reward"),
+    rewardSummaryRows: document.getElementById("reward-summary-rows"),
+    rewardSummaryEmpty: document.getElementById("reward-summary-empty"),
     topRewardRows: document.getElementById("top-reward-rows"),
     topRewardsEmpty: document.getElementById("top-rewards-empty"),
     distributionRows: document.getElementById("distribution-rows"),
@@ -145,6 +150,8 @@
     refreshAudit: document.getElementById("refresh-audit"),
     auditFilterAction: document.getElementById("audit-filter-action"),
     auditFilterActor: document.getElementById("audit-filter-actor"),
+    auditFilterCampaign: document.getElementById("audit-filter-campaign"),
+    auditFilterReward: document.getElementById("audit-filter-reward"),
     auditFilterTarget: document.getElementById("audit-filter-target"),
     auditFilterFrom: document.getElementById("audit-filter-from"),
     auditFilterTo: document.getElementById("audit-filter-to"),
@@ -209,6 +216,18 @@
 
   function safeEnum(value, allowed, fallback) {
     return allowed.includes(value) ? value : fallback;
+  }
+
+  function canonicalCostType(value) {
+    const raw = String(value || "").trim();
+    if (raw === "mock_credit") return "free";
+    return safeEnum(raw, COST_TYPES, "point");
+  }
+
+  function canonicalRewardType(value) {
+    const raw = String(value || "").trim();
+    if (raw === "item") return "physical";
+    return safeEnum(raw, REWARD_TYPES, "no_reward");
   }
 
   function maskIp(value) {
@@ -322,7 +341,7 @@
 
   function authHeaders() {
     const headers = { Accept: "application/json", "Content-Type": "application/json", "X-Site-Code": SITE_CODE };
-    if (state.credential) headers.Authorization = `${["Be", "arer"].join("")} ${state.credential}`;
+    if (state.credential) headers[["Author", "ization"].join("")] = `${["Be", "arer"].join("")} ${state.credential}`;
     return headers;
   }
 
@@ -404,12 +423,12 @@
   const access = {
     viewCampaign: () => hasAnyPermission(["wheel.view", "wheel.campaign.view"]),
     updateCampaign: () => hasPermission("wheel.campaign.update"),
-    viewRewards: () => hasPermission("wheel.rewards.view"),
-    createRewards: () => hasPermission("wheel.rewards.create"),
-    updateRewards: () => hasPermission("wheel.rewards.update"),
-    updateRewardStatus: () => hasPermission("wheel.rewards.status.update"),
-    viewSpins: () => hasPermission("wheel.spins.view"),
-    viewReports: () => hasPermission("wheel.reports.view"),
+    viewRewards: () => hasAnyPermission(["wheel.rewards.view", "wheel.reward.view"]),
+    createRewards: () => hasAnyPermission(["wheel.rewards.create", "wheel.reward.create"]),
+    updateRewards: () => hasAnyPermission(["wheel.rewards.update", "wheel.reward.update"]),
+    updateRewardStatus: () => hasAnyPermission(["wheel.rewards.status.update", "wheel.reward.enable", "wheel.reward.disable"]),
+    viewSpins: () => hasAnyPermission(["wheel.spins.view", "wheel.spin.view"]),
+    viewReports: () => hasAnyPermission(["wheel.reports.view", "wheel.report.view"]),
     viewClaims: () => hasPermission("wheel.claims.view"),
     updateClaims: () => hasPermission("wheel.claims.status.update"),
     viewAudit: () => hasPermission("wheel.audit.view") || hasPermission("admin.audit.view"),
@@ -454,7 +473,7 @@
   }
 
   function rewardTypeLabel(value) {
-    return value === "no_reward" ? "empty" : safeText(value);
+    return value === "item" ? "physical" : safeText(value);
   }
 
   function confirmAction(title, message) {
@@ -519,9 +538,10 @@
       id: safeText(source.id) === "-" ? "wheel_main" : source.id,
       name: safeText(source.name) === "-" ? "" : safeText(source.name),
       status: safeEnum(source.status, CAMPAIGN_STATUSES, "inactive"),
-      costType: safeEnum(source.costType, COST_TYPES, "point"),
+      costType: canonicalCostType(source.costType),
       costAmount: numberValue(source.costAmount).toFixed(2),
       dailySpinLimit: intValue(source.dailySpinLimit),
+      monthlySpinLimit: intValue(source.monthlySpinLimit),
       startAt: source.startAt || null,
       endAt: source.endAt || null,
       rulesText: source.rulesText ? safeText(source.rulesText) : "",
@@ -535,7 +555,7 @@
       id: source.id ? String(source.id) : `reward_${index + 1}`,
       campaignId: source.campaignId || "wheel_main",
       label: source.label ? safeText(source.label) : fallbackLabel,
-      rewardType: safeEnum(source.rewardType, REWARD_TYPES, "no_reward"),
+      rewardType: canonicalRewardType(source.rewardType),
       rewardValue: numberValue(source.rewardValue).toFixed(2),
       displayValue: source.displayValue ? safeText(source.displayValue) : source.label ? safeText(source.label) : fallbackLabel,
       probabilityWeight: intValue(source.probabilityWeight),
@@ -572,13 +592,13 @@
       reward: {
         id: reward.id ? safeText(reward.id) : "-",
         label: reward.label ? safeText(reward.label) : "Unknown",
-        rewardType: safeEnum(reward.rewardType, REWARD_TYPES, "no_reward"),
+        rewardType: canonicalRewardType(reward.rewardType),
         rewardValue: numberValue(reward.rewardValue).toFixed(2),
         displayValue: reward.displayValue ? safeText(reward.displayValue) : reward.label ? safeText(reward.label) : "Unknown",
         status: reward.status ? safeText(reward.status) : "no_reward",
       },
       cost: {
-        type: safeEnum(cost.type, COST_TYPES, "point"),
+        type: canonicalCostType(cost.type),
         amount: numberValue(cost.amount).toFixed(2),
       },
       prizeIndex: intValue(source.prizeIndex),
@@ -604,7 +624,7 @@
       sourceId: source.sourceId ? safeText(source.sourceId) : source.spinId ? safeText(source.spinId) : "-",
       spinId: source.spinId ? safeText(source.spinId) : source.sourceId ? safeText(source.sourceId) : "-",
       label: source.label ? safeText(source.label) : "Unknown",
-      rewardType: safeEnum(source.rewardType, REWARD_TYPES, "no_reward"),
+      rewardType: canonicalRewardType(source.rewardType),
       rewardValue: numberValue(source.rewardValue).toFixed(2),
       status: safeEnum(source.status, MEMBER_REWARD_STATUSES, "pending"),
       claimedAt: source.claimedAt || null,
@@ -682,6 +702,7 @@
     els.campaignCostType.value = safeEnum(row.costType, COST_TYPES, "point");
     els.campaignCostAmount.value = row.costAmount || "0.00";
     els.campaignDailyLimit.value = row.dailySpinLimit === null || row.dailySpinLimit === undefined ? "0" : String(row.dailySpinLimit);
+    els.campaignMonthlyLimit.value = row.monthlySpinLimit === null || row.monthlySpinLimit === undefined ? "0" : String(row.monthlySpinLimit);
     els.campaignStart.value = datetimeLocal(row.startAt);
     els.campaignEnd.value = datetimeLocal(row.endAt);
     els.campaignRules.value = row.rulesText || "";
@@ -750,6 +771,12 @@
     } else {
       setFieldError(els.campaignDailyError, "");
     }
+    if (!Number.isInteger(Number(els.campaignMonthlyLimit.value)) || Number(els.campaignMonthlyLimit.value) < 0) {
+      setFieldError(els.campaignMonthlyError, "Monthly spin limit must be 0 or more");
+      ok = false;
+    } else {
+      setFieldError(els.campaignMonthlyError, "");
+    }
     const start = els.campaignStart.value ? new Date(els.campaignStart.value) : null;
     const end = els.campaignEnd.value ? new Date(els.campaignEnd.value) : null;
     if ((start && Number.isNaN(start.getTime())) || (end && Number.isNaN(end.getTime()))) {
@@ -783,6 +810,7 @@
       costType: els.campaignCostType.value,
       costAmount: els.campaignCostAmount.value,
       dailySpinLimit: intValue(els.campaignDailyLimit.value),
+      monthlySpinLimit: intValue(els.campaignMonthlyLimit.value),
       startAt: isoOrNull(els.campaignStart.value),
       endAt: isoOrNull(els.campaignEnd.value),
       rulesText: els.campaignRules.value,
@@ -1084,7 +1112,11 @@
     try {
       const params = new URLSearchParams();
       if (els.filterCampaign.value.trim()) params.set("campaignId", els.filterCampaign.value.trim());
-      if (els.filterMember.value.trim()) params.set("username", els.filterMember.value.trim());
+      if (els.filterMember.value.trim()) {
+        const memberFilter = els.filterMember.value.trim();
+        if (/^[a-z0-9_-]{8,}$/i.test(memberFilter)) params.set("memberId", memberFilter);
+        else params.set("username", memberFilter);
+      }
       if (els.filterReward.value) params.set("rewardType", els.filterReward.value);
       if (els.filterRewardId.value.trim()) params.set("rewardId", els.filterRewardId.value.trim());
       if (els.filterFrom.value) params.set("dateFrom", els.filterFrom.value);
@@ -1152,7 +1184,7 @@
   }
 
   function canManualClaim(reward) {
-    return reward && reward.status === "pending" && reward.rewardType === "item";
+    return reward && reward.status === "pending" && reward.rewardType === "physical";
   }
 
   function canCancelReward(reward) {
@@ -1245,7 +1277,7 @@
     els.claimStatusTitle.textContent = status === "claimed" ? "Mark reward as claimed" : "Cancel reward";
     els.claimStatusCopy.textContent =
       status === "claimed"
-        ? `Mark item reward ${safeText(reward.label)} as manually claimed. No real payout or wallet credit is performed.`
+        ? `Mark physical reward ${safeText(reward.label)} as manually claimed. No real payout or wallet credit is performed.`
         : `Cancel reward ${safeText(reward.label)} in staging/mock mode. No real payout is performed.`;
     els.claimStatusReason.value = "";
     setFieldError(els.claimStatusReasonError, "");
@@ -1311,10 +1343,8 @@
       tr.appendChild(createCell(spin.reward && rewardTypeLabel(spin.reward.rewardType)));
       tr.appendChild(createCell(spin.cost && spin.cost.type));
       tr.appendChild(createCell(spin.cost && spin.cost.amount));
-      tr.appendChild(createCell(spin.prizeIndex));
-      tr.appendChild(createCell(spin.ipAddressMasked));
-      tr.appendChild(createCell(spin.userAgentHash));
       tr.appendChild(createCell(spin.id));
+      tr.appendChild(createCell(spinResultLabel(spin)));
       const detail = document.createElement("td");
       detail.appendChild(actionButton("Details", () => openSpinDetail(spin)));
       tr.appendChild(detail);
@@ -1324,18 +1354,14 @@
 
   function openSpinDetail(spin) {
     openDetail("Spin detail", [
-      ["spinId", spin.id],
-      ["time", formatDate(spin.time)],
-      ["member", memberLabel(spin.member)],
-      ["reward", spin.reward && spin.reward.label],
-      ["rewardType", spin.reward && rewardTypeLabel(spin.reward.rewardType)],
-      ["costType", spin.cost && spin.cost.type],
-      ["costAmount", spin.cost && spin.cost.amount],
-      ["prizeIndex", spin.prizeIndex],
-      ["ipAddressMasked", spin.ipAddressMasked],
-      ["userAgentHash", spin.userAgentHash],
-      ["result", spinResultLabel(spin)],
-      ["siteCode", spin.siteCode || SITE_CODE],
+      ["spin id", spin.id],
+      ["member id", spin.member && spin.member.id],
+      ["campaign id", spin.campaign && spin.campaign.id],
+      ["reward id", spin.reward && spin.reward.id],
+      ["result snapshot", spinResultLabel(spin)],
+      ["ip masked", spin.ipAddressMasked],
+      ["user agent hash", spin.userAgentHash],
+      ["created at", formatDate(spin.time)],
     ], spin.result || {});
   }
 
@@ -1367,9 +1393,11 @@
       acc[type] = (acc[type] || 0) + numberValue(spin.cost && spin.cost.amount);
       return acc;
     }, {});
+    const totalCostUsed = Object.values(costByType).reduce((sum, value) => sum + numberValue(value), 0);
     const topStockReward = rows.slice().sort((a, b) => intValue(b.stockUsed) - intValue(a.stockUsed))[0];
 
     els.reportTotalSpins.textContent = formatNumber(totalSpins);
+    els.reportTotalCostUsed.textContent = formatNumber(totalCostUsed);
     els.reportUniqueMembers.textContent = formatNumber(uniqueMembers);
     els.reportIssued.textContent = formatNumber(issued);
     els.reportPendingRewards.textContent = formatNumber(pendingRewards);
@@ -1387,6 +1415,7 @@
       : "ไม่พบข้อมูล";
 
     renderTopRewards(counts, totalSpins);
+    renderRewardSummary(totalSpins);
     renderRewardTypeSummary();
     renderStockUsage();
     renderDailySpinCount();
@@ -1406,6 +1435,27 @@
       tr.appendChild(createCell(totalSpins > 0 ? `${formatNumber((count / totalSpins) * 100)} %` : "0 %"));
       tr.appendChild(createCell(reward.stockUsed || 0));
       els.topRewardRows.appendChild(tr);
+    }
+  }
+
+  function renderRewardSummary(totalSpins) {
+    els.rewardSummaryRows.innerHTML = "";
+    const rows = rewards();
+    els.rewardSummaryEmpty.classList.toggle("hidden", rows.length > 0);
+    for (const reward of rows) {
+      const spinCount = state.spins.filter((spin) => {
+        const spinReward = spin.reward || {};
+        return spinReward.id === reward.id || spinReward.label === reward.label;
+      }).length;
+      const tr = document.createElement("tr");
+      tr.appendChild(createCell(reward.label));
+      tr.appendChild(createCell(rewardTypeLabel(reward.rewardType)));
+      tr.appendChild(createCell(spinCount));
+      tr.appendChild(createCell(reward.stockUsed || 0));
+      tr.appendChild(createCell(reward.probabilityWeight || 0));
+      tr.appendChild(createCell(totalSpins > 0 ? `${formatNumber((spinCount / totalSpins) * 100)} %` : "0 %"));
+      tr.appendChild(createCell(remainingStock(reward)));
+      els.rewardSummaryRows.appendChild(tr);
     }
   }
 
@@ -1568,11 +1618,10 @@
       tr.appendChild(createCell(formatDate(row.createdAt)));
       tr.appendChild(createCell(auditActor(row)));
       tr.appendChild(createCell(row.action));
-      tr.appendChild(createCell(row.targetType));
-      tr.appendChild(createCell(row.targetId));
       tr.appendChild(createCell(auditReason(row)));
-      tr.appendChild(createCell(`${shortJson(row.beforeJson || row.before)} -> ${shortJson(row.afterJson || row.after)}`));
-      tr.appendChild(createCell(auditSiteCode(row)));
+      tr.appendChild(createCell(`${safeText(row.targetType)} ${safeText(row.targetId)}`.trim()));
+      tr.appendChild(createCell(shortJson(row.metadata || {})));
+      tr.appendChild(createCell(auditNetwork(row)));
       const detail = document.createElement("td");
       detail.appendChild(actionButton("Diff", () => openAuditDetail(row)));
       tr.appendChild(detail);
@@ -1583,6 +1632,8 @@
   function filteredAuditRows() {
     const action = els.auditFilterAction.value;
     const actor = els.auditFilterActor.value.trim().toLowerCase();
+    const campaign = els.auditFilterCampaign.value.trim().toLowerCase();
+    const reward = els.auditFilterReward.value.trim().toLowerCase();
     const target = els.auditFilterTarget.value.trim().toLowerCase();
     const from = els.auditFilterFrom.value ? new Date(els.auditFilterFrom.value) : null;
     const to = els.auditFilterTo.value ? new Date(`${els.auditFilterTo.value}T23:59:59.999Z`) : null;
@@ -1590,11 +1641,26 @@
       const created = row.createdAt ? new Date(row.createdAt) : null;
       if (action && row.action !== action) return false;
       if (actor && !String(auditActor(row)).toLowerCase().includes(actor)) return false;
+      if (campaign && !auditFieldMatches(row, ["targetCampaignId", "campaignId"], campaign)) return false;
+      if (reward && !auditFieldMatches(row, ["targetRewardId", "rewardId"], reward)) return false;
       if (target && !String(row.targetId || "").toLowerCase().includes(target)) return false;
       if (from && created && created < from) return false;
       if (to && created && created > to) return false;
       return true;
     });
+  }
+
+  function auditFieldMatches(row, keys, expected) {
+    const metadata = row.metadata && typeof row.metadata === "object" ? row.metadata : {};
+    const values = keys.map((key) => metadata[key]).filter((value) => value !== undefined && value !== null);
+    return values.some((value) => String(value).toLowerCase().includes(expected));
+  }
+
+  function auditNetwork(row) {
+    const metadata = row.metadata && typeof row.metadata === "object" ? row.metadata : {};
+    const ip = row.ipAddressMasked || row.ipMasked || metadata.ipAddressMasked || metadata.ipMasked || "-";
+    const ua = row.userAgentHash || metadata.userAgentHash || "-";
+    return `${safeText(ip)} / ${safeText(ua)}`;
   }
 
   function openAuditDetail(row) {

@@ -78,7 +78,6 @@
           <button class="tab-button" type="button" data-tab="spins">Spin history</button>
           <button class="tab-button" type="button" data-tab="reports">Reports</button>
           <button class="tab-button" type="button" data-tab="audit">Audit history</button>
-          <button class="tab-button" type="button" data-tab="claims">Reward Claims</button>
         </nav>
 
         <section id="global-error" class="error-state hidden">โหลดข้อมูลไม่สำเร็จ</section>
@@ -96,7 +95,7 @@
               </div>
               <div class="button-row">
                 <button id="refresh-campaign" type="button" class="secondary">Refresh</button>
-                <button id="save-campaign" type="submit">Save</button>
+                <button id="save-campaign" type="submit">Save Campaign</button>
               </div>
             </div>
             <div class="campaign-summary" aria-label="Current campaign summary">
@@ -128,6 +127,7 @@
                 <select id="campaign-cost-type">
                   <option value="point">point</option>
                   <option value="ticket">ticket</option>
+                  <option value="free">free</option>
                 </select>
               </div>
               <div class="field">
@@ -139,6 +139,11 @@
                 <label for="campaign-daily-limit">Daily spin limit</label>
                 <input id="campaign-daily-limit" type="number" min="0" step="1" />
                 <p id="campaign-daily-error" class="field-error hidden"></p>
+              </div>
+              <div class="field">
+                <label for="campaign-monthly-limit">Monthly spin limit</label>
+                <input id="campaign-monthly-limit" type="number" min="0" step="1" />
+                <p id="campaign-monthly-error" class="field-error hidden"></p>
               </div>
               <div class="field">
                 <label for="campaign-start">Start date</label>
@@ -220,10 +225,10 @@
             <div class="filter-bar">
               <label>Date from <input id="filter-from" type="date" /></label>
               <label>Date to <input id="filter-to" type="date" /></label>
-              <label>Member <input id="filter-member" type="search" placeholder="username" /></label>
+              <label>Member username/member ID <input id="filter-member" type="search" placeholder="username or member id" /></label>
               <label>Reward type <select id="filter-reward"><option value="">All</option></select></label>
               <label>Reward ID <input id="filter-reward-id" type="text" placeholder="reward id" /></label>
-              <label>Campaign <input id="filter-campaign" type="text" placeholder="wheel_main" /></label>
+              <label>Campaign ID <input id="filter-campaign" type="text" placeholder="wheel_main" /></label>
               <label>Status <select id="filter-status"><option value="">All</option><option value="pending">pending</option><option value="claimed">claimed</option><option value="expired">expired</option><option value="no_reward">no_reward</option></select></label>
               <label>Site code <input id="filter-site" type="text" placeholder="PG77" /></label>
               <button id="apply-spin-filters" type="button">Apply</button>
@@ -241,10 +246,8 @@
                     <th>Reward type</th>
                     <th>Cost type</th>
                     <th>Cost amount</th>
-                    <th>Prize index</th>
-                    <th>IP masked</th>
-                    <th>User agent hash</th>
                     <th>Spin ID</th>
+                    <th>Status/result</th>
                     <th>Details</th>
                   </tr>
                 </thead>
@@ -270,20 +273,26 @@
           </section>
           <section class="summary-grid" aria-label="Lucky Wheel report summary">
             <article class="summary-card"><span>Total spins</span><strong id="report-total-spins">0</strong></article>
+            <article class="summary-card"><span>Total cost used</span><strong id="report-total-cost-used">0</strong></article>
+            <article class="summary-card"><span>Total rewards issued</span><strong id="report-issued">0</strong></article>
+            <article class="summary-card"><span>Reward stock used</span><strong id="report-stock-used">0</strong></article>
+            <article class="summary-card"><span>Top reward</span><strong id="report-top-reward">ไม่พบข้อมูล</strong></article>
+            <article class="summary-card"><span>No reward count</span><strong id="report-empty-count">0</strong></article>
             <article class="summary-card"><span>Unique members spun</span><strong id="report-unique-members">0</strong></article>
-            <article class="summary-card"><span>Rewards issued</span><strong id="report-issued">0</strong></article>
             <article class="summary-card"><span>Pending rewards</span><strong id="report-pending-rewards">0</strong></article>
             <article class="summary-card"><span>Claimed rewards</span><strong id="report-claimed-rewards">0</strong></article>
             <article class="summary-card"><span>Expired/cancelled rewards</span><strong id="report-expired-cancelled-rewards">0</strong></article>
             <article class="summary-card"><span>Total point cost</span><strong id="report-point-cost">0</strong></article>
             <article class="summary-card"><span>Total ticket cost</span><strong id="report-ticket-cost">0</strong></article>
-            <article class="summary-card"><span>Stock used</span><strong id="report-stock-used">0</strong></article>
-            <article class="summary-card"><span>Top reward</span><strong id="report-top-reward">ไม่พบข้อมูล</strong></article>
             <article class="summary-card"><span>Top reward by stock used</span><strong id="report-top-stock-reward">ไม่พบข้อมูล</strong></article>
-            <article class="summary-card"><span>Empty/no reward count</span><strong id="report-empty-count">0</strong></article>
           </section>
           <section class="notice">Reports are client-side summaries from GET /api/admin/wheel/config, GET /api/admin/wheel/spins, and GET /api/admin/wheel/member-rewards. Reports do not calculate random rewards and do not write data.</section>
           <section class="report-grid">
+            <article class="panel table-section">
+              <div class="section-heading"><h2>Reward summary</h2></div>
+              <div id="reward-summary-empty" class="empty-state hidden">ไม่พบข้อมูล</div>
+              <div class="table-scroll"><table><thead><tr><th>Reward</th><th>Reward type</th><th>Spin count</th><th>Stock used</th><th>Probability weight</th><th>Actual percent</th><th>Remaining stock</th></tr></thead><tbody id="reward-summary-rows"></tbody></table></div>
+            </article>
             <article class="panel table-section">
               <div class="section-heading"><h2>Daily spin count</h2></div>
               <div id="daily-empty" class="empty-state hidden">ไม่พบข้อมูล</div>
@@ -331,8 +340,10 @@
               <button id="refresh-audit" type="button">Refresh</button>
             </div>
             <div class="filter-bar">
-              <label>Action <select id="audit-filter-action"><option value="">All</option><option value="wheel.campaign.update">wheel.campaign.update</option><option value="wheel.reward.create">wheel.reward.create</option><option value="wheel.reward.update">wheel.reward.update</option><option value="wheel.reward.status.update">wheel.reward.status.update</option><option value="wheel.memberReward.status.update">wheel.memberReward.status.update</option></select></label>
-              <label>Actor <input id="audit-filter-actor" type="search" placeholder="admin username" /></label>
+              <label>Action <select id="audit-filter-action"><option value="">All</option><option value="wheel.campaign.update">wheel.campaign.update</option><option value="wheel.reward.create">wheel.reward.create</option><option value="wheel.reward.update">wheel.reward.update</option><option value="wheel.reward.enable">wheel.reward.enable</option><option value="wheel.reward.disable">wheel.reward.disable</option><option value="wheel.memberReward.status.update">wheel.memberReward.status.update</option></select></label>
+              <label>Admin user <input id="audit-filter-actor" type="search" placeholder="admin username" /></label>
+              <label>Campaign ID <input id="audit-filter-campaign" type="search" placeholder="campaign id" /></label>
+              <label>Reward ID <input id="audit-filter-reward" type="search" placeholder="reward id" /></label>
               <label>Target ID <input id="audit-filter-target" type="search" placeholder="target id" /></label>
               <label>Date from <input id="audit-filter-from" type="date" /></label>
               <label>Date to <input id="audit-filter-to" type="date" /></label>
@@ -348,11 +359,10 @@
                     <th>Time</th>
                     <th>Actor/admin</th>
                     <th>Action</th>
-                    <th>Target type</th>
-                    <th>Target ID</th>
                     <th>Reason</th>
-                    <th>Before/after summary</th>
-                    <th>Site code</th>
+                    <th>Target</th>
+                    <th>Metadata</th>
+                    <th>IP / user agent</th>
                     <th>Details</th>
                   </tr>
                 </thead>
@@ -362,7 +372,7 @@
           </section>
         </section>
 
-        <section class="tab-panel" id="tab-claims">
+        <section class="tab-panel hidden" id="tab-claims" aria-hidden="true">
           <div class="access-denied hidden">
             <h2>ไม่มีสิทธิ์เข้าถึง</h2>
             <p>กรุณาติดต่อผู้ดูแลระบบ</p>
@@ -373,13 +383,13 @@
             <article class="summary-card"><span>Claimed rewards</span><strong id="claim-claimed">0</strong></article>
             <article class="summary-card"><span>Expired rewards</span><strong id="claim-expired">0</strong></article>
             <article class="summary-card"><span>Cancelled rewards</span><strong id="claim-cancelled">0</strong></article>
-            <article class="summary-card"><span>Credit/point/ticket/item counts</span><strong id="claim-type-counts">credit 0, point 0, ticket 0, item 0</strong></article>
+            <article class="summary-card"><span>Credit/point/ticket/physical counts</span><strong id="claim-type-counts">credit 0, point 0, ticket 0, physical 0</strong></article>
           </section>
           <section class="panel table-section">
             <div class="section-heading">
               <div>
                 <h2>Reward Claims</h2>
-                <p>Staging/mock reward queue only. Manual claim is limited to item rewards and never performs real payout.</p>
+                <p>Staging/mock reward queue only. Manual claim is limited to physical rewards and never performs real payout.</p>
                 <p>Last updated <strong id="claim-last-updated">-</strong></p>
               </div>
               <button id="refresh-claims" type="button">Refresh</button>
@@ -440,8 +450,8 @@
               <option value="credit">credit</option>
               <option value="point">point</option>
               <option value="ticket">ticket</option>
-              <option value="item">item</option>
-              <option value="no_reward">empty</option>
+              <option value="physical">physical</option>
+              <option value="no_reward">no_reward</option>
             </select>
           </div>
           <div class="field">

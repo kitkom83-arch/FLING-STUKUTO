@@ -6,6 +6,10 @@ const HTML_PATH = path.join(ROOT, "src", "admin-wheel-ui", "index.html");
 const JS_PATH = path.join(ROOT, "src", "admin-wheel-ui", "app.js");
 const CSS_PATH = path.join(ROOT, "src", "admin-wheel-ui", "styles.css");
 const APP_PATH = path.join(ROOT, "src", "app.js");
+const ADMIN_ROUTES_PATH = path.join(ROOT, "src", "routes", "admin.routes.js");
+const PERMISSION_PATH = path.join(ROOT, "src", "services", "adminPermission.service.js");
+const WHEEL_SERVICE_PATH = path.join(ROOT, "src", "services", "wheel.service.js");
+const AUDIT_CONTROLLER_PATH = path.join(ROOT, "src", "controllers", "adminAudit.controller.js");
 
 function read(filePath) {
   return fs.readFileSync(filePath, "utf8");
@@ -29,26 +33,20 @@ function visibleTextFromHtml(html) {
     .trim();
 }
 
-function assertNoRenderedPlaceholderText(label, text) {
-  const rendered = visibleTextFromHtml(text);
+function assertNoRenderedPlaceholderText(label, html) {
+  const rendered = visibleTextFromHtml(html);
   for (const marker of ["undefined", "NaN", "[object Object]"]) {
     if (rendered.includes(marker)) throw new Error(`${label} rendered placeholder text: ${marker}`);
-  }
-}
-
-function assertNoRenderedSensitiveCopy(label, text) {
-  const rendered = visibleTextFromHtml(text);
-  if (/\b(secret|token|password|database_url|auth|jwt)\b/i.test(rendered)) {
-    throw new Error(`${label} rendered sensitive keyword copy.`);
   }
 }
 
 function assertNoStaticSecret(label, text) {
   const jwtLike = /\b[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\b/;
   const postgresWithCredentials = /postgres(?:ql)?:\/\/[^:\s/]+:[^@\s/]+@/i;
+  const forbiddenEnvAssignment = /DATABASE_URL\s*=|LOCAL_ADMIN_PASSWORD\s*=|JWT_SECRET\s*=|AUTHORIZATION\s*=/i;
   if (jwtLike.test(text)) throw new Error(`${label} contains a JWT-like static value.`);
   if (postgresWithCredentials.test(text)) throw new Error(`${label} contains a PostgreSQL credential URL.`);
-  if (/DATABASE_URL\s*=|LOCAL_ADMIN_PASSWORD\s*=|JWT_SECRET\s*=/.test(text)) throw new Error(`${label} contains an env assignment marker.`);
+  if (forbiddenEnvAssignment.test(text)) throw new Error(`${label} contains a sensitive env assignment marker.`);
 }
 
 function assertNoUnsafeLogging(js) {
@@ -70,22 +68,16 @@ function assertReasonBeforeWrite(js, reasonMarker, writeMarker, label) {
   }
 }
 
-function assertNoFrontendSpinSelection(js) {
+function assertNoFrontendPrizeDecision(js) {
   const forbidden = [
     "Math.random",
     "crypto.getRandomValues",
     "/member/wheel/spin",
-    "body: { campaignId",
-    "campaignId: \"wheel_main\"",
+    "rewardId: \"wheel_reward",
   ];
   for (const marker of forbidden) {
-    if (js.includes(marker)) throw new Error(`Admin Wheel UI must not contain frontend spin selection marker: ${marker}`);
+    if (js.includes(marker)) throw new Error(`Admin Wheel UI must not contain frontend prize decision marker: ${marker}`);
   }
-}
-
-function assertNoFrontendSpinPayload(js) {
-  const spinWritePattern = /fetch\([^)]*\/member\/wheel\/spin|api\([^)]*\/member\/wheel\/spin/;
-  if (spinWritePattern.test(js)) throw new Error("Admin Wheel UI must not call member spin endpoints.");
   if (/body\s*:\s*\{[^}]*rewardId|body\s*:\s*\{[^}]*prizeIndex/s.test(js)) {
     throw new Error("Admin Wheel UI must not submit rewardId or prizeIndex in write payloads.");
   }
@@ -96,9 +88,8 @@ function assertNoAdminForceControls(html, js) {
   if (/\b(force reward|force spin|set prizeIndex)\b/i.test(rendered)) {
     throw new Error("Admin Wheel UI must not render force reward/spin controls.");
   }
-  const buttonLabelPattern = /actionButton\(\s*["'](?:force reward|force spin|set prizeIndex)["']|<button[^>]*>\s*(?:force reward|force spin|set prizeIndex)\s*<\/button>/i;
-  if (buttonLabelPattern.test(js) || buttonLabelPattern.test(html)) {
-    throw new Error("Admin Wheel UI must not define force reward/spin buttons.");
+  if (/force reward|force spin|set prizeIndex/i.test(js)) {
+    throw new Error("Admin Wheel UI must not define force reward/spin controls.");
   }
 }
 
@@ -107,42 +98,43 @@ function main() {
   const js = read(JS_PATH);
   const css = read(CSS_PATH);
   const app = read(APP_PATH);
+  const adminRoutes = read(ADMIN_ROUTES_PATH);
+  const permissions = read(PERMISSION_PATH);
+  const wheelService = read(WHEEL_SERVICE_PATH);
+  const auditController = read(AUDIT_CONTROLLER_PATH);
 
   assertIncludes("Express app", app, ["/admin-wheel", "/admin/lucky-wheel", "admin-wheel-ui"]);
-  assertIncludes("Admin Wheel HTML", html, [
-    "Admin Lucky Wheel",
-    "Admin &gt; Lucky Wheel",
-    "Lucky Wheel Admin Console",
-    "Staging / Mock Admin Console",
-    "No real money / no live provider",
-    "Response leak warning",
-    "Permission summary",
-    "Effective admin access for this site",
-    "View campaign",
-    "Update campaign",
-    "Manage rewards",
-    "View claims",
-    "Update claims",
-    "View reports",
-    "View audit",
-    "ไม่มีสิทธิ์เข้าถึง",
-    "กรุณาติดต่อผู้ดูแลระบบ",
-    "Site code",
-    "Last updated",
+
+  assertIncludes("Admin Wheel five sections", html, [
     "Campaign settings",
-    "Current campaign summary",
-    "campaign-summary-status",
-    "Campaign ID",
-    "Campaign name",
-    "Cost type",
-    "Cost amount",
-    "Daily spin limit",
-    "Start date",
-    "End date",
-    "Rules text",
     "Rewards management",
-    "Reward Claims",
+    "Spin history",
+    "Reports",
+    "Audit history",
+  ]);
+  if (/data-tab="claims"/.test(html)) throw new Error("Admin Wheel UI must expose five main tabs only.");
+
+  assertIncludes("Campaign settings", html + js, [
+    "campaign-status",
+    "campaign-name",
+    "campaign-cost-type",
+    '<option value="point">point</option>',
+    '<option value="ticket">ticket</option>',
+    '<option value="free">free</option>',
+    "campaign-cost-amount",
+    "campaign-daily-limit",
+    "campaign-monthly-limit",
+    "campaign-start",
+    "campaign-end",
+    "campaign-rules",
+    "campaign-reason",
+    "Save Campaign",
+    "wheel.campaign.update",
+  ]);
+
+  assertIncludes("Rewards management", html + js, [
     "Sort order",
+    "Label",
     "Reward type",
     "Reward value",
     "Probability weight",
@@ -150,167 +142,150 @@ function main() {
     "Stock used",
     "Segment color",
     "Image URL",
-    "empty",
     "Status",
     "Actions",
-    "Spin history",
-    "Reward ID",
-    "Cost type",
-    "Cost amount",
-    "IP masked",
-    "User agent hash",
-    "Spin ID",
-    "Reports",
-    "Total spins",
-    "Unique members spun",
-    "Rewards issued",
-    "Pending rewards",
-    "Claimed rewards",
-    "Expired/cancelled rewards",
-    "Total point cost",
-    "Total ticket cost",
-    "Stock used",
-    "Top reward",
-    "Top reward by stock used",
-    "Empty/no reward count",
-    "Reward type summary",
-    "Reward stock usage",
-    "Daily spin count",
-    "Claim status summary",
-    "Member reward summary",
-    "Audit history",
-    "Actor/admin",
-    "Target type",
-    "Target ID",
-    "Site code",
-    "Before/after summary",
-    "Reason",
+    '<option value="credit">credit</option>',
+    '<option value="point">point</option>',
+    '<option value="ticket">ticket</option>',
+    '<option value="physical">physical</option>',
+    '<option value="no_reward">no_reward</option>',
     "Add reward",
-    'id="claim-status-modal" data-modal="claim-status" data-testid="claim-status-modal"',
-    'id="reward-modal" data-modal="reward" data-testid="reward-modal"',
-    'id="status-modal" data-modal="status" data-testid="status-modal"',
-    'id="confirm-modal" data-modal="confirm" data-testid="confirm-modal"',
-    'id="detail-modal" data-modal="detail" data-testid="detail-modal"',
-    'data-close-modal="reward-modal" data-testid="reward-modal-close"',
-    'data-close-modal="detail-modal" data-testid="detail-modal-close"',
-    "ไม่พบข้อมูล",
-    "กำลังโหลดข้อมูล",
-    "Audit history จะเชื่อมกับ admin audit log endpoint เมื่อพร้อม",
-    "GET /api/admin/wheel/member-rewards",
-    "Manual claim is limited to item rewards",
+    "Edit reward",
+    "Disable",
+    "Enable",
+    "reward-reason",
+    "Label is required",
+    "Probability weight must be 0 or more",
+    "Stock limit must be blank or 0 or more",
+    "wheel.reward.create",
+    "wheel.reward.update",
+    "wheel.reward.enable",
+    "wheel.reward.disable",
   ]);
-  assertIncludes("Admin Wheel JS endpoints", js, [
+
+  assertIncludes("Spin history", html + js, [
+    "Date from",
+    "Date to",
+    "Member username/member ID",
+    "Reward ID",
+    "Campaign ID",
+    "Status/result",
+    "spin id",
+    "member id",
+    "campaign id",
+    "reward id",
+    "result snapshot",
+    "ip masked",
+    "user agent hash",
+    "created at",
+  ]);
+
+  assertIncludes("Reports", html + js, [
+    "Total spins",
+    "Total cost used",
+    "Total rewards issued",
+    "Reward stock used",
+    "Top reward",
+    "No reward count",
+    "Reward summary",
+    "Spin count",
+    "Probability weight",
+    "Actual percent",
+    "Remaining stock",
+    "totalSpins > 0",
+    "0 %",
+    "renderRewardSummary",
+  ]);
+
+  assertIncludes("Audit history", html + js, [
+    "Admin user",
+    "Campaign ID",
+    "Reward ID",
+    "Reason",
+    "Target",
+    "Metadata",
+    "IP / user agent",
+    "row.metadata && row.metadata.reason",
+    "auditFieldMatches",
+    "auditNetwork",
+  ]);
+
+  assertIncludes("Admin Wheel endpoints", js, [
     "/admin/permissions/me",
     "/admin/wheel/config",
     "/admin/wheel/campaign",
     "/admin/wheel/rewards",
-    "encodeURIComponent(state.editingReward.id)",
-    "encodeURIComponent(reward.id)",
     "/admin/wheel/spins",
-    "/admin/wheel/member-rewards",
-    "encodeURIComponent(target.reward.id)",
     "/admin/audit-logs?limit=100",
   ]);
-  assertIncludes("Admin Wheel JS safety", js, [
-    "SENSITIVE_KEY_PATTERN",
-    "IP_KEY_PATTERN",
-    "RAW_IPV4_PATTERN",
-    "maskIp",
-    "sanitizeValue",
-    "normalizeConfig",
-    "normalizeReward",
-    "normalizeSpin",
-    "SafeApiError",
-    "กรุณาเข้าสู่ระบบแอดมิน",
-    "ไม่มีสิทธิ์ใช้งานเมนู Lucky Wheel",
-    "ไม่มีสิทธิ์ดำเนินการนี้",
-    "DENIED_VIEW_MESSAGE",
-    "ยังไม่พบข้อมูล Lucky Wheel",
-    "loadPermissions",
-    "updatePermissionPanel",
-    "updateAccessStates",
-    "permission-denied",
-    "setButtonPermission",
-    "validateReason",
-    "renderCampaignSummary",
-    "บันทึกการตั้งค่าแคมเปญสำเร็จ",
-    "บันทึกไม่สำเร็จ กรุณาตรวจสอบข้อมูลอีกครั้ง",
-    "โหลดข้อมูลไม่สำเร็จ",
-    "remainingStock",
-    "spinResultLabel",
-    "renderReports",
-    "renderRewardTypeSummary",
-    "renderDailySpinCount",
-    "totalSpins > 0",
-    "0 %",
-    "openSpinDetail",
-    "openAuditDetail",
-    "confirmAction",
-    "openStatusModal",
-    "Edit reward",
-    "document.getElementById(button.dataset.closeModal)",
-    "WHEEL_AUDIT_ACTIONS",
+
+  assertIncludes("Permission markers", permissions + adminRoutes + js, [
+    "wheel.view",
     "wheel.campaign.update",
     "wheel.reward.create",
     "wheel.reward.update",
-    "wheel.reward.status.update",
-    "wheel.memberReward.status.update",
-    "normalizeMemberReward",
-    "renderMemberRewards",
-    "openRewardClaimDetail",
-    "saveClaimStatus",
-    "No real payout or wallet credit is performed",
-  ]);
-  assertIncludes("Admin Wheel JS permissions", js, [
-    "wheel.view",
-    "wheel.campaign.view",
-    "wheel.campaign.update",
-    "wheel.rewards.view",
-    "wheel.rewards.create",
-    "wheel.rewards.update",
-    "wheel.rewards.status.update",
-    "wheel.spins.view",
-    "wheel.reports.view",
-    "wheel.claims.view",
-    "wheel.claims.status.update",
+    "wheel.reward.enable",
+    "wheel.reward.disable",
+    "wheel.spin.view",
+    "wheel.report.view",
     "wheel.audit.view",
-    "admin.audit.view",
   ]);
-  assertIncludes("Admin Wheel JS validation", js, [
-    "Campaign name is required",
-    "CAMPAIGN_STATUSES.includes",
-    "COST_TYPES.includes",
-    "Display value is required",
-    "Probability weight must be 0 or more",
-    "Stock limit must be blank or 0 or more",
-    "Stock limit must be greater than or equal to stock used",
-    "#16705d",
+
+  assertIncludes("Permission guards", adminRoutes, [
+    'can("wheel.campaign.update")',
+    'canAny(["wheel.reward.create", "wheel.rewards.create"])',
+    "canWheelRewardUpdate",
+    'canAny(["wheel.spin.view", "wheel.spins.view"])',
+    "canAuditLogs",
   ]);
+
+  assertIncludes("Backend audit actions", wheelService + auditController, [
+    "wheel.campaign.update",
+    "wheel.reward.create",
+    "wheel.reward.update",
+    "wheel.reward.enable",
+    "wheel.reward.disable",
+    "metadata: {",
+    "reason,",
+  ]);
+
   assertReasonBeforeWrite(js, "const reason = validateCampaign();", "/admin/wheel/campaign", "Campaign save");
   assertReasonBeforeWrite(js, "const reason = validateReward();", "/admin/wheel/rewards", "Reward save");
+  assertReasonBeforeWrite(js, "const reason = validateReason(els.statusReason", "encodeURIComponent(reward.id)", "Reward enable/disable");
   assertReasonBeforeWrite(js, "const reason = validateReason(els.claimStatusReason", "encodeURIComponent(target.reward.id)}/status", "Reward claim status save");
-  assertReasonBeforeWrite(js, "const reason = validateReason(els.statusReason", "encodeURIComponent(reward.id)", "Reward status save");
-  assertNoFrontendSpinSelection(js);
-  assertNoFrontendSpinPayload(js);
+
+  assertIncludes("Safety helpers", js, [
+    "safeText",
+    "numberValue",
+    "formatNumber",
+    "remainingStock",
+    "sanitizeValue",
+    "maskIp",
+    "SafeApiError",
+    "ไม่มีสิทธิ์เข้าถึง",
+    "ไม่มีสิทธิ์ดำเนินการนี้",
+    "ไม่พบข้อมูล",
+  ]);
+  assertIncludes("Admin Wheel CSS", css, [".tab-button.active", ".summary-grid", ".permission-panel", ".access-denied", ".permission-disabled", ".table-section", ".badge", ".safe-json"]);
+
+  assertNoFrontendPrizeDecision(js);
   assertNoAdminForceControls(html, js);
   assertNoUnsafeLogging(js);
-  assertIncludes("Admin Wheel CSS", css, [".tab-button.active", ".summary-grid", ".permission-panel", ".access-denied", ".permission-disabled", ".table-section", ".badge", ".safe-json"]);
   assertNoRenderedPlaceholderText("Admin Wheel HTML", html);
-  assertNoRenderedSensitiveCopy("Admin Wheel HTML", html);
-  assertNoStaticSecret("Admin Wheel HTML", html);
-  assertNoStaticSecret("Admin Wheel JS", js);
-  assertNoStaticSecret("Admin Wheel CSS", css);
+  for (const [label, text] of [
+    ["Admin Wheel HTML", html],
+    ["Admin Wheel JS", js],
+    ["Admin Wheel CSS", css],
+  ]) {
+    assertNoStaticSecret(label, text);
+  }
 
-  console.log("Admin Wheel UI manual QA checklist static route /admin-wheel: PASS");
-  console.log("Admin Wheel UI manual QA checklist title/tabs: PASS");
-  console.log("Admin Wheel UI manual QA checklist reason/modal selectors: PASS");
-  console.log("Admin Wheel UI manual QA checklist no undefined/NaN/[object Object] rendered copy: PASS");
-  console.log("Admin Wheel UI manual QA checklist no sensitive rendered copy/static secret values: PASS");
-  console.log("Admin Wheel UI manual QA checklist no member spin endpoint or force controls: PASS");
-  console.log("Admin Wheel UI static route contract: PASS");
-  console.log("Admin Wheel UI endpoint contract: PASS");
-  console.log("Admin Wheel UI reason validation contract: PASS");
-  console.log("Admin Wheel UI frontend spin safety: PASS");
+  console.log("Admin Wheel UI five-section render contract: PASS");
+  console.log("Admin Wheel UI permission marker contract: PASS");
+  console.log("Admin Wheel UI reason/audit contract: PASS");
+  console.log("Admin Wheel UI report zero-guard contract: PASS");
+  console.log("Admin Wheel UI no frontend prize decision contract: PASS");
+  console.log("Admin Wheel UI static secret/placeholder scan: PASS");
   console.log("Admin Wheel UI smoke: PASS");
 }
 

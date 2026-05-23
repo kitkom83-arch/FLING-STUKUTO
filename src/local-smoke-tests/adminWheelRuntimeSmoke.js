@@ -17,7 +17,7 @@ const WHEEL_AUDIT_ACTIONS = [
   "wheel.campaign.update",
   "wheel.reward.create",
   "wheel.reward.update",
-  "wheel.reward.status.update",
+  "wheel.reward.disable",
   "wheel.memberReward.status.update",
 ];
 const issuedAuthValues = new Set();

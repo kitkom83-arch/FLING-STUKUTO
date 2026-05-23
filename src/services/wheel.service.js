@@ -12,8 +12,8 @@ const SAFE_PROVIDER_MODES = new Set(["mock", "sandbox", "disabled"]);
 const SAFE_APP_ENVS = new Set(["development", "development-local", "local-test", "staging", "stage", "test", "testing", "qa", "sandbox"]);
 const LIVE_APP_ENVS = new Set(["prod", "production", "live"]);
 const CAMPAIGN_STATUSES = new Set(["active", "inactive", "draft"]);
-const COST_TYPES = new Set(["point", "ticket", "mock_credit"]);
-const REWARD_TYPES = new Set(["credit", "point", "ticket", "item", "no_reward"]);
+const COST_TYPES = new Set(["point", "ticket", "free", "mock_credit"]);
+const REWARD_TYPES = new Set(["credit", "point", "ticket", "physical", "item", "no_reward"]);
 const REWARD_STATUSES = new Set(["active", "inactive"]);
 const MEMBER_REWARD_STATUSES = new Set(["pending", "claimed", "expired", "cancelled"]);
 const ADMIN_MEMBER_REWARD_STATUS_UPDATES = new Set(["claimed", "cancelled"]);
@@ -152,7 +152,7 @@ function publicReward(reward) {
   return {
     id: reward.id,
     label: reward.label,
-    type: reward.rewardType,
+    type: reward.rewardType === "item" ? "physical" : reward.rewardType,
     displayValue: reward.displayValue,
     segmentColor: reward.segmentColor,
     imageUrl: reward.imageUrl,
@@ -163,7 +163,7 @@ function publicReward(reward) {
 function spinReward(reward) {
   return {
     label: reward.label,
-    type: reward.rewardType,
+    type: reward.rewardType === "item" ? "physical" : reward.rewardType,
     amount: decimalNumber(reward.rewardValue),
     displayValue: reward.displayValue,
   };
@@ -174,7 +174,7 @@ function adminReward(reward) {
     id: reward.id,
     campaignId: reward.campaignId,
     label: reward.label,
-    rewardType: reward.rewardType,
+    rewardType: reward.rewardType === "item" ? "physical" : reward.rewardType,
     rewardValue: decimalString(reward.rewardValue),
     displayValue: reward.displayValue,
     probabilityWeight: reward.probabilityWeight,
@@ -311,7 +311,7 @@ function resultSnapshot(reward) {
   return sanitizeAdminLogData({
     rewardId: reward.id,
     label: reward.label,
-    rewardType: reward.rewardType,
+    rewardType: reward.rewardType === "item" ? "physical" : reward.rewardType,
     rewardValue: decimalString(reward.rewardValue),
     displayValue: reward.displayValue,
     segmentColor: reward.segmentColor,
@@ -564,7 +564,7 @@ async function spin({ siteId, userId, body, req }) {
           memberId: user.id,
           source: "wheel",
           sourceId: spinRow.id,
-          rewardType: reward.rewardType,
+          rewardType: reward.rewardType === "item" ? "physical" : reward.rewardType,
           rewardValue: reward.rewardValue,
           label: reward.label,
           status: "pending",
@@ -597,7 +597,7 @@ async function history({ siteId, userId, query = {} }) {
     spinId: row.id,
     createdAt: row.createdAt,
     rewardLabel: row.resultSnapshot && row.resultSnapshot.label ? row.resultSnapshot.label : row.reward.label,
-    rewardType: row.resultSnapshot && row.resultSnapshot.rewardType ? row.resultSnapshot.rewardType : row.reward.rewardType,
+    rewardType: row.resultSnapshot && row.resultSnapshot.rewardType ? row.resultSnapshot.rewardType : row.reward.rewardType === "item" ? "physical" : row.reward.rewardType,
     rewardValue: row.resultSnapshot && row.resultSnapshot.rewardValue ? row.resultSnapshot.rewardValue : decimalString(row.reward.rewardValue),
     displayValue: row.resultSnapshot && row.resultSnapshot.displayValue ? row.resultSnapshot.displayValue : row.reward.displayValue,
     status: row.memberReward ? row.memberReward.status : "no_reward",
@@ -617,7 +617,7 @@ async function myRewards({ siteId, userId, query = {} }) {
   return rows.map((row) => ({
     id: row.id,
     label: row.label,
-    rewardType: row.rewardType,
+    rewardType: row.rewardType === "item" ? "physical" : row.rewardType,
     rewardValue: decimalString(row.rewardValue),
     status: row.status,
     createdAt: row.createdAt,
@@ -670,9 +670,10 @@ function campaignUpdateData(body) {
   }
   if (body.costType !== undefined) {
     assertAllowed(body.costType, COST_TYPES, "costType");
-    data.costType = body.costType;
+    data.costType = body.costType === "mock_credit" ? "free" : body.costType;
   }
   if (body.costAmount !== undefined) data.costAmount = parseNonNegativeDecimal(body.costAmount, "costAmount");
+  if (data.costType === "free") data.costAmount = toDecimal("0.00");
   if (body.dailySpinLimit !== undefined) data.dailySpinLimit = parseNonNegativeInt(body.dailySpinLimit, "dailySpinLimit");
   if (body.monthlySpinLimit !== undefined) data.monthlySpinLimit = parseNonNegativeInt(body.monthlySpinLimit, "monthlySpinLimit");
   if (body.startAt !== undefined) data.startAt = parseDateOrNull(body.startAt, "startAt");
@@ -745,7 +746,7 @@ function rewardData(body, { partial = false } = {}) {
   }
   if (!partial || body.rewardType !== undefined) {
     assertAllowed(body.rewardType, REWARD_TYPES, "rewardType");
-    data.rewardType = body.rewardType;
+    data.rewardType = body.rewardType === "item" ? "physical" : body.rewardType;
   }
   if (!partial || body.rewardValue !== undefined) data.rewardValue = parseNonNegativeDecimal(body.rewardValue, "rewardValue");
   if (!partial || body.displayValue !== undefined) {
@@ -848,7 +849,9 @@ async function updateReward({ siteId, siteCode, admin, rewardId, body, req }) {
     const changedKeys = Object.keys(data);
     const action =
       changedKeys.length === 1 && changedKeys[0] === "status" && before.status !== after.status
-        ? "wheel.reward.status.update"
+        ? after.status === "active"
+          ? "wheel.reward.enable"
+          : "wheel.reward.disable"
         : "wheel.reward.update";
     await logAdminAction({
       tx,
@@ -879,7 +882,10 @@ async function listAdminSpins({ siteId, siteCode = null, query = {} }) {
   if (query.campaignId) where.campaignId = String(query.campaignId);
   if (query.memberId) where.memberId = String(query.memberId);
   if (query.rewardId || query.reward_id) where.rewardId = String(query.rewardId || query.reward_id);
-  if (query.rewardType) where.reward = { rewardType: String(query.rewardType) };
+  if (query.rewardType) {
+    const rewardType = String(query.rewardType);
+    where.reward = rewardType === "physical" ? { rewardType: { in: ["physical", "item"] } } : { rewardType };
+  }
   if (query.username) {
     where.member = { username: { contains: String(query.username), mode: "insensitive" } };
   }
@@ -944,7 +950,7 @@ function summarizeMemberRewards(rows) {
       credit: 0,
       point: 0,
       ticket: 0,
-      item: 0,
+      physical: 0,
       no_reward: 0,
     },
   };
@@ -954,8 +960,9 @@ function summarizeMemberRewards(rows) {
     if (row.status === "claimed") summary.claimedRewards += 1;
     if (row.status === "expired") summary.expiredRewards += 1;
     if (row.status === "cancelled") summary.cancelledRewards += 1;
-    if (!summary.byType[row.rewardType]) summary.byType[row.rewardType] = 0;
-    summary.byType[row.rewardType] += 1;
+    const type = row.rewardType === "item" ? "physical" : row.rewardType;
+    if (!summary.byType[type]) summary.byType[type] = 0;
+    summary.byType[type] += 1;
     return summary;
   }, zero);
 }
@@ -968,7 +975,10 @@ async function listAdminMemberRewards({ siteId, siteCode = null, query = {} }) {
   if (query.sourceId || query.source_id || query.spinId || query.spin_id) {
     where.sourceId = String(query.sourceId || query.source_id || query.spinId || query.spin_id);
   }
-  if (query.rewardType) where.rewardType = String(query.rewardType);
+  if (query.rewardType) {
+    const rewardType = String(query.rewardType);
+    where.rewardType = rewardType === "physical" ? { in: ["physical", "item"] } : rewardType;
+  }
   if (query.status) {
     assertAllowed(String(query.status), MEMBER_REWARD_STATUSES, "status");
     where.status = String(query.status);
@@ -1033,8 +1043,8 @@ async function updateMemberRewardStatus({ siteId, siteCode, admin, rewardId, bod
       error.statusCode = 400;
       throw error;
     }
-    if (status === "claimed" && before.rewardType !== "item") {
-      const error = new Error("Manual claim is allowed only for item rewards in staging/mock mode");
+    if (status === "claimed" && before.rewardType !== "physical" && before.rewardType !== "item") {
+      const error = new Error("Manual claim is allowed only for physical rewards in staging/mock mode");
       error.statusCode = 400;
       throw error;
     }

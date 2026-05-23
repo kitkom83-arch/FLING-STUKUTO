@@ -45,8 +45,15 @@ const PERMISSIONS = [
   "wheel.rewards.create",
   "wheel.rewards.update",
   "wheel.rewards.status.update",
+  "wheel.reward.view",
+  "wheel.reward.create",
+  "wheel.reward.update",
+  "wheel.reward.enable",
+  "wheel.reward.disable",
   "wheel.spins.view",
+  "wheel.spin.view",
   "wheel.reports.view",
+  "wheel.report.view",
   "wheel.claims.view",
   "wheel.claims.status.update",
   "wheel.audit.view",
@@ -66,7 +73,9 @@ const ROLE_PERMISSIONS = {
     "admin.audit.view",
     "wheel.view",
     "wheel.spins.view",
+    "wheel.spin.view",
     "wheel.reports.view",
+    "wheel.report.view",
     "wheel.claims.view",
   ],
   support: [
@@ -91,6 +100,11 @@ const ROLE_PERMISSIONS = {
     "wheel.rewards.create",
     "wheel.rewards.update",
     "wheel.rewards.status.update",
+    "wheel.reward.view",
+    "wheel.reward.create",
+    "wheel.reward.update",
+    "wheel.reward.enable",
+    "wheel.reward.disable",
   ],
   viewer: [
     "members.view",
@@ -104,13 +118,15 @@ const ROLE_PERMISSIONS = {
     "wheel.campaign.view",
     "wheel.rewards.view",
     "wheel.spins.view",
+    "wheel.spin.view",
     "wheel.reports.view",
+    "wheel.report.view",
     "wheel.claims.view",
   ],
 };
 
 if (!ROLE_PERMISSIONS[STAGING_SAFE_ROLE]) {
-  ROLE_PERMISSIONS[STAGING_SAFE_ROLE] = ["wheel.view", "wheel.reports.view"];
+  ROLE_PERMISSIONS[STAGING_SAFE_ROLE] = ["wheel.view", "wheel.reports.view", "wheel.report.view"];
 }
 
 const ROLES = Object.entries(ROLE_PERMISSIONS).map(([role, permissions]) => ({
@@ -134,8 +150,15 @@ const PERMISSION_DETAILS = [
   ["Lucky Wheel", "wheel.rewards.create", "Create wheel rewards", "write", true, true, "/admin/lucky-wheel", "POST /api/admin/wheel/rewards"],
   ["Lucky Wheel", "wheel.rewards.update", "Update wheel rewards", "write", true, true, "/admin/lucky-wheel", "PATCH /api/admin/wheel/rewards/:id"],
   ["Lucky Wheel", "wheel.rewards.status.update", "Update wheel reward status", "write", true, true, "/admin/lucky-wheel", "PATCH /api/admin/wheel/rewards/:id"],
+  ["Lucky Wheel", "wheel.reward.view", "View wheel rewards", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/config"],
+  ["Lucky Wheel", "wheel.reward.create", "Create wheel rewards", "write", true, true, "/admin/lucky-wheel", "POST /api/admin/wheel/rewards"],
+  ["Lucky Wheel", "wheel.reward.update", "Update wheel rewards", "write", true, true, "/admin/lucky-wheel", "PATCH /api/admin/wheel/rewards/:id"],
+  ["Lucky Wheel", "wheel.reward.enable", "Enable wheel reward", "write", true, true, "/admin/lucky-wheel", "PATCH /api/admin/wheel/rewards/:id"],
+  ["Lucky Wheel", "wheel.reward.disable", "Disable wheel reward", "write", true, true, "/admin/lucky-wheel", "PATCH /api/admin/wheel/rewards/:id"],
   ["Lucky Wheel", "wheel.spins.view", "View wheel spins", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/spins"],
+  ["Lucky Wheel", "wheel.spin.view", "View wheel spins", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/spins"],
   ["Lucky Wheel", "wheel.reports.view", "View wheel reports", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/spins"],
+  ["Lucky Wheel", "wheel.report.view", "View wheel reports", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/spins"],
   ["Lucky Wheel", "wheel.claims.view", "View reward claims", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/member-rewards"],
   ["Lucky Wheel", "wheel.claims.status.update", "Update reward claim status", "write", true, true, "/admin/lucky-wheel", "PATCH /api/admin/wheel/member-rewards/:id/status"],
   ["Lucky Wheel", "wheel.audit.view", "View wheel audit history", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/audit-logs"],
