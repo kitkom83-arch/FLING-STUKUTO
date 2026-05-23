@@ -47,6 +47,7 @@
     "smoke:admin-browser-routes": "node src/local-smoke-tests/adminBrowserRoutesSmoke.js",
     "smoke:admin-operator-handoff": "node src/local-smoke-tests/adminOperatorHandoffSmoke.js",
     "smoke:wheel": "node src/local-smoke-tests/wheelSmoke.js",
+    "smoke:project-closeout": "node src/local-smoke-tests/projectCloseoutSmoke.js",
     "staging:preflight": "node src/local-smoke-tests/stagingPreflight.js",
     "smoke:staging": "node src/local-smoke-tests/stagingSmoke.js",
     "smoke:staging-release-readiness": "node src/local-smoke-tests/stagingReleaseReadinessSmoke.js",

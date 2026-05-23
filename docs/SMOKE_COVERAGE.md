@@ -46,6 +46,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `adminWheelUiSmoke.js` | `npm run smoke:admin-wheel-ui` | No | No | No | Syntax check plus static contract | Static Admin Lucky Wheel UI source contract for `/admin-wheel` and `/admin/lucky-wheel/`, exact five Phase Y tabs, permission summary panel, access-denied state, disabled write-action copy, campaign summary, reward modal/table fields, Reward Claims queue fields/actions, detail/status/claim modal selectors, spin empty state, reports/audit fields, endpoint usage, reason validation, 401/403 safe handling, audit reason/metadata.reason wiring, safe number/percent formatting, rendered-copy placeholder checks, static leak-shape checks, masked IP handling, singular and plural wheel permission aliases, no member spin endpoint call, no frontend reward selection, and no force reward/spin controls. |
 | `adminWheelRuntimeSmoke.js` | `npm run smoke:admin-wheel-runtime` | Yes | Yes | Yes | Syntax check only | Phase Y Admin Lucky Wheel runtime E2E: route/assets, unauth `401`, no-permission `403`, admin config campaign/reward reads, campaign/reward writes with unique reason, audit read bounded by `dateFrom`/`dateTo` with `metadata.reason`, member config/spin/history/my-rewards checks, backend-selected spin response, latest admin spin history lookup, finite report summary inputs, claim/cancel reason validation, write audit creation, audit read sanitization, and leak scan. Skips safely when local admin/member env is not configured. |
 | `wheelSmoke.js` | `npm run smoke:wheel` | Yes | Yes | Yes | Syntax check only | Lucky Wheel mock config/spin/history/rewards, missing auth, invalid campaign, backend result selection, admin reason/audit checks, stock-zero exclusion, fail-safe guards, and leak scan. Skips safely when local runtime env is missing; blocks unsafe targets. |
+| `projectCloseoutSmoke.js` | `npm run smoke:project-closeout` | No | No | No | Runs static contract | Project Closeout Smoke checks final closeout docs, Lucky Wheel final UAT, admin operator handoff, safety boundaries, static secret scan, and unsafe rendered placeholder copy scan. It does not call API, connect DB, require a server, read env secrets, deploy, migrate, or seed. |
 | `stagingPreflight.js` | `npm run staging:preflight` | No local Prisma access | Optional | No | Runs local-test dry run | Staging readiness guard for env boundary, database/API target labels, external modes, health contract, and response leak scan. |
 | `stagingSmoke.js` | `npm run smoke:staging` | No local Prisma access | Yes | No | Syntax check only | Hosted staging health contract, safe external mode labels, admin auth negative leak check, and response leak scan. |
 | `stagingReleaseReadinessSmoke.js` | `npm run smoke:staging-release-readiness` | No | No | No | Runs static contract | CI-safe static release readiness guard for package scripts, runbook/docs policy, rollback/incident checklist wording, release gate/full UAT/role UAT command separation, and secret-shaped value scan. It does not call staging. |
@@ -1108,3 +1109,48 @@ Boundary:
 - No seed.
 - No runtime money flow change.
 - If no staging/disposable DB exists, dry-run, backup/restore proof, and rollback proof are marked NOT EXECUTED.
+## 42. Project Closeout Smoke
+
+Phase Z status: Final Handoff / UAT / Project Closeout pending Safe CI for the closeout commit.
+
+Documents:
+
+- `docs/PROJECT_CLOSEOUT.md`
+- `docs/LUCKY_WHEEL_FINAL_UAT.md`
+- `docs/ADMIN_OPERATOR_HANDOFF.md`
+
+Script:
+
+- `src/local-smoke-tests/projectCloseoutSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:project-closeout
+```
+
+Coverage:
+
+- Confirms final closeout docs exist.
+- Confirms Lucky Wheel final UAT exists.
+- Confirms admin operator handoff exists.
+- Confirms safety boundaries: no production DB, no real money, no live payout, and no live provider/payment/bank/SMS/Slip OCR.
+- Confirms Lucky Wheel backend result authority: backend decides `prizeIndex` and frontend must not decide reward.
+- Confirms admin operator may-do and must-not-do checklists are present.
+- Runs a static secret scan for credential-shaped values and raw credential URL/header shapes.
+- Runs an unsafe rendered placeholder copy scan using safe wording checks for missing-value placeholder, invalid-number placeholder, object-string placeholder, and unsafe rendered placeholder copy.
+
+Boundary:
+
+- Scope is docs/static smoke only.
+- No API calls.
+- No DB connection.
+- No server requirement.
+- No env secret reads.
+- No production DB.
+- No real money.
+- No live payout.
+- No live provider/payment/bank/SMS/Slip OCR.
+- No deploy.
+- No migration.
+- No seed.

@@ -435,7 +435,7 @@ npm run smoke:bank-module
 
 ## Local All Smoke Test
 
-The all-local smoke runner executes the local smoke suite in one guarded sequence. It performs syntax checks for the local smoke files, runs the project check, runs money-flow, core API, game-transfer, financial-negative, admin reports/config, bank module, admin permission, admin role management, admin work schedule, admin work schedule UI, and admin audit/security smoke tests, scans the related files for secret-shaped values, and checks whitespace errors in the related diff.
+The all-local smoke runner executes the local smoke suite in one guarded sequence. It performs syntax checks for the local smoke files, runs the project check, runs money-flow, core API, game-transfer, financial-negative, admin reports/config, bank module, admin permission, admin role management, admin work schedule, admin work schedule UI, and admin audit/security smoke tests, scans the related files for secret-shaped values, and checks the Project Closeout static docs, scans the related files for secret-shaped values, and checks whitespace errors in the related diff.
 
 Start the backend first with safe local or test environment values:
 
