@@ -241,6 +241,8 @@ node --check src/local-smoke-tests/stagingDeployReadinessPackSmoke.js
 node --check src/local-smoke-tests/disposableStagingDbDryRunPackSmoke.js
 node --check src/staging-scripts/disposableStagingDbPreflight.js
 node --check src/local-smoke-tests/disposableStagingDbPreflightSmoke.js
+node --check src/local-smoke-tests/disposableStagingDbPreflightRuntimeHarnessSmoke.js
+node --check src/local-smoke-tests/disposableStagingDbPreflightRuntimeHarness.js
 node --check src/local-smoke-tests/runAllLocalSmoke.js
 ```
 
@@ -259,6 +261,8 @@ npm run smoke:admin-audit-security
 npm run smoke:staging-deploy-readiness-pack
 npm run smoke:disposable-staging-db-dry-run-pack
 npm run smoke:disposable-staging-db-preflight
+npm run smoke:disposable-staging-db-preflight-runtime-static
+npm run smoke:disposable-staging-db-preflight-runtime
 npm run staging:db:preflight
 npm run smoke:staging
 npm run smoke:all-local

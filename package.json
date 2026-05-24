@@ -55,6 +55,8 @@
     "smoke:staging-deploy-readiness-pack": "node src/local-smoke-tests/stagingDeployReadinessPackSmoke.js",
     "smoke:disposable-staging-db-dry-run-pack": "node src/local-smoke-tests/disposableStagingDbDryRunPackSmoke.js",
     "smoke:disposable-staging-db-preflight": "node src/local-smoke-tests/disposableStagingDbPreflightSmoke.js",
+    "smoke:disposable-staging-db-preflight-runtime": "node src/local-smoke-tests/disposableStagingDbPreflightRuntimeHarness.js",
+    "smoke:disposable-staging-db-preflight-runtime-static": "node src/local-smoke-tests/disposableStagingDbPreflightRuntimeHarnessSmoke.js",
     "smoke:production-readiness-audit": "node src/local-smoke-tests/productionReadinessAuditSmoke.js",
     "smoke:production-safety-dry-run": "node src/local-smoke-tests/productionSafetyDryRunSmoke.js",
     "smoke:monitoring-backup-runbook": "node src/local-smoke-tests/monitoringBackupRunbookSmoke.js",

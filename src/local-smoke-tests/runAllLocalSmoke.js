@@ -32,6 +32,8 @@ const RELATED_FILES = [
   "src/local-smoke-tests/stagingDeployReadinessPackSmoke.js",
   "src/local-smoke-tests/disposableStagingDbDryRunPackSmoke.js",
   "src/local-smoke-tests/disposableStagingDbPreflightSmoke.js",
+  "src/local-smoke-tests/disposableStagingDbPreflightRuntimeHarnessSmoke.js",
+  "src/local-smoke-tests/disposableStagingDbPreflightRuntimeHarness.js",
   "src/staging-scripts/disposableStagingDbPreflight.js",
   "src/local-smoke-tests/projectCloseoutSmoke.js",
   "src/local-smoke-tests/productionReadinessAuditSmoke.js",
@@ -68,6 +70,7 @@ const RELATED_FILES = [
   "docs/STAGING_DEPLOY_GO_NO_GO.md",
   "docs/DISPOSABLE_STAGING_DB_DRY_RUN.md",
   "docs/DISPOSABLE_STAGING_DB_PREFLIGHT.md",
+  "docs/DISPOSABLE_STAGING_DB_PREFLIGHT_RUNTIME_HARNESS.md",
   "docs/STAGING_DB_SAFETY_EVIDENCE_CHECKLIST.md",
   "docs/PHASE_AB_GO_NO_GO.md",
   "src/admin-wheel-ui/index.html",
@@ -120,6 +123,16 @@ const summary = [
   {
     key: "disposableStagingDbPreflight",
     label: "disposable-staging-db-preflight",
+    status: "PENDING",
+  },
+  {
+    key: "disposableStagingDbPreflightRuntimeStatic",
+    label: "disposable-staging-db-preflight-runtime-static",
+    status: "PENDING",
+  },
+  {
+    key: "disposableStagingDbPreflightRuntime",
+    label: "disposable-staging-db-preflight-runtime",
     status: "PENDING",
   },
   { key: "productionReadinessAudit", label: "production-readiness-audit", status: "PENDING" },
@@ -270,6 +283,18 @@ const steps = [
     name: "node --check disposableStagingDbPreflightSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/disposableStagingDbPreflightSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check disposableStagingDbPreflightRuntimeHarnessSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/disposableStagingDbPreflightRuntimeHarnessSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check disposableStagingDbPreflightRuntimeHarness",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/disposableStagingDbPreflightRuntimeHarness.js"],
     summaryKey: "syntax",
   },
   {
@@ -501,6 +526,18 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:disposable-staging-db-preflight"]),
     summaryKey: "disposableStagingDbPreflight",
+  },
+  {
+    name: "npm run smoke:disposable-staging-db-preflight-runtime-static",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:disposable-staging-db-preflight-runtime-static"]),
+    summaryKey: "disposableStagingDbPreflightRuntimeStatic",
+  },
+  {
+    name: "npm run smoke:disposable-staging-db-preflight-runtime",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:disposable-staging-db-preflight-runtime"]),
+    summaryKey: "disposableStagingDbPreflightRuntime",
   },
   {
     name: "npm run smoke:production-readiness-audit",

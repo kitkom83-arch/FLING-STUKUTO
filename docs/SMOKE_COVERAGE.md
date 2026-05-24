@@ -53,6 +53,8 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `stagingDeployReadinessPackSmoke.js` | `npm run smoke:staging-deploy-readiness-pack` | No | No | No | Runs static contract | Staging Deploy Readiness Pack Smoke checks staging deploy readiness docs, environment matrix, go/no-go gate, no production DB boundary, no real-money boundary, no live provider/payment/bank/SMS/Slip OCR boundary, static secret scan, and unsafe rendered placeholder copy scan. It does not call API, connect DB, require a server, read env secrets, deploy, migrate, or seed. |
 | `disposableStagingDbDryRunPackSmoke.js` | `npm run smoke:disposable-staging-db-dry-run-pack` | No | No | No | Runs static contract | Disposable Staging DB Dry-Run Pack Smoke checks disposable staging DB dry-run docs, staging DB safety evidence checklist, Phase AB Go/No-Go gate, no production DB boundary, no actual migration in Phase AB boundary, backup/restore/rollback evidence checklist, static secret scan, and unsafe rendered placeholder copy scan. It does not call API, connect DB, require a server, read env secrets, deploy, migrate, or seed. |
 | `disposableStagingDbPreflightSmoke.js` | `npm run smoke:disposable-staging-db-preflight` | No | No | No | Runs static contract | Disposable Staging DB Preflight Smoke checks the preflight script exists, docs exist, no DB connection boundary, no migration/seed/deploy boundary, production-looking DB blocker, secret redaction rule, provider mode boundary, static secret scan, and unsafe rendered placeholder copy scan. It does not call API, connect DB, require a server, read env secrets, deploy, migrate, or seed. |
+| `disposableStagingDbPreflightRuntimeHarnessSmoke.js` | `npm run smoke:disposable-staging-db-preflight-runtime-static` | No | No | No | Runs static contract | Disposable Staging DB Preflight Runtime Harness Smoke checks the runtime harness exists, synthetic safe PASS case, required fail-closed cases, production-looking DB blockers, provider mode blockers, redaction checks, no DB connection boundary, no migration/seed/deploy boundary, static secret scan, and unsafe rendered placeholder copy scan. |
+| `disposableStagingDbPreflightRuntimeHarness.js` | `npm run smoke:disposable-staging-db-preflight-runtime` | No | No | No | Runs synthetic child-process harness | Runtime harness executes the disposable staging DB preflight script with synthetic ENV only, verifies safe PASS and required FAIL cases, checks redaction, and does not connect DB, migrate, seed, deploy, use production DB, use real money, or call live provider/payment/bank/SMS/Slip OCR. |
 | `productionReadinessAuditSmoke.js` | `npm run smoke:production-readiness-audit` | No | No | No | Runs static contract | Phase M static guard for `docs/PRODUCTION_READINESS_GAP_AUDIT.md`, production blocker coverage, mock/sandbox boundary wording, Go/No-Go criteria, P0 checklist, recommended next phases, and secret-shaped value scan. It is a pre-production planning artifact only and does not deploy production. |
 | `productionSafetyDryRunSmoke.js` | `npm run smoke:production-safety-dry-run` | No | No | No | Runs static contract | Phase N static guard for `docs/PRODUCTION_SAFETY_DRY_RUN.md`, hard safety boundaries, ENV checklist, dry-run smoke plan, rollback, backup/restore, monitoring/alerting, financial safety, Go/No-Go rehearsal, next phases, and secret-shaped value scan. It is a planning artifact only and does not deploy production. |
 | `monitoringBackupRunbookSmoke.js` | `npm run smoke:monitoring-backup-runbook` | No | No | No | Runs static contract | Phase O static guard for `docs/MONITORING_BACKUP_RUNBOOK.md`, monitoring targets, SEV1-SEV4 severity/routing, log retention, backup, restore drill, incident checklist/template, Go/No-Go monitoring criteria, next phases, and secret-shaped value scan. It is a planning artifact only and does not deploy production. |
@@ -1298,6 +1300,58 @@ Boundary:
 - No DB connection.
 - No server requirement.
 - No env secret reads in smoke.
+- No production DB.
+- No real money.
+- No live payout.
+- No live provider/payment/bank/SMS/Slip OCR.
+- No deploy.
+- No migration.
+- No seed.
+
+## 46. Disposable Staging DB Preflight Runtime Harness Smoke
+
+Phase AD status: Disposable Staging DB Preflight Runtime Harness for synthetic ENV runtime checks only.
+
+Document:
+
+- `docs/DISPOSABLE_STAGING_DB_PREFLIGHT_RUNTIME_HARNESS.md`
+
+Static smoke:
+
+- `src/local-smoke-tests/disposableStagingDbPreflightRuntimeHarnessSmoke.js`
+
+Runtime harness:
+
+- `src/local-smoke-tests/disposableStagingDbPreflightRuntimeHarness.js`
+
+Commands:
+
+```powershell
+npm run smoke:disposable-staging-db-preflight-runtime-static
+npm run smoke:disposable-staging-db-preflight-runtime
+```
+
+Coverage:
+
+- Confirms the runtime harness exists.
+- Confirms the harness references the disposable staging DB preflight script.
+- Confirms the synthetic safe PASS case.
+- Confirms required fail-closed cases.
+- Confirms production-looking DB blockers.
+- Confirms provider mode blockers.
+- Confirms redaction checks.
+- Confirms no DB connection boundary.
+- Confirms no migration/seed/deploy boundary.
+- Runs a static secret scan.
+- Runs an unsafe rendered placeholder copy scan.
+
+Boundary:
+
+- Scope is synthetic runtime harness plus static smoke only.
+- No real DATABASE_URL.
+- No API calls.
+- No DB connection.
+- No server requirement.
 - No production DB.
 - No real money.
 - No live payout.
