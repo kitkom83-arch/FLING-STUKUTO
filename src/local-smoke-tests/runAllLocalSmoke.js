@@ -31,6 +31,8 @@ const RELATED_FILES = [
   "src/local-smoke-tests/stagingReleaseReadinessSmoke.js",
   "src/local-smoke-tests/stagingDeployReadinessPackSmoke.js",
   "src/local-smoke-tests/disposableStagingDbDryRunPackSmoke.js",
+  "src/local-smoke-tests/disposableStagingDbPreflightSmoke.js",
+  "src/staging-scripts/disposableStagingDbPreflight.js",
   "src/local-smoke-tests/projectCloseoutSmoke.js",
   "src/local-smoke-tests/productionReadinessAuditSmoke.js",
   "src/local-smoke-tests/productionSafetyDryRunSmoke.js",
@@ -65,6 +67,7 @@ const RELATED_FILES = [
   "docs/STAGING_ENVIRONMENT_MATRIX.md",
   "docs/STAGING_DEPLOY_GO_NO_GO.md",
   "docs/DISPOSABLE_STAGING_DB_DRY_RUN.md",
+  "docs/DISPOSABLE_STAGING_DB_PREFLIGHT.md",
   "docs/STAGING_DB_SAFETY_EVIDENCE_CHECKLIST.md",
   "docs/PHASE_AB_GO_NO_GO.md",
   "src/admin-wheel-ui/index.html",
@@ -112,6 +115,11 @@ const summary = [
   {
     key: "disposableStagingDbDryRunPack",
     label: "disposable-staging-db-dry-run-pack",
+    status: "PENDING",
+  },
+  {
+    key: "disposableStagingDbPreflight",
+    label: "disposable-staging-db-preflight",
     status: "PENDING",
   },
   { key: "productionReadinessAudit", label: "production-readiness-audit", status: "PENDING" },
@@ -250,6 +258,18 @@ const steps = [
     name: "node --check disposableStagingDbDryRunPackSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/disposableStagingDbDryRunPackSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check disposableStagingDbPreflight",
+    command: nodeCommand,
+    args: ["--check", "src/staging-scripts/disposableStagingDbPreflight.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check disposableStagingDbPreflightSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/disposableStagingDbPreflightSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -475,6 +495,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:disposable-staging-db-dry-run-pack"]),
     summaryKey: "disposableStagingDbDryRunPack",
+  },
+  {
+    name: "npm run smoke:disposable-staging-db-preflight",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:disposable-staging-db-preflight"]),
+    summaryKey: "disposableStagingDbPreflight",
   },
   {
     name: "npm run smoke:production-readiness-audit",

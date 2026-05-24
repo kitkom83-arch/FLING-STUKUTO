@@ -52,6 +52,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `stagingReleaseReadinessSmoke.js` | `npm run smoke:staging-release-readiness` | No | No | No | Runs static contract | CI-safe static release readiness guard for package scripts, runbook/docs policy, rollback/incident checklist wording, release gate/full UAT/role UAT command separation, and secret-shaped value scan. It does not call staging. |
 | `stagingDeployReadinessPackSmoke.js` | `npm run smoke:staging-deploy-readiness-pack` | No | No | No | Runs static contract | Staging Deploy Readiness Pack Smoke checks staging deploy readiness docs, environment matrix, go/no-go gate, no production DB boundary, no real-money boundary, no live provider/payment/bank/SMS/Slip OCR boundary, static secret scan, and unsafe rendered placeholder copy scan. It does not call API, connect DB, require a server, read env secrets, deploy, migrate, or seed. |
 | `disposableStagingDbDryRunPackSmoke.js` | `npm run smoke:disposable-staging-db-dry-run-pack` | No | No | No | Runs static contract | Disposable Staging DB Dry-Run Pack Smoke checks disposable staging DB dry-run docs, staging DB safety evidence checklist, Phase AB Go/No-Go gate, no production DB boundary, no actual migration in Phase AB boundary, backup/restore/rollback evidence checklist, static secret scan, and unsafe rendered placeholder copy scan. It does not call API, connect DB, require a server, read env secrets, deploy, migrate, or seed. |
+| `disposableStagingDbPreflightSmoke.js` | `npm run smoke:disposable-staging-db-preflight` | No | No | No | Runs static contract | Disposable Staging DB Preflight Smoke checks the preflight script exists, docs exist, no DB connection boundary, no migration/seed/deploy boundary, production-looking DB blocker, secret redaction rule, provider mode boundary, static secret scan, and unsafe rendered placeholder copy scan. It does not call API, connect DB, require a server, read env secrets, deploy, migrate, or seed. |
 | `productionReadinessAuditSmoke.js` | `npm run smoke:production-readiness-audit` | No | No | No | Runs static contract | Phase M static guard for `docs/PRODUCTION_READINESS_GAP_AUDIT.md`, production blocker coverage, mock/sandbox boundary wording, Go/No-Go criteria, P0 checklist, recommended next phases, and secret-shaped value scan. It is a pre-production planning artifact only and does not deploy production. |
 | `productionSafetyDryRunSmoke.js` | `npm run smoke:production-safety-dry-run` | No | No | No | Runs static contract | Phase N static guard for `docs/PRODUCTION_SAFETY_DRY_RUN.md`, hard safety boundaries, ENV checklist, dry-run smoke plan, rollback, backup/restore, monitoring/alerting, financial safety, Go/No-Go rehearsal, next phases, and secret-shaped value scan. It is a planning artifact only and does not deploy production. |
 | `monitoringBackupRunbookSmoke.js` | `npm run smoke:monitoring-backup-runbook` | No | No | No | Runs static contract | Phase O static guard for `docs/MONITORING_BACKUP_RUNBOOK.md`, monitoring targets, SEV1-SEV4 severity/routing, log retention, backup, restore drill, incident checklist/template, Go/No-Go monitoring criteria, next phases, and secret-shaped value scan. It is a planning artifact only and does not deploy production. |
@@ -1248,6 +1249,55 @@ Boundary:
 - No DB connection.
 - No server requirement.
 - No env secret reads.
+- No production DB.
+- No real money.
+- No live payout.
+- No live provider/payment/bank/SMS/Slip OCR.
+- No deploy.
+- No migration.
+- No seed.
+
+## 45. Disposable Staging DB Preflight Smoke
+
+Phase AC status: Disposable Staging DB Preflight Script Pack for safe preflight only.
+
+Documents:
+
+- `docs/DISPOSABLE_STAGING_DB_PREFLIGHT.md`
+
+Script:
+
+- `src/local-smoke-tests/disposableStagingDbPreflightSmoke.js`
+
+Preflight script:
+
+- `src/staging-scripts/disposableStagingDbPreflight.js`
+
+Command:
+
+```powershell
+npm run smoke:disposable-staging-db-preflight
+```
+
+Coverage:
+
+- Confirms the preflight script exists.
+- Confirms the docs exist.
+- Confirms no DB connection boundary.
+- Confirms no migration/seed/deploy boundary.
+- Confirms production-looking DB blocker.
+- Confirms secret redaction rule.
+- Confirms provider mode boundary.
+- Runs a static secret scan.
+- Runs an unsafe rendered placeholder copy scan.
+
+Boundary:
+
+- Scope is docs/static smoke plus safe preflight script only.
+- No API calls.
+- No DB connection.
+- No server requirement.
+- No env secret reads in smoke.
 - No production DB.
 - No real money.
 - No live payout.
