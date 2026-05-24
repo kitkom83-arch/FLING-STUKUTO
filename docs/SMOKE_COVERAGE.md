@@ -55,6 +55,9 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `disposableStagingDbPreflightSmoke.js` | `npm run smoke:disposable-staging-db-preflight` | No | No | No | Runs static contract | Disposable Staging DB Preflight Smoke checks the preflight script exists, docs exist, no DB connection boundary, no migration/seed/deploy boundary, production-looking DB blocker, secret redaction rule, provider mode boundary, static secret scan, and unsafe rendered placeholder copy scan. It does not call API, connect DB, require a server, read env secrets, deploy, migrate, or seed. |
 | `disposableStagingDbPreflightRuntimeHarnessSmoke.js` | `npm run smoke:disposable-staging-db-preflight-runtime-static` | No | No | No | Runs static contract | Disposable Staging DB Preflight Runtime Harness Smoke checks the runtime harness exists, synthetic safe PASS case, required fail-closed cases, production-looking DB blockers, provider mode blockers, redaction checks, no DB connection boundary, no migration/seed/deploy boundary, static secret scan, and unsafe rendered placeholder copy scan. |
 | `disposableStagingDbPreflightRuntimeHarness.js` | `npm run smoke:disposable-staging-db-preflight-runtime` | No | No | No | Runs synthetic child-process harness | Runtime harness executes the disposable staging DB preflight script with synthetic ENV only, verifies safe PASS and required FAIL cases, checks redaction, and does not connect DB, migrate, seed, deploy, use production DB, use real money, or call live provider/payment/bank/SMS/Slip OCR. |
+| `disposableStagingDbReadOnlyProbeSmoke.js` | `npm run smoke:disposable-staging-db-read-only-probe-static` | No | No | No | Runs static contract | Disposable Staging DB Read-Only Connection Probe Smoke checks the read-only probe script exists, docs exist, operator-approved DB connection guard, read-only SQL only, production-looking DB blocker, provider mode boundary, no migration/seed/deploy boundary, static secret scan, and unsafe rendered placeholder copy scan. |
+| `disposableStagingDbReadOnlyProbeRuntimeHarnessSmoke.js` | `npm run smoke:disposable-staging-db-read-only-probe-runtime-static` | No | No | No | Runs static contract | Disposable Staging DB Read-Only Connection Probe Runtime Harness Smoke checks the runtime harness exists, synthetic injected DB client, safe PASS case, required fail-closed cases, read-only query failure redaction, no real database connection, no migration/seed/deploy boundary, static secret scan, and unsafe rendered placeholder copy scan. |
+| `disposableStagingDbReadOnlyProbeRuntimeHarness.js` | `npm run smoke:disposable-staging-db-read-only-probe-runtime` | No | No | No | Runs synthetic injected-client harness | Runtime harness executes the read-only probe with synthetic ENV and injected DB client only, verifies safe PASS and required FAIL cases, checks redaction, and does not connect DB, migrate, seed, deploy, use production DB, use real money, or call live provider/payment/bank/SMS/Slip OCR. |
 | `productionReadinessAuditSmoke.js` | `npm run smoke:production-readiness-audit` | No | No | No | Runs static contract | Phase M static guard for `docs/PRODUCTION_READINESS_GAP_AUDIT.md`, production blocker coverage, mock/sandbox boundary wording, Go/No-Go criteria, P0 checklist, recommended next phases, and secret-shaped value scan. It is a pre-production planning artifact only and does not deploy production. |
 | `productionSafetyDryRunSmoke.js` | `npm run smoke:production-safety-dry-run` | No | No | No | Runs static contract | Phase N static guard for `docs/PRODUCTION_SAFETY_DRY_RUN.md`, hard safety boundaries, ENV checklist, dry-run smoke plan, rollback, backup/restore, monitoring/alerting, financial safety, Go/No-Go rehearsal, next phases, and secret-shaped value scan. It is a planning artifact only and does not deploy production. |
 | `monitoringBackupRunbookSmoke.js` | `npm run smoke:monitoring-backup-runbook` | No | No | No | Runs static contract | Phase O static guard for `docs/MONITORING_BACKUP_RUNBOOK.md`, monitoring targets, SEV1-SEV4 severity/routing, log retention, backup, restore drill, incident checklist/template, Go/No-Go monitoring criteria, next phases, and secret-shaped value scan. It is a planning artifact only and does not deploy production. |
@@ -1165,6 +1168,68 @@ Boundary:
 - No deploy.
 - No migration.
 - No seed.
+
+## 47. Disposable Staging DB Read-Only Connection Probe Smoke
+
+Phase AE status: Disposable Staging DB Read-Only Connection Probe Pack for approved read-only DB connection checks only.
+
+Document:
+
+- `docs/DISPOSABLE_STAGING_DB_READ_ONLY_PROBE.md`
+
+Probe script:
+
+- `src/staging-scripts/disposableStagingDbReadOnlyProbe.js`
+
+Static smoke:
+
+- `src/local-smoke-tests/disposableStagingDbReadOnlyProbeSmoke.js`
+
+Runtime harness:
+
+- `src/local-smoke-tests/disposableStagingDbReadOnlyProbeRuntimeHarness.js`
+- `src/local-smoke-tests/disposableStagingDbReadOnlyProbeRuntimeHarnessSmoke.js`
+
+Commands:
+
+```powershell
+npm run smoke:disposable-staging-db-read-only-probe-static
+npm run smoke:disposable-staging-db-read-only-probe-runtime-static
+npm run smoke:disposable-staging-db-read-only-probe-runtime
+npm run staging:db:read-only-probe
+```
+
+Coverage:
+
+- Confirms the read-only probe script exists.
+- Confirms the operator-approved DB connection guard.
+- Confirms the read-only probe confirmation guard.
+- Confirms read-only SQL only.
+- Confirms the synthetic injected DB client runtime harness.
+- Confirms safe PASS case.
+- Confirms required fail-closed cases.
+- Confirms production-looking DB blocker.
+- Confirms provider mode boundary.
+- Confirms read-only query failure redaction.
+- Confirms no migration/seed/deploy boundary.
+- Runs a static secret scan.
+- Runs an unsafe rendered placeholder copy scan.
+
+Boundary:
+
+- Scope is read-only connection probe plus synthetic runtime harness and static smoke only.
+- Operator probe may connect only to an approved disposable staging/test DB.
+- `npm run staging:db:read-only-probe` is manual-only and is not part of all-local.
+- Runtime harness uses synthetic ENV and an injected client only.
+- No real database connection in runtime harness.
+- No production DB.
+- No real money.
+- No live payout.
+- No live provider/payment/bank/SMS/Slip OCR.
+- No deploy.
+- No migration.
+- No seed.
+- No data mutation.
 
 ## 43. Staging Deploy Readiness Pack Smoke
 

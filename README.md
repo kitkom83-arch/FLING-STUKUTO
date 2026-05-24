@@ -263,12 +263,18 @@ npm run smoke:disposable-staging-db-dry-run-pack
 npm run smoke:disposable-staging-db-preflight
 npm run smoke:disposable-staging-db-preflight-runtime-static
 npm run smoke:disposable-staging-db-preflight-runtime
+npm run smoke:disposable-staging-db-read-only-probe-static
+npm run smoke:disposable-staging-db-read-only-probe-runtime-static
+npm run smoke:disposable-staging-db-read-only-probe-runtime
 npm run staging:db:preflight
+npm run staging:db:read-only-probe
 npm run smoke:staging
 npm run smoke:all-local
 ```
 
 If a safe database target is not available, stop after `npm run check`, Prisma validation/generation, and the `node --check` smoke syntax checks.
+
+`npm run staging:db:read-only-probe` is manual-only for an approved disposable staging/test DB target. It is not part of `npm run smoke:all-local`.
 
 For hosted staging HTTP-only smoke, set `BASE_URL` to the approved staging API URL and run:
 
