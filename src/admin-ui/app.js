@@ -13,6 +13,7 @@
     ["Admin/Audit", "admin.security.view", "View security events", "read", false, false, "/admin/audit-security", "GET /api/admin/security-events"],
     ["Admin/Audit", "admin.workSchedule.view", "View work schedules", "read", false, false, "/admin/work-schedules", "GET /api/admin/work-schedules"],
     ["Admin/Audit", "admin.workSchedule.update", "Update work schedules", "write", true, true, "/admin/work-schedules", "PATCH /api/admin/work-schedules/:adminId"],
+    ["General Admin", "reports.view", "View dashboard summary and reports", "read", false, false, "#dashboard", "GET /api/admin/reports/summary"],
     ["Lucky Wheel", "wheel.view", "Open Lucky Wheel console", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/config"],
     ["Lucky Wheel", "wheel.campaign.view", "View wheel campaign", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/config"],
     ["Lucky Wheel", "wheel.campaign.update", "Update wheel campaign", "write", true, true, "/admin/lucky-wheel", "PATCH /api/admin/wheel/campaign"],
@@ -47,6 +48,8 @@
     canView: false,
     canUpdate: false,
     canOverride: false,
+    canViewReports: false,
+    dashboardSummary: null,
     schedules: [],
     selectedAdminId: null,
     selectedAdminLabel: "",
@@ -71,6 +74,15 @@
     backendEnforced: document.getElementById("backend-enforced"),
     roleLastRefresh: document.getElementById("role-last-refresh"),
     responseLeakWarning: document.getElementById("response-leak-warning"),
+    dashboardState: document.getElementById("dashboard-state"),
+    refreshDashboard: document.getElementById("refresh-dashboard"),
+    dashboardMemberCount: document.getElementById("dashboard-member-count"),
+    dashboardTotalDeposit: document.getElementById("dashboard-total-deposit"),
+    dashboardTotalWithdraw: document.getElementById("dashboard-total-withdraw"),
+    dashboardTotalBonus: document.getElementById("dashboard-total-bonus"),
+    dashboardTotalProfitMock: document.getElementById("dashboard-total-profit-mock"),
+    dashboardPendingTotal: document.getElementById("dashboard-pending-total"),
+    dashboardEmpty: document.getElementById("dashboard-empty"),
     permissionMatrixRows: document.getElementById("permission-matrix-rows"),
     permissionMatrixCount: document.getElementById("permission-matrix-count"),
     roleCount: document.getElementById("role-count"),
@@ -192,6 +204,13 @@
     return String(count < 0 ? 0 : count);
   }
 
+  function formatMoneySafe(value) {
+    return toSafeNumber(value, 0).toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  }
+
   function sanitizeToken(value) {
     return String(value || "")
       .trim()
@@ -297,6 +316,7 @@
     state.canView = hasPermission("admin.schedule.view");
     state.canUpdate = hasPermission("admin.schedule.update");
     state.canOverride = hasPermission("admin.schedule.override");
+    state.canViewReports = hasPermission("reports.view");
     els.permissionState.textContent = state.canView
       ? `Access granted: ${safeDisplay(data.role || "role")} via ${safeDisplay(data.source || "role")}`
       : "No permission for admin work schedules.";
@@ -311,6 +331,10 @@
     els.loadPermissions.disabled = false;
     els.refreshAdminRoles.disabled = !canManageRoles();
     els.refreshRoles.disabled = !canManageRoles();
+    els.refreshDashboard.disabled = !state.canViewReports;
+    if (!state.canViewReports) {
+      renderDashboardSummary(null, "reports.view permission is required for dashboard summary.");
+    }
     renderPermissionMatrix();
   }
 
@@ -572,6 +596,8 @@
     state.canView = false;
     state.canUpdate = false;
     state.canOverride = false;
+    state.canViewReports = false;
+    state.dashboardSummary = null;
     state.selectedAdminId = null;
     state.selectedAdminLabel = "";
     state.roleAssignmentRow = null;
@@ -592,8 +618,10 @@
     els.loadPermissions.disabled = true;
     els.refreshAdminRoles.disabled = true;
     els.refreshRoles.disabled = true;
+    els.refreshDashboard.disabled = true;
     els.rolePermissionReason.value = "";
     setFieldError(els.rolePermissionReasonError, "");
+    renderDashboardSummary(null, "Load an admin credential to read the summary.");
     renderSchedules([]);
     renderAudit([]);
     renderPermissionMatrix();
@@ -643,6 +671,76 @@
     badge.className = `badge ${cls || ""}`.trim();
     badge.textContent = label;
     return badge;
+  }
+
+  function setDashboardCards(summary) {
+    const safeSummary = summary && typeof summary === "object" ? summary : {};
+    const pendingDepositCount = toSafeNumber(safeSummary.pending_deposit_count, 0);
+    const pendingWithdrawCount = toSafeNumber(safeSummary.pending_withdraw_count, 0);
+    els.dashboardMemberCount.textContent = formatCountSafe(safeSummary.member_count);
+    els.dashboardTotalDeposit.textContent = formatMoneySafe(safeSummary.total_deposit);
+    els.dashboardTotalWithdraw.textContent = formatMoneySafe(safeSummary.total_withdraw);
+    els.dashboardTotalBonus.textContent = formatMoneySafe(safeSummary.total_bonus);
+    els.dashboardTotalProfitMock.textContent = formatMoneySafe(safeSummary.total_profit_mock);
+    els.dashboardPendingTotal.textContent = formatCountSafe(pendingDepositCount + pendingWithdrawCount);
+  }
+
+  function resetDashboardCards() {
+    for (const el of [
+      els.dashboardMemberCount,
+      els.dashboardTotalDeposit,
+      els.dashboardTotalWithdraw,
+      els.dashboardTotalBonus,
+      els.dashboardTotalProfitMock,
+      els.dashboardPendingTotal,
+    ]) {
+      el.textContent = "-";
+    }
+  }
+
+  function renderDashboardSummary(summary, message) {
+    const safeSummary = summary && typeof summary === "object" ? summary : null;
+    state.dashboardSummary = safeSummary;
+    els.dashboardState.textContent = safeDisplay(message || (safeSummary ? "Dashboard summary loaded." : "No dashboard summary loaded."));
+    if (!safeSummary) {
+      resetDashboardCards();
+      els.dashboardEmpty.classList.add("hidden");
+      return;
+    }
+
+    setDashboardCards(safeSummary);
+    const activityTotal = [
+      safeSummary.member_count,
+      safeSummary.total_deposit,
+      safeSummary.total_withdraw,
+      safeSummary.total_bonus,
+      safeSummary.total_profit_mock,
+      safeSummary.pending_deposit_count,
+      safeSummary.pending_withdraw_count,
+    ].reduce((total, value) => total + toSafeNumber(value, 0), 0);
+    els.dashboardEmpty.classList.toggle("hidden", activityTotal > 0);
+  }
+
+  async function loadDashboardSummary() {
+    if (!state.token) {
+      renderDashboardSummary(null, "Load an admin credential to read the summary.");
+      return;
+    }
+    if (!state.canViewReports) {
+      renderDashboardSummary(null, "reports.view permission is required for dashboard summary.");
+      return;
+    }
+    els.dashboardState.textContent = "Loading dashboard summary...";
+    renderDashboardSummary(await api("/admin/reports/summary"), "Dashboard summary loaded.");
+  }
+
+  async function refreshDashboardSummary() {
+    try {
+      await loadDashboardSummary();
+    } catch (error) {
+      renderDashboardSummary(null, sanitizeErrorMessage(error.message));
+      setToast(error.message);
+    }
   }
 
   function createAdminCell(row) {
@@ -1215,6 +1313,7 @@
   async function boot() {
     sessionStorage.removeItem("pg77_admin_token");
     drawDayGrid([]);
+    renderDashboardSummary(null, "Load an admin credential to read the summary.");
     renderAudit([]);
     renderPermissionMatrix();
     renderRoles([]);
@@ -1231,12 +1330,19 @@
       }
       state.token = sanitized;
       await loadPermissions();
+      await refreshDashboardSummary();
       await loadSchedules();
       setToast("Session loaded.");
     }).catch((error) => setToast(error.message))
   );
   els.clearToken.addEventListener("click", clearSession);
-  els.loadPermissions.addEventListener("click", () => withLoading(els.loadPermissions, loadPermissions).catch((error) => setToast("Permission request failed")));
+  els.loadPermissions.addEventListener("click", () =>
+    withLoading(els.loadPermissions, async () => {
+      await loadPermissions();
+      await refreshDashboardSummary();
+    }).catch((error) => setToast("Permission request failed"))
+  );
+  els.refreshDashboard.addEventListener("click", () => withLoading(els.refreshDashboard, refreshDashboardSummary).catch((error) => setToast(error.message)));
   els.editRolePermissions.addEventListener("click", openRoleEdit);
   els.refreshRoles.addEventListener("click", () => withLoading(els.refreshRoles, loadPermissions).catch((error) => setToast(error.message)));
   els.rolePermissionReason.addEventListener("input", renderRoleDraftState);

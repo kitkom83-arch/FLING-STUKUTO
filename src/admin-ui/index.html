@@ -18,6 +18,7 @@
         </div>
         <nav class="nav-list">
           <a href="#permissions" class="nav-link active">Permission Guard</a>
+          <a href="#dashboard" class="nav-link">Dashboard Summary</a>
           <a href="/admin/roles/" class="nav-link">Role Management</a>
           <a href="#schedule" class="nav-link">Work Schedule</a>
           <a href="/admin/audit-security/" class="nav-link">Audit Security</a>
@@ -86,6 +87,44 @@
             <strong id="response-leak-warning">Safe display only</strong>
           </article>
         </section>
+
+        <section class="guard-panel" id="dashboard">
+          <div>
+            <span class="eyebrow">Read-only dashboard</span>
+            <h2>Dashboard summary</h2>
+            <p>Summary cards read from the guarded admin report endpoint.</p>
+          </div>
+          <div id="dashboard-state" class="permission-state">Load an admin credential to read the summary.</div>
+          <button id="refresh-dashboard" type="button" disabled>Refresh dashboard</button>
+        </section>
+
+        <section class="status-grid" id="dashboard-summary-cards" aria-label="Dashboard summary cards">
+          <article class="status-card">
+            <span>Members</span>
+            <strong id="dashboard-member-count">-</strong>
+          </article>
+          <article class="status-card">
+            <span>Approved deposits</span>
+            <strong id="dashboard-total-deposit">-</strong>
+          </article>
+          <article class="status-card">
+            <span>Approved withdrawals</span>
+            <strong id="dashboard-total-withdraw">-</strong>
+          </article>
+          <article class="status-card">
+            <span>Bonus ledger</span>
+            <strong id="dashboard-total-bonus">-</strong>
+          </article>
+          <article class="status-card">
+            <span>Mock profit</span>
+            <strong id="dashboard-total-profit-mock">-</strong>
+          </article>
+          <article class="status-card">
+            <span>Pending requests</span>
+            <strong id="dashboard-pending-total">-</strong>
+          </article>
+        </section>
+        <div id="dashboard-empty" class="empty-state hidden">No dashboard activity found for this site.</div>
 
         <section class="table-section" id="permission-matrix">
           <div class="section-heading">
