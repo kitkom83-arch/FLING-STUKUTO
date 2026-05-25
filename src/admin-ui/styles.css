@@ -392,6 +392,41 @@ th {
   padding: 12px;
 }
 
+.member-history {
+  border-top: 1px solid var(--line);
+}
+
+.history-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+  border-bottom: 1px solid var(--line);
+  background: #fbfdfc;
+}
+
+.history-tabs button {
+  min-height: 32px;
+  padding: 0 10px;
+}
+
+.history-tabs button.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.history-panel {
+  border-bottom: 1px solid var(--line);
+}
+
+.history-panel:last-child {
+  border-bottom: 0;
+}
+
+.history-detail {
+  padding: 16px;
+}
+
 .permission-chip-list,
 .permission-checkbox-grid {
   display: flex;

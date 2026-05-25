@@ -108,6 +108,11 @@ function assertNoMemberSpinEndpoint(label, js) {
   assert(!js.includes("/member/wheel/spin"), `${label} must not call member spin endpoint.`);
 }
 
+function assertNoGeneralPlayHistoryEndpoint(label, js) {
+  const endpoint = ["/api/game", "/bet-history/mock"].join("");
+  assert(!js.includes(endpoint), `${label} must not call general play history mock endpoint.`);
+}
+
 function assertNoAdminMemberWriteControls(html, js) {
   const rendered = visibleTextFromHtml(html);
   const forbiddenRendered = /\b(Blacklist|Unblacklist|Credit adjustment|Add credit|Remove credit|Add points|Remove points|Approve bank|Reject bank)\b/i;
@@ -209,6 +214,12 @@ async function main() {
       "member-detail-state",
       "member-detail-rows",
       "Back to Member List",
+      "data-member-history-read-only-marker",
+      "ประวัติสมาชิก / Read-only",
+      "Wallet Ledger",
+      "กงล้อ / Spin history",
+      "รางวัล / Member rewards",
+      "ยังไม่มี API สำหรับประวัติการเล่นทั่วไป",
       "Role Management",
       "Work Schedule",
       "Audit Security",
@@ -249,6 +260,10 @@ async function main() {
       "loadMemberDetail",
       "renderMemberDetail",
       "memberDetailTrigger",
+      "loadMemberHistory",
+      "/admin/reports/wallet-ledger",
+      "/admin/wheel/spins",
+      "/admin/wheel/member-rewards",
       "members.view",
       "/admin/roles/",
       "admin.roles.update",
@@ -303,6 +318,7 @@ async function main() {
     assertNoAdminForceControls(wheelHtml, wheelJs);
     assertNoMemberSpinEndpoint("Admin role JS", adminJs);
     assertNoMemberSpinEndpoint("Admin wheel JS", wheelJs);
+    assertNoGeneralPlayHistoryEndpoint("Admin role JS", adminJs);
 
     const apiMiss = await get(baseUrl, "/api/__admin_browser_routes_smoke__");
     assert.notStrictEqual(apiMiss.response.status, 200, "/api/* should remain outside admin static HTML routes");

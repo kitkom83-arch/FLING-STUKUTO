@@ -54,6 +54,7 @@
     dashboardSummary: null,
     memberRows: [],
     memberDetail: null,
+    memberHistory: {},
     selectedMemberId: null,
     schedules: [],
     selectedAdminId: null,
@@ -109,6 +110,24 @@
     memberWithdrawCount: document.getElementById("member-withdraw-count"),
     memberWithdrawEmpty: document.getElementById("member-withdraw-empty"),
     memberWithdrawRows: document.getElementById("member-withdraw-rows"),
+    memberHistoryState: document.getElementById("member-history-state"),
+    memberHistoryTabs: document.getElementById("member-history-tabs"),
+    historyDepositCount: document.getElementById("history-deposit-count"),
+    historyDepositEmpty: document.getElementById("history-deposit-empty"),
+    historyDepositRows: document.getElementById("history-deposit-rows"),
+    historyWithdrawCount: document.getElementById("history-withdraw-count"),
+    historyWithdrawEmpty: document.getElementById("history-withdraw-empty"),
+    historyWithdrawRows: document.getElementById("history-withdraw-rows"),
+    historyLedgerCount: document.getElementById("history-ledger-count"),
+    historyLedgerEmpty: document.getElementById("history-ledger-empty"),
+    historyLedgerRows: document.getElementById("history-ledger-rows"),
+    historySpinCount: document.getElementById("history-spin-count"),
+    historySpinEmpty: document.getElementById("history-spin-empty"),
+    historySpinRows: document.getElementById("history-spin-rows"),
+    historyRewardCount: document.getElementById("history-reward-count"),
+    historyRewardEmpty: document.getElementById("history-reward-empty"),
+    historyRewardRows: document.getElementById("history-reward-rows"),
+    historyReferralSource: document.getElementById("history-referral-source"),
     permissionMatrixRows: document.getElementById("permission-matrix-rows"),
     permissionMatrixCount: document.getElementById("permission-matrix-count"),
     roleCount: document.getElementById("role-count"),
@@ -641,6 +660,7 @@
     state.dashboardSummary = null;
     state.memberRows = [];
     state.memberDetail = null;
+    state.memberHistory = {};
     state.selectedMemberId = null;
     state.selectedAdminId = null;
     state.selectedAdminLabel = "";
@@ -909,12 +929,29 @@
     els.memberBankRows.innerHTML = "";
     els.memberDepositRows.innerHTML = "";
     els.memberWithdrawRows.innerHTML = "";
+    els.historyDepositRows.innerHTML = "";
+    els.historyWithdrawRows.innerHTML = "";
+    els.historyLedgerRows.innerHTML = "";
+    els.historySpinRows.innerHTML = "";
+    els.historyRewardRows.innerHTML = "";
     els.memberBankCount.textContent = "0 accounts";
     els.memberDepositCount.textContent = "0 deposits";
     els.memberWithdrawCount.textContent = "0 withdrawals";
+    els.historyDepositCount.textContent = "0 รายการ";
+    els.historyWithdrawCount.textContent = "0 รายการ";
+    els.historyLedgerCount.textContent = "0 รายการ";
+    els.historySpinCount.textContent = "0 รายการ";
+    els.historyRewardCount.textContent = "0 รายการ";
     els.memberBankEmpty.classList.remove("hidden");
     els.memberDepositEmpty.classList.remove("hidden");
     els.memberWithdrawEmpty.classList.remove("hidden");
+    els.historyDepositEmpty.classList.remove("hidden");
+    els.historyWithdrawEmpty.classList.remove("hidden");
+    els.historyLedgerEmpty.classList.remove("hidden");
+    els.historySpinEmpty.classList.remove("hidden");
+    els.historyRewardEmpty.classList.remove("hidden");
+    els.historyReferralSource.textContent = "-";
+    els.memberHistoryState.textContent = "เลือกสมาชิกเพื่อดูประวัติ";
   }
 
   function renderMemberBankAccounts(member) {
@@ -968,6 +1005,185 @@
     }
   }
 
+  function historyAmount(value) {
+    return formatMoneySafe(value);
+  }
+
+  function setHistoryEmpty(emptyEl, rows, message) {
+    emptyEl.textContent = safeDisplay(message || "ไม่พบข้อมูล");
+    emptyEl.classList.toggle("hidden", rows.length > 0);
+  }
+
+  function appendHistoryCells(tr, values) {
+    for (const value of values) tr.appendChild(createCell(value));
+  }
+
+  function setMemberHistoryTab(tabName) {
+    const activeTab = String(tabName || "deposits");
+    document.querySelectorAll("[data-member-history-tab]").forEach((button) => {
+      const isActive = button.dataset.memberHistoryTab === activeTab;
+      button.classList.toggle("active", isActive);
+      button.setAttribute("aria-selected", isActive ? "true" : "false");
+    });
+    document.querySelectorAll("[data-member-history-panel]").forEach((panel) => {
+      panel.classList.toggle("hidden", panel.dataset.memberHistoryPanel !== activeTab);
+    });
+  }
+
+  function renderHistoryDeposits(member) {
+    const rows = arrayValue(member && member.deposits);
+    els.historyDepositRows.innerHTML = "";
+    els.historyDepositCount.textContent = `${formatCountSafe(rows.length)} รายการ`;
+    setHistoryEmpty(els.historyDepositEmpty, rows);
+    for (const row of rows) {
+      const tr = document.createElement("tr");
+      appendHistoryCells(tr, [
+        (row && row.transactionId) || (row && row.id),
+        historyAmount(row && row.amount),
+      ]);
+      tr.appendChild(createStatusCell(row && row.status));
+      appendHistoryCells(tr, [
+        row && row.channel,
+        formatDate(row && row.createdAt),
+        formatDate(row && row.updatedAt),
+      ]);
+      els.historyDepositRows.appendChild(tr);
+    }
+  }
+
+  function renderHistoryWithdrawals(member) {
+    const rows = arrayValue(member && member.withdrawals);
+    els.historyWithdrawRows.innerHTML = "";
+    els.historyWithdrawCount.textContent = `${formatCountSafe(rows.length)} รายการ`;
+    setHistoryEmpty(els.historyWithdrawEmpty, rows);
+    for (const row of rows) {
+      const tr = document.createElement("tr");
+      appendHistoryCells(tr, [
+        (row && row.transactionId) || (row && row.id),
+        historyAmount(row && row.amount),
+      ]);
+      tr.appendChild(createStatusCell(row && row.status));
+      appendHistoryCells(tr, [
+        formatDate(row && row.createdAt),
+        formatDate(row && row.updatedAt),
+        formatDate(row && row.paidAt),
+      ]);
+      els.historyWithdrawRows.appendChild(tr);
+    }
+  }
+
+  function renderHistoryLedger() {
+    const rows = arrayValue(state.memberHistory.ledgerRows);
+    els.historyLedgerRows.innerHTML = "";
+    els.historyLedgerCount.textContent = `${formatCountSafe(rows.length)} รายการ`;
+    setHistoryEmpty(els.historyLedgerEmpty, rows);
+    for (const row of rows) {
+      const tr = document.createElement("tr");
+      appendHistoryCells(tr, [
+        (row && row.transactionId) || (row && row.id),
+        row && row.type,
+        historyAmount(row && row.amount),
+        historyAmount(row && row.balanceBefore),
+        historyAmount(row && row.balanceAfter),
+        `${safeDisplay(row && row.referenceType)} / ${safeDisplay(row && row.referenceId)}`,
+        formatDate(row && row.createdAt),
+      ]);
+      els.historyLedgerRows.appendChild(tr);
+    }
+  }
+
+  function renderHistorySpins() {
+    const rows = arrayValue(state.memberHistory.spinRows);
+    els.historySpinRows.innerHTML = "";
+    els.historySpinCount.textContent = `${formatCountSafe(rows.length)} รายการ`;
+    setHistoryEmpty(els.historySpinEmpty, rows);
+    for (const row of rows) {
+      const campaign = objectValue(row && row.campaign);
+      const reward = objectValue(row && row.reward);
+      const cost = objectValue(row && row.cost);
+      const tr = document.createElement("tr");
+      appendHistoryCells(tr, [
+        row && row.id,
+        campaign && campaign.name,
+        reward && (reward.label || reward.displayValue || reward.id),
+        cost ? `${historyAmount(cost.amount)} ${safeDisplay(cost.type)}` : "0.00",
+        row && row.prizeIndex,
+        formatDate((row && row.time) || (row && row.createdAt)),
+      ]);
+      els.historySpinRows.appendChild(tr);
+    }
+  }
+
+  function renderHistoryRewards() {
+    const rows = arrayValue(state.memberHistory.rewardRows);
+    els.historyRewardRows.innerHTML = "";
+    els.historyRewardCount.textContent = `${formatCountSafe(rows.length)} รายการ`;
+    setHistoryEmpty(els.historyRewardEmpty, rows);
+    for (const row of rows) {
+      const tr = document.createElement("tr");
+      appendHistoryCells(tr, [
+        row && (row.label || row.id),
+        row && row.rewardType,
+        historyAmount(row && row.rewardValue),
+      ]);
+      tr.appendChild(createStatusCell(row && row.status));
+      appendHistoryCells(tr, [
+        row && (row.sourceId || row.spinId || row.source),
+        formatDate(row && row.createdAt),
+        formatDate(row && row.expiresAt),
+      ]);
+      els.historyRewardRows.appendChild(tr);
+    }
+  }
+
+  function renderMemberHistory(member) {
+    const safeMember = objectValue(member);
+    if (!safeMember) {
+      state.memberHistory = {};
+      els.memberHistoryState.textContent = "เลือกสมาชิกเพื่อดูประวัติ";
+      renderHistoryDeposits(null);
+      renderHistoryWithdrawals(null);
+      renderHistoryLedger();
+      renderHistorySpins();
+      renderHistoryRewards();
+      els.historyReferralSource.textContent = "-";
+      setMemberHistoryTab("deposits");
+      return;
+    }
+    renderHistoryDeposits(safeMember);
+    renderHistoryWithdrawals(safeMember);
+    renderHistoryLedger();
+    renderHistorySpins();
+    renderHistoryRewards();
+    els.historyReferralSource.textContent = safeDisplay(safeMember.referralSource || "-");
+    els.memberHistoryState.textContent = "โหลดประวัติสมาชิกแบบ read-only แล้ว";
+  }
+
+  async function safeReadOnly(path, fallback) {
+    try {
+      return await api(path);
+    } catch (_error) {
+      return fallback;
+    }
+  }
+
+  async function loadMemberHistory(memberId, renderResult = true) {
+    const params = new URLSearchParams({ user_id: memberId, limit: "50" });
+    const spinParams = new URLSearchParams({ memberId, limit: "50" });
+    const [ledgerRows, spinRows, rewardData] = await Promise.all([
+      safeReadOnly(`/admin/reports/wallet-ledger?${params.toString()}`, []),
+      safeReadOnly(`/admin/wheel/spins?${spinParams.toString()}`, []),
+      safeReadOnly(`/admin/wheel/member-rewards?${spinParams.toString()}`, { rows: [] }),
+    ]);
+    state.memberHistory = {
+      ledgerRows: arrayValue(ledgerRows),
+      spinRows: arrayValue(spinRows),
+      rewardRows: arrayValue(rewardData && rewardData.rows),
+    };
+    els.memberHistoryState.textContent = "โหลดประวัติสมาชิกแบบ read-only แล้ว";
+    if (renderResult) renderMemberHistory(state.memberDetail);
+  }
+
   function renderMemberDetail(member, options) {
     const safeMember = objectValue(member);
     const config = options || {};
@@ -978,11 +1194,15 @@
     els.memberDetailEmpty.textContent = safeDisplay(config.emptyMessage || "Select a member from the list.");
     els.memberDetailEmpty.classList.toggle("hidden", Boolean(safeMember));
     resetMemberDetailTables();
-    if (!safeMember) return;
+    if (!safeMember) {
+      state.memberHistory = {};
+      return;
+    }
     renderMemberProfileRows(safeMember);
     renderMemberBankAccounts(safeMember);
     renderMemberDeposits(safeMember);
     renderMemberWithdrawals(safeMember);
+    renderMemberHistory(safeMember);
   }
 
   async function loadMemberDetail(memberId) {
@@ -1006,7 +1226,10 @@
     els.memberDetailState.textContent = "Loading member detail...";
     els.memberDetailEmpty.classList.add("hidden");
     resetMemberDetailTables();
+    state.memberHistory = {};
     const member = await api(`/admin/members/${encodeURIComponent(memberId)}`);
+    state.memberHistory = {};
+    await loadMemberHistory(memberId, false);
     renderMemberDetail(member, {
       message: "Member detail loaded from GET /api/admin/members/:id.",
       emptyMessage: "ไม่พบข้อมูล",
@@ -1744,6 +1967,10 @@
   els.refreshDashboard.addEventListener("click", () => withLoading(els.refreshDashboard, refreshDashboardSummary).catch((error) => setToast(error.message)));
   els.refreshMembers.addEventListener("click", () => withLoading(els.refreshMembers, refreshMemberList).catch((error) => setToast(error.message)));
   els.backToMembers.addEventListener("click", backToMemberList);
+  els.memberHistoryTabs.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-member-history-tab]");
+    if (button) setMemberHistoryTab(button.dataset.memberHistoryTab);
+  });
   els.memberSearch.addEventListener("keydown", (event) => {
     if (event.key === "Enter") refreshMemberList().catch((error) => setToast(error.message));
   });

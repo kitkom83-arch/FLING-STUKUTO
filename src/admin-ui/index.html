@@ -252,6 +252,158 @@
               <tbody id="member-withdraw-rows"></tbody>
             </table>
           </div>
+          <div
+            class="member-history"
+            id="member-history"
+            data-member-history-read-only-marker="GET /api/admin/members/:id, GET /api/admin/reports/wallet-ledger?user_id=:id, GET /api/admin/wheel/spins?memberId=:id, GET /api/admin/wheel/member-rewards?memberId=:id"
+          >
+            <div class="section-heading compact-heading">
+              <h2>ประวัติสมาชิก / Read-only</h2>
+              <span id="member-history-state">เลือกสมาชิกเพื่อดูประวัติ</span>
+            </div>
+            <div class="history-tabs" id="member-history-tabs" role="tablist" aria-label="Member history tabs">
+              <button type="button" class="secondary active" data-member-history-tab="deposits">รายการฝาก</button>
+              <button type="button" class="secondary" data-member-history-tab="withdrawals">รายการถอน</button>
+              <button type="button" class="secondary" data-member-history-tab="ledger">Wallet Ledger</button>
+              <button type="button" class="secondary" data-member-history-tab="spins">กงล้อ / Spin history</button>
+              <button type="button" class="secondary" data-member-history-tab="rewards">รางวัล / Member rewards</button>
+              <button type="button" class="secondary" data-member-history-tab="play">รายการเล่น</button>
+              <button type="button" class="secondary" data-member-history-tab="pre-promotion">รายการฝากก่อนรับโปร</button>
+              <button type="button" class="secondary" data-member-history-tab="referral">แนะนำเพื่อน</button>
+              <button type="button" class="secondary" data-member-history-tab="usage">การใช้งาน</button>
+              <button type="button" class="secondary" data-member-history-tab="debt">ยอดค้างชำระ</button>
+            </div>
+            <section class="history-panel" data-member-history-panel="deposits">
+              <div class="section-heading compact-heading">
+                <h2>รายการฝาก</h2>
+                <span id="history-deposit-count">0 รายการ</span>
+              </div>
+              <div id="history-deposit-empty" class="empty-state">ไม่พบข้อมูล</div>
+              <div class="table-scroll">
+                <table aria-label="Member history deposits">
+                  <thead>
+                    <tr>
+                      <th>Transaction</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                      <th>Channel</th>
+                      <th>Created</th>
+                      <th>Updated</th>
+                    </tr>
+                  </thead>
+                  <tbody id="history-deposit-rows"></tbody>
+                </table>
+              </div>
+            </section>
+            <section class="history-panel hidden" data-member-history-panel="withdrawals">
+              <div class="section-heading compact-heading">
+                <h2>รายการถอน</h2>
+                <span id="history-withdraw-count">0 รายการ</span>
+              </div>
+              <div id="history-withdraw-empty" class="empty-state">ไม่พบข้อมูล</div>
+              <div class="table-scroll">
+                <table aria-label="Member history withdrawals">
+                  <thead>
+                    <tr>
+                      <th>Transaction</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                      <th>Created</th>
+                      <th>Updated</th>
+                      <th>Paid</th>
+                    </tr>
+                  </thead>
+                  <tbody id="history-withdraw-rows"></tbody>
+                </table>
+              </div>
+            </section>
+            <section class="history-panel hidden" data-member-history-panel="ledger">
+              <div class="section-heading compact-heading">
+                <h2>Wallet Ledger</h2>
+                <span id="history-ledger-count">0 รายการ</span>
+              </div>
+              <div id="history-ledger-empty" class="empty-state">ไม่พบข้อมูล</div>
+              <div class="table-scroll">
+                <table aria-label="Member wallet ledger">
+                  <thead>
+                    <tr>
+                      <th>Transaction</th>
+                      <th>Type</th>
+                      <th>Amount</th>
+                      <th>Before</th>
+                      <th>After</th>
+                      <th>Reference</th>
+                      <th>Created</th>
+                    </tr>
+                  </thead>
+                  <tbody id="history-ledger-rows"></tbody>
+                </table>
+              </div>
+            </section>
+            <section class="history-panel hidden" data-member-history-panel="spins">
+              <div class="section-heading compact-heading">
+                <h2>กงล้อ / Spin history</h2>
+                <span id="history-spin-count">0 รายการ</span>
+              </div>
+              <div id="history-spin-empty" class="empty-state">ไม่พบข้อมูล</div>
+              <div class="table-scroll">
+                <table aria-label="Member wheel spin history">
+                  <thead>
+                    <tr>
+                      <th>Spin</th>
+                      <th>Campaign</th>
+                      <th>Reward</th>
+                      <th>Cost</th>
+                      <th>Prize index</th>
+                      <th>Time</th>
+                    </tr>
+                  </thead>
+                  <tbody id="history-spin-rows"></tbody>
+                </table>
+              </div>
+            </section>
+            <section class="history-panel hidden" data-member-history-panel="rewards">
+              <div class="section-heading compact-heading">
+                <h2>รางวัล / Member rewards</h2>
+                <span id="history-reward-count">0 รายการ</span>
+              </div>
+              <div id="history-reward-empty" class="empty-state">ไม่พบข้อมูล</div>
+              <div class="table-scroll">
+                <table aria-label="Member rewards history">
+                  <thead>
+                    <tr>
+                      <th>Reward</th>
+                      <th>Type</th>
+                      <th>Value</th>
+                      <th>Status</th>
+                      <th>Source</th>
+                      <th>Created</th>
+                      <th>Expires</th>
+                    </tr>
+                  </thead>
+                  <tbody id="history-reward-rows"></tbody>
+                </table>
+              </div>
+            </section>
+            <section class="history-panel hidden" data-member-history-panel="play">
+              <div id="history-play-empty" class="empty-state">ยังไม่มี API สำหรับประวัติการเล่นทั่วไป</div>
+            </section>
+            <section class="history-panel hidden" data-member-history-panel="pre-promotion">
+              <div id="history-pre-promotion-empty" class="empty-state">ยังไม่มี API สำหรับข้อมูลนี้</div>
+            </section>
+            <section class="history-panel hidden" data-member-history-panel="referral">
+              <dl class="detail-grid compact-detail history-detail">
+                <dt>Referral source</dt>
+                <dd id="history-referral-source">-</dd>
+              </dl>
+            </section>
+            <section class="history-panel hidden" data-member-history-panel="usage">
+              <div id="history-usage-empty" class="empty-state">ยังไม่มี API สำหรับข้อมูลนี้</div>
+            </section>
+            <section class="history-panel hidden" data-member-history-panel="debt">
+              <div id="history-debt-empty" class="empty-state">ยังไม่มี API สำหรับข้อมูลนี้</div>
+            </section>
+          </div>
         </section>
 
         <section class="table-section" id="permission-matrix">
