@@ -19,6 +19,7 @@
         <nav class="nav-list">
           <a href="#permissions" class="nav-link active">Permission Guard</a>
           <a href="#dashboard" class="nav-link">Dashboard Summary</a>
+          <a href="#members" class="nav-link">Member List</a>
           <a href="/admin/roles/" class="nav-link">Role Management</a>
           <a href="#schedule" class="nav-link">Work Schedule</a>
           <a href="/admin/audit-security/" class="nav-link">Audit Security</a>
@@ -125,6 +126,56 @@
           </article>
         </section>
         <div id="dashboard-empty" class="empty-state hidden">No dashboard activity found for this site.</div>
+
+        <section class="guard-panel" id="members" data-member-permission-marker="members.view">
+          <div>
+            <span class="eyebrow">Read-only members</span>
+            <h2>Member List</h2>
+            <p>Guarded member lookup and wallet snapshot.</p>
+          </div>
+          <div id="member-list-state" class="permission-state">ยังไม่ได้ login / ต้อง login admin</div>
+          <button id="refresh-members" type="button" disabled>Refresh members</button>
+        </section>
+
+        <section class="toolbar compact" aria-label="Member filters">
+          <div class="field">
+            <label for="member-search">Search member</label>
+            <input id="member-search" type="search" placeholder="username or phone" disabled />
+          </div>
+          <div class="field">
+            <label for="member-status-filter">Status</label>
+            <select id="member-status-filter" disabled>
+              <option value="">All statuses</option>
+              <option value="active">active</option>
+              <option value="blocked">blocked</option>
+            </select>
+          </div>
+        </section>
+
+        <section class="table-section" id="member-list">
+          <div class="section-heading">
+            <h2>Member List / Read-only</h2>
+            <span id="member-count">0 members</span>
+          </div>
+          <div id="member-empty" class="empty-state">ยังไม่ได้ login / ต้อง login admin</div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Member</th>
+                  <th>Phone</th>
+                  <th>Status</th>
+                  <th>Rank</th>
+                  <th>Wallet</th>
+                  <th>Points</th>
+                  <th>Bank accounts</th>
+                  <th>Created</th>
+                </tr>
+              </thead>
+              <tbody id="member-rows"></tbody>
+            </table>
+          </div>
+        </section>
 
         <section class="table-section" id="permission-matrix">
           <div class="section-heading">

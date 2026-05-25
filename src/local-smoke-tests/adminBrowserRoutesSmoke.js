@@ -108,6 +108,22 @@ function assertNoMemberSpinEndpoint(label, js) {
   assert(!js.includes("/member/wheel/spin"), `${label} must not call member spin endpoint.`);
 }
 
+function assertNoAdminMemberWriteControls(html, js) {
+  const rendered = visibleTextFromHtml(html);
+  const forbiddenRendered = /\b(Blacklist|Unblacklist|Credit adjustment|Add credit|Remove credit|Add points|Remove points|Approve bank|Reject bank)\b/i;
+  assert(!forbiddenRendered.test(rendered), "Admin member list must not expose member write controls.");
+  for (const marker of [
+    "/admin/members/:id/block",
+    "/admin/members/:id/unblock",
+    "/admin/members/:id/credit/add",
+    "/admin/members/:id/credit/remove",
+    "/admin/members/:id/points/add",
+    "/admin/members/:id/points/remove",
+  ]) {
+    assert(!js.includes(marker), `Admin member list must not define write endpoint marker: ${marker}`);
+  }
+}
+
 async function assertHtmlRoute(baseUrl, route) {
   const { response, text } = await get(baseUrl, route);
   assert.strictEqual(response.status, 200, `${route} should return 200`);
@@ -180,6 +196,10 @@ async function main() {
       "Read-only dashboard",
       "dashboard-summary-cards",
       "refresh-dashboard",
+      "Member List",
+      "data-member-permission-marker=\"members.view\"",
+      "member-list-state",
+      "member-rows",
       "Role Management",
       "Work Schedule",
       "Audit Security",
@@ -212,6 +232,10 @@ async function main() {
       "loadDashboardSummary",
       "renderDashboardSummary",
       "reports.view",
+      "/admin/members",
+      "loadMemberList",
+      "renderMemberList",
+      "members.view",
       "/admin/roles/",
       "admin.roles.update",
       "admin.audit.view",
@@ -261,6 +285,7 @@ async function main() {
     ]);
 
     assertNoRoleBypassControls(rolesHtml, adminJs);
+    assertNoAdminMemberWriteControls(adminHtml, adminJs);
     assertNoAdminForceControls(wheelHtml, wheelJs);
     assertNoMemberSpinEndpoint("Admin role JS", adminJs);
     assertNoMemberSpinEndpoint("Admin wheel JS", wheelJs);
@@ -287,6 +312,7 @@ async function main() {
     console.log("Admin browser static asset contract: PASS");
     console.log("Admin browser no forbidden rendered copy/static secret values: PASS");
     console.log("Admin browser no owner/super_admin bypass controls: PASS");
+    console.log("Admin browser member list read-only controls: PASS");
     console.log("Admin browser no force reward/spin controls or member spin endpoint calls: PASS");
     console.log("Admin browser /api route boundary: PASS");
     console.log("Admin browser /admin/auth/login JSON boundary: PASS");

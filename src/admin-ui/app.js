@@ -14,6 +14,7 @@
     ["Admin/Audit", "admin.workSchedule.view", "View work schedules", "read", false, false, "/admin/work-schedules", "GET /api/admin/work-schedules"],
     ["Admin/Audit", "admin.workSchedule.update", "Update work schedules", "write", true, true, "/admin/work-schedules", "PATCH /api/admin/work-schedules/:adminId"],
     ["General Admin", "reports.view", "View dashboard summary and reports", "read", false, false, "#dashboard", "GET /api/admin/reports/summary"],
+    ["General Admin", "members.view", "View member list", "read", false, false, "#members", "GET /api/admin/members"],
     ["Lucky Wheel", "wheel.view", "Open Lucky Wheel console", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/config"],
     ["Lucky Wheel", "wheel.campaign.view", "View wheel campaign", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/config"],
     ["Lucky Wheel", "wheel.campaign.update", "Update wheel campaign", "write", true, true, "/admin/lucky-wheel", "PATCH /api/admin/wheel/campaign"],
@@ -49,7 +50,9 @@
     canUpdate: false,
     canOverride: false,
     canViewReports: false,
+    canViewMembers: false,
     dashboardSummary: null,
+    memberRows: [],
     schedules: [],
     selectedAdminId: null,
     selectedAdminLabel: "",
@@ -83,6 +86,13 @@
     dashboardTotalProfitMock: document.getElementById("dashboard-total-profit-mock"),
     dashboardPendingTotal: document.getElementById("dashboard-pending-total"),
     dashboardEmpty: document.getElementById("dashboard-empty"),
+    memberListState: document.getElementById("member-list-state"),
+    refreshMembers: document.getElementById("refresh-members"),
+    memberSearch: document.getElementById("member-search"),
+    memberStatusFilter: document.getElementById("member-status-filter"),
+    memberCount: document.getElementById("member-count"),
+    memberEmpty: document.getElementById("member-empty"),
+    memberRows: document.getElementById("member-rows"),
     permissionMatrixRows: document.getElementById("permission-matrix-rows"),
     permissionMatrixCount: document.getElementById("permission-matrix-count"),
     roleCount: document.getElementById("role-count"),
@@ -186,6 +196,7 @@
 
   function text(value) {
     if (typeof value === "number" && !Number.isFinite(value)) return "-";
+    if (value && typeof value === "object") return "-";
     return value === null || value === void 0 || value === "" ? "-" : String(value);
   }
 
@@ -209,6 +220,10 @@
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
+  }
+
+  function formatMoneyOrFallback(value) {
+    return value === null || value === void 0 || value === "" ? "-" : formatMoneySafe(value);
   }
 
   function sanitizeToken(value) {
@@ -317,6 +332,7 @@
     state.canUpdate = hasPermission("admin.schedule.update");
     state.canOverride = hasPermission("admin.schedule.override");
     state.canViewReports = hasPermission("reports.view");
+    state.canViewMembers = hasPermission("members.view");
     els.permissionState.textContent = state.canView
       ? `Access granted: ${safeDisplay(data.role || "role")} via ${safeDisplay(data.source || "role")}`
       : "No permission for admin work schedules.";
@@ -332,8 +348,15 @@
     els.refreshAdminRoles.disabled = !canManageRoles();
     els.refreshRoles.disabled = !canManageRoles();
     els.refreshDashboard.disabled = !state.canViewReports;
+    updateMemberListControls();
     if (!state.canViewReports) {
       renderDashboardSummary(null, "reports.view permission is required for dashboard summary.");
+    }
+    if (!state.canViewMembers) {
+      renderMemberList([], {
+        message: "members.view permission is required for member list.",
+        emptyMessage: "ต้องมี permission members.view",
+      });
     }
     renderPermissionMatrix();
   }
@@ -597,7 +620,9 @@
     state.canUpdate = false;
     state.canOverride = false;
     state.canViewReports = false;
+    state.canViewMembers = false;
     state.dashboardSummary = null;
+    state.memberRows = [];
     state.selectedAdminId = null;
     state.selectedAdminLabel = "";
     state.roleAssignmentRow = null;
@@ -619,9 +644,14 @@
     els.refreshAdminRoles.disabled = true;
     els.refreshRoles.disabled = true;
     els.refreshDashboard.disabled = true;
+    updateMemberListControls();
     els.rolePermissionReason.value = "";
     setFieldError(els.rolePermissionReasonError, "");
     renderDashboardSummary(null, "Load an admin credential to read the summary.");
+    renderMemberList([], {
+      message: "ยังไม่ได้ login / ต้อง login admin",
+      emptyMessage: "ยังไม่ได้ login / ต้อง login admin",
+    });
     renderSchedules([]);
     renderAudit([]);
     renderPermissionMatrix();
@@ -719,6 +749,121 @@
       safeSummary.pending_withdraw_count,
     ].reduce((total, value) => total + toSafeNumber(value, 0), 0);
     els.dashboardEmpty.classList.toggle("hidden", activityTotal > 0);
+  }
+
+  function updateMemberListControls() {
+    const enabled = Boolean(state.token && state.canViewMembers);
+    els.refreshMembers.disabled = !enabled;
+    els.memberSearch.disabled = !enabled;
+    els.memberStatusFilter.disabled = !enabled;
+  }
+
+  function memberQueryParams() {
+    const params = new URLSearchParams({ page: "1", limit: "50" });
+    const search = els.memberSearch.value.trim();
+    if (search) params.set("search", search);
+    if (els.memberStatusFilter.value) params.set("status", els.memberStatusFilter.value);
+    return params;
+  }
+
+  function memberWallet(member) {
+    return member && member.walletAccount && typeof member.walletAccount === "object" ? member.walletAccount : {};
+  }
+
+  function memberBankSummary(member) {
+    const accounts = Array.isArray(member && member.bankAccounts) ? member.bankAccounts : [];
+    if (!accounts.length) return "-";
+    const counts = new Map();
+    for (const account of accounts) {
+      const status = text(account && account.status);
+      counts.set(status, (counts.get(status) || 0) + 1);
+    }
+    return Array.from(counts.entries())
+      .map(([status, count]) => `${safeDisplay(status)} ${formatCountSafe(count)}`)
+      .join(", ");
+  }
+
+  function memberStatusBadge(member) {
+    const status = text(member && member.status);
+    const normalized = status.toLowerCase();
+    const cls = normalized === "active" ? "ok" : normalized === "blocked" ? "danger" : normalized === "-" ? "" : "warn";
+    return createBadge(safeDisplay(status), cls);
+  }
+
+  function createMemberIdentityCell(member) {
+    const td = document.createElement("td");
+    const name = document.createElement("strong");
+    const id = document.createElement("span");
+    name.textContent = safeDisplay((member && member.username) || "-");
+    id.textContent = safeDisplay(member && member.id);
+    td.appendChild(name);
+    td.appendChild(document.createElement("br"));
+    td.appendChild(id);
+    return td;
+  }
+
+  function renderMemberList(rows, options) {
+    const safeRows = Array.isArray(rows) ? rows : [];
+    const config = options || {};
+    state.memberRows = safeRows;
+    els.memberRows.innerHTML = "";
+    els.memberCount.textContent = `${formatCountSafe(safeRows.length)} members`;
+    els.memberListState.textContent = safeDisplay(config.message || (safeRows.length ? "Member list loaded." : "ไม่พบข้อมูล"));
+    els.memberEmpty.textContent = safeDisplay(config.emptyMessage || "ไม่พบข้อมูล");
+    els.memberEmpty.classList.toggle("hidden", safeRows.length > 0 || Boolean(config.hideEmpty));
+
+    for (const member of safeRows) {
+      const wallet = memberWallet(member);
+      const tr = document.createElement("tr");
+      const statusCell = document.createElement("td");
+      statusCell.appendChild(memberStatusBadge(member));
+      tr.appendChild(createMemberIdentityCell(member));
+      tr.appendChild(createCell(member && member.phone));
+      tr.appendChild(statusCell);
+      tr.appendChild(createCell(member && member.rank));
+      tr.appendChild(createCell(wallet.balance === null || wallet.balance === void 0 || wallet.balance === "" ? "-" : `${formatMoneySafe(wallet.balance)} ${safeDisplay(wallet.currency || "THB")}`));
+      tr.appendChild(createCell(formatMoneyOrFallback(member && member.points)));
+      tr.appendChild(createCell(memberBankSummary(member)));
+      tr.appendChild(createCell(formatDate(member && member.createdAt)));
+      els.memberRows.appendChild(tr);
+    }
+  }
+
+  async function loadMemberList() {
+    updateMemberListControls();
+    if (!state.token) {
+      renderMemberList([], {
+        message: "ยังไม่ได้ login / ต้อง login admin",
+        emptyMessage: "ยังไม่ได้ login / ต้อง login admin",
+      });
+      return;
+    }
+    if (!state.canViewMembers) {
+      renderMemberList([], {
+        message: "members.view permission is required for member list.",
+        emptyMessage: "ต้องมี permission members.view",
+      });
+      return;
+    }
+    els.memberListState.textContent = "Loading member list...";
+    els.memberEmpty.classList.add("hidden");
+    const rows = await api(`/admin/members?${memberQueryParams().toString()}`);
+    renderMemberList(rows, {
+      message: "Member list loaded from GET /api/admin/members.",
+      emptyMessage: "ไม่พบข้อมูล",
+    });
+  }
+
+  async function refreshMemberList() {
+    try {
+      await loadMemberList();
+    } catch (error) {
+      renderMemberList([], {
+        message: sanitizeErrorMessage(error.message),
+        emptyMessage: state.token ? "โหลด member list ไม่สำเร็จ" : "ยังไม่ได้ login / ต้อง login admin",
+      });
+      setToast(error.message);
+    }
   }
 
   async function loadDashboardSummary() {
@@ -1314,6 +1459,11 @@
     sessionStorage.removeItem("pg77_admin_token");
     drawDayGrid([]);
     renderDashboardSummary(null, "Load an admin credential to read the summary.");
+    renderMemberList([], {
+      message: "ยังไม่ได้ login / ต้อง login admin",
+      emptyMessage: "ยังไม่ได้ login / ต้อง login admin",
+    });
+    updateMemberListControls();
     renderAudit([]);
     renderPermissionMatrix();
     renderRoles([]);
@@ -1331,6 +1481,7 @@
       state.token = sanitized;
       await loadPermissions();
       await refreshDashboardSummary();
+      await refreshMemberList();
       await loadSchedules();
       setToast("Session loaded.");
     }).catch((error) => setToast(error.message))
@@ -1340,9 +1491,15 @@
     withLoading(els.loadPermissions, async () => {
       await loadPermissions();
       await refreshDashboardSummary();
+      await refreshMemberList();
     }).catch((error) => setToast("Permission request failed"))
   );
   els.refreshDashboard.addEventListener("click", () => withLoading(els.refreshDashboard, refreshDashboardSummary).catch((error) => setToast(error.message)));
+  els.refreshMembers.addEventListener("click", () => withLoading(els.refreshMembers, refreshMemberList).catch((error) => setToast(error.message)));
+  els.memberSearch.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") refreshMemberList().catch((error) => setToast(error.message));
+  });
+  els.memberStatusFilter.addEventListener("change", () => refreshMemberList().catch((error) => setToast(error.message)));
   els.editRolePermissions.addEventListener("click", openRoleEdit);
   els.refreshRoles.addEventListener("click", () => withLoading(els.refreshRoles, loadPermissions).catch((error) => setToast(error.message)));
   els.rolePermissionReason.addEventListener("input", renderRoleDraftState);
