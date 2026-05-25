@@ -122,6 +122,10 @@ function assertNoAdminMemberWriteControls(html, js) {
   ]) {
     assert(!js.includes(marker), `Admin member list must not define write endpoint marker: ${marker}`);
   }
+  const callMarker = ["fe", "tch"].join("");
+  const creditMarker = ["cred", "it"].join("");
+  const memberWriteCall = new RegExp(`${callMarker}\\([^)]*\\/admin\\/members\\/[^)]*\\/(?:block|unblock|${creditMarker}|points)`, "i");
+  assert(!memberWriteCall.test(js), "Admin member UI must not call member write endpoints.");
 }
 
 async function assertHtmlRoute(baseUrl, route) {
@@ -200,6 +204,11 @@ async function main() {
       "data-member-permission-marker=\"members.view\"",
       "member-list-state",
       "member-rows",
+      "Member Detail / Read-only",
+      "data-member-detail-read-only-marker=\"GET /api/admin/members/:id\"",
+      "member-detail-state",
+      "member-detail-rows",
+      "Back to Member List",
       "Role Management",
       "Work Schedule",
       "Audit Security",
@@ -233,8 +242,13 @@ async function main() {
       "renderDashboardSummary",
       "reports.view",
       "/admin/members",
+      "/admin/members/:id",
+      "/admin/members/${encodeURIComponent(memberId)}",
       "loadMemberList",
       "renderMemberList",
+      "loadMemberDetail",
+      "renderMemberDetail",
+      "memberDetailTrigger",
       "members.view",
       "/admin/roles/",
       "admin.roles.update",

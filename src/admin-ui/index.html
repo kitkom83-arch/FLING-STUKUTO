@@ -170,9 +170,86 @@
                   <th>Points</th>
                   <th>Bank accounts</th>
                   <th>Created</th>
+                  <th>Detail</th>
                 </tr>
               </thead>
               <tbody id="member-rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="table-section hidden" id="member-detail" data-member-detail-read-only-marker="GET /api/admin/members/:id">
+          <div class="section-heading">
+            <h2>Member Detail / Read-only</h2>
+            <div class="actions">
+              <span id="member-detail-state">No member selected</span>
+              <button id="back-to-members" type="button" class="secondary">Back to Member List</button>
+            </div>
+          </div>
+          <div id="member-detail-empty" class="empty-state">Select a member from the list.</div>
+          <div class="table-scroll">
+            <table aria-label="Member profile detail">
+              <tbody id="member-detail-rows"></tbody>
+            </table>
+          </div>
+          <div class="section-heading compact-heading">
+            <h2>Bank accounts</h2>
+            <span id="member-bank-count">0 accounts</span>
+          </div>
+          <div id="member-bank-empty" class="empty-state">No bank account data.</div>
+          <div class="table-scroll">
+            <table aria-label="Member bank accounts">
+              <thead>
+                <tr>
+                  <th>Bank code</th>
+                  <th>Account number</th>
+                  <th>Account name</th>
+                  <th>Status</th>
+                  <th>Approved at</th>
+                  <th>Created</th>
+                </tr>
+              </thead>
+              <tbody id="member-bank-rows"></tbody>
+            </table>
+          </div>
+          <div class="section-heading compact-heading">
+            <h2>Recent deposits</h2>
+            <span id="member-deposit-count">0 deposits</span>
+          </div>
+          <div id="member-deposit-empty" class="empty-state">No deposit data.</div>
+          <div class="table-scroll">
+            <table aria-label="Member recent deposits">
+              <thead>
+                <tr>
+                  <th>Transaction</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Channel</th>
+                  <th>Created</th>
+                  <th>Approved</th>
+                </tr>
+              </thead>
+              <tbody id="member-deposit-rows"></tbody>
+            </table>
+          </div>
+          <div class="section-heading compact-heading">
+            <h2>Recent withdrawals</h2>
+            <span id="member-withdraw-count">0 withdrawals</span>
+          </div>
+          <div id="member-withdraw-empty" class="empty-state">No withdrawal data.</div>
+          <div class="table-scroll">
+            <table aria-label="Member recent withdrawals">
+              <thead>
+                <tr>
+                  <th>Transaction</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                  <th>Approved</th>
+                  <th>Paid</th>
+                </tr>
+              </thead>
+              <tbody id="member-withdraw-rows"></tbody>
             </table>
           </div>
         </section>

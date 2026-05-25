@@ -14,7 +14,7 @@
     ["Admin/Audit", "admin.workSchedule.view", "View work schedules", "read", false, false, "/admin/work-schedules", "GET /api/admin/work-schedules"],
     ["Admin/Audit", "admin.workSchedule.update", "Update work schedules", "write", true, true, "/admin/work-schedules", "PATCH /api/admin/work-schedules/:adminId"],
     ["General Admin", "reports.view", "View dashboard summary and reports", "read", false, false, "#dashboard", "GET /api/admin/reports/summary"],
-    ["General Admin", "members.view", "View member list", "read", false, false, "#members", "GET /api/admin/members"],
+    ["General Admin", "members.view", "View member list/detail", "read", false, false, "#members", "GET /api/admin/members, GET /api/admin/members/:id"],
     ["Lucky Wheel", "wheel.view", "Open Lucky Wheel console", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/config"],
     ["Lucky Wheel", "wheel.campaign.view", "View wheel campaign", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/config"],
     ["Lucky Wheel", "wheel.campaign.update", "Update wheel campaign", "write", true, true, "/admin/lucky-wheel", "PATCH /api/admin/wheel/campaign"],
@@ -53,6 +53,8 @@
     canViewMembers: false,
     dashboardSummary: null,
     memberRows: [],
+    memberDetail: null,
+    selectedMemberId: null,
     schedules: [],
     selectedAdminId: null,
     selectedAdminLabel: "",
@@ -93,6 +95,20 @@
     memberCount: document.getElementById("member-count"),
     memberEmpty: document.getElementById("member-empty"),
     memberRows: document.getElementById("member-rows"),
+    memberDetail: document.getElementById("member-detail"),
+    memberDetailState: document.getElementById("member-detail-state"),
+    memberDetailEmpty: document.getElementById("member-detail-empty"),
+    memberDetailRows: document.getElementById("member-detail-rows"),
+    backToMembers: document.getElementById("back-to-members"),
+    memberBankCount: document.getElementById("member-bank-count"),
+    memberBankEmpty: document.getElementById("member-bank-empty"),
+    memberBankRows: document.getElementById("member-bank-rows"),
+    memberDepositCount: document.getElementById("member-deposit-count"),
+    memberDepositEmpty: document.getElementById("member-deposit-empty"),
+    memberDepositRows: document.getElementById("member-deposit-rows"),
+    memberWithdrawCount: document.getElementById("member-withdraw-count"),
+    memberWithdrawEmpty: document.getElementById("member-withdraw-empty"),
+    memberWithdrawRows: document.getElementById("member-withdraw-rows"),
     permissionMatrixRows: document.getElementById("permission-matrix-rows"),
     permissionMatrixCount: document.getElementById("permission-matrix-count"),
     roleCount: document.getElementById("role-count"),
@@ -223,7 +239,7 @@
   }
 
   function formatMoneyOrFallback(value) {
-    return value === null || value === void 0 || value === "" ? "-" : formatMoneySafe(value);
+    return value === null || value === void 0 || value === "" || (value && typeof value === "object") ? "-" : formatMoneySafe(value);
   }
 
   function sanitizeToken(value) {
@@ -357,6 +373,7 @@
         message: "members.view permission is required for member list.",
         emptyMessage: "ต้องมี permission members.view",
       });
+      renderMemberDetail(null, { hide: true });
     }
     renderPermissionMatrix();
   }
@@ -623,6 +640,8 @@
     state.canViewMembers = false;
     state.dashboardSummary = null;
     state.memberRows = [];
+    state.memberDetail = null;
+    state.selectedMemberId = null;
     state.selectedAdminId = null;
     state.selectedAdminLabel = "";
     state.roleAssignmentRow = null;
@@ -652,6 +671,7 @@
       message: "ยังไม่ได้ login / ต้อง login admin",
       emptyMessage: "ยังไม่ได้ login / ต้อง login admin",
     });
+    renderMemberDetail(null, { hide: true });
     renderSchedules([]);
     renderAudit([]);
     renderPermissionMatrix();
@@ -758,6 +778,14 @@
     els.memberStatusFilter.disabled = !enabled;
   }
 
+  function objectValue(value) {
+    return value && typeof value === "object" && !Array.isArray(value) ? value : null;
+  }
+
+  function arrayValue(value) {
+    return Array.isArray(value) ? value : [];
+  }
+
   function memberQueryParams() {
     const params = new URLSearchParams({ page: "1", limit: "50" });
     const search = els.memberSearch.value.trim();
@@ -767,11 +795,11 @@
   }
 
   function memberWallet(member) {
-    return member && member.walletAccount && typeof member.walletAccount === "object" ? member.walletAccount : {};
+    return objectValue(member && member.walletAccount) || {};
   }
 
   function memberBankSummary(member) {
-    const accounts = Array.isArray(member && member.bankAccounts) ? member.bankAccounts : [];
+    const accounts = arrayValue(member && member.bankAccounts);
     if (!accounts.length) return "-";
     const counts = new Map();
     for (const account of accounts) {
@@ -790,6 +818,35 @@
     return createBadge(safeDisplay(status), cls);
   }
 
+  function recordStatusBadge(value) {
+    const status = text(value);
+    const normalized = status.toLowerCase();
+    const okStatuses = new Set(["active", "approved", "completed", "paid"]);
+    const dangerStatuses = new Set(["blocked", "cancelled", "canceled", "failed", "rejected"]);
+    const cls = okStatuses.has(normalized) ? "ok" : dangerStatuses.has(normalized) ? "danger" : normalized === "-" ? "" : "warn";
+    return createBadge(safeDisplay(status), cls);
+  }
+
+  function createStatusCell(value) {
+    const td = document.createElement("td");
+    td.appendChild(recordStatusBadge(value));
+    return td;
+  }
+
+  function booleanText(value) {
+    return typeof value === "boolean" ? (value ? "Yes" : "No") : text(value);
+  }
+
+  function relationCount(member, key, label) {
+    return Array.isArray(member && member[key]) ? `${formatCountSafe(member[key].length)} ${label}` : "-";
+  }
+
+  function moneyWithCurrency(value, currency) {
+    const amount = formatMoneyOrFallback(value);
+    if (amount === "-") return "-";
+    return `${amount} ${safeDisplay(currency || "THB")}`;
+  }
+
   function createMemberIdentityCell(member) {
     const td = document.createElement("td");
     const name = document.createElement("strong");
@@ -800,6 +857,191 @@
     td.appendChild(document.createElement("br"));
     td.appendChild(id);
     return td;
+  }
+
+  function createMemberDetailButton(member) {
+    const memberId = member && member.id ? String(member.id) : "";
+    const button = actionButton("Detail", () => openMemberDetail(memberId, button), Boolean(state.token && state.canViewMembers && memberId));
+    button.dataset.memberDetailTrigger = "true";
+    if (!memberId) button.title = "Member id is missing";
+    return button;
+  }
+
+  function appendDetailRow(label, value) {
+    const tr = document.createElement("tr");
+    const th = document.createElement("th");
+    const td = document.createElement("td");
+    th.scope = "row";
+    th.textContent = label;
+    td.textContent = safeDisplay(value);
+    tr.appendChild(th);
+    tr.appendChild(td);
+    els.memberDetailRows.appendChild(tr);
+  }
+
+  function renderMemberProfileRows(member) {
+    const wallet = objectValue(member && member.walletAccount);
+    const rows = [
+      ["Member ID", member && member.id],
+      ["Username", member && member.username],
+      ["Phone", member && member.phone],
+      ["Status", member && member.status],
+      ["Rank", member && member.rank],
+      ["Points", formatMoneyOrFallback(member && member.points)],
+      ["Site ID", member && member.siteId],
+      ["Referral source", member && member.referralSource],
+      ["Accept bonus", booleanText(member && member.acceptBonus)],
+      ["Accept terms", booleanText(member && member.acceptTerms)],
+      ["Wallet balance", wallet ? moneyWithCurrency(wallet.balance, wallet.currency) : "-"],
+      ["Wallet updated", wallet ? formatDate(wallet.updatedAt) : "-"],
+      ["Bank accounts", relationCount(member, "bankAccounts", "accounts")],
+      ["Recent deposits", relationCount(member, "deposits", "deposits")],
+      ["Recent withdrawals", relationCount(member, "withdrawals", "withdrawals")],
+      ["Last login", formatDate(member && member.lastLoginAt)],
+      ["Created", formatDate(member && member.createdAt)],
+      ["Updated", formatDate(member && member.updatedAt)],
+    ];
+    for (const [label, value] of rows) appendDetailRow(label, value);
+  }
+
+  function resetMemberDetailTables() {
+    els.memberDetailRows.innerHTML = "";
+    els.memberBankRows.innerHTML = "";
+    els.memberDepositRows.innerHTML = "";
+    els.memberWithdrawRows.innerHTML = "";
+    els.memberBankCount.textContent = "0 accounts";
+    els.memberDepositCount.textContent = "0 deposits";
+    els.memberWithdrawCount.textContent = "0 withdrawals";
+    els.memberBankEmpty.classList.remove("hidden");
+    els.memberDepositEmpty.classList.remove("hidden");
+    els.memberWithdrawEmpty.classList.remove("hidden");
+  }
+
+  function renderMemberBankAccounts(member) {
+    const accounts = arrayValue(member && member.bankAccounts);
+    els.memberBankRows.innerHTML = "";
+    els.memberBankCount.textContent = `${formatCountSafe(accounts.length)} accounts`;
+    els.memberBankEmpty.classList.toggle("hidden", accounts.length > 0);
+    for (const account of accounts) {
+      const tr = document.createElement("tr");
+      tr.appendChild(createCell(account && account.bankCode));
+      tr.appendChild(createCell(account && account.accountNumber));
+      tr.appendChild(createCell(account && account.accountName));
+      tr.appendChild(createStatusCell(account && account.status));
+      tr.appendChild(createCell(formatDate(account && account.approvedAt)));
+      tr.appendChild(createCell(formatDate(account && account.createdAt)));
+      els.memberBankRows.appendChild(tr);
+    }
+  }
+
+  function renderMemberDeposits(member) {
+    const deposits = arrayValue(member && member.deposits);
+    els.memberDepositRows.innerHTML = "";
+    els.memberDepositCount.textContent = `${formatCountSafe(deposits.length)} deposits`;
+    els.memberDepositEmpty.classList.toggle("hidden", deposits.length > 0);
+    for (const deposit of deposits) {
+      const tr = document.createElement("tr");
+      tr.appendChild(createCell((deposit && deposit.transactionId) || (deposit && deposit.id)));
+      tr.appendChild(createCell(formatMoneyOrFallback(deposit && deposit.amount)));
+      tr.appendChild(createStatusCell(deposit && deposit.status));
+      tr.appendChild(createCell(deposit && deposit.channel));
+      tr.appendChild(createCell(formatDate(deposit && deposit.createdAt)));
+      tr.appendChild(createCell(formatDate(deposit && deposit.approvedAt)));
+      els.memberDepositRows.appendChild(tr);
+    }
+  }
+
+  function renderMemberWithdrawals(member) {
+    const withdrawals = arrayValue(member && member.withdrawals);
+    els.memberWithdrawRows.innerHTML = "";
+    els.memberWithdrawCount.textContent = `${formatCountSafe(withdrawals.length)} withdrawals`;
+    els.memberWithdrawEmpty.classList.toggle("hidden", withdrawals.length > 0);
+    for (const withdrawal of withdrawals) {
+      const tr = document.createElement("tr");
+      tr.appendChild(createCell((withdrawal && withdrawal.transactionId) || (withdrawal && withdrawal.id)));
+      tr.appendChild(createCell(formatMoneyOrFallback(withdrawal && withdrawal.amount)));
+      tr.appendChild(createStatusCell(withdrawal && withdrawal.status));
+      tr.appendChild(createCell(formatDate(withdrawal && withdrawal.createdAt)));
+      tr.appendChild(createCell(formatDate(withdrawal && withdrawal.approvedAt)));
+      tr.appendChild(createCell(formatDate(withdrawal && withdrawal.paidAt)));
+      els.memberWithdrawRows.appendChild(tr);
+    }
+  }
+
+  function renderMemberDetail(member, options) {
+    const safeMember = objectValue(member);
+    const config = options || {};
+    state.memberDetail = safeMember;
+    state.selectedMemberId = safeMember && safeMember.id ? String(safeMember.id) : null;
+    els.memberDetail.classList.toggle("hidden", Boolean(config.hide));
+    els.memberDetailState.textContent = safeDisplay(config.message || (safeMember ? "Member detail loaded." : "No member selected"));
+    els.memberDetailEmpty.textContent = safeDisplay(config.emptyMessage || "Select a member from the list.");
+    els.memberDetailEmpty.classList.toggle("hidden", Boolean(safeMember));
+    resetMemberDetailTables();
+    if (!safeMember) return;
+    renderMemberProfileRows(safeMember);
+    renderMemberBankAccounts(safeMember);
+    renderMemberDeposits(safeMember);
+    renderMemberWithdrawals(safeMember);
+  }
+
+  async function loadMemberDetail(memberId) {
+    if (!state.token) {
+      renderMemberDetail(null, {
+        message: "ยังไม่ได้ login / ต้อง login admin",
+        emptyMessage: "ยังไม่ได้ login / ต้อง login admin",
+      });
+      setToast("No session loaded");
+      return;
+    }
+    if (!state.canViewMembers) {
+      renderMemberDetail(null, {
+        message: "members.view permission is required for member detail.",
+        emptyMessage: "ต้องมี permission members.view",
+      });
+      setToast("members.view permission is required");
+      return;
+    }
+    els.memberDetail.classList.remove("hidden");
+    els.memberDetailState.textContent = "Loading member detail...";
+    els.memberDetailEmpty.classList.add("hidden");
+    resetMemberDetailTables();
+    const member = await api(`/admin/members/${encodeURIComponent(memberId)}`);
+    renderMemberDetail(member, {
+      message: "Member detail loaded from GET /api/admin/members/:id.",
+      emptyMessage: "ไม่พบข้อมูล",
+    });
+    els.memberDetail.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  async function openMemberDetail(memberId, button) {
+    const safeId = String(memberId || "").trim();
+    if (!safeId) {
+      renderMemberDetail(null, {
+        message: "Member id is missing.",
+        emptyMessage: "ไม่พบ member id",
+      });
+      setToast("Member id is missing.");
+      return;
+    }
+    try {
+      if (button) {
+        await withLoading(button, () => loadMemberDetail(safeId));
+      } else {
+        await loadMemberDetail(safeId);
+      }
+    } catch (error) {
+      renderMemberDetail(null, {
+        message: sanitizeErrorMessage(error.message),
+        emptyMessage: state.token ? "โหลด member detail ไม่สำเร็จ" : "ยังไม่ได้ login / ต้อง login admin",
+      });
+      setToast(error.message);
+    }
+  }
+
+  function backToMemberList() {
+    renderMemberDetail(null, { hide: true });
+    document.getElementById("member-list").scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function renderMemberList(rows, options) {
@@ -825,6 +1067,10 @@
       tr.appendChild(createCell(formatMoneyOrFallback(member && member.points)));
       tr.appendChild(createCell(memberBankSummary(member)));
       tr.appendChild(createCell(formatDate(member && member.createdAt)));
+      const actions = document.createElement("td");
+      actions.className = "actions";
+      actions.appendChild(createMemberDetailButton(member));
+      tr.appendChild(actions);
       els.memberRows.appendChild(tr);
     }
   }
@@ -1463,6 +1709,7 @@
       message: "ยังไม่ได้ login / ต้อง login admin",
       emptyMessage: "ยังไม่ได้ login / ต้อง login admin",
     });
+    renderMemberDetail(null, { hide: true });
     updateMemberListControls();
     renderAudit([]);
     renderPermissionMatrix();
@@ -1496,6 +1743,7 @@
   );
   els.refreshDashboard.addEventListener("click", () => withLoading(els.refreshDashboard, refreshDashboardSummary).catch((error) => setToast(error.message)));
   els.refreshMembers.addEventListener("click", () => withLoading(els.refreshMembers, refreshMemberList).catch((error) => setToast(error.message)));
+  els.backToMembers.addEventListener("click", backToMemberList);
   els.memberSearch.addEventListener("keydown", (event) => {
     if (event.key === "Enter") refreshMemberList().catch((error) => setToast(error.message));
   });
