@@ -161,6 +161,12 @@ function assertNoAdminMemberWriteControls(html, js) {
   const memberWriteApiCall = new RegExp(`${apiMarker}\\([^)]*\\/admin\\/members\\/[^)]*\\/(?:block|unblock|${creditMarker}|points)`, "i");
   assert(!memberWriteCall.test(js), "Admin member UI must not call member write endpoints.");
   assert(!memberWriteApiCall.test(js), "Admin member UI must not call member write endpoints through api().");
+  const apiPrefix = ["/api", "/admin"].join("");
+  const memberWriteEndpoint = new RegExp(`${apiPrefix}\\/members\\/[^\\s"'<>]+\\/(?:block|unblock|${creditMarker}|points)`, "i");
+  const bankWriteEndpoint = new RegExp(`${apiPrefix}\\/bank[^\\s"'<>]+\\/(?:approve|reject)`, "i");
+  assert(!memberWriteEndpoint.test(html) && !memberWriteEndpoint.test(js), "Admin member UI must not include active member write endpoint strings.");
+  assert(!bankWriteEndpoint.test(html) && !bankWriteEndpoint.test(js), "Admin member UI must not include active bank review write endpoint strings.");
+  assert(!/\b(approve bank|reject bank|unblock member|block member)\b/i.test(rendered), "Admin member UI must not render write-looking member/bank action labels.");
   assert(!/\b(approve deposit|reject deposit|approve withdrawal|reject withdrawal|mark-paid|claim reward|cancel reward)\b/i.test(js), "Admin member UI must not define money/reward write actions.");
 }
 
@@ -246,6 +252,18 @@ async function main() {
       "member-detail-state",
       "member-detail-rows",
       "Back to Member List",
+      "data-member-blocked-read-only-marker",
+      "ข้อมูลสมาชิกที่บล็อค",
+      "Blocked Members / Read-only",
+      "Read-only view only. No unblock action in this phase.",
+      "GET /api/admin/members?status=blocked",
+      "member-blocked-rows",
+      "data-member-pending-bank-read-only-marker",
+      "ข้อมูลบัญชีที่รอตรวจสอบ",
+      "Pending Bank Accounts / Read-only",
+      "Read-only view only. No approve/reject action in this phase.",
+      "GET /api/admin/bank-accounts/pending",
+      "member-pending-bank-rows",
       "data-member-history-read-only-marker",
       "/api/admin/members/:id",
       "/api/admin/reports/wallet-ledger?user_id=&lt;memberId&gt;",
@@ -301,6 +319,10 @@ async function main() {
       "renderDashboardSummary",
       "reports.view",
       "/admin/members",
+      "/admin/members?${params.toString()}",
+      "/admin/bank-accounts/pending?${params.toString()}",
+      "renderBlockedMembers",
+      "renderPendingBankAccounts",
       "/admin/members/:id",
       "/admin/members/${encodeURIComponent(memberId)}",
       "loadMemberList",

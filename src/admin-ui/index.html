@@ -20,6 +20,8 @@
           <a href="#permissions" class="nav-link active">Permission Guard</a>
           <a href="#dashboard" class="nav-link">Dashboard Summary</a>
           <a href="#members" class="nav-link">Member List</a>
+          <a href="#member-blocked" class="nav-link">Blocked Members</a>
+          <a href="#member-pending-bank" class="nav-link">Pending Bank Accounts</a>
           <a href="/admin/roles/" class="nav-link">Role Management</a>
           <a href="#schedule" class="nav-link">Work Schedule</a>
           <a href="/admin/audit-security/" class="nav-link">Audit Security</a>
@@ -174,6 +176,72 @@
                 </tr>
               </thead>
               <tbody id="member-rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section
+          class="table-section"
+          id="member-blocked"
+          data-member-blocked-read-only-marker="GET /api/admin/members?status=blocked"
+        >
+          <div class="section-heading">
+            <div>
+              <h2>ข้อมูลสมาชิกที่บล็อค / Read-only</h2>
+              <p>Blocked Members / Read-only. ใช้ดูสมาชิกที่ถูกบล็อคเท่านั้น ไม่มีการปลดบล็อคในรอบนี้</p>
+              <p>Read-only view only. No unblock action in this phase. Endpoint: GET /api/admin/members?status=blocked</p>
+            </div>
+            <span id="member-blocked-count">0 members</span>
+          </div>
+          <div id="member-blocked-empty" class="empty-state">ไม่พบข้อมูล</div>
+          <div class="table-scroll">
+            <table aria-label="Blocked members read-only">
+              <thead>
+                <tr>
+                  <th>username</th>
+                  <th>ธนาคาร</th>
+                  <th>ชื่อบัญชี</th>
+                  <th>เลขที่บัญชี</th>
+                  <th>เบอร์โทรศัพท์</th>
+                  <th>สถานะ</th>
+                  <th>วันที่บล็อค</th>
+                  <th>สาเหตุที่บล็อค</th>
+                  <th>บล็อคโดย</th>
+                </tr>
+              </thead>
+              <tbody id="member-blocked-rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section
+          class="table-section"
+          id="member-pending-bank"
+          data-member-pending-bank-read-only-marker="GET /api/admin/bank-accounts/pending"
+        >
+          <div class="section-heading">
+            <div>
+              <h2>ข้อมูลบัญชีที่รอตรวจสอบ / Read-only</h2>
+              <p>Pending Bank Accounts / Read-only. ใช้ดูบัญชีที่รอตรวจสอบเท่านั้น ไม่มีอนุมัติ/ปฏิเสธในรอบนี้</p>
+              <p>Read-only view only. No approve/reject action in this phase. Endpoint: GET /api/admin/bank-accounts/pending</p>
+            </div>
+            <span id="member-pending-bank-count">0 accounts</span>
+          </div>
+          <div id="member-pending-bank-empty" class="empty-state">ไม่พบข้อมูล</div>
+          <div class="table-scroll">
+            <table aria-label="Pending bank accounts read-only">
+              <thead>
+                <tr>
+                  <th>วันที่สมัคร</th>
+                  <th>username</th>
+                  <th>ธนาคาร</th>
+                  <th>ชื่อบัญชี</th>
+                  <th>เลขที่บัญชี</th>
+                  <th>สถานะ</th>
+                  <th>หมายเหตุ</th>
+                </tr>
+              </thead>
+              <tbody id="member-pending-bank-rows"></tbody>
             </table>
           </div>
         </section>
