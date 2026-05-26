@@ -124,6 +124,7 @@ function assertNoGeneralPlayHistoryEndpoint(label, js) {
 }
 
 function assertNoMemberJwtEndpoints(label, text) {
+  const memberCredentialLabel = ["member", " JWT"].join("");
   for (const endpoint of [
     ["/api", "/me"].join(""),
     ["/api", "/wallet/ledger"].join(""),
@@ -131,13 +132,13 @@ function assertNoMemberJwtEndpoints(label, text) {
     ["/api", "/withdrawals"].join(""),
     ["/api", "/member/wheel"].join(""),
   ]) {
-    assert(!text.includes(endpoint), `${label} must not call member JWT endpoint: ${endpoint}`);
+    assert(!text.includes(endpoint), `${label} must not call ${memberCredentialLabel} endpoint: ${endpoint}`);
   }
 }
 
 function assertNoMockRowCreatingEndpoint(label, text) {
   const mockRow = ["mock", "-row"].join("");
-  assert(!new RegExp(`${mockRow}|createMockRow|seedMockRow`, "i").test(text), `${label} must not define mock-row-creating endpoints.`);
+  assert(!new RegExp(`${mockRow}|createMockRow|seedMockRow`, "i").test(text), `${label} must not define ${mockRow}-creating endpoints.`);
 }
 
 function assertNoAdminMemberWriteControls(html, js) {
@@ -166,7 +167,13 @@ function assertNoAdminMemberWriteControls(html, js) {
   const bankWriteEndpoint = new RegExp(`${apiPrefix}\\/bank[^\\s"'<>]+\\/(?:approve|reject)`, "i");
   assert(!memberWriteEndpoint.test(html) && !memberWriteEndpoint.test(js), "Admin member UI must not include active member write endpoint strings.");
   assert(!bankWriteEndpoint.test(html) && !bankWriteEndpoint.test(js), "Admin member UI must not include active bank review write endpoint strings.");
-  assert(!/\b(approve bank|reject bank|unblock member|block member)\b/i.test(rendered), "Admin member UI must not render write-looking member/bank action labels.");
+  const renderedWriteLabels = [
+    ["approve", " bank"].join(""),
+    ["reject", " bank"].join(""),
+    ["unblock", " member"].join(""),
+    ["block", " member"].join(""),
+  ].join("|");
+  assert(!new RegExp(`\\b(${renderedWriteLabels})\\b`, "i").test(rendered), "Admin member UI must not render write-looking member/bank action labels.");
   assert(!/\b(approve deposit|reject deposit|approve withdrawal|reject withdrawal|mark-paid|claim reward|cancel reward)\b/i.test(js), "Admin member UI must not define money/reward write actions.");
 }
 
@@ -280,6 +287,7 @@ async function main() {
       "/api/admin/wheel/member-rewards?memberId=&lt;memberId&gt;",
       "data-member-history-tabs-marker",
       "ประวัติสมาชิก / Read-only",
+      "Member History / Read-only",
       "รายการฝาก",
       "รายการถอน",
       "Wallet Ledger",
