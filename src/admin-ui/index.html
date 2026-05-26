@@ -322,6 +322,39 @@
           </div>
           <div
             class="member-history"
+            id="member-audit"
+            data-member-audit-read-only-marker="GET /api/admin/audit-logs?target_type=user&amp;target_id=&lt;memberId&gt;"
+          >
+            <div class="section-heading compact-heading">
+              <div>
+                <h2>Member Audit / Read-only</h2>
+                <p>Audit visibility only. No member or bank write action in this phase.</p>
+                <p>Endpoint: GET /api/admin/audit-logs?target_type=user&amp;target_id=&lt;memberId&gt;</p>
+              </div>
+              <span id="member-audit-count">0 events</span>
+            </div>
+            <div class="empty-state">Bank Account Audit target mapping needs confirmation. Approve/Reject are future write actions, not in this phase.</div>
+            <div id="member-audit-empty" class="empty-state">ไม่พบข้อมูล</div>
+            <div class="table-scroll">
+              <table aria-label="Member admin audit read-only">
+                <thead>
+                  <tr>
+                    <th>วันที่</th>
+                    <th>Action</th>
+                    <th>Result</th>
+                    <th>Actor</th>
+                    <th>Module</th>
+                    <th>Reason</th>
+                    <th>Target</th>
+                    <th>Severity</th>
+                  </tr>
+                </thead>
+                <tbody id="member-audit-rows"></tbody>
+              </table>
+            </div>
+          </div>
+          <div
+            class="member-history"
             id="member-history"
             data-member-history-read-only-marker="GET /api/admin/members/:id, GET /api/admin/reports/wallet-ledger?user_id=&lt;memberId&gt;, GET /api/admin/wheel/spins?memberId=&lt;memberId&gt;, GET /api/admin/wheel/member-rewards?memberId=&lt;memberId&gt;"
             data-member-history-tabs-marker="รายการฝาก, รายการถอน, Wallet Ledger, กงล้อ / Spin history, รางวัล / Member rewards, รายการเล่น, รายการฝากก่อนรับโปร, แนะนำเพื่อน, การใช้งาน, ยอดค้างชำระ"
@@ -652,9 +685,13 @@
           </div>
         </section>
 
-        <section class="audit-section" id="audit">
+        <section class="audit-section" id="audit" data-admin-audit-read-only-marker="GET /api/admin/audit-logs">
           <div class="section-heading">
-            <h2>Audit history</h2>
+            <div>
+              <h2>Admin Audit / Read-only</h2>
+              <p>Audit visibility only. No member or bank write action in this phase.</p>
+              <p>Endpoint: GET /api/admin/audit-logs</p>
+            </div>
             <span id="audit-count">0 events</span>
           </div>
           <div class="toolbar compact">

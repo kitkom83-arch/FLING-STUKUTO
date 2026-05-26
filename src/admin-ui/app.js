@@ -53,12 +53,14 @@
     canViewReports: false,
     canViewMembers: false,
     canViewBank: false,
+    canViewAudit: false,
     dashboardSummary: null,
     memberRows: [],
     blockedMemberRows: [],
     pendingBankRows: [],
     memberDetail: null,
     memberHistory: {},
+    memberAuditRows: [],
     selectedMemberId: null,
     schedules: [],
     selectedAdminId: null,
@@ -120,6 +122,9 @@
     memberWithdrawCount: document.getElementById("member-withdraw-count"),
     memberWithdrawEmpty: document.getElementById("member-withdraw-empty"),
     memberWithdrawRows: document.getElementById("member-withdraw-rows"),
+    memberAuditCount: document.getElementById("member-audit-count"),
+    memberAuditEmpty: document.getElementById("member-audit-empty"),
+    memberAuditRows: document.getElementById("member-audit-rows"),
     memberHistoryState: document.getElementById("member-history-state"),
     memberHistoryTabs: document.getElementById("member-history-tabs"),
     historyDepositCount: document.getElementById("history-deposit-count"),
@@ -379,6 +384,7 @@
     state.canViewReports = hasPermission("reports.view");
     state.canViewMembers = hasPermission("members.view");
     state.canViewBank = hasPermission("bank.view");
+    state.canViewAudit = hasPermission("admin.audit.view");
     els.permissionState.textContent = state.canView
       ? `Access granted: ${safeDisplay(data.role || "role")} via ${safeDisplay(data.source || "role")}`
       : "No permission for admin work schedules.";
@@ -411,6 +417,11 @@
     if (!state.canViewBank) {
       renderPendingBankAccounts([], {
         emptyMessage: "ต้องมี permission bank.view",
+      });
+    }
+    if (!state.canViewAudit) {
+      renderMemberAudit([], {
+        emptyMessage: "ต้องมี permission admin.audit.view",
       });
     }
     renderPermissionMatrix();
@@ -677,12 +688,14 @@
     state.canViewReports = false;
     state.canViewMembers = false;
     state.canViewBank = false;
+    state.canViewAudit = false;
     state.dashboardSummary = null;
     state.memberRows = [];
     state.blockedMemberRows = [];
     state.pendingBankRows = [];
     state.memberDetail = null;
     state.memberHistory = {};
+    state.memberAuditRows = [];
     state.selectedMemberId = null;
     state.selectedAdminId = null;
     state.selectedAdminLabel = "";
@@ -717,6 +730,9 @@
       emptyMessage: "ยังไม่ได้ login / ต้อง login admin",
     });
     renderPendingBankAccounts([], {
+      emptyMessage: "ยังไม่ได้ login / ต้อง login admin",
+    });
+    renderMemberAudit([], {
       emptyMessage: "ยังไม่ได้ login / ต้อง login admin",
     });
     renderMemberDetail(null, { hide: true });
@@ -988,6 +1004,46 @@
     }
   }
 
+  function auditActorName(row) {
+    const actor = objectValue(row && row.actorAdmin) || objectValue(row && row.admin);
+    return (actor && (actor.username || actor.email || actor.id)) || "-";
+  }
+
+  function auditReasonValue(row) {
+    const metadata = objectValue(row && row.metadata);
+    return metadata && metadata.reason ? metadata.reason : "-";
+  }
+
+  function auditTargetValue(row) {
+    const type = safeDisplay(row && row.targetType);
+    const id = safeDisplay(row && row.targetId);
+    if (type === "-" && id === "-") return "-";
+    return `${type} / ${id}`;
+  }
+
+  function renderMemberAudit(rows, options) {
+    const safeRows = Array.isArray(rows) ? rows : [];
+    const config = options || {};
+    state.memberAuditRows = safeRows;
+    els.memberAuditRows.innerHTML = "";
+    els.memberAuditCount.textContent = `${formatCountSafe(safeRows.length)} events`;
+    els.memberAuditEmpty.textContent = safeDisplay(config.emptyMessage || "ไม่พบข้อมูล");
+    els.memberAuditEmpty.classList.toggle("hidden", safeRows.length > 0);
+
+    for (const row of safeRows) {
+      const tr = document.createElement("tr");
+      tr.appendChild(createCell(formatDate(row && row.createdAt)));
+      tr.appendChild(createCell(row && row.action));
+      tr.appendChild(createCell(row && row.result));
+      tr.appendChild(createCell(auditActorName(row)));
+      tr.appendChild(createCell(row && row.module));
+      tr.appendChild(createCell(auditReasonValue(row)));
+      tr.appendChild(createCell(auditTargetValue(row)));
+      tr.appendChild(createCell(row && row.severity));
+      els.memberAuditRows.appendChild(tr);
+    }
+  }
+
   function appendDetailRow(label, value) {
     const tr = document.createElement("tr");
     const th = document.createElement("th");
@@ -1030,6 +1086,7 @@
     els.memberBankRows.innerHTML = "";
     els.memberDepositRows.innerHTML = "";
     els.memberWithdrawRows.innerHTML = "";
+    els.memberAuditRows.innerHTML = "";
     els.historyDepositRows.innerHTML = "";
     els.historyWithdrawRows.innerHTML = "";
     els.historyLedgerRows.innerHTML = "";
@@ -1038,6 +1095,7 @@
     els.memberBankCount.textContent = "0 accounts";
     els.memberDepositCount.textContent = "0 deposits";
     els.memberWithdrawCount.textContent = "0 withdrawals";
+    els.memberAuditCount.textContent = "0 events";
     els.historyDepositCount.textContent = "0 รายการ";
     els.historyWithdrawCount.textContent = "0 รายการ";
     els.historyLedgerCount.textContent = "0 รายการ";
@@ -1046,6 +1104,7 @@
     els.memberBankEmpty.classList.remove("hidden");
     els.memberDepositEmpty.classList.remove("hidden");
     els.memberWithdrawEmpty.classList.remove("hidden");
+    els.memberAuditEmpty.classList.remove("hidden");
     els.historyDepositEmpty.classList.remove("hidden");
     els.historyWithdrawEmpty.classList.remove("hidden");
     els.historyLedgerEmpty.classList.remove("hidden");
@@ -1285,6 +1344,25 @@
     if (renderResult) renderMemberHistory(state.memberDetail);
   }
 
+  async function loadMemberAudit(memberId, renderResult = true) {
+    if (!state.token) {
+      renderMemberAudit([], {
+        emptyMessage: "ยังไม่ได้ login / ต้อง login admin",
+      });
+      return;
+    }
+    if (!state.canViewAudit) {
+      renderMemberAudit([], {
+        emptyMessage: "ต้องมี permission admin.audit.view",
+      });
+      return;
+    }
+    const params = new URLSearchParams({ target_type: "user", target_id: memberId, limit: "50" });
+    const data = await safeReadOnly(`/admin/audit-logs?${params.toString()}`, { rows: [] });
+    state.memberAuditRows = arrayValue(data && data.rows);
+    if (renderResult) renderMemberAudit(state.memberAuditRows);
+  }
+
   function renderMemberDetail(member, options) {
     const safeMember = objectValue(member);
     const config = options || {};
@@ -1297,12 +1375,14 @@
     resetMemberDetailTables();
     if (!safeMember) {
       state.memberHistory = {};
+      state.memberAuditRows = [];
       return;
     }
     renderMemberProfileRows(safeMember);
     renderMemberBankAccounts(safeMember);
     renderMemberDeposits(safeMember);
     renderMemberWithdrawals(safeMember);
+    renderMemberAudit(state.memberAuditRows);
     renderMemberHistory(safeMember);
   }
 
@@ -1328,9 +1408,12 @@
     els.memberDetailEmpty.classList.add("hidden");
     resetMemberDetailTables();
     state.memberHistory = {};
+    state.memberAuditRows = [];
     const member = await api(`/admin/members/${encodeURIComponent(memberId)}`);
     state.memberHistory = {};
+    state.memberAuditRows = [];
     await loadMemberHistory(memberId, false);
+    await loadMemberAudit(memberId, false);
     renderMemberDetail(member, {
       message: "Member detail loaded from GET /api/admin/members/:id.",
       emptyMessage: "ไม่พบข้อมูล",
@@ -2104,6 +2187,9 @@
       emptyMessage: "ยังไม่ได้ login / ต้อง login admin",
     });
     renderPendingBankAccounts([], {
+      emptyMessage: "ยังไม่ได้ login / ต้อง login admin",
+    });
+    renderMemberAudit([], {
       emptyMessage: "ยังไม่ได้ login / ต้อง login admin",
     });
     renderMemberDetail(null, { hide: true });
