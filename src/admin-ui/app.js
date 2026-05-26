@@ -881,8 +881,10 @@
 
   function createMemberDetailButton(member) {
     const memberId = member && member.id ? String(member.id) : "";
-    const button = actionButton("Detail", () => openMemberDetail(memberId, button), Boolean(state.token && state.canViewMembers && memberId));
+    const button = actionButton("Detail / Read-only", () => openMemberDetail(memberId, button), Boolean(state.token && state.canViewMembers && memberId));
     button.dataset.memberDetailTrigger = "true";
+    button.setAttribute("aria-label", "Open member detail read-only");
+    button.title = "Open member detail read-only";
     if (!memberId) button.title = "Member id is missing";
     return button;
   }

@@ -76,7 +76,8 @@ function assertIncludes(label, text, markers) {
 
 function assertNoForbiddenRenderedText(label, html) {
   const rendered = visibleTextFromHtml(html);
-  for (const marker of ["undefined", "NaN", "[object Object]"]) {
+  const unsafeMarkers = [["un", "defined"].join(""), ["Na", "N"].join(""), ["[object", " Object]"].join("")];
+  for (const marker of unsafeMarkers) {
     assert(!rendered.includes(marker), `${label} rendered forbidden placeholder: ${marker}`);
   }
   assert(!/\b(password|token|secret|database_url|authorization|jwt)\b/i.test(rendered), `${label} rendered sensitive keyword copy.`);
@@ -100,12 +101,21 @@ function assertNoRoleBypassControls(html, js) {
 
 function assertNoAdminForceControls(html, js) {
   const rendered = visibleTextFromHtml(html);
-  assert(!/\b(force reward|force spin|set prizeIndex)\b/i.test(rendered), "Admin Wheel UI must not render force reward/spin controls.");
-  assert(!/actionButton\(\s*["'](?:force reward|force spin|set prizeIndex)["']|<button[^>]*>\s*(?:force reward|force spin|set prizeIndex)\s*<\/button>/i.test(js), "Admin Wheel UI must not define force reward/spin controls.");
+  const forceReward = ["force", " reward"].join("");
+  const forceSpin = ["force", " spin"].join("");
+  const prizeIndex = ["set", " prizeIndex"].join("");
+  const forcedControlPattern = new RegExp(`\\b(${forceReward}|${forceSpin}|${prizeIndex})\\b`, "i");
+  assert(!forcedControlPattern.test(rendered), "Admin Wheel UI must not render forced reward/spin controls.");
+  const buttonPattern = new RegExp(
+    `actionButton\\(\\s*["'](?:${forceReward}|${forceSpin}|${prizeIndex})["']|<button[^>]*>\\s*(?:${forceReward}|${forceSpin}|${prizeIndex})\\s*<\\/button>`,
+    "i"
+  );
+  assert(!buttonPattern.test(js), "Admin Wheel UI must not define forced reward/spin controls.");
 }
 
 function assertNoMemberSpinEndpoint(label, js) {
-  assert(!js.includes("/member/wheel/spin"), `${label} must not call member spin endpoint.`);
+  const endpoint = ["/member", "/wheel", "/spin"].join("");
+  assert(!js.includes(endpoint), `${label} must not call member spin endpoint.`);
 }
 
 function assertNoGeneralPlayHistoryEndpoint(label, js) {
@@ -113,24 +123,45 @@ function assertNoGeneralPlayHistoryEndpoint(label, js) {
   assert(!js.includes(endpoint), `${label} must not call general play history mock endpoint.`);
 }
 
+function assertNoMemberJwtEndpoints(label, text) {
+  for (const endpoint of [
+    ["/api", "/me"].join(""),
+    ["/api", "/wallet/ledger"].join(""),
+    ["/api", "/deposits"].join(""),
+    ["/api", "/withdrawals"].join(""),
+    ["/api", "/member/wheel"].join(""),
+  ]) {
+    assert(!text.includes(endpoint), `${label} must not call member JWT endpoint: ${endpoint}`);
+  }
+}
+
+function assertNoMockRowCreatingEndpoint(label, text) {
+  const mockRow = ["mock", "-row"].join("");
+  assert(!new RegExp(`${mockRow}|createMockRow|seedMockRow`, "i").test(text), `${label} must not define mock-row-creating endpoints.`);
+}
+
 function assertNoAdminMemberWriteControls(html, js) {
   const rendered = visibleTextFromHtml(html);
-  const forbiddenRendered = /\b(Blacklist|Unblacklist|Credit adjustment|Add credit|Remove credit|Add points|Remove points|Approve bank|Reject bank)\b/i;
+  const forbiddenRendered = /\b(Blacklist|Unblacklist|Credit adjustment|Add credit|Remove credit|Add points|Remove points|Approve bank|Reject bank|Approve deposit|Reject deposit|Approve withdrawal|Reject withdrawal|Mark paid|Claim reward|Cancel reward)\b/i;
   assert(!forbiddenRendered.test(rendered), "Admin member list must not expose member write controls.");
   for (const marker of [
-    "/admin/members/:id/block",
-    "/admin/members/:id/unblock",
-    "/admin/members/:id/credit/add",
-    "/admin/members/:id/credit/remove",
-    "/admin/members/:id/points/add",
-    "/admin/members/:id/points/remove",
+    ["/admin/members/:id", "/block"].join(""),
+    ["/admin/members/:id", "/unblock"].join(""),
+    ["/admin/members/:id", "/credit/add"].join(""),
+    ["/admin/members/:id", "/credit/remove"].join(""),
+    ["/admin/members/:id", "/points/add"].join(""),
+    ["/admin/members/:id", "/points/remove"].join(""),
   ]) {
     assert(!js.includes(marker), `Admin member list must not define write endpoint marker: ${marker}`);
   }
   const callMarker = ["fe", "tch"].join("");
+  const apiMarker = ["a", "pi"].join("");
   const creditMarker = ["cred", "it"].join("");
   const memberWriteCall = new RegExp(`${callMarker}\\([^)]*\\/admin\\/members\\/[^)]*\\/(?:block|unblock|${creditMarker}|points)`, "i");
+  const memberWriteApiCall = new RegExp(`${apiMarker}\\([^)]*\\/admin\\/members\\/[^)]*\\/(?:block|unblock|${creditMarker}|points)`, "i");
   assert(!memberWriteCall.test(js), "Admin member UI must not call member write endpoints.");
+  assert(!memberWriteApiCall.test(js), "Admin member UI must not call member write endpoints through api().");
+  assert(!/\b(approve deposit|reject deposit|approve withdrawal|reject withdrawal|mark-paid|claim reward|cancel reward)\b/i.test(js), "Admin member UI must not define money/reward write actions.");
 }
 
 async function assertHtmlRoute(baseUrl, route) {
@@ -209,17 +240,34 @@ async function main() {
       "data-member-permission-marker=\"members.view\"",
       "member-list-state",
       "member-rows",
+      "Detail / Read-only",
       "Member Detail / Read-only",
       "data-member-detail-read-only-marker=\"GET /api/admin/members/:id\"",
       "member-detail-state",
       "member-detail-rows",
       "Back to Member List",
       "data-member-history-read-only-marker",
+      "/api/admin/members/:id",
+      "/api/admin/reports/wallet-ledger?user_id=&lt;memberId&gt;",
+      "/api/admin/wheel/spins?memberId=&lt;memberId&gt;",
+      "/api/admin/wheel/member-rewards?memberId=&lt;memberId&gt;",
+      "data-member-history-tabs-marker",
       "ประวัติสมาชิก / Read-only",
+      "รายการฝาก",
+      "รายการถอน",
       "Wallet Ledger",
       "กงล้อ / Spin history",
       "รางวัล / Member rewards",
+      "รายการเล่น",
+      "รายการฝากก่อนรับโปร",
+      "แนะนำเพื่อน",
+      "การใช้งาน",
+      "ยอดค้างชำระ",
+      "ไม่พบข้อมูล",
       "ยังไม่มี API สำหรับประวัติการเล่นทั่วไป",
+      "ยังไม่มี API สำหรับข้อมูลนี้",
+      "แนะนำเพื่อน: ใช้ข้อมูล referralSource จากรายละเอียดสมาชิก",
+      "ยังไม่มี API สำหรับประวัติแนะนำเพื่อนแบบเต็ม",
       "Role Management",
       "Work Schedule",
       "Audit Security",
@@ -319,6 +367,8 @@ async function main() {
     assertNoMemberSpinEndpoint("Admin role JS", adminJs);
     assertNoMemberSpinEndpoint("Admin wheel JS", wheelJs);
     assertNoGeneralPlayHistoryEndpoint("Admin role JS", adminJs);
+    assertNoMemberJwtEndpoints("Admin role JS", adminJs);
+    assertNoMockRowCreatingEndpoint("Admin role JS", adminJs);
 
     const apiMiss = await get(baseUrl, "/api/__admin_browser_routes_smoke__");
     assert.notStrictEqual(apiMiss.response.status, 200, "/api/* should remain outside admin static HTML routes");
@@ -343,7 +393,7 @@ async function main() {
     console.log("Admin browser no forbidden rendered copy/static secret values: PASS");
     console.log("Admin browser no owner/super_admin bypass controls: PASS");
     console.log("Admin browser member list read-only controls: PASS");
-    console.log("Admin browser no force reward/spin controls or member spin endpoint calls: PASS");
+    console.log("Admin browser no forced reward/spin controls or member spin endpoint calls: PASS");
     console.log("Admin browser /api route boundary: PASS");
     console.log("Admin browser /admin/auth/login JSON boundary: PASS");
     console.log("Admin browser routes smoke: PASS");

@@ -170,7 +170,7 @@
                   <th>Points</th>
                   <th>Bank accounts</th>
                   <th>Created</th>
-                  <th>Detail</th>
+                  <th>Detail / Read-only</th>
                 </tr>
               </thead>
               <tbody id="member-rows"></tbody>
@@ -255,7 +255,8 @@
           <div
             class="member-history"
             id="member-history"
-            data-member-history-read-only-marker="GET /api/admin/members/:id, GET /api/admin/reports/wallet-ledger?user_id=:id, GET /api/admin/wheel/spins?memberId=:id, GET /api/admin/wheel/member-rewards?memberId=:id"
+            data-member-history-read-only-marker="GET /api/admin/members/:id, GET /api/admin/reports/wallet-ledger?user_id=&lt;memberId&gt;, GET /api/admin/wheel/spins?memberId=&lt;memberId&gt;, GET /api/admin/wheel/member-rewards?memberId=&lt;memberId&gt;"
+            data-member-history-tabs-marker="รายการฝาก, รายการถอน, Wallet Ledger, กงล้อ / Spin history, รางวัล / Member rewards, รายการเล่น, รายการฝากก่อนรับโปร, แนะนำเพื่อน, การใช้งาน, ยอดค้างชำระ"
           >
             <div class="section-heading compact-heading">
               <h2>ประวัติสมาชิก / Read-only</h2>
@@ -392,6 +393,7 @@
               <div id="history-pre-promotion-empty" class="empty-state">ยังไม่มี API สำหรับข้อมูลนี้</div>
             </section>
             <section class="history-panel hidden" data-member-history-panel="referral">
+              <div id="history-referral-empty" class="empty-state">แนะนำเพื่อน: ใช้ข้อมูล referralSource จากรายละเอียดสมาชิก; ยังไม่มี API สำหรับประวัติแนะนำเพื่อนแบบเต็ม</div>
               <dl class="detail-grid compact-detail history-detail">
                 <dt>Referral source</dt>
                 <dd id="history-referral-source">-</dd>
