@@ -142,7 +142,21 @@
     historyRewardCount: document.getElementById("history-reward-count"),
     historyRewardEmpty: document.getElementById("history-reward-empty"),
     historyRewardRows: document.getElementById("history-reward-rows"),
+    historyPlayCount: document.getElementById("history-play-count"),
+    historyPlayEmpty: document.getElementById("history-play-empty"),
+    historyPlayRows: document.getElementById("history-play-rows"),
+    historyPrePromotionCount: document.getElementById("history-pre-promotion-count"),
+    historyPrePromotionEmpty: document.getElementById("history-pre-promotion-empty"),
+    historyPrePromotionRows: document.getElementById("history-pre-promotion-rows"),
+    historyReferralCount: document.getElementById("history-referral-count"),
+    historyReferralEmpty: document.getElementById("history-referral-empty"),
     historyReferralSource: document.getElementById("history-referral-source"),
+    historyUsageCount: document.getElementById("history-usage-count"),
+    historyUsageEmpty: document.getElementById("history-usage-empty"),
+    historyUsageRows: document.getElementById("history-usage-rows"),
+    historyDebtCount: document.getElementById("history-debt-count"),
+    historyDebtEmpty: document.getElementById("history-debt-empty"),
+    historyDebtRows: document.getElementById("history-debt-rows"),
     permissionMatrixRows: document.getElementById("permission-matrix-rows"),
     permissionMatrixCount: document.getElementById("permission-matrix-count"),
     roleCount: document.getElementById("role-count"),
@@ -363,6 +377,14 @@
 
   function hasPermission(permission) {
     return state.permissions.includes(permission) || state.permissions.includes("admin.manage");
+  }
+
+  function canViewWheelSpins() {
+    return hasPermission("wheel.spin.view") || hasPermission("wheel.spins.view");
+  }
+
+  function canViewWheelRewards() {
+    return hasPermission("wheel.claims.view");
   }
 
   function canManageRoles() {
@@ -1092,6 +1114,10 @@
     els.historyLedgerRows.innerHTML = "";
     els.historySpinRows.innerHTML = "";
     els.historyRewardRows.innerHTML = "";
+    els.historyPlayRows.innerHTML = "";
+    els.historyPrePromotionRows.innerHTML = "";
+    els.historyUsageRows.innerHTML = "";
+    els.historyDebtRows.innerHTML = "";
     els.memberBankCount.textContent = "0 accounts";
     els.memberDepositCount.textContent = "0 deposits";
     els.memberWithdrawCount.textContent = "0 withdrawals";
@@ -1101,6 +1127,11 @@
     els.historyLedgerCount.textContent = "0 รายการ";
     els.historySpinCount.textContent = "0 รายการ";
     els.historyRewardCount.textContent = "0 รายการ";
+    els.historyPlayCount.textContent = "0 รายการ";
+    els.historyPrePromotionCount.textContent = "0 รายการ";
+    els.historyReferralCount.textContent = "0 รายการ";
+    els.historyUsageCount.textContent = "0 รายการ";
+    els.historyDebtCount.textContent = "0 รายการ";
     els.memberBankEmpty.classList.remove("hidden");
     els.memberDepositEmpty.classList.remove("hidden");
     els.memberWithdrawEmpty.classList.remove("hidden");
@@ -1110,6 +1141,11 @@
     els.historyLedgerEmpty.classList.remove("hidden");
     els.historySpinEmpty.classList.remove("hidden");
     els.historyRewardEmpty.classList.remove("hidden");
+    els.historyPlayEmpty.classList.remove("hidden");
+    els.historyPrePromotionEmpty.classList.remove("hidden");
+    els.historyReferralEmpty.classList.remove("hidden");
+    els.historyUsageEmpty.classList.remove("hidden");
+    els.historyDebtEmpty.classList.remove("hidden");
     els.historyReferralSource.textContent = "-";
     els.memberHistoryState.textContent = "เลือกสมาชิกเพื่อดูประวัติ";
   }
@@ -1169,6 +1205,15 @@
     return formatMoneySafe(value);
   }
 
+  function historyAmountOrFallback(value) {
+    return value === null || value === void 0 || value === "" ? "-" : historyAmount(value);
+  }
+
+  function historyMessage(key, fallback) {
+    const messages = objectValue(state.memberHistory && state.memberHistory.messages);
+    return safeDisplay(messages[key] || fallback || "ไม่พบข้อมูลจาก API read-only");
+  }
+
   function setHistoryEmpty(emptyEl, rows, message) {
     emptyEl.textContent = safeDisplay(message || "ไม่พบข้อมูล");
     emptyEl.classList.toggle("hidden", rows.length > 0);
@@ -1191,10 +1236,11 @@
   }
 
   function renderHistoryDeposits(member) {
-    const rows = arrayValue(member && member.deposits);
+    const apiRows = arrayValue(state.memberHistory && state.memberHistory.depositRows);
+    const rows = apiRows.length ? apiRows : arrayValue(member && member.deposits);
     els.historyDepositRows.innerHTML = "";
     els.historyDepositCount.textContent = `${formatCountSafe(rows.length)} รายการ`;
-    setHistoryEmpty(els.historyDepositEmpty, rows);
+    setHistoryEmpty(els.historyDepositEmpty, rows, historyMessage("deposits"));
     for (const row of rows) {
       const tr = document.createElement("tr");
       appendHistoryCells(tr, [
@@ -1212,10 +1258,11 @@
   }
 
   function renderHistoryWithdrawals(member) {
-    const rows = arrayValue(member && member.withdrawals);
+    const apiRows = arrayValue(state.memberHistory && state.memberHistory.withdrawRows);
+    const rows = apiRows.length ? apiRows : arrayValue(member && member.withdrawals);
     els.historyWithdrawRows.innerHTML = "";
     els.historyWithdrawCount.textContent = `${formatCountSafe(rows.length)} รายการ`;
-    setHistoryEmpty(els.historyWithdrawEmpty, rows);
+    setHistoryEmpty(els.historyWithdrawEmpty, rows, historyMessage("withdrawals"));
     for (const row of rows) {
       const tr = document.createElement("tr");
       appendHistoryCells(tr, [
@@ -1236,7 +1283,7 @@
     const rows = arrayValue(state.memberHistory.ledgerRows);
     els.historyLedgerRows.innerHTML = "";
     els.historyLedgerCount.textContent = `${formatCountSafe(rows.length)} รายการ`;
-    setHistoryEmpty(els.historyLedgerEmpty, rows);
+    setHistoryEmpty(els.historyLedgerEmpty, rows, historyMessage("ledger"));
     for (const row of rows) {
       const tr = document.createElement("tr");
       appendHistoryCells(tr, [
@@ -1256,7 +1303,7 @@
     const rows = arrayValue(state.memberHistory.spinRows);
     els.historySpinRows.innerHTML = "";
     els.historySpinCount.textContent = `${formatCountSafe(rows.length)} รายการ`;
-    setHistoryEmpty(els.historySpinEmpty, rows);
+    setHistoryEmpty(els.historySpinEmpty, rows, historyMessage("spins"));
     for (const row of rows) {
       const campaign = objectValue(row && row.campaign);
       const reward = objectValue(row && row.reward);
@@ -1278,7 +1325,7 @@
     const rows = arrayValue(state.memberHistory.rewardRows);
     els.historyRewardRows.innerHTML = "";
     els.historyRewardCount.textContent = `${formatCountSafe(rows.length)} รายการ`;
-    setHistoryEmpty(els.historyRewardEmpty, rows);
+    setHistoryEmpty(els.historyRewardEmpty, rows, historyMessage("rewards"));
     for (const row of rows) {
       const tr = document.createElement("tr");
       appendHistoryCells(tr, [
@@ -1296,6 +1343,101 @@
     }
   }
 
+  function renderHistoryPlay() {
+    const rows = arrayValue(state.memberHistory.playRows);
+    els.historyPlayRows.innerHTML = "";
+    els.historyPlayCount.textContent = `${formatCountSafe(rows.length)} รายการ`;
+    setHistoryEmpty(els.historyPlayEmpty, rows, historyMessage("play"));
+    for (const row of rows) {
+      const tr = document.createElement("tr");
+      appendHistoryCells(tr, [
+        row && (row.roundId || row.id),
+        row && row.provider,
+        row && row.gameCode,
+        historyAmount(row && row.betAmount),
+        historyAmount(row && row.winAmount),
+        historyAmount(row && row.profitAmount),
+        formatDate(row && row.playedAt),
+        row && row.source,
+      ]);
+      els.historyPlayRows.appendChild(tr);
+    }
+  }
+
+  function renderHistoryPrePromotion() {
+    const rows = arrayValue(state.memberHistory.prePromotionRows);
+    els.historyPrePromotionRows.innerHTML = "";
+    els.historyPrePromotionCount.textContent = `${formatCountSafe(rows.length)} รายการ`;
+    setHistoryEmpty(els.historyPrePromotionEmpty, rows, historyMessage("prePromotion"));
+    for (const row of rows) {
+      const tr = document.createElement("tr");
+      appendHistoryCells(tr, [
+        row && row.eventType,
+        row && row.promotionTitle,
+        historyAmount(row && row.amount),
+      ]);
+      tr.appendChild(createStatusCell(row && row.status));
+      appendHistoryCells(tr, [
+        row && (row.transactionId || row.promotionId || row.id),
+        formatDate(row && (row.approvedAt || row.createdAt)),
+      ]);
+      els.historyPrePromotionRows.appendChild(tr);
+    }
+  }
+
+  function renderHistoryReferral(member) {
+    const referral = objectValue(state.memberHistory.referral);
+    const source = (referral && referral.source) || (member && member.referralSource) || "-";
+    const rows = arrayValue(referral && referral.rows);
+    els.historyReferralCount.textContent = `${formatCountSafe(rows.length)} รายการ`;
+    els.historyReferralSource.textContent = safeDisplay(source || "-");
+    setHistoryEmpty(els.historyReferralEmpty, rows, historyMessage("referral", referral && referral.note));
+  }
+
+  function renderHistoryUsage() {
+    const rows = arrayValue(state.memberHistory.usageRows);
+    els.historyUsageRows.innerHTML = "";
+    els.historyUsageCount.textContent = `${formatCountSafe(rows.length)} รายการ`;
+    setHistoryEmpty(els.historyUsageEmpty, rows, historyMessage("usage"));
+    for (const row of rows) {
+      const tr = document.createElement("tr");
+      appendHistoryCells(tr, [
+        row && row.eventType,
+        row && (row.provider || "-"),
+        row && (row.gameName || row.gameCode || row.referenceType || row.referenceId),
+        historyAmountOrFallback(row && row.amount),
+      ]);
+      tr.appendChild(createStatusCell(row && row.status));
+      appendHistoryCells(tr, [
+        row && row.referenceId,
+        formatDate(row && row.createdAt),
+      ]);
+      els.historyUsageRows.appendChild(tr);
+    }
+  }
+
+  function renderHistoryDebt() {
+    const rows = arrayValue(state.memberHistory.debtRows);
+    els.historyDebtRows.innerHTML = "";
+    els.historyDebtCount.textContent = `${formatCountSafe(rows.length)} รายการ`;
+    setHistoryEmpty(els.historyDebtEmpty, rows, historyMessage("debt"));
+    for (const row of rows) {
+      const tr = document.createElement("tr");
+      appendHistoryCells(tr, [
+        row && (row.promotionTitle || row.promotionId || row.id),
+        historyAmount(row && row.requiredAmount),
+        historyAmount(row && row.currentAmount),
+        historyAmount(row && row.remainingAmount),
+      ]);
+      tr.appendChild(createStatusCell(row && row.status));
+      appendHistoryCells(tr, [
+        formatDate(row && row.createdAt),
+        formatDate(row && row.updatedAt),
+      ]);
+      els.historyDebtRows.appendChild(tr);
+    }
+  }
+
   function renderMemberHistory(member) {
     const safeMember = objectValue(member);
     if (!safeMember) {
@@ -1306,7 +1448,11 @@
       renderHistoryLedger();
       renderHistorySpins();
       renderHistoryRewards();
-      els.historyReferralSource.textContent = "-";
+      renderHistoryPlay();
+      renderHistoryPrePromotion();
+      renderHistoryReferral(null);
+      renderHistoryUsage();
+      renderHistoryDebt();
       setMemberHistoryTab("deposits");
       return;
     }
@@ -1315,7 +1461,11 @@
     renderHistoryLedger();
     renderHistorySpins();
     renderHistoryRewards();
-    els.historyReferralSource.textContent = safeDisplay(safeMember.referralSource || "-");
+    renderHistoryPlay();
+    renderHistoryPrePromotion();
+    renderHistoryReferral(safeMember);
+    renderHistoryUsage();
+    renderHistoryDebt();
     els.memberHistoryState.textContent = "โหลดประวัติสมาชิกแบบ read-only แล้ว";
   }
 
@@ -1328,17 +1478,39 @@
   }
 
   async function loadMemberHistory(memberId, renderResult = true) {
+    const historyParams = new URLSearchParams({ limit: "50" });
     const params = new URLSearchParams({ user_id: memberId, limit: "50" });
     const spinParams = new URLSearchParams({ memberId, limit: "50" });
-    const [ledgerRows, spinRows, rewardData] = await Promise.all([
-      safeReadOnly(`/admin/reports/wallet-ledger?${params.toString()}`, []),
-      safeReadOnly(`/admin/wheel/spins?${spinParams.toString()}`, []),
-      safeReadOnly(`/admin/wheel/member-rewards?${spinParams.toString()}`, { rows: [] }),
+    const [historyData, ledgerRows, spinRows, rewardData] = await Promise.all([
+      safeReadOnly(`/admin/members/${encodeURIComponent(memberId)}/history?${historyParams.toString()}`, {}),
+      state.canViewReports ? safeReadOnly(`/admin/reports/wallet-ledger?${params.toString()}`, []) : [],
+      canViewWheelSpins() ? safeReadOnly(`/admin/wheel/spins?${spinParams.toString()}`, []) : [],
+      canViewWheelRewards() ? safeReadOnly(`/admin/wheel/member-rewards?${spinParams.toString()}`, { rows: [] }) : { rows: [] },
     ]);
     state.memberHistory = {
+      depositRows: arrayValue(historyData && historyData.deposits),
+      withdrawRows: arrayValue(historyData && historyData.withdrawals),
       ledgerRows: arrayValue(ledgerRows),
       spinRows: arrayValue(spinRows),
       rewardRows: arrayValue(rewardData && rewardData.rows),
+      playRows: arrayValue(historyData && historyData.playRows),
+      prePromotionRows: arrayValue(historyData && historyData.prePromotionRows),
+      referral: objectValue(historyData && historyData.referral) || {},
+      usageRows: arrayValue(historyData && historyData.usageRows),
+      debtRows: arrayValue(historyData && historyData.debtRows),
+      sources: objectValue(historyData && historyData.sources) || {},
+      messages: {
+        deposits: "ไม่พบข้อมูลจาก GET /api/admin/members/:id/history",
+        withdrawals: "ไม่พบข้อมูลจาก GET /api/admin/members/:id/history",
+        ledger: state.canViewReports ? "ไม่พบข้อมูลจาก GET /api/admin/reports/wallet-ledger" : "ต้องมี permission reports.view",
+        spins: canViewWheelSpins() ? "ไม่พบข้อมูลจาก GET /api/admin/wheel/spins" : "ต้องมี permission wheel.spin.view หรือ wheel.spins.view",
+        rewards: canViewWheelRewards() ? "ไม่พบข้อมูลจาก GET /api/admin/wheel/member-rewards" : "ต้องมี permission wheel.claims.view",
+        play: "ไม่พบข้อมูลจาก GET /api/admin/members/:id/history",
+        prePromotion: "ไม่พบข้อมูลจาก GET /api/admin/members/:id/history",
+        referral: "ไม่พบข้อมูลแนะนำเพื่อนเพิ่มเติมจาก API read-only",
+        usage: "ไม่พบข้อมูลจาก GET /api/admin/members/:id/history",
+        debt: "ไม่พบข้อมูลจาก GET /api/admin/members/:id/history",
+      },
     };
     els.memberHistoryState.textContent = "โหลดประวัติสมาชิกแบบ read-only แล้ว";
     if (renderResult) renderMemberHistory(state.memberDetail);

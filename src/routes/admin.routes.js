@@ -180,6 +180,7 @@ router.post("/sites/:id/payment-configs", adminAuth, canForSite("settings.websit
 router.put("/sites/:id/payment-configs/:configId", adminAuth, canForSite("settings.website.update"), asyncHandler(adminSiteController.updatePaymentConfig));
 
 router.get("/members", protectedSite, can("members.view"), asyncHandler(adminController.listMembers));
+router.get("/members/:id/history", protectedSite, can("members.view"), asyncHandler(adminController.getMemberHistory));
 router.get("/members/:id", protectedSite, can("members.view"), asyncHandler(adminController.getMember));
 router.post("/members/:id/block", protectedSite, can("members.update"), asyncHandler(adminController.blockMember));
 router.post("/members/:id/unblock", protectedSite, can("members.update"), asyncHandler(adminController.unblockMember));

@@ -191,6 +191,7 @@ Permission failures return `403` with the standard error envelope and must not r
 | GET | `/admin/security-events/summary` | Admin | `admin.security.view` | None | security-event summary counts with the same safe summary contract | `400`, `401`, `403` | None |
 | GET | `/admin/members` | Admin | `members.view` | None | member list with wallet and bank accounts | `401`, `403` | None |
 | GET | `/admin/members/:id` | Admin | `members.view` | None | member detail with wallet, bank accounts, recent deposits, recent withdrawals | `403`, `404` member not found | None |
+| GET | `/admin/members/:id/history` | Admin | `members.view` | optional `limit` | Admin Member Detail history supplemental read-only payload: deposits, withdrawals, promotion deposit/claim rows, referral source, game usage rows, mock game bet-history table rows, and turnover requirement/outstanding rows. Wallet ledger and Lucky Wheel history keep using their existing guarded read endpoints. No wallet/credit/debit/write action. | `401`, `403`, `404` member not found | None |
 | POST | `/admin/members/:id/block` | Admin | `members.update` | None | blocked member | `403`, `404` member not found | `user.block` |
 | POST | `/admin/members/:id/unblock` | Admin | `members.update` | None | active member | `403`, `404` member not found | `user.unblock` |
 | POST | `/admin/members/:id/credit/add` | Admin | `members.update` | `amount`, optional `note` | wallet movement and ledger | `400`, `403`, `404` member not found | `credit.add` |
@@ -215,6 +216,7 @@ Permission failures return `403` with the standard error envelope and must not r
 Common admin query params:
 
 - `/admin/members`: `page`, `limit`, `search`, `status`
+- `/admin/members/:id/history`: `limit`
 - `/admin/logs`: `page`, `limit`, `search`, `action`, `status`, `admin_id`, `target_type`, `target_id`
 - `/admin/audit-logs` and `/admin/security-events`: `page`, `limit`, `search`, `action`, `adminId`, `targetAdminId`, `dateFrom`, `dateTo`, `severity`, `module`, `result`
 - `/admin/deposits`: `page`, `limit`, `search`, `status`
@@ -574,6 +576,7 @@ Verified by `src/local-smoke-tests/financialNegativeSmoke.js`:
 | `npm run smoke:admin-work-schedule-ui` | Static `/admin/work-schedules` UI route/assets, permission block, owner schedule list/update, override, masked audit history, response leak scan | Yes | Yes | Syntax checked only in Safe CI |
 | `npm run smoke:admin-audit-security` | Static `/admin/audit-security` UI route/assets, audit/security endpoints, UX markers, filters, permission block, empty state response, masked IP, raw user-agent omission, response leak scan | Yes | Yes | Syntax checked only in Safe CI |
 | `npm run smoke:admin-wheel-ui` | Static `/admin/lucky-wheel` UI source contract, tabs, existing endpoint usage, reason validation before writes, redaction markers, and frontend spin-safety guard | No | No | Runs as static/source smoke |
+| `npm run smoke:admin-member-history-read-only` | Static/source contract for Admin Member Detail history: `GET /api/admin/members/:id/history`, UI tabs, empty-state markers, existing wallet/wheel permission guards, no member write endpoint, no member JWT endpoint, no live provider call | No | No | Syntax checked by Safe CI; runs locally as static/source smoke |
 | `npm run smoke:wheel` | Lucky Wheel safety guard, member config/spin/history/rewards, backend result selection, admin campaign/reward reason validation, audit reason, stock-zero exclusion, and response leak scan | Yes | Yes | Syntax checked only in Safe CI |
 | `npm run smoke:all-local` | Guarded sequence: smoke syntax checks, `npm run check`, promotion-claim, money-flow, core-api, game-transfer, financial-negative, admin-reports-config, admin work schedule, admin work schedule UI, admin audit/security, admin wheel UI, wheel, secret grep, diff whitespace check | Yes | Yes | Not run in Safe CI because it needs a running API and local DB |
 | GitHub Actions Safe CI | `npm ci`, Prisma validate/generate, `npm run check`, local smoke syntax checks, secret-shaped value scan | No | No real DB connection for smoke | Runs on push and PR |

@@ -356,7 +356,7 @@
           <div
             class="member-history"
             id="member-history"
-            data-member-history-read-only-marker="GET /api/admin/members/:id, GET /api/admin/reports/wallet-ledger?user_id=&lt;memberId&gt;, GET /api/admin/wheel/spins?memberId=&lt;memberId&gt;, GET /api/admin/wheel/member-rewards?memberId=&lt;memberId&gt;"
+            data-member-history-read-only-marker="GET /api/admin/members/:id, GET /api/admin/members/:id/history, GET /api/admin/reports/wallet-ledger?user_id=&lt;memberId&gt;, GET /api/admin/wheel/spins?memberId=&lt;memberId&gt;, GET /api/admin/wheel/member-rewards?memberId=&lt;memberId&gt;"
             data-member-history-tabs-marker="รายการฝาก, รายการถอน, Wallet Ledger, กงล้อ / Spin history, รางวัล / Member rewards, รายการเล่น, รายการฝากก่อนรับโปร, แนะนำเพื่อน, การใช้งาน, ยอดค้างชำระ"
           >
             <div class="section-heading compact-heading">
@@ -489,23 +489,107 @@
               </div>
             </section>
             <section class="history-panel hidden" data-member-history-panel="play">
-              <div id="history-play-empty" class="empty-state">ยังไม่มี API สำหรับประวัติการเล่นทั่วไป</div>
+              <div class="section-heading compact-heading">
+                <h2>รายการเล่น</h2>
+                <span id="history-play-count">0 รายการ</span>
+              </div>
+              <div id="history-play-empty" class="empty-state">ไม่พบข้อมูลจาก API read-only</div>
+              <div class="table-scroll">
+                <table aria-label="Member play history">
+                  <thead>
+                    <tr>
+                      <th>Round</th>
+                      <th>Provider</th>
+                      <th>Game</th>
+                      <th>Bet</th>
+                      <th>Win</th>
+                      <th>Profit</th>
+                      <th>Played</th>
+                      <th>Source</th>
+                    </tr>
+                  </thead>
+                  <tbody id="history-play-rows"></tbody>
+                </table>
+              </div>
             </section>
             <section class="history-panel hidden" data-member-history-panel="pre-promotion">
-              <div id="history-pre-promotion-empty" class="empty-state">ยังไม่มี API สำหรับข้อมูลนี้</div>
+              <div class="section-heading compact-heading">
+                <h2>รายการฝากก่อนรับโปร</h2>
+                <span id="history-pre-promotion-count">0 รายการ</span>
+              </div>
+              <div id="history-pre-promotion-empty" class="empty-state">ไม่พบข้อมูลจาก API read-only</div>
+              <div class="table-scroll">
+                <table aria-label="Member pre-promotion history">
+                  <thead>
+                    <tr>
+                      <th>Type</th>
+                      <th>Promotion</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                      <th>Reference</th>
+                      <th>Created/Approved</th>
+                    </tr>
+                  </thead>
+                  <tbody id="history-pre-promotion-rows"></tbody>
+                </table>
+              </div>
             </section>
             <section class="history-panel hidden" data-member-history-panel="referral">
-              <div id="history-referral-empty" class="empty-state">แนะนำเพื่อน: ใช้ข้อมูล referralSource จากรายละเอียดสมาชิก; ยังไม่มี API สำหรับประวัติแนะนำเพื่อนแบบเต็ม</div>
+              <div class="section-heading compact-heading">
+                <h2>แนะนำเพื่อน</h2>
+                <span id="history-referral-count">0 รายการ</span>
+              </div>
+              <div id="history-referral-empty" class="empty-state">ใช้ข้อมูล referralSource จาก API read-only</div>
               <dl class="detail-grid compact-detail history-detail">
                 <dt>Referral source</dt>
                 <dd id="history-referral-source">-</dd>
               </dl>
             </section>
             <section class="history-panel hidden" data-member-history-panel="usage">
-              <div id="history-usage-empty" class="empty-state">ยังไม่มี API สำหรับข้อมูลนี้</div>
+              <div class="section-heading compact-heading">
+                <h2>การใช้งาน</h2>
+                <span id="history-usage-count">0 รายการ</span>
+              </div>
+              <div id="history-usage-empty" class="empty-state">ไม่พบข้อมูลจาก API read-only</div>
+              <div class="table-scroll">
+                <table aria-label="Member usage history">
+                  <thead>
+                    <tr>
+                      <th>Event</th>
+                      <th>Provider</th>
+                      <th>Detail</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                      <th>Reference</th>
+                      <th>Created</th>
+                    </tr>
+                  </thead>
+                  <tbody id="history-usage-rows"></tbody>
+                </table>
+              </div>
             </section>
             <section class="history-panel hidden" data-member-history-panel="debt">
-              <div id="history-debt-empty" class="empty-state">ยังไม่มี API สำหรับข้อมูลนี้</div>
+              <div class="section-heading compact-heading">
+                <h2>ยอดค้างชำระ</h2>
+                <span id="history-debt-count">0 รายการ</span>
+              </div>
+              <div id="history-debt-empty" class="empty-state">ไม่พบข้อมูลจาก API read-only</div>
+              <div class="table-scroll">
+                <table aria-label="Member outstanding turnover history">
+                  <thead>
+                    <tr>
+                      <th>Promotion</th>
+                      <th>Required</th>
+                      <th>Current</th>
+                      <th>Remaining</th>
+                      <th>Status</th>
+                      <th>Created</th>
+                      <th>Updated</th>
+                    </tr>
+                  </thead>
+                  <tbody id="history-debt-rows"></tbody>
+                </table>
+              </div>
             </section>
           </div>
         </section>

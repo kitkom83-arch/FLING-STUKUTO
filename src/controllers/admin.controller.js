@@ -180,6 +180,10 @@ async function getMember(req, res) {
   return success(res, await memberService.getMember(req.params.id, req.siteId));
 }
 
+async function getMemberHistory(req, res) {
+  return success(res, await memberService.getMemberHistory(req.params.id, req.query, req.siteId));
+}
+
 async function blockMember(req, res) {
   return success(res, await memberService.setBlocked({ id: req.params.id, blocked: true, admin: req.admin, req, siteId: req.siteId }));
 }
@@ -323,6 +327,7 @@ module.exports = {
   me,
   listMembers,
   getMember,
+  getMemberHistory,
   blockMember,
   unblockMember,
   addCredit,

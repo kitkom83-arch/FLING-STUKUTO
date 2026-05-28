@@ -40,6 +40,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `adminPermissionSmoke.js` | `npm run smoke:admin-permission` | Yes | Yes | Yes | Syntax check only | Admin RBAC role/permission guard checks for owner, finance, support, graphic, viewer, unauth, and forbidden access. |
 | `adminRoleManagementSmoke.js` | `npm run smoke:admin-role-management` | Yes | Yes | Yes | Syntax check only | Admin role-management checks for permission catalog, role catalog, current/target permissions, owner updates, non-owner `403`, audit log, rollback, and leak scan. |
 | `adminBrowserRoutesSmoke.js` | `npm run smoke:admin-browser-routes` | No | No | No | Syntax check plus static HTTP contract | Static browser route contract for `/admin`, `/admin/roles`, `/admin-wheel`, trailing-slash aliases, JS/CSS assets, `/api/*` boundary, required UI markers, no forbidden rendered placeholders, no static secret-shaped values, no owner/super_admin bypass controls, no force reward/spin controls, and no member spin endpoint calls. |
+| `adminMemberHistoryReadOnlySmoke.js` | `npm run smoke:admin-member-history-read-only` | No | No | No | Syntax check plus static/source contract | Admin Member Detail history read-only contract for `GET /api/admin/members/:id/history`, UI history tabs, empty-state markers, existing wallet/wheel permission guards, no member write endpoint, no member JWT endpoint, no live provider call, and no sensitive field selection. |
 | `adminWorkScheduleSmoke.js` | `npm run smoke:admin-work-schedule` | Yes | Yes | Yes | Syntax check only | Admin work schedule UI/API checks for schedule list/read/update, permission guards, login block/allow, emergency override, expired override, audit history, rollback, and leak scan. |
 | `adminWorkScheduleUiSmoke.js` | `npm run smoke:admin-work-schedule-ui` | Yes | Yes | Yes | Syntax check only | Static admin schedule UI route/assets, owner flow, no-permission block, emergency override, masked audit history, and leak scan. |
 | `adminAuditSecuritySmoke.js` | `npm run smoke:admin-audit-security` | Yes | Yes | Yes | Syntax check only | Static audit/security UI route/assets, UX markers, report endpoints, filters, permission block, empty response shape, masked IP, raw user-agent omission, and leak scan. |
@@ -281,6 +282,19 @@ Role-management smoke uses only local/staging/test PostgreSQL fixtures. It does 
 - Confirms Admin Wheel UI does not expose force reward, force spin, set-prize-index controls, or member spin endpoint calls.
 
 The admin browser route smoke is static HTTP contract coverage only. It does not run migrations, seed data, call live providers, connect real bank/payment/SMS/Slip OCR systems, or move money.
+
+## 12A. smoke:admin-member-history-read-only Coverage
+
+- Static/source contract for Admin Member Detail history API integration.
+- Confirms `GET /api/admin/members/:id/history` is registered behind admin auth, site access, and `members.view`.
+- Confirms `adminController.getMemberHistory` delegates to `memberService.getMemberHistory`.
+- Confirms `memberService.getMemberHistory` uses Prisma read calls for deposits, withdrawals, promotion claims, turnover requirements, game sessions, game transfers, point ledger, and `GameBetHistoryMock`.
+- Confirms the history service body does not call create/update/upsert/delete/transaction helpers, admin audit write helpers, `fetch`, live provider adapters, or sensitive fields such as `passwordHash`, `launchUrl`, `apiKeyEncrypted`, `secretEncrypted`, `slipFileUrl`, raw IP, or raw user-agent.
+- Confirms Admin UI history tabs contain rows/empty states for play, pre-promotion, referral source, usage, and outstanding turnover/debt without fallback-only API copy.
+- Confirms wallet ledger and Lucky Wheel rows stay on their existing read endpoints and frontend permission messages (`reports.view`, wheel spin view, wheel claims view) instead of lowering those guards.
+- Confirms Admin Member History UI does not call member JWT endpoints, `/api/game/bet-history/mock`, admin member write endpoints, live provider/payment/bank/SMS/Slip OCR integrations, migrations, deploy, or money movement.
+
+This smoke is static/source coverage only. It does not connect to any database, seed data, deploy, migrate, call live providers, or move money.
 
 ## 13. smoke:admin-work-schedule Coverage
 
