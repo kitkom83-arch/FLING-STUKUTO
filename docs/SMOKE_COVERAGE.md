@@ -1438,3 +1438,48 @@ Boundary:
 - No deploy.
 - No migration.
 - No seed.
+
+## 48. Phase AJ Master Spec / API Mapping Smoke
+
+Phase AJ status: Master Spec / API Mapping docs-static coverage.
+
+Documents:
+
+- `docs/MASTER_BACKOFFICE_SPEC.md`
+- `docs/MASTER_FRONTEND_MEMBER_SPEC.md`
+- `docs/API_MAPPING.md`
+- `docs/PERMISSION_MATRIX.md`
+- `docs/AUDIT_LOG_MATRIX.md`
+- `docs/PHASE_ROADMAP.md`
+
+Script:
+
+- `src/local-smoke-tests/masterSpecMappingSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:master-spec-mapping
+```
+
+Coverage:
+
+- Confirms all six Phase AJ master docs exist.
+- Confirms `MASTER_BACKOFFICE_SPEC` includes รายงาน, จัดการสมาชิก, รายการเดินบัญชี, ธนาคาร, บริการเสริม, and ตั้งค่า.
+- Confirms `MASTER_FRONTEND_MEMBER_SPEC` includes Login, Register, Deposit, Withdraw, Promotions, Lucky Wheel, and Provider modal.
+- Confirms `API_MAPPING` includes Endpoint, Permission, Audit action, Current status, and required module mappings.
+- Confirms `PERMISSION_MATRIX` includes owner, super_admin, finance, support, graphic, viewer, read-only permission, write permission, reason, audit, no self-approval, and certification boundary markers.
+- Confirms `AUDIT_LOG_MATRIX` includes reason required, before snapshot, after snapshot, required audit actions, and implemented/planned/certification statuses.
+- Confirms `PHASE_ROADMAP` includes Phase AJ through Phase AR with goal, scope, allowed files, forbidden actions, required tests, exit criteria, and safety boundary.
+- Runs a static secret scan and unsafe live-enablement wording scan.
+
+Boundary:
+
+- Docs/static only.
+- No runtime behavior change.
+- No production DB.
+- No real money.
+- No live provider/payment/bank/SMS/Slip OCR.
+- No migration.
+- No deploy.
+- No runtime write action.
