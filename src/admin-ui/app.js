@@ -13,8 +13,10 @@
     ["Admin/Audit", "admin.security.view", "View security events", "read", false, false, "/admin/audit-security", "GET /api/admin/security-events"],
     ["Admin/Audit", "admin.workSchedule.view", "View work schedules", "read", false, false, "/admin/work-schedules", "GET /api/admin/work-schedules"],
     ["Admin/Audit", "admin.workSchedule.update", "Update work schedules", "write", true, true, "/admin/work-schedules", "PATCH /api/admin/work-schedules/:adminId"],
+    ["General Admin", "dashboard.view", "View dashboard cards", "read", false, false, "#dashboard", "GET /api/admin/reports/summary"],
     ["General Admin", "reports.view", "View dashboard summary and reports", "read", false, false, "#dashboard", "GET /api/admin/reports/summary"],
     ["General Admin", "members.view", "View member list/detail", "read", false, false, "#members", "GET /api/admin/members, GET /api/admin/members/:id"],
+    ["General Admin", "wallet.view", "View wallet ledger", "read", false, false, "#wallet-ledger-readonly", "GET /api/admin/reports/wallet-ledger"],
     ["General Admin", "bank.view", "View pending bank accounts", "read", false, false, "#member-pending-bank", "GET /api/admin/bank-accounts/pending"],
     ["Lucky Wheel", "wheel.view", "Open Lucky Wheel console", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/config"],
     ["Lucky Wheel", "wheel.campaign.view", "View wheel campaign", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/config"],
@@ -52,12 +54,15 @@
     canOverride: false,
     canViewReports: false,
     canViewMembers: false,
+    canViewWallet: false,
     canViewBank: false,
     canViewAudit: false,
     dashboardSummary: null,
     memberRows: [],
     blockedMemberRows: [],
     pendingBankRows: [],
+    ledgerRows: [],
+    bankStatementRows: [],
     memberDetail: null,
     memberHistory: {},
     memberAuditRows: [],
@@ -108,6 +113,14 @@
     memberPendingBankCount: document.getElementById("member-pending-bank-count"),
     memberPendingBankEmpty: document.getElementById("member-pending-bank-empty"),
     memberPendingBankRows: document.getElementById("member-pending-bank-rows"),
+    ledgerCount: document.getElementById("ledger-count"),
+    ledgerState: document.getElementById("ledger-state"),
+    ledgerEmpty: document.getElementById("ledger-empty"),
+    ledgerRows: document.getElementById("ledger-rows"),
+    bankStatementCount: document.getElementById("bank-statement-count"),
+    bankStatementState: document.getElementById("bank-statement-state"),
+    bankStatementEmpty: document.getElementById("bank-statement-empty"),
+    bankStatementRows: document.getElementById("bank-statement-rows"),
     memberDetail: document.getElementById("member-detail"),
     memberDetailState: document.getElementById("member-detail-state"),
     memberDetailEmpty: document.getElementById("member-detail-empty"),
@@ -375,6 +388,16 @@
     return payload.data;
   }
 
+  async function adminFetchReadOnly(endpoint, options) {
+    const config = options || {};
+    const method = String(config.method || "GET").toUpperCase();
+    if (method !== "GET") throw new Error("Read-only request blocked.");
+    if (!/^\/admin\//.test(endpoint)) throw new Error("Read-only admin endpoint required.");
+    const forbiddenPath = /\/(?:approve|reject|credit|debit|spin|payout|transfer)(?:\/|$|-)/i;
+    if (forbiddenPath.test(endpoint)) throw new Error("Read-only request blocked.");
+    return api(endpoint, { method: "GET" });
+  }
+
   function hasPermission(permission) {
     return state.permissions.includes(permission) || state.permissions.includes("admin.manage");
   }
@@ -403,8 +426,9 @@
     state.canView = hasPermission("admin.schedule.view");
     state.canUpdate = hasPermission("admin.schedule.update");
     state.canOverride = hasPermission("admin.schedule.override");
-    state.canViewReports = hasPermission("reports.view");
+    state.canViewReports = hasPermission("reports.view") || hasPermission("dashboard.view");
     state.canViewMembers = hasPermission("members.view");
+    state.canViewWallet = hasPermission("wallet.view") || hasPermission("reports.view");
     state.canViewBank = hasPermission("bank.view");
     state.canViewAudit = hasPermission("admin.audit.view");
     els.permissionState.textContent = state.canView
@@ -439,6 +463,16 @@
     if (!state.canViewBank) {
       renderPendingBankAccounts([], {
         emptyMessage: "ต้องมี permission bank.view",
+      });
+      renderBankStatements([], {
+        stateMessage: "ต้องมี permission bank.view",
+        emptyMessage: "ต้องมี permission bank.view",
+      });
+    }
+    if (!state.canViewWallet) {
+      renderLedgerRows([], {
+        stateMessage: "ต้องมี permission wallet.view",
+        emptyMessage: "ต้องมี permission wallet.view",
       });
     }
     if (!state.canViewAudit) {
@@ -754,6 +788,14 @@
     renderPendingBankAccounts([], {
       emptyMessage: "ยังไม่ได้ login / ต้อง login admin",
     });
+    renderLedgerRows([], {
+      stateMessage: "ยังไม่ได้ login / ต้อง login admin",
+      emptyMessage: "ไม่พบข้อมูล",
+    });
+    renderBankStatements([], {
+      stateMessage: "ยังไม่ได้ login / ต้อง login admin",
+      emptyMessage: "ไม่พบข้อมูล",
+    });
     renderMemberAudit([], {
       emptyMessage: "ยังไม่ได้ login / ต้อง login admin",
     });
@@ -813,12 +855,12 @@
     const safeSummary = summary && typeof summary === "object" ? summary : {};
     const pendingDepositCount = toSafeNumber(safeSummary.pending_deposit_count, 0);
     const pendingWithdrawCount = toSafeNumber(safeSummary.pending_withdraw_count, 0);
-    els.dashboardMemberCount.textContent = formatCountSafe(safeSummary.member_count);
+    els.dashboardMemberCount.textContent = formatCountSafe(safeSummary.new_member_count || safeSummary.member_count);
     els.dashboardTotalDeposit.textContent = formatMoneySafe(safeSummary.total_deposit);
     els.dashboardTotalWithdraw.textContent = formatMoneySafe(safeSummary.total_withdraw);
     els.dashboardTotalBonus.textContent = formatMoneySafe(safeSummary.total_bonus);
-    els.dashboardTotalProfitMock.textContent = formatMoneySafe(safeSummary.total_profit_mock);
-    els.dashboardPendingTotal.textContent = formatCountSafe(pendingDepositCount + pendingWithdrawCount);
+    els.dashboardTotalProfitMock.textContent = formatMoneySafe(safeSummary.total_profit || safeSummary.total_profit_mock);
+    els.dashboardPendingTotal.textContent = formatCountSafe(safeSummary.online_member_count || pendingDepositCount + pendingWithdrawCount);
   }
 
   function resetDashboardCards() {
@@ -830,7 +872,7 @@
       els.dashboardTotalProfitMock,
       els.dashboardPendingTotal,
     ]) {
-      el.textContent = "-";
+      el.textContent = el === els.dashboardTotalDeposit || el === els.dashboardTotalWithdraw || el === els.dashboardTotalBonus || el === els.dashboardTotalProfitMock ? "0.00" : "0";
     }
   }
 
@@ -1023,6 +1065,72 @@
       tr.appendChild(createStatusCell(row && row.status));
       tr.appendChild(createCell((row && row.note) || (row && row.remark) || (row && row.reviewNote) || "-"));
       els.memberPendingBankRows.appendChild(tr);
+    }
+  }
+
+  function rowMemberLabel(row) {
+    const user = nestedUser(row);
+    return (user && (user.username || user.id)) || (row && (row.username || row.userId || row.memberId)) || "-";
+  }
+
+  function rowAmount(row) {
+    if (!row || typeof row !== "object") return 0;
+    return row.amount || row.balanceDelta || row.credit || row.debit || row.totalAmount || 0;
+  }
+
+  function rowReference(row) {
+    if (!row || typeof row !== "object") return "-";
+    return row.reference || row.referenceId || row.txRef || row.transactionId || row.id || "-";
+  }
+
+  function renderLedgerRows(rows, options) {
+    const safeRows = Array.isArray(rows) ? rows : [];
+    const config = options || {};
+    state.ledgerRows = safeRows;
+    els.ledgerRows.innerHTML = "";
+    els.ledgerCount.textContent = `${formatCountSafe(safeRows.length)} rows`;
+    els.ledgerState.textContent = safeDisplay(config.stateMessage || (safeRows.length ? "Read-only ledger loaded." : "ไม่พบข้อมูล"));
+    els.ledgerEmpty.textContent = safeDisplay(config.emptyMessage || "ไม่พบข้อมูล");
+    els.ledgerEmpty.classList.toggle("hidden", safeRows.length > 0);
+
+    for (const row of safeRows) {
+      const tr = document.createElement("tr");
+      tr.appendChild(createCell(formatDate(row && (row.createdAt || row.updatedAt))));
+      tr.appendChild(createCell(rowMemberLabel(row)));
+      tr.appendChild(createCell(row && (row.type || row.transactionType || row.direction)));
+      tr.appendChild(createCell(formatMoneySafe(rowAmount(row))));
+      tr.appendChild(createCell(formatMoneyOrFallback(row && (row.balanceAfter || row.afterBalance))));
+      tr.appendChild(createStatusCell(row && (row.status || row.state || "read-only")));
+      tr.appendChild(createCell(rowReference(row)));
+      els.ledgerRows.appendChild(tr);
+    }
+  }
+
+  function statementAccount(row) {
+    if (!row || typeof row !== "object") return "-";
+    return row.accountNumberMask || row.accountNoMask || row.accountNumber || row.accountNo || row.bankAccount || "-";
+  }
+
+  function renderBankStatements(rows, options) {
+    const safeRows = Array.isArray(rows) ? rows : [];
+    const config = options || {};
+    state.bankStatementRows = safeRows;
+    els.bankStatementRows.innerHTML = "";
+    els.bankStatementCount.textContent = `${formatCountSafe(safeRows.length)} statements`;
+    els.bankStatementState.textContent = safeDisplay(config.stateMessage || (safeRows.length ? "Read-only bank statements loaded." : "ไม่พบข้อมูล"));
+    els.bankStatementEmpty.textContent = safeDisplay(config.emptyMessage || "ไม่พบข้อมูล");
+    els.bankStatementEmpty.classList.toggle("hidden", safeRows.length > 0);
+
+    for (const row of safeRows) {
+      const tr = document.createElement("tr");
+      tr.appendChild(createCell(row && row.direction));
+      tr.appendChild(createCell(formatDate(row && (row.createdAt || row.timestamp || row.statementAt))));
+      tr.appendChild(createCell(row && (row.bankName || row.bankCode || row.bank)));
+      tr.appendChild(createCell(statementAccount(row)));
+      tr.appendChild(createCell(formatMoneySafe(rowAmount(row))));
+      tr.appendChild(createStatusCell(row && (row.status || row.matchStatus || "read-only")));
+      tr.appendChild(createCell(rowReference(row)));
+      els.bankStatementRows.appendChild(tr);
     }
   }
 
@@ -1471,7 +1579,7 @@
 
   async function safeReadOnly(path, fallback) {
     try {
-      return await api(path);
+      return await adminFetchReadOnly(path);
     } catch (_error) {
       return fallback;
     }
@@ -1483,7 +1591,7 @@
     const spinParams = new URLSearchParams({ memberId, limit: "50" });
     const [historyData, ledgerRows, spinRows, rewardData] = await Promise.all([
       safeReadOnly(`/admin/members/${encodeURIComponent(memberId)}/history?${historyParams.toString()}`, {}),
-      state.canViewReports ? safeReadOnly(`/admin/reports/wallet-ledger?${params.toString()}`, []) : [],
+      state.canViewWallet ? safeReadOnly(`/admin/reports/wallet-ledger?${params.toString()}`, []) : [],
       canViewWheelSpins() ? safeReadOnly(`/admin/wheel/spins?${spinParams.toString()}`, []) : [],
       canViewWheelRewards() ? safeReadOnly(`/admin/wheel/member-rewards?${spinParams.toString()}`, { rows: [] }) : { rows: [] },
     ]);
@@ -1502,7 +1610,7 @@
       messages: {
         deposits: "ไม่พบข้อมูลจาก GET /api/admin/members/:id/history",
         withdrawals: "ไม่พบข้อมูลจาก GET /api/admin/members/:id/history",
-        ledger: state.canViewReports ? "ไม่พบข้อมูลจาก GET /api/admin/reports/wallet-ledger" : "ต้องมี permission reports.view",
+        ledger: state.canViewWallet ? "ไม่พบข้อมูลจาก GET /api/admin/reports/wallet-ledger" : "ต้องมี permission reports.view หรือ wallet.view",
         spins: canViewWheelSpins() ? "ไม่พบข้อมูลจาก GET /api/admin/wheel/spins" : "ต้องมี permission wheel.spin.view หรือ wheel.spins.view",
         rewards: canViewWheelRewards() ? "ไม่พบข้อมูลจาก GET /api/admin/wheel/member-rewards" : "ต้องมี permission wheel.claims.view",
         play: "ไม่พบข้อมูลจาก GET /api/admin/members/:id/history",
@@ -1581,7 +1689,7 @@
     resetMemberDetailTables();
     state.memberHistory = {};
     state.memberAuditRows = [];
-    const member = await api(`/admin/members/${encodeURIComponent(memberId)}`);
+    const member = await adminFetchReadOnly(`/admin/members/${encodeURIComponent(memberId)}`);
     state.memberHistory = {};
     state.memberAuditRows = [];
     await loadMemberHistory(memberId, false);
@@ -1672,7 +1780,7 @@
     }
     els.memberListState.textContent = "Loading member list...";
     els.memberEmpty.classList.add("hidden");
-    const rows = await api(`/admin/members?${memberQueryParams().toString()}`);
+    const rows = await adminFetchReadOnly(`/admin/members?${memberQueryParams().toString()}`);
     renderMemberList(rows, {
       message: "Member list loaded from GET /api/admin/members.",
       emptyMessage: "ไม่พบข้อมูล",
@@ -1705,7 +1813,7 @@
       return;
     }
     const params = new URLSearchParams({ page: "1", limit: "50", status: "blocked" });
-    const rows = await api(`/admin/members?${params.toString()}`);
+    const rows = await adminFetchReadOnly(`/admin/members?${params.toString()}`);
     renderBlockedMembers(payloadRows(rows), {
       emptyMessage: "ไม่พบข้อมูล",
     });
@@ -1736,7 +1844,7 @@
       return;
     }
     const params = new URLSearchParams({ page: "1", limit: "50" });
-    const rows = await api(`/admin/bank-accounts/pending?${params.toString()}`);
+    const rows = await adminFetchReadOnly(`/admin/bank-accounts/pending?${params.toString()}`);
     renderPendingBankAccounts(payloadRows(rows), {
       emptyMessage: "ไม่พบข้อมูล",
     });
@@ -1753,9 +1861,90 @@
     }
   }
 
+  async function loadWalletLedgerReadOnly() {
+    if (!state.token) {
+      renderLedgerRows([], {
+        stateMessage: "ยังไม่ได้ login / ต้อง login admin",
+        emptyMessage: "ยังไม่ได้ login / ต้อง login admin",
+      });
+      return;
+    }
+    if (!state.canViewWallet) {
+      renderLedgerRows([], {
+        stateMessage: "ต้องมี permission wallet.view",
+        emptyMessage: "ต้องมี permission wallet.view",
+      });
+      return;
+    }
+    els.ledgerState.textContent = "Loading...";
+    const params = new URLSearchParams({ page: "1", limit: "25" });
+    const rows = await adminFetchReadOnly(`/admin/reports/wallet-ledger?${params.toString()}`);
+    renderLedgerRows(payloadRows(rows), {
+      stateMessage: "Wallet ledger read-only loaded.",
+      emptyMessage: "ไม่พบข้อมูล",
+    });
+  }
+
+  async function refreshWalletLedgerReadOnly() {
+    try {
+      await loadWalletLedgerReadOnly();
+    } catch (error) {
+      renderLedgerRows([], {
+        stateMessage: sanitizeErrorMessage(error.message),
+        emptyMessage: state.token ? "โหลด wallet ledger ไม่สำเร็จ" : "ยังไม่ได้ login / ต้อง login admin",
+      });
+      setToast(error.message);
+    }
+  }
+
+  async function loadBankStatementsReadOnly() {
+    if (!state.token) {
+      renderBankStatements([], {
+        stateMessage: "ยังไม่ได้ login / ต้อง login admin",
+        emptyMessage: "ยังไม่ได้ login / ต้อง login admin",
+      });
+      return;
+    }
+    if (!state.canViewBank) {
+      renderBankStatements([], {
+        stateMessage: "ต้องมี permission bank.view",
+        emptyMessage: "ต้องมี permission bank.view",
+      });
+      return;
+    }
+    els.bankStatementState.textContent = "Loading...";
+    const params = new URLSearchParams({ limit: "25" });
+    const [depositRows, withdrawRows] = await Promise.all([
+      adminFetchReadOnly(`/admin/bank/mock/statements/deposits?${params.toString()}`),
+      adminFetchReadOnly(`/admin/bank/mock/statements/withdrawals?${params.toString()}`),
+    ]);
+    const rows = [
+      ...payloadRows(depositRows).map((row) => ({ ...row, direction: "deposit" })),
+      ...payloadRows(withdrawRows).map((row) => ({ ...row, direction: "withdrawal" })),
+    ];
+    renderBankStatements(rows, {
+      stateMessage: "Bank statements read-only loaded.",
+      emptyMessage: "ไม่พบข้อมูล",
+    });
+  }
+
+  async function refreshBankStatementsReadOnly() {
+    try {
+      await loadBankStatementsReadOnly();
+    } catch (error) {
+      renderBankStatements([], {
+        stateMessage: sanitizeErrorMessage(error.message),
+        emptyMessage: state.token ? "โหลด bank statement ไม่สำเร็จ" : "ยังไม่ได้ login / ต้อง login admin",
+      });
+      setToast(error.message);
+    }
+  }
+
   async function refreshMemberReadOnlyViews() {
     await refreshBlockedMembers();
     await refreshPendingBankAccounts();
+    await refreshWalletLedgerReadOnly();
+    await refreshBankStatementsReadOnly();
   }
 
   async function loadDashboardSummary() {
@@ -1768,7 +1957,7 @@
       return;
     }
     els.dashboardState.textContent = "Loading dashboard summary...";
-    renderDashboardSummary(await api("/admin/reports/summary"), "Dashboard summary loaded.");
+    renderDashboardSummary(await adminFetchReadOnly("/admin/reports/summary"), "Dashboard summary loaded.");
   }
 
   async function refreshDashboardSummary() {

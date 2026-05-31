@@ -91,43 +91,49 @@
           </article>
         </section>
 
-        <section class="guard-panel" id="dashboard">
+        <section
+          class="guard-panel"
+          id="dashboard"
+          data-phase-ak-marker="Admin Backoffice Read-only Integration"
+          data-phase-ak-permissions="dashboard.view reports.view members.view wallet.view bank.view"
+        >
           <div>
             <span class="eyebrow">Read-only dashboard</span>
             <h2>Dashboard summary</h2>
             <p>Summary cards read from the guarded admin report endpoint.</p>
           </div>
           <div id="dashboard-state" class="permission-state">Load an admin credential to read the summary.</div>
+          <span class="hidden">Loading...</span>
           <button id="refresh-dashboard" type="button" disabled>Refresh dashboard</button>
         </section>
 
         <section class="status-grid" id="dashboard-summary-cards" aria-label="Dashboard summary cards">
           <article class="status-card">
-            <span>Members</span>
+            <span>สมาชิกใหม่</span>
             <strong id="dashboard-member-count">-</strong>
           </article>
           <article class="status-card">
-            <span>Approved deposits</span>
+            <span>ยอดฝาก</span>
             <strong id="dashboard-total-deposit">-</strong>
           </article>
           <article class="status-card">
-            <span>Approved withdrawals</span>
+            <span>ยอดถอน</span>
             <strong id="dashboard-total-withdraw">-</strong>
           </article>
           <article class="status-card">
-            <span>Bonus ledger</span>
+            <span>โบนัส</span>
             <strong id="dashboard-total-bonus">-</strong>
           </article>
           <article class="status-card">
-            <span>Mock profit</span>
+            <span>กำไร</span>
             <strong id="dashboard-total-profit-mock">-</strong>
           </article>
           <article class="status-card">
-            <span>Pending requests</span>
-            <strong id="dashboard-pending-total">-</strong>
+            <span>สมาชิกออนไลน์</span>
+            <strong id="dashboard-pending-total">0</strong>
           </article>
         </section>
-        <div id="dashboard-empty" class="empty-state hidden">No dashboard activity found for this site.</div>
+        <div id="dashboard-empty" class="empty-state hidden">ไม่พบข้อมูล</div>
 
         <section class="guard-panel" id="members" data-member-permission-marker="members.view">
           <div>
@@ -242,6 +248,71 @@
                 </tr>
               </thead>
               <tbody id="member-pending-bank-rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section
+          class="table-section"
+          id="wallet-ledger-readonly"
+          data-wallet-ledger-read-only-marker="GET /api/admin/reports/wallet-ledger"
+          data-transaction-read-only-marker="GET /api/admin/reports/deposits, GET /api/admin/reports/withdrawals"
+        >
+          <div class="section-heading">
+            <div>
+              <h2>Wallet ledger / Deposit / Withdrawal / Read-only</h2>
+              <p>Read-only transaction tables from guarded admin report endpoints. No credit, debit, approval, payout, or transfer action.</p>
+            </div>
+            <span id="ledger-count">0 rows</span>
+          </div>
+          <div id="ledger-state" class="permission-state">ยังไม่ได้ login / ต้อง login admin</div>
+          <div id="ledger-empty" class="empty-state">ไม่พบข้อมูล</div>
+          <div class="table-scroll">
+            <table aria-label="Wallet ledger read-only">
+              <thead>
+                <tr>
+                  <th>Created</th>
+                  <th>Member</th>
+                  <th>Type</th>
+                  <th>Amount</th>
+                  <th>Balance after</th>
+                  <th>Status</th>
+                  <th>Reference</th>
+                </tr>
+              </thead>
+              <tbody id="ledger-rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section
+          class="table-section"
+          id="bank-summary-readonly"
+          data-bank-summary-read-only-marker="GET /api/admin/bank/mock/statements/deposits, GET /api/admin/bank/mock/statements/withdrawals"
+        >
+          <div class="section-heading">
+            <div>
+              <h2>Bank summary / Statement / Read-only</h2>
+              <p>Mock/sandbox statement visibility only. No live bank rail, payout, transfer, SMS, or Slip OCR action.</p>
+            </div>
+            <span id="bank-statement-count">0 statements</span>
+          </div>
+          <div id="bank-statement-state" class="permission-state">ยังไม่ได้ login / ต้อง login admin</div>
+          <div id="bank-statement-empty" class="empty-state">ไม่พบข้อมูล</div>
+          <div class="table-scroll">
+            <table aria-label="Bank statement read-only">
+              <thead>
+                <tr>
+                  <th>Direction</th>
+                  <th>Created</th>
+                  <th>Bank</th>
+                  <th>Account</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Reference</th>
+                </tr>
+              </thead>
+              <tbody id="bank-statement-rows"></tbody>
             </table>
           </div>
         </section>

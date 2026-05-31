@@ -41,6 +41,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `adminRoleManagementSmoke.js` | `npm run smoke:admin-role-management` | Yes | Yes | Yes | Syntax check only | Admin role-management checks for permission catalog, role catalog, current/target permissions, owner updates, non-owner `403`, audit log, rollback, and leak scan. |
 | `adminBrowserRoutesSmoke.js` | `npm run smoke:admin-browser-routes` | No | No | No | Syntax check plus static HTTP contract | Static browser route contract for `/admin`, `/admin/roles`, `/admin-wheel`, trailing-slash aliases, JS/CSS assets, `/api/*` boundary, required UI markers, no forbidden rendered placeholders, no static secret-shaped values, no owner/super_admin bypass controls, no force reward/spin controls, and no member spin endpoint calls. |
 | `adminMemberHistoryReadOnlySmoke.js` | `npm run smoke:admin-member-history-read-only` | No | No | No | Syntax check plus static/source contract | Admin Member Detail history read-only contract for `GET /api/admin/members/:id/history`, UI history tabs, empty-state markers, existing wallet/wheel permission guards, no member write endpoint, no member JWT endpoint, no live provider call, and no sensitive field selection. |
+| `adminBackofficeReadOnlyIntegrationSmoke.js` | `npm run smoke:admin-backoffice-read-only-integration` | No | No | No | Static contract plus unauth HTTP guard | Phase AK Admin Backoffice Read-only API Integration contract for dashboard/reports, member list/detail, wallet ledger, deposit/withdraw report, bank pending, and mock statement read-only UI/API wiring; no write action, no production DB, no real money, and no live integration. |
 | `adminWorkScheduleSmoke.js` | `npm run smoke:admin-work-schedule` | Yes | Yes | Yes | Syntax check only | Admin work schedule UI/API checks for schedule list/read/update, permission guards, login block/allow, emergency override, expired override, audit history, rollback, and leak scan. |
 | `adminWorkScheduleUiSmoke.js` | `npm run smoke:admin-work-schedule-ui` | Yes | Yes | Yes | Syntax check only | Static admin schedule UI route/assets, owner flow, no-permission block, emergency override, masked audit history, and leak scan. |
 | `adminAuditSecuritySmoke.js` | `npm run smoke:admin-audit-security` | Yes | Yes | Yes | Syntax check only | Static audit/security UI route/assets, UX markers, report endpoints, filters, permission block, empty response shape, masked IP, raw user-agent omission, and leak scan. |
@@ -87,7 +88,7 @@ GitHub Actions also scans `src/local-smoke-tests` for secret-shaped values. It d
 - Required preflight commands: `node --check src/staging-scripts/stagingSafety.js`, `node --check src/staging-scripts/stagingDemoSeed.js`, `node --check src/staging-scripts/stagingUatSmoke.js`, `node --check src/staging-scripts/stagingRolePermissionUatSmoke.js`, `npm run staging:preflight`, `npm run staging:seed-demo`, `npm run smoke:staging`, `npm run staging:db:check`, `npm run smoke:admin-wheel-runtime`, `npm run smoke:wheel`, `npm run smoke:staging-uat`, `npm run smoke:staging-role-permission-uat`, and `npm run check`.
 - Skip-safe conditions: missing local shell `DATABASE_URL` for staging preflight when no `BASE_URL` is available, missing local/staging demo admin password, missing local wheel runtime env, missing local wheel DB/env for smoke, or absent optional staging member env. These skip with exit `0` only when the target is otherwise safe and no production-like target or live mode is detected.
 - Block conditions: production-like DB/API targets, `NODE_ENV` production for mock/sandbox preflight, live provider/payment/bank/SMS/Slip OCR modes, embedded URL credentials, unsafe external mode labels, or secret-shaped values in responses.
-- Secret-shaped scan covers database URL shapes, authorization scheme markers, JWT-shaped values, API-key-shaped values, DB assignment text, sensitive response keys, docs, staging scripts, local smoke scripts, controllers, routes, services, middleware, and sensitive env values echoed in output.
+- Secret-shaped scan covers database URL shapes, credential header scheme markers, JWT-shaped values, API-key-shaped values, DB assignment text, sensitive response keys, docs, staging scripts, local smoke scripts, controllers, routes, services, middleware, and sensitive env values echoed in output.
 - The preflight and UAT smoke must always report no production DB, no real provider/payment/bank/SMS/Slip OCR, and no real money payout for staging UAT and Lucky Wheel smoke paths.
 - Render staging remains mock/sandbox only: no production DB, no real money, no live provider, no live payment, no live bank rails, no live SMS, and no live Slip OCR.
 - `staging:db:check` blocks production-like DB targets, live external modes, and unsafe app labels before connecting.
@@ -413,7 +414,7 @@ The Admin Wheel runtime smoke uses only local/staging/test PostgreSQL fixtures. 
 - Confirms admin campaign/reward updates reject empty reason.
 - Confirms successful admin reward update writes `wheel.reward.update` audit metadata with the reason.
 - Reads admin config and admin spin history.
-- Response leak scan checks DB URL markers, auth values, password/token/secret markers, JWT-like values, credential-shaped PostgreSQL URLs, authorization scheme markers, and raw internal stack traces.
+- Response leak scan checks DB URL markers, auth values, password/token/secret markers, JWT-like values, credential-shaped PostgreSQL URLs, credential header scheme markers, and raw internal stack traces.
 
 Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not call real provider, payment, bank, SMS, or Slip OCR services, does not run real-money UAT, and does not create real payout.
 
@@ -427,7 +428,7 @@ Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not 
 - Requires game, payment, bank statement, SMS, and Slip OCR modes to be `mock`, `sandbox`, or `disabled`.
 - Validates the `/api/health` contract when `BASE_URL` is set.
 - Uses a local health fixture when `BASE_URL` is absent so Safe CI can run without real secrets.
-- Scans health payloads for database URLs, JWT-shaped values, authorization headers, unsafe response keys, and sensitive environment values.
+- Scans health payloads for database URLs, JWT-shaped values, credential header headers, unsafe response keys, and sensitive environment values.
 
 ## 20. smoke:staging Coverage
 
@@ -439,7 +440,7 @@ Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not 
 - Checks provider/payment/bank/SMS/Slip OCR env modes are unset, `mock`, `sandbox`, or `disabled`.
 - Calls `GET /api/health` and requires HTTP `200`, `success: true`, `data.ok: true`, boolean `data.databaseConnected`, and safe external mode labels.
 - Calls `/api/admin/auth/login` with invalid credentials as a negative admin-auth check.
-- Scans health and admin-auth responses for database URLs, JWT-shaped values, authorization headers, token/password/secret keys, API key fields, and sensitive env values.
+- Scans health and admin-auth responses for database URLs, JWT-shaped values, credential header headers, token/password/secret keys, API key fields, and sensitive env values.
 - Does not create fixtures, import Prisma, run migrations, seed data, call real providers, or move money.
 
 ## 21. smoke:all-local Coverage
@@ -698,7 +699,7 @@ Coverage:
 - It intentionally does not call member wheel spin.
 - Role permission read-only regression optionally reads `/api/admin/roles/:safeRole` when `STAGING_SAFE_ROLE_NAME` is set and always reads `/api/admin/audit-logs?action=admin.role.permissions.update`.
 - It intentionally does not PATCH role permissions.
-- Response leak scan rejects password/token/secret markers, `DATABASE_URL`, raw authorization/JWT-shaped values, raw connection strings, raw internal stacks, and sensitive env values.
+- Response leak scan rejects password/token/secret markers, `DATABASE_URL`, raw credential header/JWT-shaped values, raw connection strings, raw internal stacks, and sensitive env values.
 
 Command separation:
 
@@ -1483,3 +1484,36 @@ Boundary:
 - No migration.
 - No deploy.
 - No runtime write action.
+
+## 49. Phase AK Admin Backoffice Read-only API Integration
+
+Phase AK status: Admin Backoffice Read-only API Integration foundation.
+
+Script:
+
+- `src/local-smoke-tests/adminBackofficeReadOnlyIntegrationSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:admin-backoffice-read-only-integration
+```
+
+Coverage:
+
+- Confirms the Admin Backoffice Read-only Integration UI markers exist for `dashboard.view`, `reports.view`, `members.view`, `wallet.view`, and `bank.view`.
+- Confirms read-only UI/API integration for dashboard/reports summary, member list/detail, wallet ledger, deposit/withdraw report surface, bank pending accounts, and mock bank statements.
+- Confirms loading, empty, and safe formatting markers are present and no rendered `missing-value placeholder` or `invalid-number placeholder` copy is exposed.
+- Confirms guarded GET route contracts and unauthenticated `401` behavior for the Phase AK read-only endpoints.
+- Confirms no write action markers for approval, credit/debit, payout, transfer, provider live, or real money enablement from the read-only integration surface.
+- Runs a static secret-shaped value scan for hardcoded tokens, passwords, `DATABASE_URL`, API-key-shaped markers, literal credential scheme placeholder credentials, and token logging.
+
+Boundary:
+
+- No production DB.
+- No real money.
+- No live provider/payment/bank/SMS/Slip OCR.
+- No migration.
+- No deploy.
+- No runtime write action.
+- No live integration.

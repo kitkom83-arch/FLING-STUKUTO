@@ -28,6 +28,7 @@ const RELATED_FILES = [
   "src/local-smoke-tests/adminWheelUiSmoke.js",
   "src/local-smoke-tests/adminWheelRuntimeSmoke.js",
   "src/local-smoke-tests/adminBrowserRoutesSmoke.js",
+  "src/local-smoke-tests/adminBackofficeReadOnlyIntegrationSmoke.js",
   "src/local-smoke-tests/stagingReleaseReadinessSmoke.js",
   "src/local-smoke-tests/stagingDeployReadinessPackSmoke.js",
   "src/local-smoke-tests/disposableStagingDbDryRunPackSmoke.js",
@@ -125,6 +126,7 @@ const summary = [
   { key: "adminWheelUi", label: "admin-wheel-ui", status: "PENDING" },
   { key: "adminWheelRuntime", label: "admin-wheel-runtime", status: "PENDING" },
   { key: "adminBrowserRoutes", label: "admin-browser-routes", status: "PENDING" },
+  { key: "adminBackofficeReadOnlyIntegration", label: "admin-backoffice-read-only-integration", status: "PENDING" },
   { key: "stagingReleaseReadiness", label: "staging-release-readiness", status: "PENDING" },
   { key: "stagingDeployReadinessPack", label: "staging-deploy-readiness-pack", status: "PENDING" },
   {
@@ -281,6 +283,12 @@ const steps = [
     name: "node --check adminBrowserRoutesSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/adminBrowserRoutesSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check adminBackofficeReadOnlyIntegrationSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/adminBackofficeReadOnlyIntegrationSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -560,6 +568,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:admin-browser-routes"]),
     summaryKey: "adminBrowserRoutes",
+  },
+  {
+    name: "npm run smoke:admin-backoffice-read-only-integration",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:admin-backoffice-read-only-integration"]),
+    summaryKey: "adminBackofficeReadOnlyIntegration",
   },
   {
     name: "npm run smoke:staging-release-readiness",
