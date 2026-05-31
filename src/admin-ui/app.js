@@ -67,6 +67,7 @@
     pendingBankRows: [],
     ledgerRows: [],
     bankStatementRows: [],
+    bankReviewAuditRows: [],
     memberDetail: null,
     memberHistory: {},
     memberAuditRows: [],
@@ -128,6 +129,20 @@
     bankReviewReasonError: document.getElementById("bank-review-reason-error"),
     bankReviewCancel: document.getElementById("bank-review-cancel"),
     bankReviewConfirm: document.getElementById("bank-review-confirm"),
+    bankReviewAuditAction: document.getElementById("bank-review-audit-action"),
+    bankReviewAuditUsername: document.getElementById("bank-review-audit-username"),
+    bankReviewAuditTarget: document.getElementById("bank-review-audit-target"),
+    bankReviewAuditDateFrom: document.getElementById("bank-review-audit-date-from"),
+    bankReviewAuditDateTo: document.getElementById("bank-review-audit-date-to"),
+    loadBankReviewAudit: document.getElementById("load-bank-review-audit"),
+    bankReviewAuditCount: document.getElementById("bank-review-audit-count"),
+    bankReviewAuditState: document.getElementById("bank-review-audit-state"),
+    bankReviewAuditEmpty: document.getElementById("bank-review-audit-empty"),
+    bankReviewAuditRows: document.getElementById("bank-review-audit-rows"),
+    bankReviewSummaryPending: document.getElementById("bank-review-summary-pending"),
+    bankReviewSummaryApproved: document.getElementById("bank-review-summary-approved"),
+    bankReviewSummaryRejected: document.getElementById("bank-review-summary-rejected"),
+    bankReviewSummaryDuplicate: document.getElementById("bank-review-summary-duplicate"),
     ledgerCount: document.getElementById("ledger-count"),
     ledgerState: document.getElementById("ledger-state"),
     ledgerEmpty: document.getElementById("ledger-empty"),
@@ -498,7 +513,12 @@
       renderMemberAudit([], {
         emptyMessage: "ต้องมี permission admin.audit.view",
       });
+      renderBankReviewAudit([], {
+        stateMessage: "ต้องมี permission admin.audit.view",
+        emptyMessage: "ต้องมี permission admin.audit.view",
+      });
     }
+    updateBankReviewAuditControls();
     renderPermissionMatrix();
   }
 
@@ -770,6 +790,7 @@
     state.memberRows = [];
     state.blockedMemberRows = [];
     state.pendingBankRows = [];
+    state.bankReviewAuditRows = [];
     state.memberDetail = null;
     state.memberHistory = {};
     state.memberAuditRows = [];
@@ -798,6 +819,7 @@
     els.refreshRoles.disabled = true;
     els.refreshDashboard.disabled = true;
     updateMemberListControls();
+    updateBankReviewAuditControls();
     els.rolePermissionReason.value = "";
     setFieldError(els.rolePermissionReasonError, "");
     renderDashboardSummary(null, "Load an admin credential to read the summary.");
@@ -809,6 +831,10 @@
       emptyMessage: "ยังไม่ได้ login / ต้อง login admin",
     });
     renderPendingBankAccounts([], {
+      emptyMessage: "ยังไม่ได้ login / ต้อง login admin",
+    });
+    renderBankReviewAudit([], {
+      stateMessage: "ยังไม่ได้ login / ต้อง login admin",
       emptyMessage: "ยังไม่ได้ login / ต้อง login admin",
     });
     renderLedgerRows([], {
@@ -927,6 +953,20 @@
     els.refreshMembers.disabled = !enabled;
     els.memberSearch.disabled = !enabled;
     els.memberStatusFilter.disabled = !enabled;
+  }
+
+  function updateBankReviewAuditControls() {
+    const enabled = Boolean(state.token && state.canViewAudit);
+    for (const input of [
+      els.bankReviewAuditAction,
+      els.bankReviewAuditUsername,
+      els.bankReviewAuditTarget,
+      els.bankReviewAuditDateFrom,
+      els.bankReviewAuditDateTo,
+      els.loadBankReviewAudit,
+    ]) {
+      input.disabled = !enabled;
+    }
   }
 
   function objectValue(value) {
@@ -1083,6 +1123,7 @@
     state.pendingBankRows = safeRows;
     els.memberPendingBankRows.innerHTML = "";
     els.memberPendingBankCount.textContent = `${formatCountSafe(safeRows.length)} accounts`;
+    els.bankReviewSummaryPending.textContent = formatCountSafe(safeRows.length);
     els.memberPendingBankEmpty.textContent = safeDisplay(config.emptyMessage || "ไม่พบข้อมูล");
     els.memberPendingBankEmpty.classList.toggle("hidden", safeRows.length > 0);
 
@@ -1155,9 +1196,196 @@
         state.bankReviewRow = null;
         state.bankReviewAction = null;
         await refreshPendingBankAccounts();
+        await refreshBankReviewAudit();
       },
       "Saving..."
     );
+  }
+
+  function reviewAuditMetadata(row) {
+    return objectValue(row && row.metadata) || {};
+  }
+
+  function reviewAuditBefore(row) {
+    return objectValue(row && row.beforeJson) || objectValue(reviewAuditMetadata(row).before) || {};
+  }
+
+  function reviewAuditAfter(row) {
+    return objectValue(row && row.afterJson) || objectValue(reviewAuditMetadata(row).after) || {};
+  }
+
+  function reviewAuditTargetId(row) {
+    const metadata = reviewAuditMetadata(row);
+    return text(metadata.targetId || (row && row.targetId));
+  }
+
+  function reviewAuditActionLabel(action) {
+    if (action === "member.bank.approve") return "approve";
+    if (action === "member.bank.reject") return "reject";
+    return text(action);
+  }
+
+  function reviewAuditUsername(row) {
+    const metadata = reviewAuditMetadata(row);
+    const before = reviewAuditBefore(row);
+    const after = reviewAuditAfter(row);
+    const beforeUser = objectValue(before.user) || {};
+    const afterUser = objectValue(after.user) || {};
+    return text(
+      metadata.username ||
+        metadata.memberUsername ||
+        before.username ||
+        after.username ||
+        beforeUser.username ||
+        afterUser.username ||
+        before.userId ||
+        after.userId ||
+        metadata.userId
+    );
+  }
+
+  function reviewAuditAccount(row) {
+    const before = reviewAuditBefore(row);
+    const after = reviewAuditAfter(row);
+    const bank = after.bankName || after.bankCode || before.bankName || before.bankCode || "-";
+    const account = after.accountNumberMasked || before.accountNumberMasked || after.accountNumber || before.accountNumber || "-";
+    return `${safeDisplay(bank)} / ${safeDisplay(account)}`;
+  }
+
+  function reviewAuditReason(row) {
+    const metadata = reviewAuditMetadata(row);
+    return text(metadata.reason || (row && row.reason));
+  }
+
+  function reviewAuditPreviousStatus(row) {
+    const metadata = reviewAuditMetadata(row);
+    const before = reviewAuditBefore(row);
+    return text(metadata.previousStatus || before.status);
+  }
+
+  function reviewAuditNextStatus(row) {
+    const metadata = reviewAuditMetadata(row);
+    const after = reviewAuditAfter(row);
+    return text(metadata.nextStatus || after.status);
+  }
+
+  function reviewAuditActor(row) {
+    const metadata = reviewAuditMetadata(row);
+    const actor = objectValue(metadata.actor) || objectValue(row && row.actorAdmin) || objectValue(row && row.admin) || {};
+    return text(actor.username || metadata.actorUsername || metadata.adminUsername || actor.id);
+  }
+
+  function reviewAuditSiteCode(row) {
+    const metadata = reviewAuditMetadata(row);
+    return text(metadata.siteCode || (row && row.siteCode) || SITE_CODE);
+  }
+
+  function reviewAuditDuplicateCount(rows) {
+    return rows.filter((row) => {
+      const metadata = reviewAuditMetadata(row);
+      const status = String(metadata.httpStatus || metadata.statusCode || metadata.result || row.result || "").toLowerCase();
+      return status === "409" || status.includes("duplicate") || status.includes("already reviewed");
+    }).length;
+  }
+
+  function bankReviewAuditMatchesFilters(row) {
+    const username = els.bankReviewAuditUsername.value.trim().toLowerCase();
+    const target = els.bankReviewAuditTarget.value.trim().toLowerCase();
+    const usernameText = reviewAuditUsername(row).toLowerCase();
+    const targetText = reviewAuditTargetId(row).toLowerCase();
+    if (username && !usernameText.includes(username)) return false;
+    if (target && !targetText.includes(target)) return false;
+    return true;
+  }
+
+  function renderBankReviewAudit(rows, options) {
+    const safeRows = Array.isArray(rows) ? rows : [];
+    const config = options || {};
+    state.bankReviewAuditRows = safeRows;
+    els.bankReviewAuditRows.innerHTML = "";
+    els.bankReviewAuditCount.textContent = `${formatCountSafe(safeRows.length)} rows`;
+    els.bankReviewAuditState.textContent = safeDisplay(config.stateMessage || (safeRows.length ? "Review history loaded." : "ไม่พบข้อมูล"));
+    els.bankReviewAuditEmpty.textContent = safeDisplay(config.emptyMessage || "ไม่พบข้อมูล");
+    els.bankReviewAuditEmpty.classList.toggle("hidden", safeRows.length > 0);
+    els.bankReviewSummaryPending.textContent = formatCountSafe(state.pendingBankRows.length);
+    els.bankReviewSummaryApproved.textContent = formatCountSafe(safeRows.filter((row) => row.action === "member.bank.approve").length);
+    els.bankReviewSummaryRejected.textContent = formatCountSafe(safeRows.filter((row) => row.action === "member.bank.reject").length);
+    els.bankReviewSummaryDuplicate.textContent = formatCountSafe(reviewAuditDuplicateCount(safeRows));
+
+    for (const row of safeRows) {
+      const tr = document.createElement("tr");
+      tr.appendChild(createCell(formatDate(row && row.createdAt)));
+      tr.appendChild(createCell(reviewAuditActionLabel(row && row.action)));
+      tr.appendChild(createCell(reviewAuditUsername(row)));
+      tr.appendChild(createCell(reviewAuditAccount(row)));
+      tr.appendChild(createStatusCell(reviewAuditPreviousStatus(row)));
+      tr.appendChild(createStatusCell(reviewAuditNextStatus(row)));
+      tr.appendChild(createCell(reviewAuditReason(row)));
+      tr.appendChild(createCell(reviewAuditActor(row)));
+      tr.appendChild(createCell(reviewAuditSiteCode(row)));
+      els.bankReviewAuditRows.appendChild(tr);
+    }
+  }
+
+  function bankReviewAuditParams(action) {
+    const params = new URLSearchParams({ action, target_type: "user_bank_account", limit: "100" });
+    const dateFrom = els.bankReviewAuditDateFrom.value;
+    const dateTo = els.bankReviewAuditDateTo.value;
+    const target = els.bankReviewAuditTarget.value.trim();
+    if (dateFrom) params.set("dateFrom", dateFrom);
+    if (dateTo) params.set("dateTo", dateTo);
+    if (target) params.set("target_id", target);
+    return params;
+  }
+
+  async function loadBankReviewAudit() {
+    updateBankReviewAuditControls();
+    if (!state.token) {
+      renderBankReviewAudit([], {
+        stateMessage: "ยังไม่ได้ login / ต้อง login admin",
+        emptyMessage: "ยังไม่ได้ login / ต้อง login admin",
+      });
+      return;
+    }
+    if (!state.canViewAudit) {
+      renderBankReviewAudit([], {
+        stateMessage: "ต้องมี permission admin.audit.view",
+        emptyMessage: "ต้องมี permission admin.audit.view",
+      });
+      return;
+    }
+    els.bankReviewAuditState.textContent = "Loading review history...";
+    const selected = els.bankReviewAuditAction.value;
+    const actions =
+      selected === "approve"
+        ? ["member.bank.approve"]
+        : selected === "reject"
+          ? ["member.bank.reject"]
+          : ["member.bank.approve", "member.bank.reject"];
+    const results = await Promise.all(
+      actions.map((action) => adminFetchReadOnly(`/admin/audit-logs?${bankReviewAuditParams(action).toString()}`))
+    );
+    const rows = results
+      .flatMap((result) => arrayValue(result && result.rows))
+      .filter(bankReviewAuditMatchesFilters)
+      .sort((a, b) => new Date(b && b.createdAt).getTime() - new Date(a && a.createdAt).getTime());
+    renderBankReviewAudit(rows, {
+      stateMessage: "Review history loaded from GET /api/admin/audit-logs.",
+      emptyMessage: "ไม่พบข้อมูล",
+    });
+  }
+
+  async function refreshBankReviewAudit() {
+    try {
+      await loadBankReviewAudit();
+    } catch (error) {
+      const safeMessage = sanitizeErrorMessage(error.message);
+      renderBankReviewAudit([], {
+        stateMessage: safeMessage,
+        emptyMessage: state.token ? "ไม่สามารถโหลดประวัติได้" : "ยังไม่ได้ login / ต้อง login admin",
+      });
+      setToast(safeMessage);
+    }
   }
 
   function rowMemberLabel(row) {
@@ -2035,6 +2263,7 @@
   async function refreshMemberReadOnlyViews() {
     await refreshBlockedMembers();
     await refreshPendingBankAccounts();
+    await refreshBankReviewAudit();
     await refreshWalletLedgerReadOnly();
     await refreshBankStatementsReadOnly();
   }
@@ -2645,6 +2874,10 @@
     renderPendingBankAccounts([], {
       emptyMessage: "ยังไม่ได้ login / ต้อง login admin",
     });
+    renderBankReviewAudit([], {
+      stateMessage: "ยังไม่ได้ login / ต้อง login admin",
+      emptyMessage: "ยังไม่ได้ login / ต้อง login admin",
+    });
     renderMemberAudit([], {
       emptyMessage: "ยังไม่ได้ login / ต้อง login admin",
     });
@@ -2709,6 +2942,17 @@
   els.search.addEventListener("input", () => loadSchedules().catch((error) => setToast(error.message)));
   els.roleFilter.addEventListener("change", () => loadSchedules().catch((error) => setToast(error.message)));
   els.loadAudit.addEventListener("click", () => withLoading(els.loadAudit, () => loadAudit()).catch((error) => setToast(error.message)));
+  els.loadBankReviewAudit.addEventListener("click", () =>
+    withLoading(els.loadBankReviewAudit, refreshBankReviewAudit).catch((error) => setToast(error.message))
+  );
+  els.bankReviewAuditAction.addEventListener("change", () => refreshBankReviewAudit().catch((error) => setToast(error.message)));
+  els.bankReviewAuditDateFrom.addEventListener("change", () => refreshBankReviewAudit().catch((error) => setToast(error.message)));
+  els.bankReviewAuditDateTo.addEventListener("change", () => refreshBankReviewAudit().catch((error) => setToast(error.message)));
+  for (const input of [els.bankReviewAuditUsername, els.bankReviewAuditTarget]) {
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") refreshBankReviewAudit().catch((error) => setToast(error.message));
+    });
+  }
   els.scheduleForm.addEventListener("submit", (event) => saveSchedule(event).catch((error) => setToast(error.message)));
   els.toggleForm.addEventListener("submit", (event) => toggleSchedule(event).catch((error) => setToast(error.message)));
   els.overrideForm.addEventListener("submit", (event) => saveOverride(event).catch((error) => setToast(error.message)));

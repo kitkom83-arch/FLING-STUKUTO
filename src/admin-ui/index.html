@@ -259,6 +259,103 @@
 
         <section
           class="table-section"
+          id="bank-review-audit"
+          data-bank-review-audit-marker="Bank Account Review Audit"
+          data-bank-review-operator-handoff-marker="Operator Handoff"
+          data-bank-review-audit-actions="member.bank.approve member.bank.reject"
+          data-bank-review-audit-reason="reason required"
+          data-bank-review-audit-required="audit required"
+          data-bank-review-duplicate-safe="duplicate reviewed safe 409"
+          data-bank-review-audit-safety="no production DB no real money no live provider/payment/bank/SMS/Slip OCR"
+        >
+          <div class="section-heading">
+            <div>
+              <h2>Bank Account Review Audit / Review History</h2>
+              <p>Read-only history for member.bank.approve and member.bank.reject. Requires admin.audit.view and never changes bank account status.</p>
+              <p>Operator Handoff. Reason required, audit required, duplicate reviewed must fail safely with 409, and this panel must not trigger real money, withdrawal, transfer, credit, debit, payout, or live provider actions.</p>
+            </div>
+            <span id="bank-review-audit-count">0 events</span>
+          </div>
+          <section class="status-grid" aria-label="Bank account review audit summary">
+            <article class="status-card">
+              <span>Pending accounts</span>
+              <strong id="bank-review-summary-pending">0</strong>
+            </article>
+            <article class="status-card">
+              <span>Approved reviews</span>
+              <strong id="bank-review-summary-approved">0</strong>
+            </article>
+            <article class="status-card">
+              <span>Rejected reviews</span>
+              <strong id="bank-review-summary-rejected">0</strong>
+            </article>
+            <article class="status-card">
+              <span>Duplicate reviewed safe 409</span>
+              <strong id="bank-review-summary-duplicate">0</strong>
+            </article>
+          </section>
+          <section class="toolbar compact" aria-label="Bank account review audit filters">
+            <div class="field">
+              <label for="bank-review-audit-action">Action</label>
+              <select id="bank-review-audit-action" disabled>
+                <option value="">All actions</option>
+                <option value="member.bank.approve">approve</option>
+                <option value="member.bank.reject">reject</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="bank-review-audit-username">Username</label>
+              <input id="bank-review-audit-username" type="search" placeholder="username or member id" disabled />
+            </div>
+            <div class="field">
+              <label for="bank-review-audit-target">Bank account / target id</label>
+              <input id="bank-review-audit-target" type="search" placeholder="target id" disabled />
+            </div>
+            <div class="field">
+              <label for="bank-review-audit-date-from">Date from</label>
+              <input id="bank-review-audit-date-from" type="date" disabled />
+            </div>
+            <div class="field">
+              <label for="bank-review-audit-date-to">Date to</label>
+              <input id="bank-review-audit-date-to" type="date" disabled />
+            </div>
+            <button id="load-bank-review-audit" type="button" disabled>Load review history</button>
+          </section>
+          <div id="bank-review-audit-state" class="permission-state">ยังไม่ได้ login / ต้อง login admin</div>
+          <div id="bank-review-audit-empty" class="empty-state">ไม่พบข้อมูล</div>
+          <div class="table-scroll">
+            <table aria-label="Bank account review audit history">
+              <thead>
+                <tr>
+                  <th>วันที่</th>
+                  <th>action</th>
+                  <th>username/member</th>
+                  <th>ธนาคาร/เลขบัญชี</th>
+                  <th>previousStatus</th>
+                  <th>nextStatus</th>
+                  <th>reason</th>
+                  <th>actor</th>
+                  <th>targetId</th>
+                  <th>siteCode</th>
+                </tr>
+              </thead>
+              <tbody id="bank-review-audit-rows"></tbody>
+            </table>
+          </div>
+          <aside class="guard-panel" id="bank-review-operator-handoff">
+            <div>
+              <span class="eyebrow">Operator Handoff</span>
+              <h2>Pending bank review checklist</h2>
+              <p>Admin must verify masked bank details, enter a clear reason, and confirm the action only when the pending account is safe to review.</p>
+              <p>Do not approve or reject if the account is unclear. Do not use this page for real money, withdrawal, transfer, credit, debit, payout, or live provider/payment/bank/SMS/Slip OCR work.</p>
+              <p>Safe error states: reason required returns 400, duplicate reviewed returns 409, audit is required for every approved or rejected review, and raw stacks or sensitive values must never be shown.</p>
+            </div>
+            <div class="permission-state">Read-only handoff guidance</div>
+          </aside>
+        </section>
+
+        <section
+          class="table-section"
           id="wallet-ledger-readonly"
           data-wallet-ledger-read-only-marker="GET /api/admin/reports/wallet-ledger"
           data-transaction-read-only-marker="GET /api/admin/reports/deposits, GET /api/admin/reports/withdrawals"

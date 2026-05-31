@@ -36,7 +36,7 @@ Safety boundary: docs/static only. No production DB, no real money, no live prov
 | `promotions.manage` | write permission | Yes | Yes | Limited | No | Yes | No | Yes | Yes | Graphic may manage copy/assets only if backend separates financial reward fields. |
 | `wheel.view` | read-only permission | Yes | Yes | Yes | Yes | Yes | Yes | No | No | Wheel reports/config read. |
 | `wheel.manage` | write permission | Yes | Yes | Limited | No | Yes | No | Yes | Yes | No forced spin result; backend selects member rewards. |
-| `audit.view` | read-only permission | Yes | Yes | Yes | Limited | No | Yes | No | No | Audit rows must be sanitized. |
+| `audit.view` / `admin.audit.view` | read-only permission | Yes | Yes | Yes | Limited | No | Yes | No | No | Audit rows must be sanitized. Phase AM bank account review history uses `admin.audit.view` for read-only operator handoff visibility of `member.bank.approve` and `member.bank.reject`; it does not grant approve/reject rights. |
 | `security.view` | read-only permission | Yes | Yes | Limited | No | No | Yes | No | No | Security event rows must be sanitized. |
 | `admin.roles.view` | read-only permission | Yes | Yes | No | No | No | Yes | No | No | Viewer sees catalog only if policy allows. |
 | `admin.roles.update` | write permission | Yes | Limited | No | No | No | No | Yes | Yes | Owner-only recommended; no self-demotion bypass or privilege escalation. |
@@ -50,5 +50,6 @@ Safety boundary: docs/static only. No production DB, no real money, no live prov
 - Read-only permission and write permission must stay separate.
 - Reason is required for wallet, bank approval/reject, blacklist, deposit approval, withdrawal approval/mark paid, promotion manage, wheel manage, role update, work schedule update, and settings update.
 - Audit is required for every write permission row.
+- Phase AM Admin Bank Account Review Audit & Operator Handoff is read-only: `members.bank.view` reads pending rows, `members.bank.approve` still controls approve/reject with reason required and audit required, and `admin.audit.view` reads review history only.
 - No self-approval is required for wallet adjustment, withdrawal approval/mark paid, role-sensitive changes, future commission settlement, and any future dual-control action.
 - No live action until certification: provider, payment, bank, SMS, Slip OCR, payout, and production DB operation remain disabled or mock/sandbox only.

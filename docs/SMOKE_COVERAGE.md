@@ -43,6 +43,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `adminMemberHistoryReadOnlySmoke.js` | `npm run smoke:admin-member-history-read-only` | No | No | No | Syntax check plus static/source contract | Admin Member Detail history read-only contract for `GET /api/admin/members/:id/history`, UI history tabs, empty-state markers, existing wallet/wheel permission guards, no member write endpoint, no member JWT endpoint, no live provider call, and no sensitive field selection. |
 | `adminBackofficeReadOnlyIntegrationSmoke.js` | `npm run smoke:admin-backoffice-read-only-integration` | No | No | No | Static contract plus unauth HTTP guard | Phase AK Admin Backoffice Read-only API Integration contract for dashboard/reports, member list/detail, wallet ledger, deposit/withdraw report, bank pending, and mock statement read-only UI/API wiring; no write action, no production DB, no real money, and no live integration. |
 | `adminGuardedBankAccountReviewSmoke.js` | `npm run smoke:admin-guarded-bank-account-review` | No | No | No | Static contract plus unauth HTTP guard | Phase AL Admin Guarded Bank Account Review contract for pending bank approve/reject guarded write foundation, reason/audit/permission guard, duplicate guard, safe errors, no production DB, no real money, and no live integration. |
+| `adminOperatorHandoffSmoke.js` | `npm run smoke:admin-operator-handoff` | No | No | No | Static contract plus unauth HTTP guard | Phase AM Admin Bank Account Review Audit & Operator Handoff contract for read-only review history, `admin.audit.view` permission/API guard, operator safety copy, response leak scan, duplicate reviewed safe `409`, reason required, audit required, no production DB, no real money, and no live integration. |
 | `adminWorkScheduleSmoke.js` | `npm run smoke:admin-work-schedule` | Yes | Yes | Yes | Syntax check only | Admin work schedule UI/API checks for schedule list/read/update, permission guards, login block/allow, emergency override, expired override, audit history, rollback, and leak scan. |
 | `adminWorkScheduleUiSmoke.js` | `npm run smoke:admin-work-schedule-ui` | Yes | Yes | Yes | Syntax check only | Static admin schedule UI route/assets, owner flow, no-permission block, emergency override, masked audit history, and leak scan. |
 | `adminAuditSecuritySmoke.js` | `npm run smoke:admin-audit-security` | Yes | Yes | Yes | Syntax check only | Static audit/security UI route/assets, UX markers, report endpoints, filters, permission block, empty response shape, masked IP, raw user-agent omission, and leak scan. |
@@ -647,6 +648,8 @@ Confirmed from current docs and scripts:
 
 Phase I status: Admin UI End-to-End Manual QA + Operator Handoff Final.
 
+Phase AM status: Admin Bank Account Review Audit & Operator Handoff read-only review history and operator safety panel.
+
 Script:
 
 - `src/local-smoke-tests/adminOperatorHandoffSmoke.js`
@@ -665,11 +668,14 @@ Coverage:
 - Confirms admin UI route/link/selector markers for Role Management, Lucky Wheel, Audit Security, permission matrix, reason field, and confirm modal.
 - Confirms Role Management reason-required copy and protected owner/super_admin guard copy.
 - Confirms Admin Wheel Permission summary, tabs, Reward Claims reason field, reason validation, and confirm action markers.
+- Confirms Phase AM Bank Account Review Audit / Review History UI includes `member.bank.approve`, `member.bank.reject`, `admin.audit.view`, reason required, audit required, duplicate reviewed safe `409`, no real money, and no production DB markers.
+- Confirms the Phase AM UI/JS uses the existing read-only `GET /api/admin/audit-logs` contract with `target_type=user_bank_account`, action/date/target filters, safe empty/error states, and no frontend status mutation.
+- Confirms review history unauth access returns `401`; no-permission `403` and authorized read are covered by static route/API contract when no local audit fixture is present.
 - Confirms no unexpected static placeholder copy and no static secret-shaped values in checked docs/assets.
 - Confirms Admin Wheel UI does not expose force reward, force spin, or set-prize-index controls.
 - Runs `adminBrowserRoutesSmoke.js` as a dependency so the route contract for the five Phase I browser routes remains covered.
 
-This smoke is static/contract only. It does not log in, run migrations, seed data, connect to production DB, call live provider/payment/bank/SMS/Slip OCR, or move money. DB-backed runtime smoke may still report BLOCKED or SKIPPED by safety guard when the safe local/staging env is absent.
+This smoke is static/contract plus unauth HTTP guard only. It does not log in, run migrations, seed data, connect to production DB, call live provider/payment/bank/SMS/Slip OCR, or move money. DB-backed runtime smoke may still report BLOCKED or SKIPPED by safety guard when the safe local/staging env is absent.
 
 ## 29. smoke:staging-release-gate Coverage
 
@@ -1544,6 +1550,40 @@ Coverage:
 Boundary:
 
 - Local/staging/mock only.
+- No production DB.
+- No real money.
+- No live provider/payment/bank/SMS/Slip OCR.
+- No migration.
+- No deploy.
+- No credit/debit.
+- No payout.
+
+## 51. Phase AM Admin Bank Account Review Audit & Operator Handoff
+
+Phase AM status: read-only operator handoff for bank account review audit/history.
+
+Script:
+
+- `src/local-smoke-tests/adminOperatorHandoffSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:admin-operator-handoff
+```
+
+Coverage:
+
+- Confirms the Admin UI includes Bank Account Review Audit / Review History, Operator Handoff, action/username/target/date filters, summary cards, table/empty/error states, and `admin.audit.view` visibility guard.
+- Confirms review history maps to existing `GET /api/admin/audit-logs?action=member.bank.approve|member.bank.reject&target_type=user_bank_account` and remains read-only.
+- Confirms audit metadata markers for action, actor admin, target bank account/member, previousStatus, nextStatus, reason, createdAt, and siteCode.
+- Confirms operator handoff copy covers reason required, audit required, duplicate reviewed safe `409`, no real money, no production DB, and no live provider/payment/bank/SMS/Slip OCR.
+- Confirms no forbidden controls for force credit, force debit, payout, live transfer, provider live, approve withdrawal, or mark paid real.
+
+Boundary:
+
+- Read-only audit visibility only.
+- No new write action.
 - No production DB.
 - No real money.
 - No live provider/payment/bank/SMS/Slip OCR.

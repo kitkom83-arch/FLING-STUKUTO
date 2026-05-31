@@ -30,6 +30,7 @@ const RELATED_FILES = [
   "src/local-smoke-tests/adminBrowserRoutesSmoke.js",
   "src/local-smoke-tests/adminBackofficeReadOnlyIntegrationSmoke.js",
   "src/local-smoke-tests/adminGuardedBankAccountReviewSmoke.js",
+  "src/local-smoke-tests/adminOperatorHandoffSmoke.js",
   "src/local-smoke-tests/stagingReleaseReadinessSmoke.js",
   "src/local-smoke-tests/stagingDeployReadinessPackSmoke.js",
   "src/local-smoke-tests/disposableStagingDbDryRunPackSmoke.js",
@@ -129,6 +130,7 @@ const summary = [
   { key: "adminBrowserRoutes", label: "admin-browser-routes", status: "PENDING" },
   { key: "adminBackofficeReadOnlyIntegration", label: "admin-backoffice-read-only-integration", status: "PENDING" },
   { key: "adminGuardedBankAccountReview", label: "admin-guarded-bank-account-review", status: "PENDING" },
+  { key: "adminOperatorHandoff", label: "admin-operator-handoff", status: "PENDING" },
   { key: "stagingReleaseReadiness", label: "staging-release-readiness", status: "PENDING" },
   { key: "stagingDeployReadinessPack", label: "staging-deploy-readiness-pack", status: "PENDING" },
   {
@@ -297,6 +299,12 @@ const steps = [
     name: "node --check adminGuardedBankAccountReviewSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/adminGuardedBankAccountReviewSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check adminOperatorHandoffSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/adminOperatorHandoffSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -588,6 +596,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:admin-guarded-bank-account-review"]),
     summaryKey: "adminGuardedBankAccountReview",
+  },
+  {
+    name: "npm run smoke:admin-operator-handoff",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:admin-operator-handoff"]),
+    summaryKey: "adminOperatorHandoff",
   },
   {
     name: "npm run smoke:staging-release-readiness",
