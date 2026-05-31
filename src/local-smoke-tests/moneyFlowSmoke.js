@@ -362,7 +362,7 @@ async function runSmoke(apiBaseUrl) {
   const approvedBankAccount = await apiRequest(apiBaseUrl, `/api/admin/bank-accounts/${bankAccount.id}/approve`, {
     method: "POST",
     token: adminToken,
-    body: {},
+    body: { reason: "local money-flow smoke approve bank account" },
   });
   assertEqual(approvedBankAccount.status, "approved", "Bank account status after approval");
   console.log("Bank account approve: PASS");

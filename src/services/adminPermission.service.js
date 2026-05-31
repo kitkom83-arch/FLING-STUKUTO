@@ -17,6 +17,8 @@ const STAGING_SAFE_ROLE = safeStagingRoleName(process.env.STAGING_SAFE_ROLE_NAME
 const PERMISSIONS = [
   "members.view",
   "members.update",
+  "members.bank.view",
+  "members.bank.approve",
   "deposits.view",
   "deposits.approve",
   "withdrawals.view",
@@ -64,6 +66,8 @@ const ROLE_PERMISSIONS = {
   super_admin: [...PERMISSIONS],
   finance: [
     "members.view",
+    "members.bank.view",
+    "members.bank.approve",
     "deposits.view",
     "deposits.approve",
     "withdrawals.view",
@@ -81,6 +85,7 @@ const ROLE_PERMISSIONS = {
   support: [
     "members.view",
     "members.update",
+    "members.bank.view",
     "deposits.view",
     "withdrawals.view",
     "bank.view",
@@ -108,6 +113,7 @@ const ROLE_PERMISSIONS = {
   ],
   viewer: [
     "members.view",
+    "members.bank.view",
     "deposits.view",
     "withdrawals.view",
     "bank.view",
@@ -170,6 +176,8 @@ const PERMISSION_DETAILS = [
   ["Admin/Audit", "admin.workSchedule.update", "Update admin work schedules", "write", true, true, "/admin/work-schedules", "PATCH /api/admin/work-schedules/:adminId"],
   ["General Admin", "members.view", "View members", "read", false, false, "Admin member tools", "GET /api/admin/members"],
   ["General Admin", "members.update", "Update members", "write", true, true, "Admin member tools", "POST /api/admin/members/:id/*"],
+  ["General Admin", "members.bank.view", "View pending member bank accounts", "read", false, false, "#member-pending-bank", "GET /api/admin/bank-accounts/pending"],
+  ["General Admin", "members.bank.approve", "Approve or reject pending member bank accounts", "write", true, true, "#member-pending-bank", "POST /api/admin/bank-accounts/:id/approve, POST /api/admin/bank-accounts/:id/reject"],
   ["General Admin", "deposits.view", "View deposits", "read", false, false, "Admin finance tools", "GET /api/admin/deposits"],
   ["General Admin", "deposits.approve", "Approve/reject deposits", "write", true, true, "Admin finance tools", "POST /api/admin/deposits/:id/*"],
   ["General Admin", "withdrawals.view", "View withdrawals", "read", false, false, "Admin finance tools", "GET /api/admin/withdrawals"],

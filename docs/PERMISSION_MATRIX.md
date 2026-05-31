@@ -20,8 +20,8 @@ Safety boundary: docs/static only. No production DB, no real money, no live prov
 | `reports.view` | read-only permission | Yes | Yes | Yes | Limited | No | Yes | No | No | Reports are display/export only; export audit can be added later. |
 | `members.view` | read-only permission | Yes | Yes | Yes | Yes | No | Yes | No | No | Must mask sensitive member data. |
 | `members.history.view` | read-only permission | Yes | Yes | Yes | Yes | No | Yes | No | No | History read-only; no provider live calls. |
-| `members.bank.view` | read-only permission | Yes | Yes | Yes | Limited | No | Yes | No | No | Bank account numbers must be masked. |
-| `members.bank.approve` | write permission | Yes | Yes | Yes | No | No | No | Yes for reject; recommended for approve | Yes | No live bank action; approval only changes member bank status. |
+| `members.bank.view` | read-only permission | Yes | Yes | Yes | Limited | No | Yes | No | No | Bank account numbers must be masked; pending review read only. |
+| `members.bank.approve` | guarded write permission | Yes | Yes | Yes | No | No | No | Yes | Yes | Phase AL guarded write; approve/reject requires reason, audit, duplicate guard, local/staging/mock only, and no live bank action. |
 | `members.blacklist.update` | write permission | Yes | Yes | Limited | Limited | No | No | Yes | Yes | Must capture before/after status and actor. |
 | `wallet.view` | read-only permission | Yes | Yes | Yes | Limited | No | Yes | No | No | Display only; not settlement proof. |
 | `wallet.adjust` | write permission | Yes | Yes | Limited | No | No | No | Yes | Yes | No self-approval; no live action until certification; dual control required before production. |

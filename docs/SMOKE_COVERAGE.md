@@ -42,6 +42,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `adminBrowserRoutesSmoke.js` | `npm run smoke:admin-browser-routes` | No | No | No | Syntax check plus static HTTP contract | Static browser route contract for `/admin`, `/admin/roles`, `/admin-wheel`, trailing-slash aliases, JS/CSS assets, `/api/*` boundary, required UI markers, no forbidden rendered placeholders, no static secret-shaped values, no owner/super_admin bypass controls, no force reward/spin controls, and no member spin endpoint calls. |
 | `adminMemberHistoryReadOnlySmoke.js` | `npm run smoke:admin-member-history-read-only` | No | No | No | Syntax check plus static/source contract | Admin Member Detail history read-only contract for `GET /api/admin/members/:id/history`, UI history tabs, empty-state markers, existing wallet/wheel permission guards, no member write endpoint, no member JWT endpoint, no live provider call, and no sensitive field selection. |
 | `adminBackofficeReadOnlyIntegrationSmoke.js` | `npm run smoke:admin-backoffice-read-only-integration` | No | No | No | Static contract plus unauth HTTP guard | Phase AK Admin Backoffice Read-only API Integration contract for dashboard/reports, member list/detail, wallet ledger, deposit/withdraw report, bank pending, and mock statement read-only UI/API wiring; no write action, no production DB, no real money, and no live integration. |
+| `adminGuardedBankAccountReviewSmoke.js` | `npm run smoke:admin-guarded-bank-account-review` | No | No | No | Static contract plus unauth HTTP guard | Phase AL Admin Guarded Bank Account Review contract for pending bank approve/reject guarded write foundation, reason/audit/permission guard, duplicate guard, safe errors, no production DB, no real money, and no live integration. |
 | `adminWorkScheduleSmoke.js` | `npm run smoke:admin-work-schedule` | Yes | Yes | Yes | Syntax check only | Admin work schedule UI/API checks for schedule list/read/update, permission guards, login block/allow, emergency override, expired override, audit history, rollback, and leak scan. |
 | `adminWorkScheduleUiSmoke.js` | `npm run smoke:admin-work-schedule-ui` | Yes | Yes | Yes | Syntax check only | Static admin schedule UI route/assets, owner flow, no-permission block, emergency override, masked audit history, and leak scan. |
 | `adminAuditSecuritySmoke.js` | `npm run smoke:admin-audit-security` | Yes | Yes | Yes | Syntax check only | Static audit/security UI route/assets, UX markers, report endpoints, filters, permission block, empty response shape, masked IP, raw user-agent omission, and leak scan. |
@@ -1517,3 +1518,37 @@ Boundary:
 - No deploy.
 - No runtime write action.
 - No live integration.
+
+## 50. Phase AL Admin Guarded Bank Account Review
+
+Phase AL status: Admin Guarded Bank Account Review guarded write foundation.
+
+Script:
+
+- `src/local-smoke-tests/adminGuardedBankAccountReviewSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:admin-guarded-bank-account-review
+```
+
+Coverage:
+
+- Confirms Pending Bank Accounts UI includes `Admin Guarded Bank Account Review`, `members.bank.view`, `members.bank.approve`, reason required, audit required, approve/reject modal, masked account display, and safe loading/success/error markers.
+- Confirms backend routes use `members.bank.view` for read and `members.bank.approve` for approve/reject.
+- Confirms controller/service contracts require `reason`, write audit actions `member.bank.approve` and `member.bank.reject`, duplicate reviewed rows fail safely, and response leak scan passes.
+- Confirms package script and `runAllLocalSmoke.js` include `smoke:admin-guarded-bank-account-review`.
+- Confirms no forbidden controls for force credit, force debit, live payout, live transfer, provider live, real-money activation, approve withdrawal, mark paid real, or forced spin result.
+
+Boundary:
+
+- Local/staging/mock only.
+- No production DB.
+- No real money.
+- No live provider/payment/bank/SMS/Slip OCR.
+- No migration.
+- No deploy.
+- No credit/debit.
+- No payout.
+- Reason/audit/permission guard required.

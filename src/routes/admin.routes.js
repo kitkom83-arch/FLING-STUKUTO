@@ -189,9 +189,9 @@ router.post("/members/:id/credit/remove", protectedSite, can("members.update"), 
 router.post("/members/:id/points/add", protectedSite, can("members.update"), asyncHandler(adminController.addPoints));
 router.post("/members/:id/points/remove", protectedSite, can("members.update"), asyncHandler(adminController.removePoints));
 
-router.get("/bank-accounts/pending", protectedSite, can("bank.view"), asyncHandler(bankAccountController.pending));
-router.post("/bank-accounts/:id/approve", protectedSite, can("bank.update"), asyncHandler(bankAccountController.approve));
-router.post("/bank-accounts/:id/reject", protectedSite, can("bank.update"), asyncHandler(bankAccountController.reject));
+router.get("/bank-accounts/pending", protectedSite, can("members.bank.view"), asyncHandler(bankAccountController.pending));
+router.post("/bank-accounts/:id/approve", protectedSite, can("members.bank.approve"), asyncHandler(bankAccountController.approve));
+router.post("/bank-accounts/:id/reject", protectedSite, can("members.bank.approve"), asyncHandler(bankAccountController.reject));
 router.get("/bank/mock/statements/deposits", protectedSite, can("bank.view"), asyncHandler(bankMockController.listDepositStatements));
 router.get("/bank/mock/statements/withdrawals", protectedSite, can("bank.view"), asyncHandler(bankMockController.listWithdrawStatements));
 router.post("/slip-ocr/mock/verify", protectedSite, can("bank.view"), asyncHandler(bankMockController.verifySlip));

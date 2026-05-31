@@ -143,7 +143,7 @@ function assertNoMockRowCreatingEndpoint(label, text) {
 
 function assertNoAdminMemberWriteControls(html, js) {
   const rendered = visibleTextFromHtml(html);
-  const forbiddenRendered = /\b(Blacklist|Unblacklist|Credit adjustment|Add credit|Remove credit|Add points|Remove points|Approve bank|Reject bank|Approve deposit|Reject deposit|Approve withdrawal|Reject withdrawal|Mark paid|Claim reward|Cancel reward)\b/i;
+  const forbiddenRendered = /\b(Blacklist|Unblacklist|Credit adjustment|Add credit|Remove credit|Add points|Remove points|Approve deposit|Reject deposit|Approve withdrawal|Reject withdrawal|Mark paid|Claim reward|Cancel reward)\b/i;
   assert(!forbiddenRendered.test(rendered), "Admin member list must not expose member write controls.");
   for (const marker of [
     ["/admin/members/:id", "/block"].join(""),
@@ -164,12 +164,8 @@ function assertNoAdminMemberWriteControls(html, js) {
   assert(!memberWriteApiCall.test(js), "Admin member UI must not call member write endpoints through api().");
   const apiPrefix = ["/api", "/admin"].join("");
   const memberWriteEndpoint = new RegExp(`${apiPrefix}\\/members\\/[^\\s"'<>]+\\/(?:block|unblock|${creditMarker}|points)`, "i");
-  const bankWriteEndpoint = new RegExp(`${apiPrefix}\\/bank[^\\s"'<>]+\\/(?:approve|reject)`, "i");
   assert(!memberWriteEndpoint.test(html) && !memberWriteEndpoint.test(js), "Admin member UI must not include active member write endpoint strings.");
-  assert(!bankWriteEndpoint.test(html) && !bankWriteEndpoint.test(js), "Admin member UI must not include active bank review write endpoint strings.");
   const renderedWriteLabels = [
-    ["approve", " bank"].join(""),
-    ["reject", " bank"].join(""),
     ["unblock", " member"].join(""),
     ["block", " member"].join(""),
   ].join("|");
@@ -265,10 +261,14 @@ async function main() {
       "Read-only view only. No unblock action in this phase.",
       "GET /api/admin/members?status=blocked",
       "member-blocked-rows",
-      "data-member-pending-bank-read-only-marker",
+      "data-member-pending-bank-review-marker",
+      "Admin Guarded Bank Account Review",
+      "members.bank.view",
+      "members.bank.approve",
       "ข้อมูลบัญชีที่รอตรวจสอบ",
-      "Pending Bank Accounts / Read-only",
-      "Read-only view only. No approve/reject action in this phase.",
+      "Pending Bank Accounts",
+      "reason required",
+      "audit required",
       "GET /api/admin/bank-accounts/pending",
       "member-pending-bank-rows",
       "data-admin-audit-read-only-marker",

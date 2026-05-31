@@ -223,13 +223,17 @@
         <section
           class="table-section"
           id="member-pending-bank"
-          data-member-pending-bank-read-only-marker="GET /api/admin/bank-accounts/pending"
+          data-member-pending-bank-review-marker="Admin Guarded Bank Account Review"
+          data-member-pending-bank-permissions="members.bank.view members.bank.approve"
+          data-member-pending-bank-reason="reason required"
+          data-member-pending-bank-audit="audit required"
+          data-member-pending-bank-safety="no production DB no real money no live provider/payment/bank/SMS/Slip OCR"
         >
           <div class="section-heading">
             <div>
-              <h2>ข้อมูลบัญชีที่รอตรวจสอบ / Read-only</h2>
-              <p>Pending Bank Accounts / Read-only. ใช้ดูบัญชีที่รอตรวจสอบเท่านั้น ไม่มีอนุมัติ/ปฏิเสธในรอบนี้</p>
-              <p>Read-only view only. No approve/reject action in this phase. Endpoint: GET /api/admin/bank-accounts/pending</p>
+              <h2>ข้อมูลบัญชีที่รอตรวจสอบ / Guarded review</h2>
+              <p>Pending Bank Accounts. Read requires members.bank.view. Approve/Reject requires members.bank.approve, confirmation, reason required, and audit required.</p>
+              <p>Local/staging/mock guarded write only. No production DB, no real money, no live provider/payment/bank/SMS/Slip OCR. Endpoint: GET /api/admin/bank-accounts/pending</p>
             </div>
             <span id="member-pending-bank-count">0 accounts</span>
           </div>
@@ -245,6 +249,7 @@
                   <th>เลขที่บัญชี</th>
                   <th>สถานะ</th>
                   <th>หมายเหตุ</th>
+                  <th>Review action</th>
                 </tr>
               </thead>
               <tbody id="member-pending-bank-rows"></tbody>
@@ -1052,6 +1057,31 @@
         <footer>
           <button type="button" class="secondary" data-close-modal>Cancel</button>
           <button id="save-role-assignment" type="submit">Change role</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog id="bank-review-modal">
+      <form method="dialog" class="modal-card" id="bank-review-form" data-bank-review-modal="approve reject reason required audit required">
+        <header>
+          <h2 id="bank-review-title">Approve bank account</h2>
+          <span class="hidden">Reject bank account</span>
+          <button type="button" class="icon-button" value="cancel" data-close-modal aria-label="Close">x</button>
+        </header>
+        <dl class="detail-grid">
+          <dt>Username</dt>
+          <dd id="bank-review-username">-</dd>
+          <dt>Masked account</dt>
+          <dd id="bank-review-account">-</dd>
+        </dl>
+        <div class="field">
+          <label for="bank-review-reason">Reason</label>
+          <textarea id="bank-review-reason" rows="3" maxlength="500" aria-describedby="bank-review-reason-error" placeholder="Required for audit metadata"></textarea>
+          <p id="bank-review-reason-error" class="field-error hidden"></p>
+        </div>
+        <footer>
+          <button type="button" class="secondary" id="bank-review-cancel" data-close-modal>Cancel</button>
+          <button id="bank-review-confirm" type="submit">Confirm</button>
         </footer>
       </form>
     </dialog>

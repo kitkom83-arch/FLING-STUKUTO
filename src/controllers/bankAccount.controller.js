@@ -8,8 +8,8 @@ const createSchema = z.object({
   bank_account_name: z.string().min(1),
 });
 
-const rejectSchema = z.object({
-  reject_reason: z.string().min(1),
+const reviewSchema = z.object({
+  reason: z.string().trim().min(1),
 });
 
 async function listMine(req, res) {
@@ -26,29 +26,33 @@ async function pending(req, res) {
 }
 
 async function approve(req, res) {
+  const data = reviewSchema.parse(req.body);
   return success(
     res,
     await bankAccountService.updateBankAccountStatus({
       id: req.params.id,
       status: "approved",
+      reason: data.reason,
       admin: req.admin,
       req,
       siteId: req.siteId,
+      siteCode: req.siteCode,
     })
   );
 }
 
 async function reject(req, res) {
-  const data = rejectSchema.parse(req.body);
+  const data = reviewSchema.parse(req.body);
   return success(
     res,
     await bankAccountService.updateBankAccountStatus({
       id: req.params.id,
       status: "rejected",
-      rejectReason: data.reject_reason,
+      reason: data.reason,
       admin: req.admin,
       req,
       siteId: req.siteId,
+      siteCode: req.siteCode,
     })
   );
 }

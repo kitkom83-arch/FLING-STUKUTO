@@ -11,7 +11,7 @@ const READ_ONLY_ENDPOINTS = [
   { path: "/api/admin/reports/summary", permission: "reports.view" },
   { path: "/api/admin/reports/wallet-ledger", permission: "reports.view" },
   { path: "/api/admin/members", permission: "members.view" },
-  { path: "/api/admin/bank-accounts/pending", permission: "bank.view" },
+  { path: "/api/admin/bank-accounts/pending", permission: "members.bank.view" },
   { path: "/api/admin/bank/mock/statements/deposits", permission: "bank.view" },
   { path: "/api/admin/bank/mock/statements/withdrawals", permission: "bank.view" },
 ];
@@ -96,8 +96,10 @@ function assertNoForbiddenWriteControls(html, js) {
     assert(!rendered.toLowerCase().includes(marker), `UI renders forbidden write control copy: ${marker}`);
   }
 
-  const activeWriteCall = /(?:fetch|api|adminFetchReadOnly)\([^)]*\/admin\/[^)]*\/(?:approve|reject|credit|debit|spin|payout|transfer)(?:\/|["'`?)]|-)/i;
-  assert(!activeWriteCall.test(js), "Admin read-only UI must not call dangerous write endpoints.");
+  const dangerousWriteCall = /(?:fetch|api|adminFetchReadOnly)\([^)]*\/admin\/[^)]*\/(?:credit|debit|spin|payout|transfer)(?:\/|["'`?)]|-)/i;
+  assert(!dangerousWriteCall.test(js), "Admin read-only UI must not call dangerous write endpoints.");
+  const unguardedReadOnlyWriteCall = /adminFetchReadOnly\([^)]*\/(?:approve|reject)(?:\/|["'`?)]|-)/i;
+  assert(!unguardedReadOnlyWriteCall.test(js), "Admin read-only helper must not call approve/reject endpoints.");
 }
 
 function assertRouteGuard(routes, endpoint) {
@@ -170,7 +172,7 @@ async function main() {
     'router.get("/reports/summary", protectedSite, can("reports.view")',
     'router.get("/reports/wallet-ledger", protectedSite, can("reports.view")',
     'router.get("/members", protectedSite, can("members.view")',
-    'router.get("/bank-accounts/pending", protectedSite, can("bank.view")',
+    'router.get("/bank-accounts/pending", protectedSite, can("members.bank.view")',
     'router.get("/bank/mock/statements/deposits", protectedSite, can("bank.view")',
     'router.get("/bank/mock/statements/withdrawals", protectedSite, can("bank.view")',
   ]);

@@ -16,8 +16,10 @@
     ["General Admin", "dashboard.view", "View dashboard cards", "read", false, false, "#dashboard", "GET /api/admin/reports/summary"],
     ["General Admin", "reports.view", "View dashboard summary and reports", "read", false, false, "#dashboard", "GET /api/admin/reports/summary"],
     ["General Admin", "members.view", "View member list/detail", "read", false, false, "#members", "GET /api/admin/members, GET /api/admin/members/:id"],
+    ["General Admin", "members.bank.view", "View pending member bank accounts", "read", false, false, "#member-pending-bank", "GET /api/admin/bank-accounts/pending"],
+    ["General Admin", "members.bank.approve", "Approve/reject pending member bank accounts", "write", true, true, "#member-pending-bank", "POST /api/admin/bank-accounts/:id/approve, POST /api/admin/bank-accounts/:id/reject"],
     ["General Admin", "wallet.view", "View wallet ledger", "read", false, false, "#wallet-ledger-readonly", "GET /api/admin/reports/wallet-ledger"],
-    ["General Admin", "bank.view", "View pending bank accounts", "read", false, false, "#member-pending-bank", "GET /api/admin/bank-accounts/pending"],
+    ["General Admin", "bank.view", "View mock bank statements", "read", false, false, "#bank-summary-readonly", "GET /api/admin/bank/mock/statements/deposits, GET /api/admin/bank/mock/statements/withdrawals"],
     ["Lucky Wheel", "wheel.view", "Open Lucky Wheel console", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/config"],
     ["Lucky Wheel", "wheel.campaign.view", "View wheel campaign", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/config"],
     ["Lucky Wheel", "wheel.campaign.update", "Update wheel campaign", "write", true, true, "/admin/lucky-wheel", "PATCH /api/admin/wheel/campaign"],
@@ -56,6 +58,8 @@
     canViewMembers: false,
     canViewWallet: false,
     canViewBank: false,
+    canViewBankStatements: false,
+    canApproveBank: false,
     canViewAudit: false,
     dashboardSummary: null,
     memberRows: [],
@@ -73,6 +77,8 @@
     editingRow: null,
     togglingRow: null,
     roleAssignmentRow: null,
+    bankReviewRow: null,
+    bankReviewAction: null,
     roleDraftPermissions: [],
     roleOriginalPermissions: [],
   };
@@ -113,6 +119,15 @@
     memberPendingBankCount: document.getElementById("member-pending-bank-count"),
     memberPendingBankEmpty: document.getElementById("member-pending-bank-empty"),
     memberPendingBankRows: document.getElementById("member-pending-bank-rows"),
+    bankReviewModal: document.getElementById("bank-review-modal"),
+    bankReviewForm: document.getElementById("bank-review-form"),
+    bankReviewTitle: document.getElementById("bank-review-title"),
+    bankReviewUsername: document.getElementById("bank-review-username"),
+    bankReviewAccount: document.getElementById("bank-review-account"),
+    bankReviewReason: document.getElementById("bank-review-reason"),
+    bankReviewReasonError: document.getElementById("bank-review-reason-error"),
+    bankReviewCancel: document.getElementById("bank-review-cancel"),
+    bankReviewConfirm: document.getElementById("bank-review-confirm"),
     ledgerCount: document.getElementById("ledger-count"),
     ledgerState: document.getElementById("ledger-state"),
     ledgerEmpty: document.getElementById("ledger-empty"),
@@ -429,7 +444,9 @@
     state.canViewReports = hasPermission("reports.view") || hasPermission("dashboard.view");
     state.canViewMembers = hasPermission("members.view");
     state.canViewWallet = hasPermission("wallet.view") || hasPermission("reports.view");
-    state.canViewBank = hasPermission("bank.view");
+    state.canViewBank = hasPermission("members.bank.view");
+    state.canViewBankStatements = hasPermission("bank.view");
+    state.canApproveBank = hasPermission("members.bank.approve");
     state.canViewAudit = hasPermission("admin.audit.view");
     els.permissionState.textContent = state.canView
       ? `Access granted: ${safeDisplay(data.role || "role")} via ${safeDisplay(data.source || "role")}`
@@ -462,8 +479,10 @@
     }
     if (!state.canViewBank) {
       renderPendingBankAccounts([], {
-        emptyMessage: "ต้องมี permission bank.view",
+        emptyMessage: "ต้องมี permission members.bank.view",
       });
+    }
+    if (!state.canViewBankStatements) {
       renderBankStatements([], {
         stateMessage: "ต้องมี permission bank.view",
         emptyMessage: "ต้องมี permission bank.view",
@@ -744,6 +763,8 @@
     state.canViewReports = false;
     state.canViewMembers = false;
     state.canViewBank = false;
+    state.canViewBankStatements = false;
+    state.canApproveBank = false;
     state.canViewAudit = false;
     state.dashboardSummary = null;
     state.memberRows = [];
@@ -756,6 +777,8 @@
     state.selectedAdminId = null;
     state.selectedAdminLabel = "";
     state.roleAssignmentRow = null;
+    state.bankReviewRow = null;
+    state.bankReviewAction = null;
     state.roleDraftPermissions = [];
     state.roleOriginalPermissions = [];
     sessionStorage.removeItem("pg77_admin_token");
@@ -1016,6 +1039,15 @@
     return "-";
   }
 
+  function maskedAccountValue(row) {
+    const value = memberBankValue(row, ["accountNumberMasked", "maskedAccountNumber", "accountMask", "accountNumber", "accountNo", "number"]);
+    const digits = String(value || "").replace(/\s+/g, "");
+    if (!digits || value === "-") return "-";
+    if (String(value).includes("*")) return value;
+    if (digits.length <= 4) return "****";
+    return `${"*".repeat(Math.max(4, digits.length - 4))}${digits.slice(-4)}`;
+  }
+
   function nestedUser(row) {
     return objectValue(row && row.user) || objectValue(row && row.member) || {};
   }
@@ -1061,11 +1093,71 @@
       tr.appendChild(createCell((user && user.username) || (row && row.username)));
       tr.appendChild(createCell(memberBankValue(row, ["bankName", "bankCode", "bank"])));
       tr.appendChild(createCell(memberBankValue(row, ["accountName", "name"])));
-      tr.appendChild(createCell(memberBankValue(row, ["accountNumber", "accountNo", "number"])));
+      tr.appendChild(createCell(maskedAccountValue(row)));
       tr.appendChild(createStatusCell(row && row.status));
       tr.appendChild(createCell((row && row.note) || (row && row.remark) || (row && row.reviewNote) || "-"));
+      const actions = document.createElement("td");
+      actions.className = "actions";
+      const canReview = Boolean(state.token && state.canApproveBank && row && row.id);
+      actions.appendChild(actionButton("Approve", () => openBankReview("approve", row), canReview));
+      actions.appendChild(actionButton("Reject", () => openBankReview("reject", row), canReview));
+      tr.appendChild(actions);
       els.memberPendingBankRows.appendChild(tr);
     }
+  }
+
+  function bankReviewCopy(row) {
+    const user = nestedUser(row);
+    return {
+      username: (user && user.username) || (row && row.username) || "-",
+      account: maskedAccountValue(row),
+    };
+  }
+
+  function openBankReview(action, row) {
+    if (!state.token) return setToast("No session loaded");
+    if (!state.canApproveBank) return setToast("members.bank.approve permission is required");
+    if (!row || !row.id) return setToast("Bank account id is missing");
+    state.bankReviewAction = action === "reject" ? "reject" : "approve";
+    state.bankReviewRow = row;
+    const copy = bankReviewCopy(row);
+    els.bankReviewTitle.textContent = state.bankReviewAction === "approve" ? "Approve bank account" : "Reject bank account";
+    els.bankReviewUsername.textContent = safeDisplay(copy.username);
+    els.bankReviewAccount.textContent = safeDisplay(copy.account);
+    els.bankReviewReason.value = "";
+    setFieldError(els.bankReviewReasonError, "");
+    els.bankReviewModal.showModal();
+  }
+
+  async function submitBankReview(event) {
+    event.preventDefault();
+    const row = state.bankReviewRow;
+    const action = state.bankReviewAction;
+    if (!state.token || !row || !row.id || !action) {
+      setToast("Select a pending bank account");
+      return;
+    }
+    if (!state.canApproveBank) {
+      setToast("members.bank.approve permission is required");
+      return;
+    }
+    const reason = validateReasonBeforeConfirm(els.bankReviewReason, els.bankReviewReasonError);
+    if (!reason) return;
+    await withLoading(
+      els.bankReviewConfirm,
+      async () => {
+        await api(`/admin/bank-accounts/${encodeURIComponent(row.id)}/${action}`, {
+          method: "POST",
+          body: { reason },
+        });
+        els.bankReviewModal.close();
+        setToast(action === "approve" ? "Bank account approved" : "Bank account rejected");
+        state.bankReviewRow = null;
+        state.bankReviewAction = null;
+        await refreshPendingBankAccounts();
+      },
+      "Saving..."
+    );
   }
 
   function rowMemberLabel(row) {
@@ -1839,7 +1931,7 @@
     }
     if (!state.canViewBank) {
       renderPendingBankAccounts([], {
-        emptyMessage: "ต้องมี permission bank.view",
+        emptyMessage: "ต้องมี permission members.bank.view",
       });
       return;
     }
@@ -1905,7 +1997,7 @@
       });
       return;
     }
-    if (!state.canViewBank) {
+    if (!state.canViewBankStatements) {
       renderBankStatements([], {
         stateMessage: "ต้องมี permission bank.view",
         emptyMessage: "ต้องมี permission bank.view",
@@ -2036,14 +2128,17 @@
     return button;
   }
 
-  async function withLoading(button, task) {
+  async function withLoading(button, task, loadingText) {
     const original = button.disabled;
+    const originalText = button.textContent;
     button.disabled = true;
     button.classList.add("is-loading");
+    if (loadingText) button.textContent = loadingText;
     try {
       return await task();
     } finally {
       button.classList.remove("is-loading");
+      if (loadingText) button.textContent = originalText;
       button.disabled = original;
     }
   }
@@ -2617,6 +2712,7 @@
   els.scheduleForm.addEventListener("submit", (event) => saveSchedule(event).catch((error) => setToast(error.message)));
   els.toggleForm.addEventListener("submit", (event) => toggleSchedule(event).catch((error) => setToast(error.message)));
   els.overrideForm.addEventListener("submit", (event) => saveOverride(event).catch((error) => setToast(error.message)));
+  els.bankReviewForm.addEventListener("submit", (event) => submitBankReview(event).catch((error) => setToast(error.message)));
   els.roleEditForm.addEventListener("submit", (event) => saveRolePermissions(event).catch((error) => setToast(error.message)));
   els.roleAssignmentForm.addEventListener("submit", (event) => saveRoleAssignment(event).catch((error) => setToast("Role update failed")));
   els.startTime.addEventListener("change", updateOvernightNote);

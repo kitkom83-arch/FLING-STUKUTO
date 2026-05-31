@@ -22,8 +22,8 @@ Safety boundary: docs/static only. No production DB, no real money, no live prov
 | Admin roles | `admin.role.assign` | Admin role assignment changes | owner/super_admin | admin | target admin id | previous role | new role | Yes | High | planned guarded write |
 | Admin roles | `admin.role.permissions.update` | Role permission set changes | owner/super_admin | admin_role | role id | previous permission ids | new permission ids | Yes | Critical | planned guarded write |
 | Work schedule | `admin.schedule.update` | Work schedule or override changes | owner/super_admin | admin_schedule | schedule id | previous schedule/override | new schedule/override | Yes | High | planned guarded write |
-| Member bank | `member.bank.approve` | Pending member bank approved | finance/super_admin | user_bank_account | bank account id | previous bank status and masked account | approved status, approver | Recommended | High | planned guarded write |
-| Member bank | `member.bank.reject` | Pending member bank rejected | finance/super_admin | user_bank_account | bank account id | previous bank status and masked account | rejected status and reject reason | Yes | High | planned guarded write |
+| Member bank | `member.bank.approve` | Pending member bank approved | finance/super_admin | user_bank_account | bank account id | previous bank status and masked account | approved status, approver | Yes | Medium | guarded write |
+| Member bank | `member.bank.reject` | Pending member bank rejected | finance/super_admin | user_bank_account | bank account id | previous bank status and masked account | rejected status and reject reason | Yes | Medium | guarded write |
 | Member blacklist | `member.blacklist.add` | Member blocked/blacklisted | support/super_admin | user | member id | previous status | blocked status, reason, blockedBy | Yes | High | planned guarded write |
 | Member blacklist | `member.blacklist.remove` | Member unblocked | support/super_admin | user | member id | blocked status and reason | active/restored status | Yes | High | planned guarded write |
 | Wallet | `wallet.adjust.credit` | Admin adds credit | finance/super_admin | wallet_account | member wallet id | balance before and pending adjustments | balance after and ledger id | Yes | Critical | planned guarded write |
@@ -41,6 +41,7 @@ Safety boundary: docs/static only. No production DB, no real money, no live prov
 ## Audit Requirements
 
 - Before snapshot and after snapshot must never include token, password, secret, raw database URL, auth header, raw provider credential, raw SMS credential, raw bank credential, raw Slip OCR credential, raw user-agent, or unmasked IP.
+- Member bank approve/reject audit metadata must include reason required, previousStatus, nextStatus, targetType, targetId, actor admin id/username, siteCode, and before/after snapshot with masked account number only.
 - Reason is mandatory for high and critical write actions unless explicitly listed as no.
 - Critical financial actions require no self-approval where a requester/approver workflow exists.
 - Future live integration actions must not be enabled until certification evidence is complete.

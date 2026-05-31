@@ -1,6 +1,57 @@
 const prisma = require("../config/prisma");
 const { logAdminAction } = require("./adminLog.service");
 
+function maskAccountNumber(value) {
+  const digits = String(value || "").replace(/\s+/g, "");
+  if (!digits) return null;
+  if (digits.length <= 4) return "****";
+  return `${"*".repeat(Math.max(4, digits.length - 4))}${digits.slice(-4)}`;
+}
+
+function publicUserBankAccount(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    siteId: row.siteId,
+    userId: row.userId,
+    bankCode: row.bankCode,
+    accountNumberMasked: maskAccountNumber(row.accountNumber),
+    accountName: row.accountName,
+    status: row.status,
+    rejectReason: row.rejectReason,
+    approvedById: row.approvedById,
+    approvedAt: row.approvedAt,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+    user: row.user
+      ? {
+          id: row.user.id,
+          username: row.user.username,
+          phone: row.user.phone,
+          status: row.user.status,
+          createdAt: row.user.createdAt,
+        }
+      : undefined,
+  };
+}
+
+function reviewAuditSnapshot(row) {
+  return {
+    id: row.id,
+    siteId: row.siteId,
+    userId: row.userId,
+    bankCode: row.bankCode,
+    accountNumberMasked: maskAccountNumber(row.accountNumber),
+    accountName: row.accountName,
+    status: row.status,
+    rejectReason: row.rejectReason,
+    approvedById: row.approvedById,
+    approvedAt: row.approvedAt,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  };
+}
+
 async function listUserBankAccounts(userId, siteId) {
   return prisma.userBankAccount.findMany({
     where: { userId, siteId },
@@ -22,21 +73,33 @@ async function createUserBankAccount(userId, siteId, data) {
 }
 
 async function listPendingBankAccounts(siteId = null) {
-  return prisma.userBankAccount.findMany({
+  const rows = await prisma.userBankAccount.findMany({
     where: { status: "pending", ...(siteId ? { siteId } : {}) },
-    include: { user: true },
+    include: {
+      user: {
+        select: {
+          id: true,
+          username: true,
+          phone: true,
+          status: true,
+          createdAt: true,
+        },
+      },
+    },
     orderBy: { createdAt: "asc" },
   });
+  return rows.map(publicUserBankAccount);
 }
 
-async function updateBankAccountStatus({ id, status, rejectReason = null, admin, req, siteId = null }) {
+async function updateBankAccountStatus({ id, status, reason, admin, req, siteId = null, siteCode = null }) {
   if (!["approved", "rejected"].includes(status)) {
     const error = new Error("Invalid bank account status");
     error.statusCode = 400;
     throw error;
   }
-  if (status === "rejected" && !rejectReason) {
-    const error = new Error("reject_reason is required");
+  const auditReason = String(reason || "").trim();
+  if (!auditReason) {
+    const error = new Error("reason is required");
     error.statusCode = 400;
     throw error;
   }
@@ -50,30 +113,49 @@ async function updateBankAccountStatus({ id, status, rejectReason = null, admin,
       error.statusCode = 404;
       throw error;
     }
+    if (before.status !== "pending") {
+      const error = new Error("Bank account has already been reviewed");
+      error.statusCode = 409;
+      throw error;
+    }
 
     const after = await tx.userBankAccount.update({
       where: { id },
       data: {
         status,
-        rejectReason: status === "rejected" ? rejectReason : null,
+        rejectReason: status === "rejected" ? auditReason : null,
         approvedById: status === "approved" ? admin.id : null,
         approvedAt: status === "approved" ? new Date() : null,
       },
     });
+    const auditAction = status === "approved" ? "member.bank.approve" : "member.bank.reject";
 
     await logAdminAction({
       tx,
       admin,
-      action: status === "approved" ? "bank_account.approve" : "bank_account.reject",
+      action: auditAction,
       targetType: "user_bank_account",
       targetId: id,
-      before,
-      after,
+      before: reviewAuditSnapshot(before),
+      after: reviewAuditSnapshot(after),
+      metadata: {
+        reason: auditReason,
+        previousStatus: before.status,
+        nextStatus: after.status,
+        targetType: "user_bank_account",
+        targetId: id,
+        actor: { id: admin.id, username: admin.username },
+        siteCode,
+      },
       req,
       siteId: before.siteId,
     });
 
-    return after;
+    return {
+      id: after.id,
+      status: after.status,
+      auditAction,
+    };
   });
 }
 

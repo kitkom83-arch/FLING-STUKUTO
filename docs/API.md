@@ -124,6 +124,8 @@ Permission catalog:
 
 - `members.view`
 - `members.update`
+- `members.bank.view`
+- `members.bank.approve`
 - `deposits.view`
 - `deposits.approve`
 - `withdrawals.view`
@@ -198,9 +200,11 @@ Permission failures return `403` with the standard error envelope and must not r
 | POST | `/admin/members/:id/credit/remove` | Admin | `members.update` | `amount`, optional `note` | wallet movement and ledger | `400`, `403`, `404` member not found | `credit.remove` |
 | POST | `/admin/members/:id/points/add` | Admin | `members.update` | `amount`, `reason`, optional `reference_type`, `reference_id` | updated user and point ledger | `400`, `403`, `404` member not found | `points.add` |
 | POST | `/admin/members/:id/points/remove` | Admin | `members.update` | `amount`, `reason`, optional `reference_type`, `reference_id` | updated user and point ledger | `400`, `403`, `404` member not found | `points.remove` |
-| GET | `/admin/bank-accounts/pending` | Admin | `bank.view` | None | pending member bank accounts | `401`, `403` | None |
-| POST | `/admin/bank-accounts/:id/approve` | Admin | `bank.update` | None | approved member bank account | `403`, `404` not found | `bank_account.approve` |
-| POST | `/admin/bank-accounts/:id/reject` | Admin | `bank.update` | `reject_reason` | rejected member bank account | `400`, `403`, `404` not found | `bank_account.reject` |
+| GET | `/admin/bank-accounts/pending` | Admin | `members.bank.view` | None | pending member bank accounts with masked account numbers | `401`, `403` | None |
+| POST | `/admin/bank-accounts/:id/approve` | Admin | `members.bank.approve` | required `reason` | `{ id, status: "approved", auditAction: "member.bank.approve" }` | `400` missing reason, `401`, `403`, `404` not found, `409` already reviewed | `member.bank.approve` |
+| POST | `/admin/bank-accounts/:id/reject` | Admin | `members.bank.approve` | required `reason` | `{ id, status: "rejected", auditAction: "member.bank.reject" }` | `400` missing reason, `401`, `403`, `404` not found, `409` already reviewed | `member.bank.reject` |
+
+Pending bank account approve/reject is Phase AL guarded write foundation for local/staging/mock only. It does not call live bank rails, payment providers, SMS, Slip OCR, payout, transfer, wallet adjustment, or production DB. Audit metadata includes `reason`, `previousStatus`, `nextStatus`, `targetType: "user_bank_account"`, `targetId`, actor id/username, and `siteCode`; before/after snapshots use masked account numbers.
 | GET | `/admin/deposits` | Admin | `deposits.view` | None | deposit list | `401`, `403` | None |
 | POST | `/admin/deposits/:id/approve` | Admin | `deposits.approve` | optional `note` | approved deposit, wallet, ledger | `400`, `403`, `404` not found | `deposit.approve` |
 | POST | `/admin/deposits/:id/reject` | Admin | `deposits.approve` | `reject_reason` | rejected deposit | `400`, `403`, `404` not found | `deposit.reject` |

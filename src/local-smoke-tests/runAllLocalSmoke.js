@@ -29,6 +29,7 @@ const RELATED_FILES = [
   "src/local-smoke-tests/adminWheelRuntimeSmoke.js",
   "src/local-smoke-tests/adminBrowserRoutesSmoke.js",
   "src/local-smoke-tests/adminBackofficeReadOnlyIntegrationSmoke.js",
+  "src/local-smoke-tests/adminGuardedBankAccountReviewSmoke.js",
   "src/local-smoke-tests/stagingReleaseReadinessSmoke.js",
   "src/local-smoke-tests/stagingDeployReadinessPackSmoke.js",
   "src/local-smoke-tests/disposableStagingDbDryRunPackSmoke.js",
@@ -127,6 +128,7 @@ const summary = [
   { key: "adminWheelRuntime", label: "admin-wheel-runtime", status: "PENDING" },
   { key: "adminBrowserRoutes", label: "admin-browser-routes", status: "PENDING" },
   { key: "adminBackofficeReadOnlyIntegration", label: "admin-backoffice-read-only-integration", status: "PENDING" },
+  { key: "adminGuardedBankAccountReview", label: "admin-guarded-bank-account-review", status: "PENDING" },
   { key: "stagingReleaseReadiness", label: "staging-release-readiness", status: "PENDING" },
   { key: "stagingDeployReadinessPack", label: "staging-deploy-readiness-pack", status: "PENDING" },
   {
@@ -289,6 +291,12 @@ const steps = [
     name: "node --check adminBackofficeReadOnlyIntegrationSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/adminBackofficeReadOnlyIntegrationSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check adminGuardedBankAccountReviewSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/adminGuardedBankAccountReviewSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -574,6 +582,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:admin-backoffice-read-only-integration"]),
     summaryKey: "adminBackofficeReadOnlyIntegration",
+  },
+  {
+    name: "npm run smoke:admin-guarded-bank-account-review",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:admin-guarded-bank-account-review"]),
+    summaryKey: "adminGuardedBankAccountReview",
   },
   {
     name: "npm run smoke:staging-release-readiness",
