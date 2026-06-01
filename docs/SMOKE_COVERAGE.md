@@ -1841,29 +1841,33 @@ npm run smoke:master-spec-mapping
 git diff --check
 ```
 
-Planned future smoke coverage:
+ORO-1 local mock smoke coverage:
 
 - `smoke:oroplay-seamless-contract`
 
-Future `smoke:oroplay-seamless-contract` should check:
+`smoke:oroplay-seamless-contract` checks:
 
-- Basic Auth env-only credential boundary.
-- Balance callback format.
+- Basic Auth accepted and rejected paths.
+- Balance callback response shape for a known mock user.
+- Unknown user rejection.
 - Debit behavior for negative amount.
 - Credit behavior for positive amount.
-- Duplicate `transactionCode` guard.
-- Insufficient balance behavior.
-- Invalid finished round guard.
-- Secret leak scan.
+- Duplicate `transactionCode` idempotency with no double debit or credit.
+- Insufficient balance rejection with unchanged balance.
+- Finished round / invalid transaction rejection with unchanged balance.
+- Malformed payload rejection.
+- Secret leak scan across responses and sanitized callback logs.
 
 Boundary:
 
-- Docs/static only.
+- Docs/static/mock/local-only.
 - No production DB.
 - No real money runtime flow.
 - No live provider call.
 - No live payout.
 - No callback wallet mutation.
+- No runtime wallet mutation.
+- No runtime ledger mutation.
 - No hardcoded credential-shaped values, payment address credentials, or messaging bot credentials.
 - No migration.
 - No deploy.

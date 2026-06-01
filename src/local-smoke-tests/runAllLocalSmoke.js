@@ -35,6 +35,9 @@ const RELATED_FILES = [
   "src/payment-provider-mock/paymentProviderContract.js",
   "src/payment-provider-mock/paymentProviderMockHarness.js",
   "src/local-smoke-tests/paymentProviderContractSmoke.js",
+  "src/game-provider-mock/oroplaySeamlessContract.js",
+  "src/game-provider-mock/oroplaySeamlessMockHarness.js",
+  "src/local-smoke-tests/oroplaySeamlessContractSmoke.js",
   "src/payment-provider-mock/memberQrDepositUxContract.js",
   "src/payment-provider-mock/memberQrDepositMockHarness.js",
   "src/local-smoke-tests/memberQrDepositUxSmoke.js",
@@ -155,6 +158,7 @@ const summary = [
   { key: "adminOperatorHandoff", label: "admin-operator-handoff", status: "PENDING" },
   { key: "adminBankAccountReviewReleasePack", label: "admin-bank-account-review-release-pack", status: "PENDING" },
   { key: "paymentProviderContract", label: "payment-provider-contract", status: "PENDING" },
+  { key: "oroplaySeamlessContract", label: "oroplay-seamless-contract", status: "PENDING" },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
   { key: "depositVerificationSource", label: "deposit-verification-source", status: "PENDING" },
   {
@@ -365,6 +369,24 @@ const steps = [
     name: "node --check paymentProviderContractSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/paymentProviderContractSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplaySeamlessContract",
+    command: nodeCommand,
+    args: ["--check", "src/game-provider-mock/oroplaySeamlessContract.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplaySeamlessMockHarness",
+    command: nodeCommand,
+    args: ["--check", "src/game-provider-mock/oroplaySeamlessMockHarness.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplaySeamlessContractSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oroplaySeamlessContractSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -748,6 +770,12 @@ const steps = [
     summaryKey: "paymentProviderContract",
   },
   {
+    name: "npm run smoke:oroplay-seamless-contract",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oroplay-seamless-contract"]),
+    summaryKey: "oroplaySeamlessContract",
+  },
+  {
     name: "npm run smoke:member-qr-deposit-ux",
     command: npmCommand,
     args: npmArgs(["run", "smoke:member-qr-deposit-ux"]),
@@ -913,6 +941,7 @@ const steps = [
       "package.json",
       "README.md",
       "src/local-smoke-tests",
+      "src/game-provider-mock",
       "docs",
       ".github",
     ],

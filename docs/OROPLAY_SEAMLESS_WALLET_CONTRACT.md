@@ -1,6 +1,6 @@
 # OroPlay Seamless Wallet Contract
 
-Status: ORO-0 docs/static planning only. This document does not add runtime routes or enable provider callbacks.
+Status: ORO-1 safe contract / adapter boundary. This document does not add runtime routes or enable provider callbacks.
 
 ## Provider Callback Purpose
 
@@ -80,9 +80,29 @@ Transaction amount rule:
 - Reconciliation guard: betting history and provider callbacks must be reconcilable by transaction, round, member, amount, and timestamp.
 - Sanitized callback logs: log request id, transaction code hash or safe reference, member safe id, action, result, and error class only.
 
+## ORO-1 Mock Harness Behavior
+
+ORO-1 adds only local mock contract helpers and an in-memory harness:
+
+- `src/game-provider-mock/oroplaySeamlessContract.js`
+- `src/game-provider-mock/oroplaySeamlessMockHarness.js`
+- `src/local-smoke-tests/oroplaySeamlessContractSmoke.js`
+
+Mock behavior:
+
+- Balance callback reads the in-memory mock user balance only.
+- Transaction callback handles negative amount as bet/debit and positive amount as win/credit.
+- Zero, malformed, missing `transactionCode`, or missing `roundId` requests are rejected.
+- Duplicate `transactionCode` returns the saved response and never debits or credits twice.
+- Insufficient balance rejects and leaves balance unchanged.
+- Finished round rejects later new transactions for the same round and leaves balance unchanged.
+- Sanitized callback logs redact raw Basic Auth and remove credential-shaped payload keys such as `clientSecret`, token fields, password fields, `DATABASE_URL`, PIN, and device identifiers.
+
+The ORO-1 harness is not a live callback API, does not create Express routes, does not connect a database, and does not mutate runtime wallet or ledger state.
+
 ## Forbidden Until Later Approval
 
-- No runtime callback endpoint in ORO-0.
+- No runtime callback endpoint in ORO-1.
 - No production DB.
 - No real money runtime flow.
 - No live provider call.
