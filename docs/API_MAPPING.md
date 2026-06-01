@@ -97,6 +97,18 @@ Safety markers: mock/sandbox/staging only; no production DB; no real money; no l
 
 Phase AO smoke coverage: `smoke:payment-provider-contract` checks provider keys, docs, mock-only harness, duplicate guard, SMS fallback manual_review, no production DB, no real money, no live provider/payment/bank/SMS/Slip OCR, no payout, and no secret-shaped values.
 
+## Future Member QR Deposit UX Mapping
+
+Status: Phase AP mock/static only. These rows define member QR deposit UX / Mock QR Download contracts for `providerKey = qr_payment_gateway`. They do not add runtime endpoints, production DB access, real money, real QR, live provider, payout, migration, deploy, credit/debit runtime action, or auto-credit from QR download.
+
+| area | future endpoint | method | current phase | providerKey | safety |
+| --- | --- | --- | --- | --- | --- |
+| create QR deposit order | `/api/member/deposits/qr-orders` | POST | Phase AP mock/static only | `qr_payment_gateway` | no real QR; no real payment; no auto-credit; no live provider |
+| get QR deposit order status | `/api/member/deposits/qr-orders/:orderId` | GET | Phase AP mock/static only | `qr_payment_gateway` | no real QR; no real payment; no auto-credit; no live provider |
+| download mock QR | `/api/member/deposits/qr-orders/:orderId/download` | GET | Phase AP mock/static only | `qr_payment_gateway` | no real QR; no real payment; no auto-credit; no live provider |
+| expire QR order | `/api/member/deposits/qr-orders/:orderId/expire` | POST | Phase AP mock/static only | `qr_payment_gateway` | no real QR; no real payment; no auto-credit; no live provider |
+| cancel QR order | `/api/member/deposits/qr-orders/:orderId/cancel` | POST | Phase AP mock/static only | `qr_payment_gateway` | no real QR; no real payment; no auto-credit; no live provider |
+
 ## Integration Rules
 
 - Every admin write must map to a permission and audit action before UI exposure.

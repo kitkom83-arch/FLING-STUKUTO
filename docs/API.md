@@ -677,3 +677,22 @@ Secret rules:
 - Production deployment smoke is not covered.
 - Full frontend end-to-end coverage is not covered.
 - Lucky Wheel frontend Phaser integration and real payout claiming are not implemented. Reward Claims in this phase is a staging/mock admin queue for manual item handoff or cancellation only.
+
+## 19. Future Member QR Deposit UX / Mock QR Download
+
+Phase AP defines future/mock contract endpoints only. No runtime endpoint is opened by this phase, no payment gateway is connected, no external network is called, no production DB is used, no real money is moved, no live QR is generated, and no auto-credit is allowed.
+
+Future/mock contract endpoints:
+
+| Method | Future endpoint | Phase AP status | Safety |
+| --- | --- | --- | --- |
+| POST | `/api/member/deposits/qr-orders` | future/mock contract only | Creates a mock QR deposit order for `providerKey = qr_payment_gateway`; no real QR, no real payment, no live provider, no auto-credit, no external network. |
+| GET | `/api/member/deposits/qr-orders/:orderId/download` | future/mock contract only | Returns a mock QR download artifact only; download must never credit member, must not be a real payment QR, and must not call a live provider. |
+
+Related future status endpoints remain contract-only until separately approved:
+
+- `GET /api/member/deposits/qr-orders/:orderId` for mock order status.
+- `POST /api/member/deposits/qr-orders/:orderId/expire` for mock expiry harness behavior.
+- `POST /api/member/deposits/qr-orders/:orderId/cancel` for mock cancel harness behavior.
+
+Phase AP QR download is a mock artifact. It is not proof of payment and it must not create wallet, ledger, payout, or credit/debit runtime action.

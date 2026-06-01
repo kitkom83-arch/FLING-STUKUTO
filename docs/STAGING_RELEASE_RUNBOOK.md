@@ -500,3 +500,11 @@ Stop conditions:
 - any secret-shaped value would be printed
 - any deploy or seed would be required
 - any live provider/payment/bank/SMS/Slip OCR, live payout, or real-money path appears
+
+## Phase AP Member QR Deposit UX / Mock QR Download Note
+
+- Phase AP is member QR deposit UX contract/mock only.
+- Mock QR download is not a real payment QR.
+- Live QR provider enablement is blocked in this phase.
+- QR download must never credit member.
+- Live provider work remains blocked until Phase AT certification.

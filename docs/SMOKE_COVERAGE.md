@@ -1680,3 +1680,42 @@ Planned future smoke commands:
 - `smoke:deposit-verification-source-contract`
 - `smoke:sms-fallback-manual-review-guard`
 - `smoke:no-live-money-provider-guard`
+
+## 54. Phase AP Member QR Deposit UX / Mock QR Download Smoke Coverage
+
+Phase AP status: Member QR Deposit UX / Mock QR Download is docs/static/mock only. It adds a member QR deposit UX contract, mock QR order contract, mock QR download artifact contract, isolated mock harness, and static smoke guard. It does not add runtime member UI changes, runtime endpoints, production DB access, real money, real QR, live provider calls, payout, deployment, migration, or auto-credit.
+
+Script:
+
+- `src/local-smoke-tests/memberQrDepositUxSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:member-qr-deposit-ux
+```
+
+Coverage:
+
+- Confirms `docs/MEMBER_QR_DEPOSIT_UX_CONTRACT.md` and `docs/MEMBER_QR_DEPOSIT_MOCK_UAT_CHECKLIST.md` exist.
+- Confirms Phase AP, Member QR Deposit UX, Mock QR Download, `providerKey = qr_payment_gateway`, no real QR, no real payment, no production DB, no external network, no payout, and QR download must never credit member markers.
+- Confirms expired QR cannot be matched, cancelled QR cannot be matched, duplicate orderId, and duplicate qrPayloadMockHash markers.
+- Confirms `node --check` for the contract, harness, and smoke files.
+- Confirms the isolated mock harness creates mock QR orders, rejects invalid amounts, creates mock download artifacts, blocks live provider mode, maps to the Phase AO normalized deposit event shape, builds idempotency keys, and scans output for secret-shaped values.
+- Confirms package script and `runAllLocalSmoke.js` registration.
+- Confirms `docs/STAGING_UAT.md` uses safe display wording: missing display value, invalid numeric display, and raw object display value.
+
+Boundary:
+
+- Docs/static/mock only.
+- No production DB.
+- No real money.
+- No real QR.
+- No real payment.
+- No live provider/payment/bank/SMS/Slip OCR.
+- No live QR payment gateway.
+- No payout.
+- No migration.
+- No deploy.
+- No runtime money-flow.
+- QR download must never credit member.

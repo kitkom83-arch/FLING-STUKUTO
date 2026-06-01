@@ -620,3 +620,32 @@ npm run smoke:staging-release-gate
 ```
 
 Run the release gate after every deploy. Full UAT remains after seed/reset only, and Role Permission UAT remains after role/permission changes.
+
+## Phase AP Member QR Deposit UX / Mock QR Download UAT
+
+Phase AP is QR deposit UX contract review and static/mock harness only. It does not add runtime member UI changes, production DB access, real money, real QR, real payment, live provider/payment/bank/SMS/Slip OCR, payout, migration, deploy, external network, runtime money-flow, or auto-credit from QR download.
+
+Checklist:
+
+- QR deposit UX contract review.
+- Mock amount validation.
+- Mock QR order creation.
+- Mock QR preview.
+- Mock QR download.
+- QR download no credit.
+- Expired QR cannot match.
+- Cancelled QR cannot match.
+- Duplicate orderId guard.
+- Duplicate qrPayloadMockHash guard.
+- ProviderKey `qr_payment_gateway`.
+- No live provider.
+- No real QR.
+- No real payment.
+- No external network.
+- No production DB.
+
+Display text safety:
+
+- Use `missing display value` for absent values.
+- Use `invalid numeric display` for invalid numeric rendering.
+- Use `raw object display value` for object rendering mistakes.

@@ -37,6 +37,11 @@ Safety boundary: docs/static only. No production DB, no real money, no live prov
 | Lucky Wheel | `wheel.reward.create/update` | Admin creates or updates wheel reward | super_admin/graphic/finance | wheel_reward | reward id | previous reward config or none | new reward config | Yes | High | planned guarded write |
 | Settings | `settings.update` | Admin updates site/system settings | owner/super_admin | site_settings | site id or setting id | previous settings | new settings | Yes | High | planned guarded write |
 | Live provider | `live_provider.config.update` | Admin changes provider live/sandbox config | owner/super_admin | game_provider_config | config id | previous mode/config metadata | new mode/config metadata | Yes | Critical | future certification required |
+| Member QR deposit | `member.qr_deposit.order_created_mock` | Member creates mock QR deposit order | member/system | mock_qr_deposit_order | mock order id | none | mock order created, no credit/debit runtime action | No | Medium | audit only / mock only; no real payment |
+| Member QR deposit | `member.qr_deposit.qr_downloaded_mock` | Member downloads mock QR artifact | member/system | mock_qr_deposit_order | mock order id | mock order ready | mock order downloaded, no credit/debit runtime action | No | Medium | audit only / mock only; no real payment |
+| Member QR deposit | `member.qr_deposit.order_expired_mock` | Mock QR order expires | system | mock_qr_deposit_order | mock order id | mock order ready/downloaded | expired, no credit/debit runtime action | No | Medium | audit only / mock only; no real payment |
+| Member QR deposit | `member.qr_deposit.order_cancelled_mock` | Member/system cancels mock QR order | member/system | mock_qr_deposit_order | mock order id | mock order ready/downloaded | cancelled, no credit/debit runtime action | No | Medium | audit only / mock only; no real payment |
+| Member QR deposit | `member.qr_deposit.duplicate_suspect_mock` | Duplicate orderId or QR mock hash is detected | system | mock_qr_deposit_order | mock order id | candidate mock order | duplicate_suspect, no credit/debit runtime action | No | High | audit only / mock only; no real payment |
 
 ## Audit Requirements
 
@@ -45,6 +50,7 @@ Safety boundary: docs/static only. No production DB, no real money, no live prov
 - Phase AM Admin Bank Account Review Audit & Operator Handoff exposes `member.bank.approve` and `member.bank.reject` history through the read-only audit log panel for operators with `admin.audit.view`; it must not create audit rows, change review status, or call live bank/payment/provider/SMS/Slip OCR integrations.
 - Phase AN Admin Bank Account Review Release Pack / UAT Checklist records the required audit evidence and UAT checklist only. It does not introduce new audit actions or runtime write behavior.
 - Phase AO Payment Provider Contract / Dual TrueMoney Provider defines future audit requirements for provider keys `truemoney_official`, `tmnone`, `qr_payment_gateway`, `slip_verification`, `bank_statement`, `bank_sms_fallback`, and `manual_admin` only. It does not add runtime audit actions; future provider events must pass idempotency, duplicate guard, audit, and reconciliation before any future credit posting.
+- Phase AP Member QR Deposit UX / Mock QR Download defines future/mock audit actions for QR order created, QR downloaded, expired, cancelled, and duplicate_suspect only. These actions are audit only / mock only, no credit/debit runtime action, no real payment, no real QR, no live provider, and no auto-credit from QR download.
 - Reason is mandatory for high and critical write actions unless explicitly listed as no.
 - Critical financial actions require no self-approval where a requester/approver workflow exists.
 - Future live integration actions must not be enabled until certification evidence is complete.
