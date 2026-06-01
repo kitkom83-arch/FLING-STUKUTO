@@ -681,6 +681,35 @@ Checklist:
 
 Phase AR is ledger/reconciliation guard contract review and static/mock harness only. It does not add runtime member UI changes, production DB access, real money, real QR, real payment, live provider/payment/bank/SMS/Slip OCR, payout, migration, deploy, external network, runtime money-flow, auto-credit from ledger guard, or runtime ledger mutation.
 
+## Phase AS Sandbox Integration Readiness UAT
+
+Phase AS is sandbox integration readiness contract review and static/mock harness only. It does not add runtime member UI changes, production DB access, real money, real QR, real payment, live provider/payment/bank/SMS/Slip OCR, payout, migration, deploy, external network, runtime money-flow, auto-credit from sandbox result, or runtime ledger mutation.
+
+- sandbox integration readiness contract review
+- sandbox provider env contract review
+- provider mode mock only
+- provider mode sandbox_configured_not_called
+- live mode blocked
+- external network blocked
+- real secrets blocked
+- fake callback payload accepted
+- webhook contract validated
+- idempotency stable
+- duplicate orderId guard
+- duplicate providerTransactionId guard
+- duplicate rawHash guard
+- SMS fallback manual review
+- manual admin reason required
+- sandbox dry-run result does not credit
+- sandbox dry-run result does not mutate wallet
+- sandbox dry-run result does not post ledger
+- no live provider
+- no real QR
+- no real payment
+- no external network
+- no production DB
+- no runtime ledger mutation
+
 Checklist:
 
 - ledger/reconciliation guard contract review.

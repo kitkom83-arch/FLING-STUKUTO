@@ -65,6 +65,20 @@ Safety boundary: docs/static only. No production DB, no real money, no live prov
 - Phase AP Member QR Deposit UX / Mock QR Download defines future/mock audit actions for QR order created, QR downloaded, expired, cancelled, and duplicate_suspect only. These actions are audit only / mock only, no credit/debit runtime action, no real payment, no real QR, no live provider, and no auto-credit from QR download.
 - Phase AQ Deposit Verification Source Mock Harness defines future/mock audit actions for source received, source matched, source manual review, source rejected, duplicate suspect, and admin manual review only. These actions are audit only / mock only, no credit/debit runtime action, no real payment, no payout, no production DB, and admin manual review requires reason.
 - Phase AR Ledger/Reconciliation Guard defines future/mock audit actions for evaluated, reconciliation checked, mismatch detected, duplicate suspect, manual review, and rejected only. These actions are audit only / mock only, no credit/debit runtime action, no ledger posting runtime action, no real payment, and admin manual review requires reason. Real ledger posting requires a future dual-control marker before enablement.
+
+## Phase AS Sandbox Integration Readiness Audit Actions
+
+These actions are future/mock only and audit only / mock only. They do not create credit/debit runtime action, ledger posting runtime action, real payment, payout, or external network execution in Phase AS. Admin sandbox review requires reason.
+
+| Area | Action | Purpose | Actor | Target | Safety |
+| --- | --- | --- | --- | --- | --- |
+| Sandbox provider | `admin.sandbox_provider.readiness_checked_mock` | Readiness checked against mock/static provider config | admin/system | provider key | audit only / mock only; no credit/debit runtime action; no ledger posting runtime action; no real payment |
+| Sandbox provider | `admin.sandbox_provider.dry_run_requested_mock` | Dry-run contract requested with fake payload only | admin/system | provider key | no external network execution in Phase AS |
+| Sandbox provider | `admin.sandbox_provider.callback_validated_mock` | Callback payload shape validated with fake payload | admin/system | callback payload | no real provider callback |
+| Sandbox provider | `admin.sandbox_provider.webhook_validated_mock` | Webhook contract shape validated with fake payload | admin/system | webhook payload | no real provider webhook |
+| Sandbox provider | `admin.sandbox_provider.external_call_blocked_mock` | External network attempt marker blocked | system | provider key | no external network execution in Phase AS |
+| Sandbox provider | `admin.sandbox_provider.secret_rejected_mock` | Secret-shaped value rejected | system | redacted field marker | no secret printed |
+| Sandbox provider | `admin.sandbox_provider.manual_review_mock` | Manual review route recorded | admin | provider/source | admin sandbox review requires reason |
 - Reason is mandatory for high and critical write actions unless explicitly listed as no.
 - Critical financial actions require no self-approval where a requester/approver workflow exists.
 - Future live integration actions must not be enabled until certification evidence is complete.

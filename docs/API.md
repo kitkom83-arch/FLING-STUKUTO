@@ -737,3 +737,27 @@ Safety notes:
 - no runtime ledger mutation
 - no external network
 - no production DB
+
+## 22. Future Sandbox Integration Readiness
+
+Phase AS defines future endpoint placeholders only. No runtime endpoint is opened by this phase, no sandbox API is called, no external network execution happens in Phase AS, no production DB is used, no real money is moved, no real QR is generated, no auto-credit is allowed, and no runtime ledger mutation is allowed.
+
+Future/mock contract endpoints:
+
+| Method | Future endpoint | Phase AS status | Safety |
+| --- | --- | --- | --- |
+| POST | `/api/admin/sandbox/providers/:providerKey/dry-run` | future/mock contract only | fake payload only; no real QR; no real payment; no auto-credit; no runtime ledger mutation; no external network execution in Phase AS; no production DB |
+| GET | `/api/admin/sandbox/providers/:providerKey/readiness` | future/mock contract only | sandbox readiness contract only; no live provider; no real secrets; no external network |
+| POST | `/api/admin/sandbox/callbacks/:providerKey/validate` | future/mock contract only | callback/webhook contract validation only; fake payload only; no provider callback call |
+
+Phase AS endpoints are future endpoint placeholders only. `POST /api/admin/sandbox/providers/:providerKey/dry-run`, `GET /api/admin/sandbox/providers/:providerKey/readiness`, and `POST /api/admin/sandbox/callbacks/:providerKey/validate` are future/mock contract only.
+
+Safety notes:
+
+- no real money
+- no real QR
+- no auto-credit
+- no runtime ledger mutation
+- no external network execution in Phase AS
+- no production DB
+- no live provider/payment/bank/SMS/Slip OCR

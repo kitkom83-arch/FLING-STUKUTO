@@ -521,6 +521,18 @@ Stop conditions:
 ## Phase AR Ledger/Reconciliation Guard Note
 
 - Phase AR is ledger/reconciliation guard mock only.
+
+## Phase AS Sandbox Integration Readiness Note
+
+- Phase AS is sandbox integration readiness only.
+- no runtime auto-credit.
+- no runtime ledger mutation.
+- no live provider enablement.
+- no real QR/payment validation.
+- no production DB.
+- no external network execution in Phase AS.
+- real sandbox external calls require explicit later approval.
+- provider live use only after Phase AT certification.
 - No runtime auto-credit is enabled.
 - No runtime ledger mutation is enabled.
 - No live provider enablement is allowed.

@@ -44,6 +44,9 @@ const RELATED_FILES = [
   "src/ledger-mock/depositLedgerReconciliationGuard.js",
   "src/ledger-mock/depositLedgerReconciliationGuardHarness.js",
   "src/local-smoke-tests/depositLedgerReconciliationGuardSmoke.js",
+  "src/sandbox-integration/sandboxIntegrationReadinessContract.js",
+  "src/sandbox-integration/sandboxIntegrationReadinessHarness.js",
+  "src/local-smoke-tests/sandboxIntegrationReadinessSmoke.js",
   "src/local-smoke-tests/stagingReleaseReadinessSmoke.js",
   "src/local-smoke-tests/stagingDeployReadinessPackSmoke.js",
   "src/local-smoke-tests/disposableStagingDbDryRunPackSmoke.js",
@@ -157,6 +160,11 @@ const summary = [
   {
     key: "depositLedgerReconciliationGuard",
     label: "deposit-ledger-reconciliation-guard",
+    status: "PENDING",
+  },
+  {
+    key: "sandboxIntegrationReadiness",
+    label: "sandbox-integration-readiness",
     status: "PENDING",
   },
   { key: "stagingReleaseReadiness", label: "staging-release-readiness", status: "PENDING" },
@@ -411,6 +419,24 @@ const steps = [
     name: "node --check depositLedgerReconciliationGuardSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/depositLedgerReconciliationGuardSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check sandboxIntegrationReadinessContract",
+    command: nodeCommand,
+    args: ["--check", "src/sandbox-integration/sandboxIntegrationReadinessContract.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check sandboxIntegrationReadinessHarness",
+    command: nodeCommand,
+    args: ["--check", "src/sandbox-integration/sandboxIntegrationReadinessHarness.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check sandboxIntegrationReadinessSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/sandboxIntegrationReadinessSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -738,6 +764,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:deposit-ledger-reconciliation-guard"]),
     summaryKey: "depositLedgerReconciliationGuard",
+  },
+  {
+    name: "npm run smoke:sandbox-integration-readiness",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:sandbox-integration-readiness"]),
+    summaryKey: "sandboxIntegrationReadiness",
   },
   {
     name: "npm run smoke:staging-release-readiness",

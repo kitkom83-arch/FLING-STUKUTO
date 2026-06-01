@@ -141,3 +141,17 @@ Status: Phase AR mock/static only. These rows define Ledger/Reconciliation Guard
 | mark duplicate suspect | `/api/admin/deposits/ledger-guard/evaluate` | POST | Phase AR mock/static only | `duplicate_suspect` | no real QR; no real payment; no auto-credit; no ledger posting runtime action; no live provider |
 | manual review ledger guard | `/api/admin/deposits/ledger-guard/:sourceId/manual-review` | POST | Phase AR mock/static only | `manual_review_required` | no real QR; no real payment; no auto-credit; no ledger posting runtime action; no live provider |
 | reject ledger guard candidate | `/api/admin/deposits/ledger-guard/:sourceId/manual-review` | POST | Phase AR mock/static only | `reject` | no real QR; no real payment; no auto-credit; no ledger posting runtime action; no live provider |
+
+## Future Sandbox Integration Readiness Mapping
+
+Status: Phase AS mock/static/sandbox-readiness only. These rows define future sandbox integration readiness contracts after Phase AO/AP/AQ/AR. They do not add runtime endpoints, production DB access, real money, real QR, live provider/payment/bank/SMS/Slip OCR, payout, migration, deploy, auto-credit, ledger posting runtime action, runtime money-flow, or external network execution in Phase AS.
+
+| area | future endpoint | method | current phase | provider mode | safety |
+| --- | --- | --- | --- | --- | --- |
+| provider readiness check | `/api/admin/sandbox/providers/:providerKey/readiness` | GET | Phase AS mock/static/sandbox-readiness only | `mock`, `sandbox_configured_not_called` | no real QR; no real payment; no auto-credit; no ledger posting runtime action; no external network in Phase AS; no live provider |
+| sandbox dry-run request | `/api/admin/sandbox/providers/:providerKey/dry-run` | POST | Phase AS mock/static/sandbox-readiness only | `sandbox_dry_run_only` | no real QR; no real payment; no auto-credit; no ledger posting runtime action; no external network in Phase AS; no live provider |
+| sandbox dry-run response | `/api/admin/sandbox/providers/:providerKey/dry-run` | POST | Phase AS mock/static/sandbox-readiness only | `sandbox_dry_run_only` | no real QR; no real payment; no auto-credit; no ledger posting runtime action; no external network in Phase AS; no live provider |
+| callback payload validation | `/api/admin/sandbox/callbacks/:providerKey/validate` | POST | Phase AS mock/static/sandbox-readiness only | `mock` | no real QR; no real payment; no auto-credit; no ledger posting runtime action; no external network in Phase AS; no live provider |
+| webhook contract validation | `/api/admin/sandbox/callbacks/:providerKey/validate` | POST | Phase AS mock/static/sandbox-readiness only | `mock` | no real QR; no real payment; no auto-credit; no ledger posting runtime action; no external network in Phase AS; no live provider |
+| sandbox reconciliation handoff | `/api/admin/sandbox/providers/:providerKey/readiness` | GET | Phase AS mock/static/sandbox-readiness only | `mock` | no real QR; no real payment; no auto-credit; no ledger posting runtime action; no external network in Phase AS; no live provider |
+| sandbox ledger guard handoff | `/api/admin/sandbox/providers/:providerKey/dry-run` | POST | Phase AS mock/static/sandbox-readiness only | `mock` | no real QR; no real payment; no auto-credit; no ledger posting runtime action; no external network in Phase AS; no live provider |

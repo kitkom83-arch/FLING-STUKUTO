@@ -1778,6 +1778,24 @@ Coverage:
 
 - Confirms `docs/DEPOSIT_LEDGER_RECONCILIATION_GUARD.md` and `docs/DEPOSIT_LEDGER_RECONCILIATION_GUARD_UAT_CHECKLIST.md` exist.
 - Confirms Phase AR, Ledger/Reconciliation Guard, and `ledger_posting_candidate_mock` markers.
+
+## 57. Phase AS Sandbox Integration Readiness Smoke Coverage
+
+Phase AS status: Sandbox Integration Readiness is docs/static/sandbox-readiness only. It adds sandbox readiness docs, a provider env contract, UAT checklist, isolated sandbox readiness contract, isolated sandbox readiness harness, and static smoke coverage. It does not add runtime endpoints, production DB access, real money, real QR, live provider calls, payout, deployment, migration, runtime money-flow, auto-credit, runtime ledger mutation, or external network in Phase AS.
+
+Script:
+
+- `smoke:sandbox-integration-readiness`
+
+Coverage:
+
+- Confirms `docs/SANDBOX_INTEGRATION_READINESS.md`, `docs/SANDBOX_PROVIDER_ENV_CONTRACT.md`, and `docs/SANDBOX_INTEGRATION_UAT_CHECKLIST.md` exist.
+- Confirms Phase AS, Sandbox Integration Readiness, `sandbox_configured_not_called`, `sandbox_dry_run_only`, `live_after_certification_only`, no production DB, no real money, no real QR, no live provider, no payout, no auto-credit, no runtime ledger mutation, and no external network in Phase AS markers.
+- Confirms sandbox readiness result must never credit member, mutate wallet, post real ledger, or call external network.
+- Confirms fake payload only, real secrets blocked, SMS fallback manual_review only, and manual admin reason required markers.
+- Confirms `src/sandbox-integration/sandboxIntegrationReadinessContract.js`, `src/sandbox-integration/sandboxIntegrationReadinessHarness.js`, and `src/local-smoke-tests/sandboxIntegrationReadinessSmoke.js` pass syntax checks.
+- Confirms the isolated harness blocks live provider mode, blocks missing config, blocks secret-shaped values, accepts safe placeholders, detects duplicate `orderId`, duplicate `providerTransactionId`, duplicate `rawHash`, and scans output for secret-shaped values.
+- Confirms package script registration and `runAllLocalSmoke` registration.
 - Confirms ledger guard recommendation must never credit member.
 - Confirms reconciliation result must never mutate wallet.
 - Confirms SMS-only source must never create ledger posting candidate.
