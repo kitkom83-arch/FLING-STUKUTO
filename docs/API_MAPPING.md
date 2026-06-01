@@ -115,3 +115,16 @@ Status: Phase AP mock/static only. These rows define member QR deposit UX / Mock
 - Every member money/reward-like write should include backend eligibility and idempotency.
 - Every future live provider/payment/bank/SMS/Slip OCR route remains disabled until certification.
 - This document does not grant production readiness or live operation approval.
+
+## Future Deposit Verification Source Mapping
+
+Status: Phase AQ Deposit Verification Source Mock Harness is mock/static only. It builds on Phase AO provider source contracts and Phase AP QR mock order contracts. It does not add runtime endpoints, production DB access, real money, real QR, live provider/payment/bank/SMS/Slip OCR, payout, migration, deploy, credit/debit runtime action, runtime money-flow, or auto-credit from verification source.
+
+| area | future endpoint | method | current phase | source type | safety |
+| --- | --- | --- | --- | --- | --- |
+| create verification source | `/api/member/deposits/verification-sources` | POST | Phase AQ mock/static only | `qr_mock_order`, `payment_provider_mock_event`, `slip_verification_mock`, `bank_statement_mock`, `bank_sms_fallback_mock`, `manual_admin_mock` | no real QR; no real payment; no auto-credit; no live provider |
+| get verification source | `/api/member/deposits/verification-sources/:sourceId` | GET | Phase AQ mock/static only | all mock source types | no real QR; no real payment; no auto-credit; no live provider |
+| match verification source | `/api/member/deposits/verification-sources/:sourceId/match` | POST | Phase AQ mock/static only | provider, slip, statement mock sources | no real QR; no real payment; no auto-credit; no live provider |
+| manual review verification source | `/api/admin/deposits/verification-sources/:sourceId/manual-review` | POST | Phase AQ mock/static only | `bank_sms_fallback_mock`, uncertain slip, unmatched statement, manual admin | no real QR; no real payment; no auto-credit; no live provider |
+| reject verification source | `/api/admin/deposits/verification-sources/:sourceId/reject` | POST | Phase AQ mock/static only | duplicate or failed mock source | no real QR; no real payment; no auto-credit; no live provider |
+| duplicate guard verification source | `/api/admin/deposits/verification-sources/:sourceId/duplicate-guard` | POST | Phase AQ mock/static only | duplicate `orderId`, `providerTransactionId`, or `rawHash` | no real QR; no real payment; no auto-credit; no live provider |

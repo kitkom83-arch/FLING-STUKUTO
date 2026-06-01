@@ -1719,3 +1719,43 @@ Boundary:
 - No deploy.
 - No runtime money-flow.
 - QR download must never credit member.
+
+## 55. Phase AQ Deposit Verification Source Mock Harness Smoke Coverage
+
+Phase AQ status: Deposit Verification Source Mock Harness is docs/static/mock only. It adds source verification docs, a mock-only contract, an isolated mock harness, and static smoke coverage. It does not add runtime endpoints, production DB access, real money, real QR, live provider calls, payout, deployment, migration, runtime money-flow, or auto-credit.
+
+Script:
+
+- `src/local-smoke-tests/depositVerificationSourceSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:deposit-verification-source
+```
+
+Coverage:
+
+- Confirms `docs/DEPOSIT_VERIFICATION_SOURCE_MOCK_HARNESS.md` and `docs/DEPOSIT_VERIFICATION_SOURCE_MOCK_UAT_CHECKLIST.md` exist.
+- Confirms Phase AQ, Deposit Verification Source Mock Harness, source types `qr_mock_order`, `payment_provider_mock_event`, `slip_verification_mock`, `bank_statement_mock`, `bank_sms_fallback_mock`, and `manual_admin_mock`.
+- Confirms SMS fallback manual_review marker, SMS-only cannot credit marker, QR download must never credit marker, expired QR cannot be matched marker, and cancelled QR cannot be matched marker.
+- Confirms duplicate orderId, duplicate providerTransactionId, and duplicate rawHash markers.
+- Confirms `node --check` for the contract, harness, and smoke files.
+- Confirms the isolated mock harness normalizes verification sources, blocks live verification mode, detects duplicates, builds idempotency keys, routes uncertain sources to manual_review, and scans output for secret-shaped values.
+- Confirms package script and `runAllLocalSmoke.js` registration.
+
+Boundary:
+
+- Docs/static/mock only.
+- No production DB.
+- No real money.
+- No real QR.
+- No real payment.
+- No live provider/payment/bank/SMS/Slip OCR.
+- No live TrueMoney.
+- No live TMNOne.
+- No payout.
+- No migration.
+- No deploy.
+- No runtime money-flow.
+- Source verification must never auto-credit member.

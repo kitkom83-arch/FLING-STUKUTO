@@ -696,3 +696,23 @@ Related future status endpoints remain contract-only until separately approved:
 - `POST /api/member/deposits/qr-orders/:orderId/cancel` for mock cancel harness behavior.
 
 Phase AP QR download is a mock artifact. It is not proof of payment and it must not create wallet, ledger, payout, or credit/debit runtime action.
+
+## 20. Future Deposit Verification Source Mock Harness
+
+Phase AQ defines future/mock contract endpoints only. No runtime endpoint is opened by this phase, no payment gateway is connected, no bank is connected, no SMS provider is connected, no Slip OCR provider is connected, no external network is called, no production DB is used, no real money is moved, no real QR is generated, and no auto-credit is allowed.
+
+Future/mock contract endpoints:
+
+| Method | Future endpoint | Phase AQ status | Safety |
+| --- | --- | --- | --- |
+| POST | `/api/member/deposits/verification-sources` | future/mock contract only | Creates a mock verification source for `qr_mock_order`, `payment_provider_mock_event`, `slip_verification_mock`, `bank_statement_mock`, `bank_sms_fallback_mock`, or `manual_admin_mock`; no real QR, no real payment, no live provider, no auto-credit, no external network. |
+| GET | `/api/member/deposits/verification-sources/:sourceId` | future/mock contract only | Reads mock verification source status only; no production DB, no real money, no live provider/payment/bank/SMS/Slip OCR. |
+| POST | `/api/admin/deposits/verification-sources/:sourceId/manual-review` | future/mock contract only | Records future manual review intent only; reason required, audit only / mock only, no credit/debit runtime action, no payout. |
+
+Related future actions remain contract-only until separately approved:
+
+- Match verification source.
+- Reject verification source.
+- Duplicate guard verification source by `orderId`, `providerTransactionId`, and `rawHash`.
+
+Phase AQ source verification is mock/static evidence. It is not proof of payment and it must not create wallet, ledger, payout, or credit/debit runtime action.

@@ -30,6 +30,8 @@ Safety boundary: docs/static only. No production DB, no real money, no live prov
 | `deposits.approve` | write permission | Yes | Yes | Yes | No | No | No | Yes | Yes | No real payment rail; no self-approval where requester/approver separation applies. |
 | `member.deposit.qr.view` | future member read-only permission | Yes | Yes | Yes | Limited | No | Yes | No | No | Phase AP mock/member UX contract only; no admin payout, no credit action, no live provider. |
 | `member.deposit.qr.download_mock` | future member mock download permission | Yes | Yes | Yes | Limited | No | Yes | No | No | Phase AP mock/member UX contract only; downloads mock artifact only; no admin payout, no credit action, no real QR. |
+| `member.deposit.verification.view` | future/read-only permission | Yes | Yes | Yes | Limited | No | Yes | No | No | Phase AQ mock/source verification contract only; no admin payout, no credit action, no live provider. |
+| `admin.deposit.verification.review_mock` | future/mock review permission | Yes | Yes | Yes | No | No | No | Yes | Yes | Phase AQ mock/source verification contract only; reason required for future admin review, no admin payout, no credit action. |
 | `withdrawals.view` | read-only permission | Yes | Yes | Yes | Limited | No | Yes | No | No | Manual/mock withdrawals only. |
 | `withdrawals.approve` | write permission | Yes | Yes | Yes | No | No | No | Yes | Yes | No self-approval; no live payout; mark-paid must not trigger bank transfer. |
 | `bank.view` | read-only permission | Yes | Yes | Yes | Limited | No | Yes | No | No | Mock/sandbox statement read only. |
@@ -56,5 +58,6 @@ Safety boundary: docs/static only. No production DB, no real money, no live prov
 - Phase AN Admin Bank Account Review Release Pack / UAT Checklist adds docs/static operator evidence only. It does not create new permissions, loosen existing permissions, or add runtime write actions.
 - Phase AO Payment Provider Contract / Dual TrueMoney Provider is contract/mock only. It does not create new permissions, loosen existing permissions, add live provider access, add payout authority, add withdrawal approve, add credit/debit runtime action, or allow frontend credit posting.
 - Phase AP Member QR Deposit UX / Mock QR Download documents future member QR view/download_mock markers only. It does not create runtime permission enforcement, admin payout authority, credit action, live QR access, or auto-credit from QR download.
+- Phase AQ Deposit Verification Source Mock Harness documents future/read-only and mock review markers only. It is mock/source verification contract only, adds no admin payout authority, adds no credit action, and reason is required for future admin review.
 - No self-approval is required for wallet adjustment, withdrawal approval/mark paid, role-sensitive changes, future commission settlement, and any future dual-control action.
 - No live action until certification: provider, payment, bank, SMS, Slip OCR, payout, and production DB operation remain disabled or mock/sandbox only.

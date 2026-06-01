@@ -649,3 +649,30 @@ Display text safety:
 - Use `missing display value` for absent values.
 - Use `invalid numeric display` for invalid numeric rendering.
 - Use `raw object display value` for object rendering mistakes.
+
+## Phase AQ Deposit Verification Source Mock Harness UAT
+
+Phase AQ is deposit verification source contract review and static/mock harness only. It does not add runtime member UI changes, production DB access, real money, real QR, real payment, live provider/payment/bank/SMS/Slip OCR, payout, migration, deploy, external network, runtime money-flow, or auto-credit from verification source.
+
+Checklist:
+
+- deposit verification source contract review.
+- QR mock source review.
+- QR downloaded no credit.
+- expired QR cannot match.
+- cancelled QR cannot match.
+- payment provider mock source matched.
+- slip verified source matched.
+- slip uncertain manual review.
+- bank statement unmatched manual review.
+- SMS fallback manual review.
+- SMS-only no credit.
+- manual admin reason required.
+- duplicate orderId guard.
+- duplicate providerTransactionId guard.
+- duplicate rawHash guard.
+- no live provider.
+- no real QR.
+- no real payment.
+- no external network.
+- no production DB.

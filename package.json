@@ -54,6 +54,7 @@
     "smoke:admin-bank-account-review-release-pack": "node src/local-smoke-tests/adminBankAccountReviewReleasePackSmoke.js",
     "smoke:payment-provider-contract": "node src/local-smoke-tests/paymentProviderContractSmoke.js",
     "smoke:member-qr-deposit-ux": "node src/local-smoke-tests/memberQrDepositUxSmoke.js",
+    "smoke:deposit-verification-source": "node src/local-smoke-tests/depositVerificationSourceSmoke.js",
     "smoke:master-spec-mapping": "node src/local-smoke-tests/masterSpecMappingSmoke.js",
     "smoke:wheel": "node src/local-smoke-tests/wheelSmoke.js",
     "smoke:project-closeout": "node src/local-smoke-tests/projectCloseoutSmoke.js",

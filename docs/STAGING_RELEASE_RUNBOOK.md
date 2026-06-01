@@ -508,3 +508,12 @@ Stop conditions:
 - Live QR provider enablement is blocked in this phase.
 - QR download must never credit member.
 - Live provider work remains blocked until Phase AT certification.
+
+## Phase AQ Deposit Verification Source Mock Harness Note
+
+- Phase AQ is deposit verification source mock only.
+- Source verification status is mock contract evidence only.
+- No runtime auto-credit is enabled.
+- No live provider enablement is allowed.
+- No real QR/payment validation is allowed.
+- Live verification only after Phase AT certification.
