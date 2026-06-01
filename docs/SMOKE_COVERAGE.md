@@ -1759,3 +1759,45 @@ Boundary:
 - No deploy.
 - No runtime money-flow.
 - Source verification must never auto-credit member.
+
+## 56. Phase AR Ledger/Reconciliation Guard Smoke Coverage
+
+Phase AR status: Ledger/Reconciliation Guard is docs/static/mock only. It adds guard docs, a mock-only contract, an isolated harness, and static smoke coverage. It does not add runtime endpoints, production DB access, real money, real QR, live provider calls, payout, deployment, migration, runtime money-flow, auto-credit, or runtime ledger mutation.
+
+Script:
+
+- `src/local-smoke-tests/depositLedgerReconciliationGuardSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:deposit-ledger-reconciliation-guard
+```
+
+Coverage:
+
+- Confirms `docs/DEPOSIT_LEDGER_RECONCILIATION_GUARD.md` and `docs/DEPOSIT_LEDGER_RECONCILIATION_GUARD_UAT_CHECKLIST.md` exist.
+- Confirms Phase AR, Ledger/Reconciliation Guard, and `ledger_posting_candidate_mock` markers.
+- Confirms ledger guard recommendation must never credit member.
+- Confirms reconciliation result must never mutate wallet.
+- Confirms SMS-only source must never create ledger posting candidate.
+- Confirms QR downloaded source must never create ledger posting candidate.
+- Confirms expired QR source must be rejected or manual_review only.
+- Confirms cancelled QR source must be rejected or manual_review only.
+- Confirms `mismatch_review_required`, duplicate orderId, duplicate providerTransactionId, duplicate rawHash, and manual admin reason markers.
+- Confirms no production DB, no real money, no real QR, no live provider, no payout, no auto-credit, no runtime ledger mutation, and no external network markers.
+- Confirms `node --check` for the guard contract, harness, and smoke files.
+- Confirms the isolated mock harness evaluates eligibility, blocks live ledger mode, detects duplicates, builds idempotency keys, detects idempotency conflicts, keeps SMS and QR download out of ledger candidates, and scans output for secret-shaped values.
+- Confirms package script and `runAllLocalSmoke.js` registration.
+
+Boundary:
+
+- docs/static/mock only.
+- no production DB.
+- no real money.
+- no real QR.
+- no live provider.
+- no payout.
+- no auto-credit.
+- no runtime ledger mutation.
+- ledger guard recommendation must never credit member.

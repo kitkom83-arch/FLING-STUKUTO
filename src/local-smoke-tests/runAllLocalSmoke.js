@@ -41,6 +41,9 @@ const RELATED_FILES = [
   "src/payment-provider-mock/depositVerificationSourceContract.js",
   "src/payment-provider-mock/depositVerificationSourceMockHarness.js",
   "src/local-smoke-tests/depositVerificationSourceSmoke.js",
+  "src/ledger-mock/depositLedgerReconciliationGuard.js",
+  "src/ledger-mock/depositLedgerReconciliationGuardHarness.js",
+  "src/local-smoke-tests/depositLedgerReconciliationGuardSmoke.js",
   "src/local-smoke-tests/stagingReleaseReadinessSmoke.js",
   "src/local-smoke-tests/stagingDeployReadinessPackSmoke.js",
   "src/local-smoke-tests/disposableStagingDbDryRunPackSmoke.js",
@@ -93,6 +96,8 @@ const RELATED_FILES = [
   "docs/MEMBER_QR_DEPOSIT_MOCK_UAT_CHECKLIST.md",
   "docs/DEPOSIT_VERIFICATION_SOURCE_MOCK_HARNESS.md",
   "docs/DEPOSIT_VERIFICATION_SOURCE_MOCK_UAT_CHECKLIST.md",
+  "docs/DEPOSIT_LEDGER_RECONCILIATION_GUARD.md",
+  "docs/DEPOSIT_LEDGER_RECONCILIATION_GUARD_UAT_CHECKLIST.md",
   "docs/STAGING_DEPLOY_READINESS_PACK.md",
   "docs/STAGING_ENVIRONMENT_MATRIX.md",
   "docs/STAGING_DEPLOY_GO_NO_GO.md",
@@ -149,6 +154,11 @@ const summary = [
   { key: "paymentProviderContract", label: "payment-provider-contract", status: "PENDING" },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
   { key: "depositVerificationSource", label: "deposit-verification-source", status: "PENDING" },
+  {
+    key: "depositLedgerReconciliationGuard",
+    label: "deposit-ledger-reconciliation-guard",
+    status: "PENDING",
+  },
   { key: "stagingReleaseReadiness", label: "staging-release-readiness", status: "PENDING" },
   { key: "stagingDeployReadinessPack", label: "staging-deploy-readiness-pack", status: "PENDING" },
   {
@@ -383,6 +393,24 @@ const steps = [
     name: "node --check depositVerificationSourceSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/depositVerificationSourceSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check depositLedgerReconciliationGuard",
+    command: nodeCommand,
+    args: ["--check", "src/ledger-mock/depositLedgerReconciliationGuard.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check depositLedgerReconciliationGuardHarness",
+    command: nodeCommand,
+    args: ["--check", "src/ledger-mock/depositLedgerReconciliationGuardHarness.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check depositLedgerReconciliationGuardSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/depositLedgerReconciliationGuardSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -704,6 +732,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:deposit-verification-source"]),
     summaryKey: "depositVerificationSource",
+  },
+  {
+    name: "npm run smoke:deposit-ledger-reconciliation-guard",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:deposit-ledger-reconciliation-guard"]),
+    summaryKey: "depositLedgerReconciliationGuard",
   },
   {
     name: "npm run smoke:staging-release-readiness",

@@ -676,3 +676,40 @@ Checklist:
 - no real payment.
 - no external network.
 - no production DB.
+
+## Phase AR Ledger/Reconciliation Guard UAT
+
+Phase AR is ledger/reconciliation guard contract review and static/mock harness only. It does not add runtime member UI changes, production DB access, real money, real QR, real payment, live provider/payment/bank/SMS/Slip OCR, payout, migration, deploy, external network, runtime money-flow, auto-credit from ledger guard, or runtime ledger mutation.
+
+Checklist:
+
+- ledger/reconciliation guard contract review.
+- verified provider source becomes ledger candidate mock only.
+- ledger candidate mock does not credit.
+- ledger candidate mock does not mutate wallet.
+- QR downloaded no credit.
+- QR downloaded no ledger candidate.
+- expired QR cannot become ledger candidate.
+- cancelled QR cannot become ledger candidate.
+- SMS fallback manual review.
+- SMS-only no credit.
+- SMS-only no ledger candidate.
+- amount mismatch manual review.
+- member mismatch manual review.
+- currency mismatch manual review.
+- manual admin reason required.
+- duplicate orderId guard.
+- duplicate providerTransactionId guard.
+- duplicate rawHash guard.
+- no live provider.
+- no real QR.
+- no real payment.
+- no external network.
+- no production DB.
+- no runtime ledger mutation.
+
+Display text safety:
+
+- Use `missing display value` for absent values.
+- Use `invalid numeric display` for invalid numeric rendering.
+- Use `raw object display value` for object rendering mistakes.

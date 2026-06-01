@@ -128,3 +128,16 @@ Status: Phase AQ Deposit Verification Source Mock Harness is mock/static only. I
 | manual review verification source | `/api/admin/deposits/verification-sources/:sourceId/manual-review` | POST | Phase AQ mock/static only | `bank_sms_fallback_mock`, uncertain slip, unmatched statement, manual admin | no real QR; no real payment; no auto-credit; no live provider |
 | reject verification source | `/api/admin/deposits/verification-sources/:sourceId/reject` | POST | Phase AQ mock/static only | duplicate or failed mock source | no real QR; no real payment; no auto-credit; no live provider |
 | duplicate guard verification source | `/api/admin/deposits/verification-sources/:sourceId/duplicate-guard` | POST | Phase AQ mock/static only | duplicate `orderId`, `providerTransactionId`, or `rawHash` | no real QR; no real payment; no auto-credit; no live provider |
+
+## Future Deposit Ledger/Reconciliation Guard Mapping
+
+Status: Phase AR mock/static only. These rows define Ledger/Reconciliation Guard contracts after Phase AQ source verification. They do not add runtime endpoints, production DB access, real money, real QR, live provider/payment/bank/SMS/Slip OCR, payout, migration, deploy, credit/debit runtime action, ledger posting runtime action, runtime money-flow, or auto-credit.
+
+| area | future endpoint | method | current phase | guard output | safety |
+| --- | --- | --- | --- | --- | --- |
+| evaluate ledger guard | `/api/admin/deposits/ledger-guard/evaluate` | POST | Phase AR mock/static only | `ledger_posting_candidate_mock`, `manual_review_required`, `no_action`, `reject` | no real QR; no real payment; no auto-credit; no ledger posting runtime action; no live provider |
+| build reconciliation snapshot | `/api/admin/deposits/ledger-guard/reconciliation/:sourceId` | GET | Phase AR mock/static only | `reconciled_mock`, `unreconciled_mock`, `pending_review_mock` | no real QR; no real payment; no auto-credit; no ledger posting runtime action; no live provider |
+| detect reconciliation mismatch | `/api/admin/deposits/ledger-guard/evaluate` | POST | Phase AR mock/static only | `mismatch_review_required` | no real QR; no real payment; no auto-credit; no ledger posting runtime action; no live provider |
+| mark duplicate suspect | `/api/admin/deposits/ledger-guard/evaluate` | POST | Phase AR mock/static only | `duplicate_suspect` | no real QR; no real payment; no auto-credit; no ledger posting runtime action; no live provider |
+| manual review ledger guard | `/api/admin/deposits/ledger-guard/:sourceId/manual-review` | POST | Phase AR mock/static only | `manual_review_required` | no real QR; no real payment; no auto-credit; no ledger posting runtime action; no live provider |
+| reject ledger guard candidate | `/api/admin/deposits/ledger-guard/:sourceId/manual-review` | POST | Phase AR mock/static only | `reject` | no real QR; no real payment; no auto-credit; no ledger posting runtime action; no live provider |

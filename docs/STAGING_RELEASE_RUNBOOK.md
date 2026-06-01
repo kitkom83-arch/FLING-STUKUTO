@@ -517,3 +517,13 @@ Stop conditions:
 - No live provider enablement is allowed.
 - No real QR/payment validation is allowed.
 - Live verification only after Phase AT certification.
+
+## Phase AR Ledger/Reconciliation Guard Note
+
+- Phase AR is ledger/reconciliation guard mock only.
+- No runtime auto-credit is enabled.
+- No runtime ledger mutation is enabled.
+- No live provider enablement is allowed.
+- No real QR/payment validation is allowed.
+- No production DB is used.
+- Real ledger posting only after later certification and explicit approval.

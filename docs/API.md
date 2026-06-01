@@ -716,3 +716,24 @@ Related future actions remain contract-only until separately approved:
 - Duplicate guard verification source by `orderId`, `providerTransactionId`, and `rawHash`.
 
 Phase AQ source verification is mock/static evidence. It is not proof of payment and it must not create wallet, ledger, payout, or credit/debit runtime action.
+
+## 21. Future Deposit Ledger/Reconciliation Guard
+
+Phase AR defines future/mock contract endpoints only for the Ledger/Reconciliation Guard. No runtime endpoint is opened by this phase. The guard produces mock recommendations only and does not enable real money, real QR, real payment, auto-credit, runtime ledger mutation, external network, production DB, live provider, payout, migration, or deploy.
+
+| Method | Future endpoint | Phase AR status | Safety |
+| --- | --- | --- | --- |
+| POST | `/api/admin/deposits/ledger-guard/evaluate` | future/mock contract only | no real money; no real QR; no auto-credit; no runtime ledger mutation; no external network; no production DB |
+| GET | `/api/admin/deposits/ledger-guard/reconciliation/:sourceId` | future/mock contract only | read-only mock reconciliation snapshot; no wallet mutation; no ledger posting |
+| POST | `/api/admin/deposits/ledger-guard/:sourceId/manual-review` | future/mock contract only | admin reason required; mock review only; no credit/debit runtime action |
+
+Phase AR endpoints are future endpoint placeholders only. `POST /api/admin/deposits/ledger-guard/evaluate`, `GET /api/admin/deposits/ledger-guard/reconciliation/:sourceId`, and `POST /api/admin/deposits/ledger-guard/:sourceId/manual-review` are future/mock contract only.
+
+Safety notes:
+
+- no real QR
+- no real payment
+- no auto-credit
+- no runtime ledger mutation
+- no external network
+- no production DB
