@@ -79,9 +79,9 @@ Safety boundary: docs/static only. No production DB, no real money, no live prov
 | Future game provider API | Mock transfer | Transfer in/out mock | POST | `/api/game/transfer-in/mock`, `/api/game/transfer-out/mock` | amount/reference | mock transfer result | member self | provider transfer mock audit if implemented | mock implemented | No live provider wallet. |
 | Future game provider API | Live provider integration | Certified provider launch/transfer/callback | TBD | Future certified provider endpoints | signed requests, idempotency, callback verification | launch/session/transfer results | future provider permissions | `live_provider.config.update`, future provider callback audits | future live integration | Requires sandbox evidence, ledger certification, rollback, monitoring, and secret handling. |
 
-## Future Payment Provider Mapping
+## Future Payment Provider Contract Mapping
 
-Status: Payment Provider Roadmap: Dual TrueMoney + QR Gateway + Bank Verification is Backlog / Next Phase after Phase AN. It is docs/backlog only in Phase AN and does not add endpoints, migrations, deploy, production DB, real money, live provider/payment/bank/SMS/Slip OCR, credit/debit runtime action, payout, withdrawal approve, or runtime money-flow changes.
+Status: Phase AO Payment Provider Contract / Dual TrueMoney Provider is contract/mock only. It builds on the Payment Provider Roadmap: Dual TrueMoney + QR Gateway + Bank Verification backlog and still does not add runtime endpoints, migrations, deploy, production DB, real money, live provider/payment/bank/SMS/Slip OCR, credit/debit runtime action, payout, withdrawal approve, or runtime money-flow changes.
 
 Safety markers: mock/sandbox/staging only; no production DB; no real money; no live provider/payment/bank/SMS/Slip OCR; no credit/debit runtime action in this phase; no payout; no withdrawal approve; no migration; no deploy; no hardcoded secret/token/password/DATABASE_URL; SMS fallback is manual_review only; frontend must not decide credit posting; provider event must pass idempotency + audit + reconciliation guard before future credit posting.
 
@@ -94,6 +94,8 @@ Safety markers: mock/sandbox/staging only; no production DB; no real money; no l
 | `bank_statement` | Statement API | backlog/mock only | fetch statement | normalize bank transaction, match deposit order, unmatched queue, duplicate guard, daily reconciliation, read-only/sandbox, no production bank account |
 | `bank_sms_fallback` | SMS fallback | backlog/manual_review only | receive SMS signal | internal receiver device only, no customer SMS, no OTP, allowlist sender/receiver, raw SMS hash duplicate guard, redact sensitive text, `sms_detected -> manual_review`, no auto-credit |
 | `manual_admin` | Manual fallback | backlog only | manual review | provider/callback/statement/slip failure path only, reason + audit, admin_id, before/after balance, future dual control, no hidden credit adjustment |
+
+Phase AO smoke coverage: `smoke:payment-provider-contract` checks provider keys, docs, mock-only harness, duplicate guard, SMS fallback manual_review, no production DB, no real money, no live provider/payment/bank/SMS/Slip OCR, no payout, and no secret-shaped values.
 
 ## Integration Rules
 

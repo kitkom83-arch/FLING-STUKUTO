@@ -181,6 +181,38 @@ Future UAT backlog:
 
 Future provider verification must stay mock/sandbox/staging only with no production DB, no real money, no live provider/payment/bank/SMS/Slip OCR, no migration, no deploy, no hardcoded secret/token/password/DATABASE_URL, no payout, and no withdrawal approve.
 
+## Phase AO Payment Provider Contract UAT Checklist
+
+Status: Phase AO is provider contract/mock only. It does not enable live provider, live TrueMoney, live TMNOne, production DB, real money, payout, withdrawal approve, credit/debit runtime action, migration, deploy, or runtime money-flow.
+
+Required smoke:
+
+```powershell
+npm run smoke:payment-provider-contract
+```
+
+Checklist:
+
+- Provider contract review includes `truemoney_official`, `tmnone`, `qr_payment_gateway`, `slip_verification`, `bank_statement`, `bank_sms_fallback`, and `manual_admin`.
+- TrueMoney Official mock creates a normalized mock deposit event.
+- TMNOne mock creates normalized transaction history and transaction info events.
+- QR gateway mock creates a QR order contract and QR download UX contract.
+- QR download UX contract includes download QR, open full screen QR, copy amount, copy reference/orderId, and upload slip fallback.
+- Slip verification mock supports verified match.
+- Slip verification uncertain result becomes manual_review.
+- Statement API mock fetch supports matched and unmatched records.
+- Statement unmatched result becomes manual_review.
+- SMS fallback creates manual_review only.
+- SMS-only cannot credit.
+- Duplicate provider transaction id guard is present.
+- Duplicate raw hash guard is present.
+- No live provider is enabled.
+- No real money is used.
+- No production DB is used.
+- No payout is available.
+- No hardcoded secret/token/password/PIN/deviceId/DATABASE_URL is present.
+- Display checks must avoid missing display value, invalid numeric display, and raw object display value.
+
 ## Render Staging UAT Flow
 
 Use this flow only after the Render Web Service, Render staging PostgreSQL database, and Render dashboard env values are configured for mock/sandbox staging.
@@ -362,7 +394,7 @@ npm run smoke:staging-uat
 npm run smoke:staging-role-permission-uat
 ```
 
-Required env values must live only in Render Environment/Secrets or an ignored local shell. Do not commit or paste `DATABASE_URL`, admin password, JWT secret, tokens, provider keys, callback secrets, or bearer values.
+Required env values must live only in Render Environment/Secrets or an ignored local shell. Do not commit or paste `DATABASE_URL`, admin password, JWT secret, tokens, provider keys, callback secrets, or credential scheme values.
 
 Role permission runtime UAT requires:
 
@@ -450,7 +482,7 @@ Controlled-live testing is not part of local smoke. Use this checklist only afte
 ## Secret Handling Checklist
 
 - Use secret managers, hosting environment variables, or local ignored `.env` files only.
-- Never commit `.env`, real database URLs, JWT secrets, provider API keys, callback secrets, passwords, or bearer tokens.
+- Never commit `.env`, real database URLs, JWT secrets, provider API keys, callback secrets, passwords, or credential scheme tokens.
 - Never paste secrets into docs, pull requests, issue trackers, screenshots, terminal transcripts, or chat.
 - Use placeholders such as `<STAGING_DATABASE_URL>` or `<PROVIDER_SANDBOX_KEY>` only when a shape is needed.
 - Rotate any secret immediately if it is printed, committed, screenshotted, or shared outside the approved secret store.

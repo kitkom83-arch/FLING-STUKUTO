@@ -127,6 +127,8 @@ npm run smoke:admin-bank-account-review-release-pack
 
 - SMS fallback is manual_review only. The allowed path is `sms_detected -> manual_review`; `sms_detected -> credited` is forbidden. Frontend must not decide credit posting. Provider event must pass idempotency + audit + reconciliation guard before future credit posting. No hardcoded secret/token/password/DATABASE_URL is allowed.
 
+- Phase AO Payment Provider Contract / Dual TrueMoney Provider is provider contract/mock only. It adds docs, isolated mock contract, and `npm run smoke:payment-provider-contract`; it does not enable live provider, live TrueMoney, live TMNOne, real money, production DB, payout, withdrawal approve, credit/debit runtime action, migration, deploy, or runtime money-flow. Live provider work is allowed only after Phase AT certification with sandbox PASS, UAT PASS, reconciliation PASS, rollback PASS, audit PASS, permission PASS, secret scan PASS, webhook signature proof, credential handling proof, and final approval. SMS fallback remains manual review only.
+
 - Render Build Command must be `npm install && npx prisma generate`.
 - Render Start Command must be `npm start`.
 - Seed command is temporary only. Do not leave it in the Render Start Command.

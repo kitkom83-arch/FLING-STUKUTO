@@ -44,6 +44,7 @@ Safety boundary: docs/static only. No production DB, no real money, no live prov
 - Member bank approve/reject audit metadata must include reason required, previousStatus, nextStatus, targetType, targetId, actor admin id/username, siteCode, and before/after snapshot with masked account number only.
 - Phase AM Admin Bank Account Review Audit & Operator Handoff exposes `member.bank.approve` and `member.bank.reject` history through the read-only audit log panel for operators with `admin.audit.view`; it must not create audit rows, change review status, or call live bank/payment/provider/SMS/Slip OCR integrations.
 - Phase AN Admin Bank Account Review Release Pack / UAT Checklist records the required audit evidence and UAT checklist only. It does not introduce new audit actions or runtime write behavior.
+- Phase AO Payment Provider Contract / Dual TrueMoney Provider defines future audit requirements for provider keys `truemoney_official`, `tmnone`, `qr_payment_gateway`, `slip_verification`, `bank_statement`, `bank_sms_fallback`, and `manual_admin` only. It does not add runtime audit actions; future provider events must pass idempotency, duplicate guard, audit, and reconciliation before any future credit posting.
 - Reason is mandatory for high and critical write actions unless explicitly listed as no.
 - Critical financial actions require no self-approval where a requester/approver workflow exists.
 - Future live integration actions must not be enabled until certification evidence is complete.

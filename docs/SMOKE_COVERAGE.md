@@ -1629,27 +1629,54 @@ Boundary:
 - No payout.
 - No new runtime write action.
 
-## 53. Planned Payment Provider Roadmap Smoke Coverage
+## 53. Phase AO Payment Provider Contract Smoke Coverage
 
-Status: planned smoke only. Payment Provider Roadmap: Dual TrueMoney + QR Gateway + Bank Verification is a backlog / next-phase documentation track after Phase AN. No smoke file or npm script is added in this docs-only update.
+Phase AO status: Payment Provider Contract / Dual TrueMoney Provider is docs/static/mock only. It adds provider contracts, isolated mock normalization, and a local smoke guard. It does not add runtime money-flow, live provider calls, production DB access, payout, deployment, or migration.
 
-Planned smoke commands:
+Script:
 
-- `smoke:payment-provider-roadmap-docs`
+- `src/local-smoke-tests/paymentProviderContractSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:payment-provider-contract
+```
+
+Coverage:
+
+- Confirms `docs/PAYMENT_PROVIDER_CONTRACT.md`, `docs/DUAL_TRUEMONEY_PROVIDER_RUNBOOK.md`, and `docs/PAYMENT_PROVIDER_MOCK_UAT_CHECKLIST.md` exist.
+- Confirms provider keys `truemoney_official`, `tmnone`, `qr_payment_gateway`, `slip_verification`, `bank_statement`, `bank_sms_fallback`, and `manual_admin`.
+- Confirms TrueMoney Official / Partner Gateway contract includes create payment order, callback/webhook, payment inquiry, orderId/refId mapping, duplicate transaction guard, idempotency key, audit log, secret redaction, sandbox first, and no hardcoded credential.
+- Confirms TMNOne contract includes wallet balance inquiry, transaction history, transaction info, deposit/receive matching, configurable per-user/per-transaction/daily limits, role approval, audit log, duplicate lock, and secret-only handling for token/PIN/device data.
+- Confirms QR Payment / Payment Gateway contract includes generate QR order, QR download UX, full-screen QR, copy amount, copy reference/orderId, upload slip fallback, callback/inquiry, expiration, status, and reconciliation.
+- Confirms Slip Verification, Statement API, SMS fallback, and Manual Admin fallback route uncertain or weak signals to manual_review unless future idempotency + audit + reconciliation guards pass.
+- Confirms SMS fallback is manual_review only, SMS-only cannot credit, and forbidden state: `sms_detected -> credited`.
+- Confirms the isolated mock harness normalizes provider events, builds duplicate guard keys, blocks live provider mode, and scans output for secret-shaped values.
+- Confirms package script and `runAllLocalSmoke.js` registration.
+
+Boundary:
+
+- Docs/static/mock only.
+- No external network.
+- No production DB.
+- No real money.
+- No live provider/payment/bank/SMS/Slip OCR.
+- No live TrueMoney.
+- No live TMNOne.
+- No payout.
+- No withdrawal approve.
+- No credit/debit runtime action in this phase.
+- No migration.
+- No deploy.
+- No hardcoded secret/token/password/PIN/deviceId/DATABASE_URL.
+- Frontend must not decide credit posting.
+- Provider event must pass idempotency + audit + reconciliation guard before future credit posting.
+
+Planned future smoke commands:
+
 - `smoke:dual-truemoney-provider-contract`
 - `smoke:qr-download-ux-contract`
 - `smoke:deposit-verification-source-contract`
 - `smoke:sms-fallback-manual-review-guard`
 - `smoke:no-live-money-provider-guard`
-
-Planned coverage:
-
-- Confirm provider keys `truemoney_official`, `tmnone`, `qr_payment_gateway`, `slip_verification`, `bank_statement`, `bank_sms_fallback`, and `manual_admin`.
-- Confirm TrueMoney Official / Partner Gateway contract includes create payment order, callback/webhook, payment inquiry, orderId/refId mapping, duplicate transaction guard, idempotency key, audit log, secret redaction, and no hardcoded credential.
-- Confirm TMNOne contract includes wallet balance inquiry, transaction history, transaction info, deposit/receive matching, configurable per-user/per-transaction/daily limits, role approval, audit log, duplicate lock, and ENV/secret-manager handling for secret/token/PIN/device data.
-- Confirm QR Payment UX supports one-device mobile flow with QR display, Download QR, Open full screen QR, copy amount, copy reference/orderId, upload slip, callback/inquiry, status, expiration, and reconciliation.
-- Confirm Slip Verification, Statement API, SMS fallback, and Manual Admin fallback all route uncertain or weak signals to manual_review unless future idempotency + audit + reconciliation guards pass.
-- Confirm safety markers: mock/sandbox/staging only, no production DB, no real money, no live provider/payment/bank/SMS/Slip OCR, no credit/debit runtime action in this phase, no payout, no withdrawal approve, no migration, no deploy, no hardcoded secret/token/password/DATABASE_URL.
-- Confirm SMS fallback is manual_review only and never `sms_detected -> credited`.
-- Confirm frontend must not decide credit posting and provider event must pass idempotency + audit + reconciliation guard before future credit posting.
-- Reason/audit/permission guard required.

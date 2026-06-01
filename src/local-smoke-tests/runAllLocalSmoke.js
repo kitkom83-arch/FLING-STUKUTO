@@ -32,6 +32,9 @@ const RELATED_FILES = [
   "src/local-smoke-tests/adminGuardedBankAccountReviewSmoke.js",
   "src/local-smoke-tests/adminOperatorHandoffSmoke.js",
   "src/local-smoke-tests/adminBankAccountReviewReleasePackSmoke.js",
+  "src/payment-provider-mock/paymentProviderContract.js",
+  "src/payment-provider-mock/paymentProviderMockHarness.js",
+  "src/local-smoke-tests/paymentProviderContractSmoke.js",
   "src/local-smoke-tests/stagingReleaseReadinessSmoke.js",
   "src/local-smoke-tests/stagingDeployReadinessPackSmoke.js",
   "src/local-smoke-tests/disposableStagingDbDryRunPackSmoke.js",
@@ -133,6 +136,7 @@ const summary = [
   { key: "adminGuardedBankAccountReview", label: "admin-guarded-bank-account-review", status: "PENDING" },
   { key: "adminOperatorHandoff", label: "admin-operator-handoff", status: "PENDING" },
   { key: "adminBankAccountReviewReleasePack", label: "admin-bank-account-review-release-pack", status: "PENDING" },
+  { key: "paymentProviderContract", label: "payment-provider-contract", status: "PENDING" },
   { key: "stagingReleaseReadiness", label: "staging-release-readiness", status: "PENDING" },
   { key: "stagingDeployReadinessPack", label: "staging-deploy-readiness-pack", status: "PENDING" },
   {
@@ -313,6 +317,24 @@ const steps = [
     name: "node --check adminBankAccountReviewReleasePackSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/adminBankAccountReviewReleasePackSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check paymentProviderContract",
+    command: nodeCommand,
+    args: ["--check", "src/payment-provider-mock/paymentProviderContract.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check paymentProviderMockHarness",
+    command: nodeCommand,
+    args: ["--check", "src/payment-provider-mock/paymentProviderMockHarness.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check paymentProviderContractSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/paymentProviderContractSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -616,6 +638,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:admin-bank-account-review-release-pack"]),
     summaryKey: "adminBankAccountReviewReleasePack",
+  },
+  {
+    name: "npm run smoke:payment-provider-contract",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:payment-provider-contract"]),
+    summaryKey: "paymentProviderContract",
   },
   {
     name: "npm run smoke:staging-release-readiness",
