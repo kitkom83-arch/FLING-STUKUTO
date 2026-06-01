@@ -51,5 +51,6 @@ Safety boundary: docs/static only. No production DB, no real money, no live prov
 - Reason is required for wallet, bank approval/reject, blacklist, deposit approval, withdrawal approval/mark paid, promotion manage, wheel manage, role update, work schedule update, and settings update.
 - Audit is required for every write permission row.
 - Phase AM Admin Bank Account Review Audit & Operator Handoff is read-only: `members.bank.view` reads pending rows, `members.bank.approve` still controls approve/reject with reason required and audit required, and `admin.audit.view` reads review history only.
+- Phase AN Admin Bank Account Review Release Pack / UAT Checklist adds docs/static operator evidence only. It does not create new permissions, loosen existing permissions, or add runtime write actions.
 - No self-approval is required for wallet adjustment, withdrawal approval/mark paid, role-sensitive changes, future commission settlement, and any future dual-control action.
 - No live action until certification: provider, payment, bank, SMS, Slip OCR, payout, and production DB operation remain disabled or mock/sandbox only.

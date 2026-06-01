@@ -106,6 +106,81 @@ Use this checklist when handing staging to testers. It authorizes staging UAT on
 - If a DB-backed runtime smoke reports SKIP-SAFE, SKIPPED, or BLOCKED because the safe local/staging env guard is not satisfied, record the reason and continue only with the checks that are valid for the configured environment. Do not lower auth, permission, staging, or provider-mode guards to force a pass.
 - Do not screenshot Render ENV, database settings, shell output, request headers, or any page that shows raw secret values.
 
+## Admin Bank Account Review UAT Checklist
+
+Phase AN Admin Bank Account Review Release Pack / UAT Checklist covers staging/mock handoff for Pending Bank Accounts, approve/reject modal, reason required, audit/history, operator handoff, permission behavior, safe error state, and response leak scan.
+
+Required docs:
+
+- `docs/ADMIN_BANK_ACCOUNT_REVIEW_UAT_CHECKLIST.md`
+- `docs/ADMIN_BANK_ACCOUNT_REVIEW_OPERATOR_RUNBOOK.md`
+- `docs/ADMIN_BANK_ACCOUNT_REVIEW_RELEASE_PACK.md`
+
+Required smoke:
+
+```powershell
+npm run smoke:admin-bank-account-review-release-pack
+npm run smoke:admin-guarded-bank-account-review
+npm run smoke:admin-operator-handoff
+```
+
+Manual staging/mock browser checks:
+
+- Dashboard loads.
+- Member List loads.
+- Pending Bank Accounts loads and shows pending accounts or a safe empty state.
+- Approve modal opens.
+- Reject modal opens.
+- Empty reason validates before submit.
+- Authorized plus reason succeeds only in local/staging/mock.
+- Duplicate reviewed returns safe `409`.
+- Bank Account Review Audit / Review History shows `member.bank.approve` and `member.bank.reject` when audit fixture exists.
+- Operator Handoff is visible.
+- Permission behavior is correct for `members.bank.view`, `members.bank.approve`, and `admin.audit.view`.
+- Console has no red errors.
+- UI shows no `missing display value`, no `invalid numeric display`, and no dangerous buttons for credit/debit, payout, live transfer, provider live, or approve withdrawal.
+
+Safety boundary:
+
+- No production DB.
+- No real money.
+- No live provider/payment/bank/SMS/Slip OCR.
+- No migration.
+- No deploy.
+- No credit/debit.
+- No payout.
+- No new runtime write action.
+
+## Payment Provider Roadmap UAT Backlog
+
+Status: backlog / next phase after Phase AN. This is a docs-only UAT backlog for Payment Provider Roadmap: Dual TrueMoney + QR Gateway + Bank Verification. It does not approve production DB, real money, live provider/payment/bank/SMS/Slip OCR, credit/debit runtime action, payout, withdrawal approve, migration, deploy, or runtime money-flow change.
+
+Future UAT backlog:
+
+- QR display.
+- Download QR.
+- Open full screen QR.
+- Copy amount.
+- Copy reference/orderId.
+- Upload slip fallback.
+- Confirm deposit fallback.
+- One-device mobile flow copy: if the customer has one phone, download QR and scan it from the phone gallery in the bank app.
+- TrueMoney official mock using provider key `truemoney_official`.
+- TMNOne mock using provider key `tmnone`.
+- QR Payment / Payment Gateway mock using provider key `qr_payment_gateway`.
+- Slip verification mock using provider key `slip_verification`.
+- Statement mock using provider key `bank_statement`.
+- SMS fallback manual_review using provider key `bank_sms_fallback`.
+- Manual Admin fallback using provider key `manual_admin`.
+- No auto credit from SMS only.
+- SMS fallback status must be `sms_detected -> manual_review`, not `sms_detected -> credited`.
+- No live provider.
+- No real money.
+- Frontend must not decide credit posting.
+- Provider event must pass idempotency + audit + reconciliation guard before future credit posting.
+
+Future provider verification must stay mock/sandbox/staging only with no production DB, no real money, no live provider/payment/bank/SMS/Slip OCR, no migration, no deploy, no hardcoded secret/token/password/DATABASE_URL, no payout, and no withdrawal approve.
+
 ## Render Staging UAT Flow
 
 Use this flow only after the Render Web Service, Render staging PostgreSQL database, and Render dashboard env values are configured for mock/sandbox staging.
@@ -181,7 +256,7 @@ Phase C is Admin Wheel UI Manual QA + Handoff. Use `docs/ADMIN_WHEEL_HANDOFF.md`
 - Admin rewards check: admin config must expose reward management fields for staging/mock administration only; reward writes still require `reason`.
 - Admin spin history check: `GET /api/admin/wheel/spins` must return sanitized rows with reward type, cost type/amount, backend `prizeIndex`, spin ID, masked IP values, and user-agent hash when present.
 - Admin Reward Claims check: `GET /api/admin/wheel/member-rewards` must return sanitized `{ rows, summary }`; claim/cancel uses `PATCH /api/admin/wheel/member-rewards/:id/status` with required `reason`, admin auth, site access, permission guard, and `wheel.memberReward.status.update` audit. Manual `claimed` is for staging/mock `item` rewards only and must not perform real payout, wallet credit, point/ticket mutation, provider, bank, payment, SMS, or Slip OCR action.
-- Admin reports check: the Admin Lucky Wheel reports tab must derive only from admin config/spins/member-rewards and show total spins, unique members spun, rewards issued, pending/claimed/expired/cancelled rewards, total point cost, total ticket cost, stock used, top reward, top stock-used reward, empty/no reward count, stock usage, reward type summary, daily spin count, claim status summary, and member reward summary without `NaN` or `undefined`.
+- Admin reports check: the Admin Lucky Wheel reports tab must derive only from admin config/spins/member-rewards and show total spins, unique members spun, rewards issued, pending/claimed/expired/cancelled rewards, total point cost, total ticket cost, stock used, top reward, top stock-used reward, empty/no reward count, stock usage, reward type summary, daily spin count, claim status summary, and member reward summary without `invalid numeric display` or `missing display value`.
 - Audit history check: audit history must come from the existing admin audit endpoint and show safe time, actor/admin, action, target type, target ID, site code, reason, before summary, and after summary only, including `wheel.memberReward.status.update`.
 - Permission contract check: Lucky Wheel routes must use `wheel.view`/`wheel.campaign.view`, `wheel.campaign.update`, `wheel.rewards.create`, `wheel.rewards.update`, `wheel.rewards.status.update`, `wheel.spins.view`, `wheel.claims.view`, `wheel.claims.status.update`, and `wheel.audit.view`/`admin.audit.view` as documented in `docs/ADMIN_PERMISSION_MATRIX.md`.
 - Secret leak check: responses, UI details, docs, logs, and smoke output must not expose raw tokens, auth headers, passwords, provider secrets, database URLs, raw stack traces, or raw unmasked IPs.
@@ -199,7 +274,7 @@ Phase C is Admin Wheel UI Manual QA + Handoff. Use `docs/ADMIN_WHEEL_HANDOFF.md`
 - Admin rewards: verify create/edit reward uses staging/mock data only and rejects empty `reason`.
 - Admin Reward Claims: verify list filters for date range, member, reward type, status, campaign, and source spin ID; verify claim/cancel rejects empty `reason`, creates audit, and never changes reward value or performs live payout.
 - Admin spin history: verify `GET /api/admin/wheel/spins` returns sanitized rows, supports reward ID filtering, and shows masked IP plus user-agent hash only when available.
-- Admin reports: verify reports render client-side summaries from config/spins/member-rewards only, including empty/no reward count, daily spin count, claim status summary, and member reward summary, and never show `NaN`, `undefined`, or real-money payout data.
+- Admin reports: verify reports render client-side summaries from config/spins/member-rewards only, including empty/no reward count, daily spin count, claim status summary, and member reward summary, and never show `invalid numeric display`, `missing display value`, or real-money payout data.
 - Audit history: verify wheel audit rows show safe time, actor/admin, action, target type, target ID, site code, reason, before summary, and after summary only.
 - Secret leak scan: verify smoke output, API responses, docs, logs, and UI details do not expose DB URLs, tokens, passwords, auth headers, provider secrets, raw stacks, or raw IPs.
 - Rollback note: if any item fails, stop UAT, keep external modes mock/sandbox/disabled, disable staging tester access or roll back the staging deploy, and never point staging at production DB.
@@ -213,7 +288,7 @@ Phase C is Admin Wheel UI Manual QA + Handoff. Use `docs/ADMIN_WHEEL_HANDOFF.md`
 - Confirm Reward Claims list loads sanitized pending/claimed/expired/cancelled rewards, shows detail modal fields, and claim/cancel requires `reason` before calling the backend.
 - Confirm Mark as claimed is available only for appropriate manual item rewards and does not run real payout, wallet credit, point/ticket mutation, provider, bank, payment, SMS, or Slip OCR.
 - Confirm Spin history loads sanitized rows or `ไม่พบข้อมูล`, shows masked IP only, and detail modal does not expose raw IP, user-agent, token, password, secret, authorization header, or database URL.
-- Confirm Reports derive from admin config/spins only and never show `NaN` or `undefined`; zero-spin state must render `0`, `0 %`, `ไม่จำกัด`, or `ไม่พบข้อมูล`.
+- Confirm Reports derive from admin config/spins only and never show `invalid numeric display` or `missing display value`; zero-spin state must render `0`, `0 %`, `ไม่จำกัด`, or `ไม่พบข้อมูล`.
 - Confirm Audit history shows existing wheel actions from `/api/admin/audit-logs` or the safe placeholder when the audit endpoint is unavailable.
 - Confirm `401`, `403`, and `404` responses show the safe Admin Lucky Wheel messages documented in `docs/API.md`.
 - Confirm the member wheel API and local `lucky-wheel-game` bridge remain backend-selected and reject frontend-submitted reward result fields.
@@ -402,7 +477,7 @@ Final manual browser QA checklist:
 - Use `docs/STAGING_ADMIN_BROWSER_QA.md`.
 - Confirm route refresh does not return `404`.
 - Confirm tabs, modals, disabled states, access-denied states, and reason validation.
-- Confirm no `undefined`, `NaN`, `[object Object]`, raw credential value, DB connection value, request auth header value, or JWT-shaped value is visible.
+- Confirm no `missing display value`, `invalid numeric display`, `raw object display value`, raw credential value, DB connection value, request auth header value, or JWT-shaped value is visible.
 
 Required staging smoke before handoff:
 

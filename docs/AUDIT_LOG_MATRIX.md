@@ -43,6 +43,7 @@ Safety boundary: docs/static only. No production DB, no real money, no live prov
 - Before snapshot and after snapshot must never include token, password, secret, raw database URL, auth header, raw provider credential, raw SMS credential, raw bank credential, raw Slip OCR credential, raw user-agent, or unmasked IP.
 - Member bank approve/reject audit metadata must include reason required, previousStatus, nextStatus, targetType, targetId, actor admin id/username, siteCode, and before/after snapshot with masked account number only.
 - Phase AM Admin Bank Account Review Audit & Operator Handoff exposes `member.bank.approve` and `member.bank.reject` history through the read-only audit log panel for operators with `admin.audit.view`; it must not create audit rows, change review status, or call live bank/payment/provider/SMS/Slip OCR integrations.
+- Phase AN Admin Bank Account Review Release Pack / UAT Checklist records the required audit evidence and UAT checklist only. It does not introduce new audit actions or runtime write behavior.
 - Reason is mandatory for high and critical write actions unless explicitly listed as no.
 - Critical financial actions require no self-approval where a requester/approver workflow exists.
 - Future live integration actions must not be enabled until certification evidence is complete.

@@ -44,6 +44,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `adminBackofficeReadOnlyIntegrationSmoke.js` | `npm run smoke:admin-backoffice-read-only-integration` | No | No | No | Static contract plus unauth HTTP guard | Phase AK Admin Backoffice Read-only API Integration contract for dashboard/reports, member list/detail, wallet ledger, deposit/withdraw report, bank pending, and mock statement read-only UI/API wiring; no write action, no production DB, no real money, and no live integration. |
 | `adminGuardedBankAccountReviewSmoke.js` | `npm run smoke:admin-guarded-bank-account-review` | No | No | No | Static contract plus unauth HTTP guard | Phase AL Admin Guarded Bank Account Review contract for pending bank approve/reject guarded write foundation, reason/audit/permission guard, duplicate guard, safe errors, no production DB, no real money, and no live integration. |
 | `adminOperatorHandoffSmoke.js` | `npm run smoke:admin-operator-handoff` | No | No | No | Static contract plus unauth HTTP guard | Phase AM Admin Bank Account Review Audit & Operator Handoff contract for read-only review history, `admin.audit.view` permission/API guard, operator safety copy, response leak scan, duplicate reviewed safe `409`, reason required, audit required, no production DB, no real money, and no live integration. |
+| `adminBankAccountReviewReleasePackSmoke.js` | `npm run smoke:admin-bank-account-review-release-pack` | No | No | No | Static docs/release pack contract | Phase AN Admin Bank Account Review Release Pack / UAT Checklist contract for release pack docs, UAT checklist, operator runbook, Phase AL/AM/AN markers, permission markers, audit action markers, reason required, duplicate safe `409`, no production DB, no real money, no live provider/payment/bank/SMS/Slip OCR, and static safety scan. |
 | `adminWorkScheduleSmoke.js` | `npm run smoke:admin-work-schedule` | Yes | Yes | Yes | Syntax check only | Admin work schedule UI/API checks for schedule list/read/update, permission guards, login block/allow, emergency override, expired override, audit history, rollback, and leak scan. |
 | `adminWorkScheduleUiSmoke.js` | `npm run smoke:admin-work-schedule-ui` | Yes | Yes | Yes | Syntax check only | Static admin schedule UI route/assets, owner flow, no-permission block, emergency override, masked audit history, and leak scan. |
 | `adminAuditSecuritySmoke.js` | `npm run smoke:admin-audit-security` | Yes | Yes | Yes | Syntax check only | Static audit/security UI route/assets, UX markers, report endpoints, filters, permission block, empty response shape, masked IP, raw user-agent omission, and leak scan. |
@@ -1591,4 +1592,64 @@ Boundary:
 - No deploy.
 - No credit/debit.
 - No payout.
+
+## 52. Phase AN Admin Bank Account Review Release Pack / UAT Checklist
+
+Phase AN status: docs/static release pack, UAT checklist, and operator runbook for Admin Bank Account Review before staging/mock handoff.
+
+Script:
+
+- `src/local-smoke-tests/adminBankAccountReviewReleasePackSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:admin-bank-account-review-release-pack
+```
+
+Coverage:
+
+- Confirms `docs/ADMIN_BANK_ACCOUNT_REVIEW_UAT_CHECKLIST.md`, `docs/ADMIN_BANK_ACCOUNT_REVIEW_OPERATOR_RUNBOOK.md`, and `docs/ADMIN_BANK_ACCOUNT_REVIEW_RELEASE_PACK.md` exist.
+- Confirms Phase AL, Phase AM, and Phase AN markers are present.
+- Confirms permission markers for `members.bank.view`, `members.bank.approve`, and `admin.audit.view`.
+- Confirms audit action markers for `member.bank.approve` and `member.bank.reject`.
+- Confirms reason required, duplicate reviewed safe `409`, response leak scan, no production DB, no real money, and no live provider/payment/bank/SMS/Slip OCR markers.
+- Confirms package script and `runAllLocalSmoke.js` registration.
+- Confirms release pack docs do not contain unsafe placeholder copy or secret-shaped literal values.
+
+Boundary:
+
+- Docs/static only.
+- No production DB.
+- No real money.
+- No live provider/payment/bank/SMS/Slip OCR.
+- No migration.
+- No deploy.
+- No credit/debit.
+- No payout.
+- No new runtime write action.
+
+## 53. Planned Payment Provider Roadmap Smoke Coverage
+
+Status: planned smoke only. Payment Provider Roadmap: Dual TrueMoney + QR Gateway + Bank Verification is a backlog / next-phase documentation track after Phase AN. No smoke file or npm script is added in this docs-only update.
+
+Planned smoke commands:
+
+- `smoke:payment-provider-roadmap-docs`
+- `smoke:dual-truemoney-provider-contract`
+- `smoke:qr-download-ux-contract`
+- `smoke:deposit-verification-source-contract`
+- `smoke:sms-fallback-manual-review-guard`
+- `smoke:no-live-money-provider-guard`
+
+Planned coverage:
+
+- Confirm provider keys `truemoney_official`, `tmnone`, `qr_payment_gateway`, `slip_verification`, `bank_statement`, `bank_sms_fallback`, and `manual_admin`.
+- Confirm TrueMoney Official / Partner Gateway contract includes create payment order, callback/webhook, payment inquiry, orderId/refId mapping, duplicate transaction guard, idempotency key, audit log, secret redaction, and no hardcoded credential.
+- Confirm TMNOne contract includes wallet balance inquiry, transaction history, transaction info, deposit/receive matching, configurable per-user/per-transaction/daily limits, role approval, audit log, duplicate lock, and ENV/secret-manager handling for secret/token/PIN/device data.
+- Confirm QR Payment UX supports one-device mobile flow with QR display, Download QR, Open full screen QR, copy amount, copy reference/orderId, upload slip, callback/inquiry, status, expiration, and reconciliation.
+- Confirm Slip Verification, Statement API, SMS fallback, and Manual Admin fallback all route uncertain or weak signals to manual_review unless future idempotency + audit + reconciliation guards pass.
+- Confirm safety markers: mock/sandbox/staging only, no production DB, no real money, no live provider/payment/bank/SMS/Slip OCR, no credit/debit runtime action in this phase, no payout, no withdrawal approve, no migration, no deploy, no hardcoded secret/token/password/DATABASE_URL.
+- Confirm SMS fallback is manual_review only and never `sms_detected -> credited`.
+- Confirm frontend must not decide credit posting and provider event must pass idempotency + audit + reconciliation guard before future credit posting.
 - Reason/audit/permission guard required.

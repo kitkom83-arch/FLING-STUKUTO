@@ -113,6 +113,20 @@ npm run smoke:financial-ledger-staging-dry-run-migration
 
 - Phase V is dry-run only. `docs/FINANCIAL_LEDGER_STAGING_DRY_RUN_MIGRATION_PLAN.md`, `docs/FINANCIAL_LEDGER_STAGING_BACKUP_RESTORE_PROOF.md`, and `docs/FINANCIAL_LEDGER_STAGING_ROLLBACK_PROOF.md` are staging/disposable DB only artifacts. No deploy without explicit approval. No seed without explicit approval. No production DB. If a staging/disposable DB is missing, record NOT EXECUTED and do not fabricate migration, backup/restore, or rollback proof.
 
+- Run the Phase AN Admin Bank Account Review Release Pack / UAT Checklist guard before handing the bank account review flow to staging/mock operators:
+
+```powershell
+npm run smoke:admin-bank-account-review-release-pack
+```
+
+- `docs/ADMIN_BANK_ACCOUNT_REVIEW_UAT_CHECKLIST.md`, `docs/ADMIN_BANK_ACCOUNT_REVIEW_OPERATOR_RUNBOOK.md`, and `docs/ADMIN_BANK_ACCOUNT_REVIEW_RELEASE_PACK.md` are docs/static release pack artifacts only. Phase AN does not require deploy because there is no runtime behavior change. It does not require migration or seed. It does not approve production DB, real money, live provider/payment/bank/SMS/Slip OCR, credit/debit, payout, withdrawal approve, or new runtime write actions. Staging/mock handoff still requires `members.bank.view`, `members.bank.approve`, `admin.audit.view`, reason required, audit required, duplicate reviewed safe `409`, response leak scan, and manual browser UAT evidence.
+
+- Payment Provider Roadmap: Dual TrueMoney + QR Gateway + Bank Verification remains future phase backlog after Phase AN. Do not enable real money, live provider/payment/bank/SMS/Slip OCR, live transfer, credit/debit runtime action, payout, withdrawal approve, production DB, migration, or deploy from this roadmap note.
+
+- Future payment/provider work is blocked until sandbox PASS, UAT PASS, reconciliation PASS, rollback PASS, audit PASS, permission PASS, secret scan PASS, and final approval. TrueMoney Official / Partner Gateway (`truemoney_official`), TMNOne (`tmnone`), QR Payment / Payment Gateway (`qr_payment_gateway`), Slip Verification (`slip_verification`), Statement API (`bank_statement`), Bank SMS fallback (`bank_sms_fallback`), and Manual Admin fallback (`manual_admin`) must stay mock/sandbox/staging only until that approval.
+
+- SMS fallback is manual_review only. The allowed path is `sms_detected -> manual_review`; `sms_detected -> credited` is forbidden. Frontend must not decide credit posting. Provider event must pass idempotency + audit + reconciliation guard before future credit posting. No hardcoded secret/token/password/DATABASE_URL is allowed.
+
 - Render Build Command must be `npm install && npx prisma generate`.
 - Render Start Command must be `npm start`.
 - Seed command is temporary only. Do not leave it in the Render Start Command.
