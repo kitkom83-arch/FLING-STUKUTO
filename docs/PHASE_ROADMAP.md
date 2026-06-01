@@ -27,6 +27,7 @@ Safety boundary: docs/static only. No production DB, no real money, no live prov
 | Phase AR Ledger/Reconciliation Guard | Define deposit ledger/reconciliation guard recommendation contract. | Mock/ledger guard contract only; consumes Phase AQ sources and returns mock recommendations, reconciliation snapshots, mismatch review, duplicate suspect, manual review, and rejection markers. | Phase AR allowed docs, `src/ledger-mock/depositLedgerReconciliationGuard.js`, `src/ledger-mock/depositLedgerReconciliationGuardHarness.js`, `src/local-smoke-tests/depositLedgerReconciliationGuardSmoke.js`, `package.json`, `src/local-smoke-tests/runAllLocalSmoke.js`. | Runtime money-flow, production DB, real money, real QR, real payment, live provider/payment/bank/SMS/Slip OCR, live TrueMoney, live TMNOne, live QR payment gateway, auto-credit, payout, migration, deploy, external network, runtime ledger mutation, ledger posting runtime action, hardcoded secrets. | `npm run smoke:deposit-ledger-reconciliation-guard`, `npm run check`, `git diff --check`, full local smoke before commit readiness. | Ledger guard contract and harness are covered; `ledger_posting_candidate_mock` is only a mock recommendation and never credits, debits, mutates wallet, or posts ledger. | Mock/ledger guard contract only; no real QR, no real payment, no live provider, no runtime money-flow, no auto-credit, no runtime ledger mutation. |
 | Phase AS Sandbox Integration | Prove sandbox-readiness contracts before any live certification. | Sandbox readiness contract only; provider modes `mock`, `sandbox_configured_not_called`, `sandbox_dry_run_only`, and future marker `live_after_certification_only`; no external network execution in Phase AS. | Phase AS allowed docs, `src/sandbox-integration/sandboxIntegrationReadinessContract.js`, `src/sandbox-integration/sandboxIntegrationReadinessHarness.js`, `src/local-smoke-tests/sandboxIntegrationReadinessSmoke.js`, `package.json`, `src/local-smoke-tests/runAllLocalSmoke.js`. | Live provider/payment/bank/SMS/Slip OCR, production DB, real money, real QR, payout, withdrawal approve, auto-credit, runtime money-flow, runtime ledger mutation, external network execution in Phase AS, real secrets. | `npm run smoke:sandbox-integration-readiness`, `npm run check`, `git diff --check`, full local smoke before commit readiness. | Sandbox readiness contract and harness are covered; sandbox result must never credit member, mutate wallet, post real ledger, or call external network. | sandbox readiness contract only; no real QR, no real payment, no live provider, no runtime money-flow, no auto-credit, no runtime ledger mutation. |
 | Phase AT Live Certification | Final approval gate before live payment/provider/bank use. | Security checklist, provider credentials checklist, webhook signature checklist, rollback proof, backup/restore proof, reconciliation proof, final approval. | Certification docs/evidence only unless explicitly approved. | Direct live use without approval, production DB mutation from uncertified flow, real payout, secret hardcoding, missing audit/reconciliation. | Security PASS, provider credential PASS, webhook signature PASS, rollback PASS, backup/restore PASS, reconciliation PASS, audit PASS, permission PASS, secret scan PASS, final approval. | Live is blocked until all certification evidence and final approval are recorded. | Certification only; no live operation by default. |
+| ORO-0 OroPlay Docs Only | Align docs with current OroPlay production context and safe Seamless Wallet plan. | Docs/static only: current status, integration plan, Seamless Wallet contract, API mapping, roadmap, smoke coverage. | `docs/OROPLAY_CURRENT_STATUS.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`, `docs/OROPLAY_SEAMLESS_WALLET_CONTRACT.md`, `docs/API_MAPPING.md`, `docs/PHASE_ROADMAP.md`, `docs/SMOKE_COVERAGE.md`. | Runtime code, routes, controllers, services, migrations, deploy, production DB, real money runtime flow, live payout, live provider calls, callback wallet mutation, hardcoded secrets. | `npm run check`, `npm run smoke:master-spec-mapping`, `git diff --check`. | OroPlay docs and planning rows exist, contain no secrets, and preserve docs/static boundary. | Docs/static only; no runtime behavior change. |
 
 ## Phase Gates
 
@@ -86,3 +87,24 @@ Phase AS status marker:
 Phase next after AS:
 
 - Phase AT: Live Certification.
+
+OroPlay phase sequence after current mock/contract phases:
+
+- ORO-0: docs only.
+- ORO-1: mock contract only.
+- ORO-2: staging callback design.
+- ORO-3: reconciliation guard alignment.
+- ORO-4: sandbox/staging integration.
+- ORO-5: live certification only after approval.
+
+ORO-0 status marker:
+
+- docs/static only.
+- current production direction is Seamless Wallet unless confirmed otherwise.
+- no production DB.
+- no real money runtime flow.
+- no live provider call.
+- no callback wallet mutation.
+- no hardcoded secret.
+- no migration.
+- no deploy.

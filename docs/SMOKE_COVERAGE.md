@@ -1819,3 +1819,51 @@ Boundary:
 - no auto-credit.
 - no runtime ledger mutation.
 - ledger guard recommendation must never credit member.
+
+## 58. ORO-0 OroPlay Docs-Only Coverage
+
+ORO-0 status: OroPlay API / Seamless Wallet integration planning is docs/static only. It records current production context, a safe phase plan, and callback contract expectations without adding runtime endpoints, production DB access, real money runtime flow, live provider calls, live payout, deployment, migration, or hardcoded secrets.
+
+Docs:
+
+- `docs/OROPLAY_CURRENT_STATUS.md`
+- `docs/OROPLAY_INTEGRATION_PLAN.md`
+- `docs/OROPLAY_SEAMLESS_WALLET_CONTRACT.md`
+- `docs/API_MAPPING.md`
+- `docs/PHASE_ROADMAP.md`
+- `docs/SMOKE_COVERAGE.md`
+
+Current validation:
+
+```powershell
+npm run check
+npm run smoke:master-spec-mapping
+git diff --check
+```
+
+Planned future smoke coverage:
+
+- `smoke:oroplay-seamless-contract`
+
+Future `smoke:oroplay-seamless-contract` should check:
+
+- Basic Auth env-only credential boundary.
+- Balance callback format.
+- Debit behavior for negative amount.
+- Credit behavior for positive amount.
+- Duplicate `transactionCode` guard.
+- Insufficient balance behavior.
+- Invalid finished round guard.
+- Secret leak scan.
+
+Boundary:
+
+- Docs/static only.
+- No production DB.
+- No real money runtime flow.
+- No live provider call.
+- No live payout.
+- No callback wallet mutation.
+- No hardcoded credential-shaped values, payment address credentials, or messaging bot credentials.
+- No migration.
+- No deploy.

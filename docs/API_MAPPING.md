@@ -155,3 +155,21 @@ Status: Phase AS mock/static/sandbox-readiness only. These rows define future sa
 | webhook contract validation | `/api/admin/sandbox/callbacks/:providerKey/validate` | POST | Phase AS mock/static/sandbox-readiness only | `mock` | no real QR; no real payment; no auto-credit; no ledger posting runtime action; no external network in Phase AS; no live provider |
 | sandbox reconciliation handoff | `/api/admin/sandbox/providers/:providerKey/readiness` | GET | Phase AS mock/static/sandbox-readiness only | `mock` | no real QR; no real payment; no auto-credit; no ledger posting runtime action; no external network in Phase AS; no live provider |
 | sandbox ledger guard handoff | `/api/admin/sandbox/providers/:providerKey/dry-run` | POST | Phase AS mock/static/sandbox-readiness only | `mock` | no real QR; no real payment; no auto-credit; no ledger posting runtime action; no external network in Phase AS; no live provider |
+
+## Future OroPlay API Mapping
+
+Status: ORO-0 docs/static planning only for OroPlay API / Seamless Wallet integration. These rows do not add runtime endpoints, routes, controllers, services, migrations, deploy, production DB access, real money runtime flow, live payout, live provider calls, callback wallet mutation, or hardcoded secrets.
+
+Safety markers: mock/static/staging-only planning; future live integration requires explicit certification. Current production direction is Seamless Wallet unless confirmed otherwise. Provider credential handling must remain internal service only and env-only.
+
+| area | future endpoint or service | method | current phase | integration mode | safety |
+| --- | --- | --- | --- | --- | --- |
+| Provider status check | `/api/oroplay/status` or admin-only service action | GET or internal service | ORO-0 docs/static only | future live integration planning | status only; no secret display; no live call in ORO-0 |
+| Provider credential exchange | internal service only, not public member endpoint | internal | ORO-0 docs/static only | future live integration planning | env-only credential; no public credential route |
+| Vendor list sync | internal provider sync service | internal | ORO-0 docs/static only | future live integration planning | staging/mock first; sanitized logs |
+| Game list sync | internal provider sync service | internal | ORO-0 docs/static only | future live integration planning | staging/mock first; no member wallet mutation |
+| Game detail sync | internal provider sync service | internal | ORO-0 docs/static only | future live integration planning | staging/mock first; no secret response fields |
+| Launch URL service | internal launch service for member game entry | internal or guarded member action | ORO-0 docs/static only | future live integration planning | no live launch until certification; launch URL must not be logged raw |
+| Betting history sync | internal reconciliation service | internal | ORO-0 docs/static only | future live integration planning | reconciliation only; wallet ledger remains source of truth |
+| Callback balance endpoint | `/api/oroplay/balance`, optional `/api/balance` alias only if required | POST | ORO-0 docs/static only | Seamless Wallet planning | Basic Auth env-only; read balance only; no wallet mutation |
+| Callback transaction endpoint | `/api/oroplay/transaction`, optional `/api/transaction` alias only if required | POST | ORO-0 docs/static only | Seamless Wallet planning | duplicate `transactionCode`, insufficient balance, invalid finished round, ledger/idempotency/reconciliation guards before mutation |
