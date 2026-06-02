@@ -44,6 +44,9 @@ const RELATED_FILES = [
   "src/controllers/oroplayCallbackStub.controller.js",
   "src/routes/oroplayCallbackStub.routes.js",
   "src/local-smoke-tests/oroplayCallbackStubSmoke.js",
+  "src/game-provider-mock/oroplayCallbackReadinessContract.js",
+  "src/game-provider-mock/oroplayCallbackReadinessHarness.js",
+  "src/local-smoke-tests/oroplayCallbackReadinessSmoke.js",
   "src/payment-provider-mock/memberQrDepositUxContract.js",
   "src/payment-provider-mock/memberQrDepositMockHarness.js",
   "src/local-smoke-tests/memberQrDepositUxSmoke.js",
@@ -171,6 +174,7 @@ const summary = [
   { key: "oroplaySeamlessContract", label: "oroplay-seamless-contract", status: "PENDING" },
   { key: "oroplayCallbackBoundary", label: "oroplay-callback-boundary", status: "PENDING" },
   { key: "oroplayCallbackStub", label: "oroplay-callback-stub", status: "PENDING" },
+  { key: "oroplayCallbackReadiness", label: "oroplay-callback-readiness", status: "PENDING" },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
   { key: "depositVerificationSource", label: "deposit-verification-source", status: "PENDING" },
   {
@@ -435,6 +439,24 @@ const steps = [
     name: "node --check oroplayCallbackStubSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/oroplayCallbackStubSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackReadinessContract",
+    command: nodeCommand,
+    args: ["--check", "src/game-provider-mock/oroplayCallbackReadinessContract.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackReadinessHarness",
+    command: nodeCommand,
+    args: ["--check", "src/game-provider-mock/oroplayCallbackReadinessHarness.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackReadinessSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oroplayCallbackReadinessSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -834,6 +856,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oroplay-callback-stub"]),
     summaryKey: "oroplayCallbackStub",
+  },
+  {
+    name: "npm run smoke:oroplay-callback-readiness",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oroplay-callback-readiness"]),
+    summaryKey: "oroplayCallbackReadiness",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

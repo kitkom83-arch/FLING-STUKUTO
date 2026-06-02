@@ -1973,3 +1973,54 @@ Boundary:
 - No payout.
 - No migration.
 - No deploy.
+
+## 61. ORO-2C OroPlay Callback Runtime Readiness Coverage
+
+ORO-2C status: Callback Runtime Readiness Contract is docs/static/mock only. It adds a readiness doc, an isolated contract, an isolated mock harness, and static smoke coverage. It does not add runtime processing, production DB access, real money runtime flow, live OroPlay API calls, external network, runtime wallet mutation, runtime ledger mutation, Prisma write, migration, deploy, payout, auto-credit, real client secrets, or provider alias enablement.
+
+Docs:
+
+- `docs/OROPLAY_CALLBACK_RUNTIME_READINESS.md`
+- `docs/OROPLAY_CALLBACK_API_DESIGN.md`
+- `docs/OROPLAY_INTEGRATION_PLAN.md`
+- `docs/API_MAPPING.md`
+- `docs/PHASE_ROADMAP.md`
+- `docs/SMOKE_COVERAGE.md`
+
+Script:
+
+- `src/local-smoke-tests/oroplayCallbackReadinessSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:oroplay-callback-readiness
+```
+
+Coverage:
+
+- Confirms new readiness doc exists.
+- Confirms readiness contract and harness files exist.
+- Confirms package script exists.
+- Confirms `runAllLocalSmoke` registers `smoke:oroplay-callback-readiness`.
+- Confirms member mapping coverage for valid `userCode`, unknown `userCode`, blocked member, inactive member, and malformed `userCode`.
+- Confirms callback payload validation coverage for balance and transaction readiness.
+- Confirms idempotency coverage for duplicate `transactionCode`, same payload replay, round/session replay, and conflicting replay to manual review / fail-closed.
+- Confirms sanitized callback log coverage for safe metadata only with masked/hash identifiers.
+- Confirms ledger/reconciliation boundary coverage with no runtime wallet mutation, no runtime ledger mutation, and no Prisma write.
+- Confirms ORO-2B fail-closed stub remains fail-closed.
+- Confirms optional alias disabled guard for `/api/balance` and `/api/transaction`.
+- Confirms new mock files contain no Prisma/db write, wallet mutation, ledger mutation, external network, or secret-shaped value markers.
+
+Boundary:
+
+- Readiness contract only.
+- No production DB.
+- No real money.
+- No live OroPlay API call.
+- No external network.
+- No client secret.
+- No runtime wallet mutation.
+- No runtime ledger mutation.
+- No migration.
+- No deploy.
