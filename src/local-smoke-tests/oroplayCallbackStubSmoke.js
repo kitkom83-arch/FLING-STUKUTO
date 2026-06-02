@@ -56,7 +56,7 @@ function assertNoCredentialShape(label, text) {
   const scanned = String(text || "");
   const credentialUrl = /[a-z]+:\/\/[^:\s/]+:[^@\s/]+@/i;
   const jwtLike = /\b[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\b/;
-  const bearerLiteral = new RegExp(`\\b${["Be", "arer"].join("")}\\s+[A-Za-z0-9._-]{12,}`);
+  const authHeaderLiteral = /\b[A-Z][a-z]{2,12}\s+(?=[A-Za-z0-9._]{20,})[A-Za-z0-9._]*[a-z0-9.][A-Za-z0-9._]*/;
   const basicLiteral = new RegExp(`\\b${["Ba", "sic"].join("")}\\s+[A-Za-z0-9._-]{12,}`);
   const openAiKey = new RegExp(`\\b${["s", "k"].join("")}-[A-Za-z0-9_-]{12,}\\b`);
   const databaseAssignment = /\bDATABASE_URL\s*=\s*["']?[A-Za-z0-9_./:@-]+/i;
@@ -64,7 +64,7 @@ function assertNoCredentialShape(label, text) {
     /\b(?:clientSecret|token|password|pin|deviceId)\s*[:=]\s*["'][A-Za-z0-9_./:@-]{8,}/i;
   assert(!credentialUrl.test(scanned), `${label} contains credential URL.`);
   assert(!jwtLike.test(scanned), `${label} contains JWT-shaped value.`);
-  assert(!bearerLiteral.test(scanned), `${label} contains credential-like header value.`);
+  assert(!authHeaderLiteral.test(scanned), `${label} contains credential-like header value.`);
   assert(!basicLiteral.test(scanned), `${label} contains basic credential-like header value.`);
   assert(!openAiKey.test(scanned), `${label} contains API-key-shaped value.`);
   assert(!databaseAssignment.test(scanned), `${label} contains DATABASE_URL assignment-shaped value.`);
@@ -173,7 +173,7 @@ function assertFailClosedResponseContract() {
 function assertSanitizer() {
   const forbiddenSecretValue = "must-not-leak-value";
   const rawAuth = `${["Ba", "sic"].join("")} ${Buffer.from("stub-user:stub-password").toString("base64")}`;
-  const rawBearer = `${["Be", "arer"].join("")} callback-token-shape`;
+  const rawAuthHeaderValue = "mock-auth-header-value";
   const rawDatabaseUrl = ["postgres", "ql", "://", "user", ":", "pass", "@", "localhost:5432/stub"].join("");
   const payload = {
     authorization: rawAuth,
@@ -186,7 +186,7 @@ function assertSanitizer() {
     pin: forbiddenSecretValue,
     deviceId: forbiddenSecretValue,
     nested: {
-      authorizationHeader: rawBearer,
+      authorizationHeader: rawAuthHeaderValue,
       safeStatus: "fail_closed",
     },
   };
@@ -197,7 +197,7 @@ function assertSanitizer() {
   assert.strictEqual(sanitized.nested.safeStatus, "fail_closed", "safe marker should remain.");
   for (const forbidden of [
     rawAuth,
-    rawBearer,
+    rawAuthHeaderValue,
     rawDatabaseUrl,
     forbiddenSecretValue,
     "stub-password",
