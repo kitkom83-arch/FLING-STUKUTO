@@ -167,3 +167,9 @@ ORO-4D maps mock OroPlay-style balance and transaction request envelopes into in
 ORO-4E current. Callback Controller Facade Dry-Run / Still No Express Route Wiring is docs, contract, static/mock harness, and local smoke only.
 
 ORO-4E simulates mock auth decision, request envelope mapper, runtime shadow invocation, response envelope, and sanitized log preview by direct function call only. It keeps default response behavior fail_closed, expressRouteWired=false, runtimeWiredToLiveRoute=false, aliasBalanceEnabled=false, aliasTransactionEnabled=false, walletMutationAllowed=false, ledgerMutationAllowed=false, prismaWriteAllowed=false, externalNetworkAllowed=false, and activationAllowed=false. It does not wire Express routes, edit `src/app.js`, open public aliases, call OroPlay, mutate wallet or ledger state, write through Prisma, migrate, deploy, payout, auto-credit, or change production config.
+
+## ORO-4F Current
+
+ORO-4F current. Staging Route Wiring Design Contract / No Express Mount Yet is docs, contract, static/mock harness, and local smoke only.
+
+ORO-4F documents future staging-only route paths `/api/oroplay/balance` and `/api/oroplay/transaction` while keeping public aliases `/api/balance` and `/api/transaction` disabled. It keeps expressRouteMounted=false, publicAliasMounted=false, runtimeWiredToLiveRoute=false, walletMutationAllowed=false, ledgerMutationAllowed=false, prismaWriteAllowed=false, externalNetworkAllowed=false, productionConfigTouched=false, and activationAllowed=false. It does not wire Express routes, edit `src/app.js`, open public aliases, call OroPlay, mutate wallet or ledger state, write through Prisma, migrate, deploy, payout, auto-credit, or change production config.

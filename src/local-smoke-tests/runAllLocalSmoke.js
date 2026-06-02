@@ -76,6 +76,9 @@ const RELATED_FILES = [
   "src/game-provider-mock/oroplayCallbackControllerFacadeDryRun.js",
   "src/game-provider-mock/oroplayCallbackControllerFacadeFixtures.js",
   "src/local-smoke-tests/oroplayCallbackControllerFacadeDryRunSmoke.js",
+  "src/game-provider-mock/oroplayCallbackStagingRouteWiringDesign.js",
+  "src/game-provider-mock/oroplayCallbackStagingRouteWiringFixtures.js",
+  "src/local-smoke-tests/oroplayCallbackStagingRouteWiringDesignSmoke.js",
   "src/payment-provider-mock/memberQrDepositUxContract.js",
   "src/payment-provider-mock/memberQrDepositMockHarness.js",
   "src/local-smoke-tests/memberQrDepositUxSmoke.js",
@@ -151,6 +154,7 @@ const RELATED_FILES = [
   "docs/OROPLAY_CALLBACK_RUNTIME_SHADOW_INVOCATION.md",
   "docs/OROPLAY_CALLBACK_REQUEST_RESPONSE_ENVELOPE.md",
   "docs/OROPLAY_CALLBACK_CONTROLLER_FACADE_DRY_RUN.md",
+  "docs/OROPLAY_CALLBACK_STAGING_ROUTE_WIRING_DESIGN.md",
   "docs/SMOKE_COVERAGE.md",
   "docs/MEMBER_QR_DEPOSIT_UX_CONTRACT.md",
   "docs/MEMBER_QR_DEPOSIT_MOCK_UAT_CHECKLIST.md",
@@ -260,6 +264,11 @@ const summary = [
   {
     key: "oroplayCallbackControllerFacadeDryRun",
     label: "oroplay-callback-controller-facade-dry-run",
+    status: "PENDING",
+  },
+  {
+    key: "oroplayCallbackStagingRouteWiringDesign",
+    label: "oroplay-callback-staging-route-wiring-design",
     status: "PENDING",
   },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
@@ -718,6 +727,24 @@ const steps = [
     name: "node --check oroplayCallbackControllerFacadeDryRunSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/oroplayCallbackControllerFacadeDryRunSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackStagingRouteWiringDesign",
+    command: nodeCommand,
+    args: ["--check", "src/game-provider-mock/oroplayCallbackStagingRouteWiringDesign.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackStagingRouteWiringFixtures",
+    command: nodeCommand,
+    args: ["--check", "src/game-provider-mock/oroplayCallbackStagingRouteWiringFixtures.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackStagingRouteWiringDesignSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oroplayCallbackStagingRouteWiringDesignSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -1183,6 +1210,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oroplay-callback-controller-facade-dry-run"]),
     summaryKey: "oroplayCallbackControllerFacadeDryRun",
+  },
+  {
+    name: "npm run smoke:oroplay-callback-staging-route-wiring-design",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oroplay-callback-staging-route-wiring-design"]),
+    summaryKey: "oroplayCallbackStagingRouteWiringDesign",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

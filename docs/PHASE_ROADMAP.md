@@ -233,6 +233,12 @@ ORO-4D normalizes mock OroPlay-style balance and transaction request envelopes i
 ORO-4E current/controller facade dry-run. This phase adds only Callback Controller Facade Dry-Run docs, isolated mock fixtures, an isolated facade helper, local smoke coverage, package registration, and runAllLocalSmoke registration.
 
 ORO-4E simulates mock auth decision, request envelope mapper, runtime shadow invocation, response envelope, and sanitized log preview by direct function call only. It does not wire any Express route, does not edit `src/app.js`, does not open `/api/balance` or `/api/transaction`, does not enable callback runtime, does not call OroPlay, does not access production DB, does not mutate wallet or ledger state, does not write through Prisma, does not create a DB transaction, does not migrate, does not deploy, does not payout, and does not auto-credit. Default response behavior remains fail_closed with activationAllowed=false.
+
+## ORO-4F current/staging route wiring design
+
+ORO-4F current/staging route wiring design. This phase adds only Staging Route Wiring Design Contract docs, isolated mock fixtures, an isolated design helper, local smoke coverage, package registration, and runAllLocalSmoke registration.
+
+ORO-4F documents future staging-only paths `/api/oroplay/balance` and `/api/oroplay/transaction` while keeping `/api/balance` and `/api/transaction` disabled. It does not mount any Express route, does not edit `src/app.js`, does not wire runtime into live routes, does not call OroPlay, does not access production DB, does not mutate wallet or ledger state, does not write through Prisma, does not create a DB transaction, does not migrate, does not deploy, does not payout, and does not auto-credit. Default route activation remains blocked with expressRouteMounted=false, publicAliasMounted=false, runtimeWiredToLiveRoute=false, productionConfigTouched=false, and activationAllowed=false.
 - ORO-3B blocked until ORO-3A pass.
 
 ORO-3B status marker:
