@@ -203,3 +203,7 @@ ORO-3C does not import Prisma client, does not open DB transactions, and does no
 ## no alias provider-compatible route enabled
 
 ORO-3C does not enable `/api/balance` or `/api/transaction`. The only existing callback route behavior remains the ORO-2B fail-closed stub under `/api/oroplay`.
+
+## ORO-3D readiness gate current
+
+ORO-3C closed. ORO-3D readiness gate current. The execution plan remains no-mutation and remains plan-only until the readiness gate and pre-implementation certification pack pass. ORO-3D does not enable runtime wallet mutation, runtime ledger mutation, Prisma write, live OroPlay traffic, external network, production DB, real money, or `/api/balance` and `/api/transaction` aliases.

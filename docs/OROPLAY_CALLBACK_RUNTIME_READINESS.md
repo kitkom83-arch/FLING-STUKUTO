@@ -145,3 +145,7 @@ Runtime mutation still blocked:
 ## ORO-3B Adapter Contract Current
 
 ORO-3B defines callback adapter contract and wallet-ledger bridge intent shapes only. It does not mutate wallet state, does not mutate ledger state, does not write Prisma records, does not call OroPlay, and does not enable provider-compatible aliases.
+
+## ORO-3D Current Readiness Gate
+
+ORO-3A closed. ORO-3B closed. ORO-3C closed. ORO-3D current readiness gate / certification pack only. Runtime mutation still blocked, and the runtime readiness gate remains closed. ORO-3D does not enable callback runtime, wallet mutation, ledger mutation, Prisma write, live traffic, external network, production DB, real money, or provider-compatible aliases.

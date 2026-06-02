@@ -197,3 +197,7 @@ ORO-3B does not insert, update, post, reverse, or persist ledger entries.
 ## no alias provider-compatible route enabled
 
 ORO-3B does not enable `/api/balance` or `/api/transaction`. The only existing callback route behavior remains the ORO-2B fail-closed stub under `/api/oroplay`.
+
+## ORO-3D readiness gate current
+
+ORO-3B closed. ORO-3C closed. ORO-3D readiness gate current. The adapter contract remains no-mutation and design-only; future runtime implementation remains blocked until certification evidence is reviewed.

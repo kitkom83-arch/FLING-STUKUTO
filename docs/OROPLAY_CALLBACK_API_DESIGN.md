@@ -206,6 +206,10 @@ ORO-3 Ledger/Reconciliation dependency must define and approve:
 - No provider-compatible alias enabled.
 - No runtime wallet/ledger mutation.
 
+## ORO-3D readiness gate only
+
+ORO-3D readiness gate only. ORO-2B fail-closed route remains default. There is no runtime wallet/ledger mutation, no provider-compatible alias enabled, no live OroPlay API call, no external network, no production DB, no real money, no Prisma write, and no runtime callback implementation.
+
 `smoke:oroplay-callback-runtime-execution-plan` covers:
 
 - ORO-3C execution plan only.

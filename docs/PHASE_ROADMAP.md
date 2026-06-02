@@ -247,3 +247,29 @@ ORO-3C status marker:
 - no migration.
 - no deploy.
 - ORO-3D blocked until ORO-3C pass.
+
+ORO-3D status marker:
+
+- ORO-3D current/readiness gate.
+- ORO-2B closed.
+- ORO-2C closed.
+- ORO-3A closed.
+- ORO-3B closed.
+- ORO-3C closed.
+- readiness gate coverage.
+- pre-implementation certification pack coverage.
+- blocker matrix coverage.
+- runtime readiness gate remains closed.
+- ORO-2B fail-closed route remains default.
+- optional aliases `POST /api/balance` and `POST /api/transaction` remain disabled/provider-required-only.
+- no production DB.
+- no real money.
+- no live OroPlay API call.
+- no external network.
+- no client secret.
+- no runtime wallet mutation.
+- no runtime ledger mutation.
+- no Prisma write.
+- no migration.
+- no deploy.
+- ORO-3E blocked until ORO-3D pass.

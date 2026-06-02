@@ -127,3 +127,7 @@ ORO-3C callback runtime wallet-ledger execution plan is current and remains exec
 - Insufficient balance response expected by provider.
 - Betting history pagination and reconciliation retention.
 - Launch URL expiry and device behavior.
+
+## ORO-3D Current
+
+ORO-3A closed. ORO-3B closed. ORO-3C closed. ORO-3D current readiness gate / certification pack only. ORO-3E blocked until readiness gate smoke passes and the pre-implementation certification checklist is reviewed. ORO-3D does not enable production DB, real money, live OroPlay traffic, external network, runtime wallet mutation, runtime ledger mutation, Prisma write, migration, deploy, or provider-compatible aliases.

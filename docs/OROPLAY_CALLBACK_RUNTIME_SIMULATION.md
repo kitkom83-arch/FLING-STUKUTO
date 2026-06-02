@@ -95,3 +95,7 @@ ORO-3B is blocked until:
 - Secret redaction and callback log policy are approved.
 
 ORO-3B current adapter contract work builds on this no-mutation simulation output. ORO-3C remains blocked until `smoke:oroplay-callback-runtime-adapter-contract` passes.
+
+## ORO-3D readiness gate current
+
+ORO-3A closed. ORO-3B closed. ORO-3C closed. ORO-3D readiness gate current. The simulation remains no-mutation and does not enable runtime callback processing, wallet mutation, ledger mutation, Prisma write, live provider traffic, or provider-compatible aliases.

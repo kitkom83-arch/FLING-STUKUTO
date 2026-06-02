@@ -2190,3 +2190,45 @@ Boundary:
 - No migration.
 - No deploy.
 - No alias provider-compatible route enabled.
+
+## 65. ORO-3D OroPlay Callback Runtime Readiness Gate Coverage
+
+ORO-3D status: Callback Runtime Readiness Gate / Pre-Implementation Certification Pack is docs/static/mock only. It adds readiness gate coverage, pre-implementation certification pack coverage, blocker matrix coverage, no mutation coverage, no alias coverage, and no live traffic coverage. It does not add production DB access, real money runtime flow, live OroPlay API calls, external network, runtime wallet mutation, runtime ledger mutation, Prisma write, migration, deploy, payout, auto-credit, real client secrets, or provider alias enablement.
+
+Docs:
+
+- `docs/OROPLAY_CALLBACK_RUNTIME_READINESS_GATE.md`
+- `docs/OROPLAY_CALLBACK_PRE_IMPLEMENTATION_CERTIFICATION.md`
+
+Smoke:
+
+```powershell
+npm run smoke:oroplay-callback-runtime-readiness-gate
+```
+
+Coverage:
+
+- Confirms readiness gate coverage for default closed gate and dangerous flag fail-closed behavior.
+- Confirms pre-implementation certification pack coverage for evidence checklist and runtime-blocked decision.
+- Confirms blocker matrix coverage for production DB, real money, wallet mutation, ledger mutation, alias enablement, live traffic, and Prisma write.
+- Confirms no mutation coverage for wallet, ledger, Prisma, migration, deploy, payout, and auto-credit.
+- Confirms no alias coverage for `/api/balance` and `/api/transaction`.
+- Confirms no live traffic coverage and no external network markers.
+- Confirms ORO-2B fail-closed route remains fail-closed.
+- Confirms docs say ORO-3E is blocked until ORO-3D passes.
+
+Boundary:
+
+- Readiness gate only.
+- Certification pack only.
+- No production DB.
+- No real money.
+- No live OroPlay API call.
+- No external network.
+- No client secret.
+- No runtime wallet mutation.
+- No runtime ledger mutation.
+- No Prisma write.
+- No migration.
+- No deploy.
+- No alias provider-compatible route enabled.
