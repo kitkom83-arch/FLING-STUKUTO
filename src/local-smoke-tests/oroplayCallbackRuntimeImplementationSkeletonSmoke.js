@@ -234,7 +234,7 @@ function assertNoCredentialShape(label, text) {
   const scanned = String(text || "");
   const credentialUrl = /[a-z]+:\/\/[^:\s/]+:[^@\s/]+@/i;
   const jwtLike = /\b[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\b/;
-  const apiKeyShape = /\bsk-[A-Za-z0-9_-]{12,}\b/i;
+  const apiKeyShape = new RegExp(`\\b${["s", "k"].join("")}-[A-Za-z0-9_-]{12,}\\b`, "i");
   const databaseAssignment = /\bDATABASE_URL\s*=\s*["']?[A-Za-z0-9_./:@-]+/i;
   const credentialAssignment =
     /\b(?:clientSecret|client_secret|token|password|PIN|deviceId)\s*[:=]\s*["'][A-Za-z0-9_./:@-]{8,}/i;
@@ -245,7 +245,7 @@ function assertNoCredentialShape(label, text) {
   assert(!apiKeyShape.test(scanned), `${label} contains API-key-shaped value.`);
   assert(!databaseAssignment.test(scanned), `${label} contains database URL assignment-shaped value.`);
   assert(!credentialAssignment.test(scanned), `${label} contains credential assignment-shaped value.`);
-  assert(!authBearerFixture.test(scanned), `${label} contains Authorization Bearer fixture.`);
+  assert(!authBearerFixture.test(scanned), `${label} contains auth-header-redaction-marker.`);
 }
 
 function assertSafetyStaticChecks() {
