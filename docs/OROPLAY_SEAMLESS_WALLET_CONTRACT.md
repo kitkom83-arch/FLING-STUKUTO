@@ -2,6 +2,8 @@
 
 Status: ORO-1 safe contract / adapter boundary. This document does not add runtime routes or enable provider callbacks.
 
+ORO-2A callback route design is tracked in `docs/OROPLAY_CALLBACK_API_DESIGN.md`. ORO-2A remains design/staging-boundary only and does not change the ORO-1 mock harness behavior.
+
 ## Provider Callback Purpose
 
 OroPlay Seamless Wallet callbacks allow the provider to ask the platform for member balance and to submit game transaction events. Future implementation must keep the wallet ledger as source of truth and must reject duplicate or unsafe provider events before any wallet mutation.

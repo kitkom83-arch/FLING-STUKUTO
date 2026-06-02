@@ -158,7 +158,7 @@ Status: Phase AS mock/static/sandbox-readiness only. These rows define future sa
 
 ## Future OroPlay API Mapping
 
-Status: ORO-0 docs/static planning only for OroPlay API / Seamless Wallet integration. These rows do not add runtime endpoints, routes, controllers, services, migrations, deploy, production DB access, real money runtime flow, live payout, live provider calls, callback wallet mutation, or hardcoded secrets.
+Status: ORO-2A callback API design / staging route boundary only for OroPlay API / Seamless Wallet integration. These rows do not add runtime endpoints, routes, controllers, services, migrations, deploy, production DB access, real money runtime flow, live payout, live provider calls, callback wallet mutation, runtime wallet mutation, runtime ledger mutation, or hardcoded secrets.
 
 Safety markers: mock/static/staging-only planning; future live integration requires explicit certification. Current production direction is Seamless Wallet unless confirmed otherwise. Provider credential handling must remain internal service only and env-only.
 
@@ -171,5 +171,7 @@ Safety markers: mock/static/staging-only planning; future live integration requi
 | Game detail sync | internal provider sync service | internal | ORO-0 docs/static only | future live integration planning | staging/mock first; no secret response fields |
 | Launch URL service | internal launch service for member game entry | internal or guarded member action | ORO-0 docs/static only | future live integration planning | no live launch until certification; launch URL must not be logged raw |
 | Betting history sync | internal reconciliation service | internal | ORO-0 docs/static only | future live integration planning | reconciliation only; wallet ledger remains source of truth |
-| Callback balance endpoint | `/api/oroplay/balance`, optional `/api/balance` alias only if required | POST | ORO-0 docs/static only | Seamless Wallet planning | Basic Auth env-only; read balance only; no wallet mutation |
-| Callback transaction endpoint | `/api/oroplay/transaction`, optional `/api/transaction` alias only if required | POST | ORO-0 docs/static only | Seamless Wallet planning | duplicate `transactionCode`, insufficient balance, invalid finished round, ledger/idempotency/reconciliation guards before mutation |
+| Callback balance endpoint | `/api/oroplay/balance` | POST | ORO-2A staging-boundary only | Seamless Wallet callback planning | Basic Auth env-only; staging-boundary only; no production DB; no real money; no runtime wallet mutation in ORO-2A; no runtime ledger mutation; no live OroPlay API |
+| Callback transaction endpoint | `/api/oroplay/transaction` | POST | ORO-2A staging-boundary only | Seamless Wallet callback planning | Basic Auth env-only; amount intent only; staging-boundary only; no production DB; no real money; no runtime wallet mutation in ORO-2A; no runtime ledger mutation; no auto-credit; ledger/idempotency/reconciliation required before future mutation |
+| Optional callback balance alias | `/api/balance` | POST | ORO-2A optional/provider-required-only staging-boundary | Seamless Wallet callback planning | Use only if OroPlay requires provider-compatible paths; staging-boundary only; no production DB; no real money; no runtime wallet mutation in ORO-2A; no runtime ledger mutation; must share guarded internal handler later |
+| Optional callback transaction alias | `/api/transaction` | POST | ORO-2A optional/provider-required-only staging-boundary | Seamless Wallet callback planning | Use only if OroPlay requires provider-compatible paths; staging-boundary only; no production DB; no real money; no runtime wallet mutation in ORO-2A; no runtime ledger mutation; no auto-credit; must share guarded internal handler later |

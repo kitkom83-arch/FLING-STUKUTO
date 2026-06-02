@@ -1871,3 +1871,55 @@ Boundary:
 - No hardcoded credential-shaped values, payment address credentials, or messaging bot credentials.
 - No migration.
 - No deploy.
+
+## 59. ORO-2A OroPlay Callback Boundary Coverage
+
+ORO-2A status: OroPlay Callback API Design / Staging Route Boundary is docs/static/mock only. It adds a callback API design doc, an isolated route-boundary helper, and a static smoke guard. It does not add Express callback routes, production DB access, real money runtime flow, live OroPlay API calls, external network, runtime wallet mutation, runtime ledger mutation, migration, deploy, payout, auto-credit, or real client secrets.
+
+Docs:
+
+- `docs/OROPLAY_CALLBACK_API_DESIGN.md`
+- `docs/OROPLAY_INTEGRATION_PLAN.md`
+- `docs/OROPLAY_SEAMLESS_WALLET_CONTRACT.md`
+- `docs/API_MAPPING.md`
+- `docs/PHASE_ROADMAP.md`
+- `docs/SMOKE_COVERAGE.md`
+
+Script:
+
+- `src/local-smoke-tests/oroplayCallbackBoundarySmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:oroplay-callback-boundary
+```
+
+Coverage:
+
+- Confirms preferred internal route boundary for `POST /api/oroplay/balance` and `POST /api/oroplay/transaction`.
+- Confirms optional provider-compatible aliases `POST /api/balance` and `POST /api/transaction` are marked optional/provider-required-only.
+- Confirms route plan status is design/staging-boundary only and does not create an Express route.
+- Confirms Basic Auth boundary uses env-only credentials and never logs or stores raw authorization.
+- Confirms balance payload requires `userCode`.
+- Confirms transaction payload requires `userCode`, `transactionCode`, and `amount`.
+- Confirms `roundId` and `isFinished` are supported optional guard fields.
+- Confirms negative amount is bet/debit intent, positive amount is win/credit intent, zero amount is invalid, and malformed amount is invalid.
+- Confirms route plan marks no runtime wallet mutation, no runtime ledger mutation, and no production DB.
+- Confirms sanitizer removes credential-shaped fields and redacts raw authorization.
+- Confirms static secret scan has no real secret, no bearer-shaped literal, and no `DATABASE_URL` assignment value.
+
+Boundary:
+
+- Docs/static/mock boundary only.
+- No production DB.
+- No real money.
+- No live OroPlay API call.
+- No external network.
+- No real client secret.
+- No runtime wallet mutation.
+- No runtime ledger mutation.
+- No auto-credit.
+- No payout.
+- No migration.
+- No deploy.

@@ -8,8 +8,9 @@ ORO sequence status: planning only. The current production direction is Seamless
 | --- | --- | --- | --- |
 | ORO-0 docs/status alignment | Record current production context and safe plan. | Docs/static only. | Docs updated with no secrets and no runtime code. |
 | ORO-1 mock Seamless Wallet contract | Create mock-only callback and wallet contract. | Static/mock harness only. | Contract smoke confirms auth, balance, transaction, duplicate, and leak guards. |
-| ORO-2 staging callback design | Design callback routing, auth, logging, and error behavior. | Staging design only. | HTTPS callback, IP whitelist, and failure-mode plan reviewed. |
-| ORO-3 wallet/ledger/reconciliation design | Align wallet ledger source of truth, idempotency, duplicate guards, and reconciliation reports. | Design/static only until approved. | Ledger and reconciliation guard checklist complete. |
+| ORO-2A Callback API Design / Staging Route Boundary | Design callback routing, auth boundary, payload shape, amount intent, and sanitizer behavior. | Docs/static plus isolated mock boundary only; no Express route. | `smoke:oroplay-callback-boundary` confirms route/auth/payload/amount/no-mutation/sanitizer boundary. |
+| ORO-2B Future Staging Callback Stub | Optional disabled staging route stub only if explicitly approved later. | Staging stub only; no wallet or ledger mutation. | Stub fails closed until member mapping, ledger, idempotency, logs, and reconciliation are approved. |
+| ORO-3 wallet/ledger/reconciliation design | Align member mapping, wallet ledger source of truth, callback logs, game transactions, idempotency, duplicate guards, and reconciliation reports. | Design/static only until approved. | Ledger and reconciliation guard checklist complete. |
 | ORO-4 outbound service design | Plan provider credential exchange, vendor list, game list, detail, launch URL, and betting history services. | Service design only; no public member credential endpoint. | Provider request/response mapping and redaction rules documented. |
 | ORO-5 admin read-only provider status page | Plan admin read-only provider health/status view. | Admin read-only design. | No write controls; no secret display; status-only payload. |
 | ORO-6 staging UAT with server IP whitelist and HTTPS callback | Validate staging-only callback and outbound behavior. | Staging UAT only after approval. | Server IP whitelist, HTTPS callback, auth, duplicate, insufficient balance, and invalid transaction cases pass. |
@@ -23,7 +24,16 @@ ORO sequence status: planning only. The current production direction is Seamless
 - No hardcoded secrets.
 - No callback wallet mutation until ledger/idempotency/reconciliation guards exist.
 - No live provider call until sandbox/staging evidence and certification are approved.
-- No migration or deploy in ORO-0.
+- No migration or deploy in ORO-2A.
+
+## ORO-2A Current Scope
+
+- Preferred callback routes: `POST /api/oroplay/balance` and `POST /api/oroplay/transaction`.
+- Optional provider-compatible aliases: `POST /api/balance` and `POST /api/transaction` only if OroPlay requires them later.
+- Basic Auth must use env-only credentials and sanitized logs only.
+- Request boundary covers `userCode`, `transactionCode`, `roundId`, `amount`, and `isFinished`.
+- Negative amount means bet/debit intent; positive amount means win/credit intent; zero or malformed amount is rejected.
+- ORO-2A does not add runtime wallet mutation, runtime ledger mutation, production DB access, real money, live OroPlay API calls, external network, migrations, deploys, or real client secrets.
 
 ## Current Integration Direction
 
