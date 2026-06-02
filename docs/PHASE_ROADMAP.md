@@ -110,7 +110,8 @@ OroPlay phase sequence after current mock/contract phases:
 - ORO-4A: callback runtime implementation skeleton / staging-disabled runtime gate. ORO-4A closed.
 - ORO-4B: runtime skeleton certification / staging wiring precheck. ORO-4B closed.
 - ORO-4C: callback runtime shadow invocation harness / no live route wiring. ORO-4C closed.
-- ORO-4D: Callback Request/Response Envelope Mapper / Runtime Shadow Response Contract. ORO-4D current.
+- ORO-4D: Callback Request/Response Envelope Mapper / Runtime Shadow Response Contract. ORO-4D closed.
+- ORO-4E: Callback Controller Facade Dry-Run / Still No Express Route Wiring. ORO-4E current.
 - ORO-2B current/fail-closed route skeleton remains the active fail-closed runtime default.
 - ORO-3 is not allowed until ORO-2B passes; ORO-2C and ORO-3A add newer gates before runtime work.
 - ORO-3B is not allowed until ORO-2B and ORO-2C are closed and ORO-3A passes.
@@ -226,6 +227,12 @@ ORO-4C directly invokes mock functions only. It does not wire the runtime skelet
 ORO-4D current/request response envelope mapper. This phase adds only Callback Request/Response Envelope Mapper docs, isolated mock fixtures, an isolated mapper helper, local smoke coverage, package registration, and runAllLocalSmoke registration.
 
 ORO-4D normalizes mock OroPlay-style balance and transaction request envelopes into internal shadow requests, then wraps shadow decisions into mock response envelopes. It does not wire the mapper into live routes, does not open `/api/balance` or `/api/transaction`, does not enable callback runtime, does not call OroPlay, does not access production DB, does not mutate wallet or ledger state, does not write through Prisma, does not create a DB transaction, does not migrate, does not deploy, does not payout, and does not auto-credit. Default response behavior remains fail_closed with activationAllowed=false.
+
+## ORO-4E current/controller facade dry-run
+
+ORO-4E current/controller facade dry-run. This phase adds only Callback Controller Facade Dry-Run docs, isolated mock fixtures, an isolated facade helper, local smoke coverage, package registration, and runAllLocalSmoke registration.
+
+ORO-4E simulates mock auth decision, request envelope mapper, runtime shadow invocation, response envelope, and sanitized log preview by direct function call only. It does not wire any Express route, does not edit `src/app.js`, does not open `/api/balance` or `/api/transaction`, does not enable callback runtime, does not call OroPlay, does not access production DB, does not mutate wallet or ledger state, does not write through Prisma, does not create a DB transaction, does not migrate, does not deploy, does not payout, and does not auto-credit. Default response behavior remains fail_closed with activationAllowed=false.
 - ORO-3B blocked until ORO-3A pass.
 
 ORO-3B status marker:

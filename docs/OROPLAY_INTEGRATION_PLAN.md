@@ -156,8 +156,14 @@ ORO-4C closed. Callback Runtime Shadow Invocation Harness / No Live Route Wiring
 
 ORO-4C invokes isolated mock functions directly against fixtures. It keeps default decision fail_closed, certified mock state shadow_ready_only, activationAllowed=false, runtimeWiredToLiveRoute=false, aliasBalanceEnabled=false, aliasTransactionEnabled=false, walletMutationAllowed=false, ledgerMutationAllowed=false, prismaWriteAllowed=false, and networkAllowed=false. It does not wire runtime into routes, open public aliases, call OroPlay, mutate wallet or ledger state, write through Prisma, migrate, deploy, payout, auto-credit, or change production config.
 
-## ORO-4D Current
+## ORO-4D Closed
 
-ORO-4D current. Callback Request/Response Envelope Mapper / Runtime Shadow Response Contract is docs, contract, static/mock harness, and local smoke only.
+ORO-4D closed. Callback Request/Response Envelope Mapper / Runtime Shadow Response Contract is docs, contract, static/mock harness, and local smoke only.
 
 ORO-4D maps mock OroPlay-style balance and transaction request envelopes into internal shadow requests, then wraps mock-only balance decisions and shadow transaction intents into response envelopes. It keeps default response behavior fail_closed, activationAllowed=false, runtimeWiredToLiveRoute=false, aliasBalanceEnabled=false, aliasTransactionEnabled=false, walletMutationAllowed=false, ledgerMutationAllowed=false, prismaWriteAllowed=false, and externalNetworkAllowed=false. It does not wire runtime into routes, open public aliases, call OroPlay, mutate wallet or ledger state, write through Prisma, migrate, deploy, payout, auto-credit, or change production config.
+
+## ORO-4E Current
+
+ORO-4E current. Callback Controller Facade Dry-Run / Still No Express Route Wiring is docs, contract, static/mock harness, and local smoke only.
+
+ORO-4E simulates mock auth decision, request envelope mapper, runtime shadow invocation, response envelope, and sanitized log preview by direct function call only. It keeps default response behavior fail_closed, expressRouteWired=false, runtimeWiredToLiveRoute=false, aliasBalanceEnabled=false, aliasTransactionEnabled=false, walletMutationAllowed=false, ledgerMutationAllowed=false, prismaWriteAllowed=false, externalNetworkAllowed=false, and activationAllowed=false. It does not wire Express routes, edit `src/app.js`, open public aliases, call OroPlay, mutate wallet or ledger state, write through Prisma, migrate, deploy, payout, auto-credit, or change production config.
