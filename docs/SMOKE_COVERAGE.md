@@ -2362,6 +2362,67 @@ Boundary:
 - No `/api/balance` alias.
 - No `/api/transaction` alias.
 
+## 71. ORO-4D OroPlay Callback Request/Response Envelope Coverage
+
+ORO-4D callback request response envelope coverage. The phase is Callback Request/Response Envelope Mapper / Runtime Shadow Response Contract only. It does not add callback processing through live routes, production DB access, real money runtime flow, live OroPlay API calls, external network, runtime wallet mutation, runtime ledger mutation, Prisma write, DB transaction, migration, deploy, payout, auto-credit, real client secrets, runtime route wiring, controller wiring, service wiring, production config changes, or provider alias enablement.
+
+Docs:
+
+- `docs/OROPLAY_CALLBACK_REQUEST_RESPONSE_ENVELOPE.md`
+- `docs/SMOKE_COVERAGE.md`
+- `docs/PHASE_ROADMAP.md`
+- `docs/API_MAPPING.md`
+- `docs/OROPLAY_INTEGRATION_PLAN.md`
+
+Script:
+
+- `src/local-smoke-tests/oroplayCallbackRequestResponseEnvelopeSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:oroplay-callback-request-response-envelope
+```
+
+Coverage:
+
+- Confirms ORO-4D docs, mapper, fixtures, package script, and `runAllLocalSmoke` registration exist.
+- Confirms balance request valid member normalizes correctly and returns a mock-only response envelope.
+- Confirms unknown member and malformed balance payload fail closed.
+- Confirms valid bet normalizes to debit intent only and valid win normalizes to credit intent only.
+- Confirms duplicate replay is idempotent and does not double debit or credit.
+- Confirms conflicting duplicate enters manual_review / fail_closed behavior.
+- Confirms insufficient balance, unsupported type, and finished round replay fail closed.
+- Confirms success, fail_closed, and manual_review response envelope shapes exist.
+- Confirms sanitized response/log preview does not leak credential-like values and uses safe redaction markers only.
+- Checks `runtimeWiredToLiveRoute`, `aliasBalanceEnabled`, `aliasTransactionEnabled`, `walletMutationAllowed`, `ledgerMutationAllowed`, `prismaWriteAllowed`, `externalNetworkAllowed`, and `activationAllowed` stay false.
+- Confirms ORO-2B fail-closed route, ORO-4A disabled gate, ORO-4B staging precheck, and ORO-4C shadow invocation remain preserved.
+- Confirms no `/api/balance` or `/api/transaction` alias is enabled and no Express route wiring is added.
+- Confirms the new mock files have no Prisma import, no wallet/ledger service import, and no network call marker.
+- Confirms new files avoid CI secret-scan false-positive marker text.
+
+Boundary:
+
+- Request/response envelope mapper only.
+- Runtime shadow response contract only.
+- No live route wiring.
+- No public alias.
+- No production DB.
+- No real money.
+- No live OroPlay API call.
+- No external network.
+- No client secret value.
+- No runtime wallet mutation.
+- No runtime ledger mutation.
+- No Prisma write.
+- No DB transaction.
+- No migration.
+- No deploy.
+- No payout.
+- No auto-credit.
+- No `/api/balance` alias.
+- No `/api/transaction` alias.
+
 ## 65. ORO-3D OroPlay Callback Runtime Readiness Gate Coverage
 
 ORO-3D status: Callback Runtime Readiness Gate / Pre-Implementation Certification Pack is docs/static/mock only. It adds readiness gate coverage, pre-implementation certification pack coverage, blocker matrix coverage, no mutation coverage, no alias coverage, and no live traffic coverage. It does not add production DB access, real money runtime flow, live OroPlay API calls, external network, runtime wallet mutation, runtime ledger mutation, Prisma write, migration, deploy, payout, auto-credit, real client secrets, or provider alias enablement.

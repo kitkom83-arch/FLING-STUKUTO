@@ -70,6 +70,9 @@ const RELATED_FILES = [
   "src/game-provider-mock/oroplayCallbackRuntimeShadowInvoker.js",
   "src/game-provider-mock/oroplayCallbackRuntimeShadowFixtures.js",
   "src/local-smoke-tests/oroplayCallbackRuntimeShadowInvocationSmoke.js",
+  "src/game-provider-mock/oroplayCallbackRequestResponseEnvelope.js",
+  "src/game-provider-mock/oroplayCallbackRequestResponseFixtures.js",
+  "src/local-smoke-tests/oroplayCallbackRequestResponseEnvelopeSmoke.js",
   "src/payment-provider-mock/memberQrDepositUxContract.js",
   "src/payment-provider-mock/memberQrDepositMockHarness.js",
   "src/local-smoke-tests/memberQrDepositUxSmoke.js",
@@ -143,6 +146,7 @@ const RELATED_FILES = [
   "docs/OROPLAY_CALLBACK_RUNTIME_SKELETON_CERTIFICATION.md",
   "docs/OROPLAY_CALLBACK_STAGING_WIRING_PRECHECK.md",
   "docs/OROPLAY_CALLBACK_RUNTIME_SHADOW_INVOCATION.md",
+  "docs/OROPLAY_CALLBACK_REQUEST_RESPONSE_ENVELOPE.md",
   "docs/SMOKE_COVERAGE.md",
   "docs/MEMBER_QR_DEPOSIT_UX_CONTRACT.md",
   "docs/MEMBER_QR_DEPOSIT_MOCK_UAT_CHECKLIST.md",
@@ -242,6 +246,11 @@ const summary = [
   {
     key: "oroplayCallbackRuntimeShadowInvocation",
     label: "oroplay-callback-runtime-shadow-invocation",
+    status: "PENDING",
+  },
+  {
+    key: "oroplayCallbackRequestResponseEnvelope",
+    label: "oroplay-callback-request-response-envelope",
     status: "PENDING",
   },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
@@ -664,6 +673,24 @@ const steps = [
     name: "node --check oroplayCallbackRuntimeShadowInvocationSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/oroplayCallbackRuntimeShadowInvocationSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackRequestResponseEnvelope",
+    command: nodeCommand,
+    args: ["--check", "src/game-provider-mock/oroplayCallbackRequestResponseEnvelope.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackRequestResponseFixtures",
+    command: nodeCommand,
+    args: ["--check", "src/game-provider-mock/oroplayCallbackRequestResponseFixtures.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackRequestResponseEnvelopeSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oroplayCallbackRequestResponseEnvelopeSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -1117,6 +1144,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oroplay-callback-runtime-shadow-invocation"]),
     summaryKey: "oroplayCallbackRuntimeShadowInvocation",
+  },
+  {
+    name: "npm run smoke:oroplay-callback-request-response-envelope",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oroplay-callback-request-response-envelope"]),
+    summaryKey: "oroplayCallbackRequestResponseEnvelope",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

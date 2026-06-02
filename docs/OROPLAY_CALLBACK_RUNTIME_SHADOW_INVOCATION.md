@@ -147,3 +147,7 @@ Any future staging route wiring remains blocked until a separate approved phase 
 ## explicit no-real-money boundary
 
 ORO-4C is not real callback runtime. It does not debit, credit, settle, reconcile real money, pay out, auto-credit, mutate wallet, mutate ledger, write through Prisma, call OroPlay, migrate, deploy, enable `/api/balance`, enable `/api/transaction`, or change production config.
+
+## ORO-4D request/response envelope handoff
+
+ORO-4D may wrap ORO-4C shadow decisions in mock request/response envelopes, but that is not route wiring. ORO-4D must keep activationAllowed=false, runtimeWiredToLiveRoute=false, aliasBalanceEnabled=false, aliasTransactionEnabled=false, walletMutationAllowed=false, ledgerMutationAllowed=false, prismaWriteAllowed=false, and externalNetworkAllowed=false.
