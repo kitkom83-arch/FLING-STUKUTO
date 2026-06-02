@@ -10,8 +10,9 @@ ORO sequence status: planning only. The current production direction is Seamless
 | ORO-1 mock Seamless Wallet contract | Create mock-only callback and wallet contract. | Static/mock harness only. | Contract smoke confirms auth, balance, transaction, duplicate, and leak guards. |
 | ORO-2A Callback API Design / Staging Route Boundary | Design callback routing, auth boundary, payload shape, amount intent, and sanitizer behavior. | Closed docs/static plus isolated mock boundary only; no Express route. | `smoke:oroplay-callback-boundary` confirms route/auth/payload/amount/no-mutation/sanitizer boundary. |
 | ORO-2B Staging Fail-Closed Callback Stub | Add preferred route skeletons that fail closed by default. | Closed staging stub only; no wallet or ledger mutation; no aliases. | `smoke:oroplay-callback-stub` confirms route skeleton, fail-closed behavior, alias-disabled guard, sanitizer, and no-mutation boundary. |
-| ORO-2C Callback Runtime Readiness Contract | Define member mapping, callback payload validation, idempotency, duplicate guard, sanitized callback log, and ledger/reconciliation readiness contract. | Current readiness contract only; no runtime processing; no wallet or ledger mutation; no aliases. | `smoke:oroplay-callback-readiness` confirms readiness contract, mock harness, sanitizer, no-mutation boundary, ORO-2B fail-closed default, and alias-disabled guard. |
-| ORO-3 wallet/ledger/reconciliation design | Align member mapping, wallet ledger source of truth, callback logs, game transactions, idempotency, duplicate guards, and reconciliation reports. | Blocked until ORO-2C readiness smoke passes and runtime safety gates are approved. | Ledger and reconciliation guard checklist must be runtime-approved before callback mutation. |
+| ORO-2C Callback Runtime Readiness Contract | Define member mapping, callback payload validation, idempotency, duplicate guard, sanitized callback log, and ledger/reconciliation readiness contract. | Closed readiness contract only; no runtime processing; no wallet or ledger mutation; no aliases. | `smoke:oroplay-callback-readiness` confirms readiness contract, mock harness, sanitizer, no-mutation boundary, ORO-2B fail-closed default, and alias-disabled guard. |
+| ORO-3A Callback Runtime Simulation Harness | Simulate balance and transaction runtime decisions with mock state and intent objects only. | Current simulation harness only; no runtime wallet mutation; no runtime ledger mutation; no Prisma write; no aliases. | `smoke:oroplay-callback-runtime-simulation` confirms simulation, idempotency/replay, sanitizer, ledger intent only, and no-mutation coverage. |
+| ORO-3B wallet/ledger/reconciliation design | Align member mapping, wallet ledger source of truth, callback logs, game transactions, idempotency, duplicate guards, and reconciliation reports. | Blocked until ORO-3A simulation smoke passes and runtime safety gates are approved. | Ledger and reconciliation guard checklist must be runtime-approved before callback mutation. |
 | ORO-4 outbound service design | Plan provider credential exchange, vendor list, game list, detail, launch URL, and betting history services. | Service design only; no public member credential endpoint. | Provider request/response mapping and redaction rules documented. |
 | ORO-5 admin read-only provider status page | Plan admin read-only provider health/status view. | Admin read-only design. | No write controls; no secret display; status-only payload. |
 | ORO-6 staging UAT with server IP whitelist and HTTPS callback | Validate staging-only callback and outbound behavior. | Staging UAT only after approval. | Server IP whitelist, HTTPS callback, auth, duplicate, insufficient balance, and invalid transaction cases pass. |
@@ -63,9 +64,22 @@ ORO-2C callback runtime readiness contract is current.
 - Ledger/reconciliation boundary remains mock readiness only.
 - No production DB, no real money, no live OroPlay API call, no external network, no client secret, no runtime wallet mutation, no runtime ledger mutation, no migration, no deploy, and no aliases.
 
-ORO-3 is blocked until `smoke:oroplay-callback-readiness` passes and runtime safety gates are approved.
+ORO-2C closed. ORO-3A current. ORO-3B blocked until simulation smoke passes.
 
-ORO-3 dependencies before any callback processing:
+ORO-3A callback runtime simulation harness is current.
+
+- Balance simulation reads mock state only.
+- Transaction simulation returns decisions only.
+- Valid new transaction simulation may return `ledgerIntent` / `reconciliationIntent` mock objects only.
+- Duplicate `transactionCode` replay is idempotent and does not produce another intent.
+- Conflicting duplicate replay enters manual_review / fail-closed.
+- Unknown, blocked, inactive, insufficient balance, malformed, finished-round replay, and unsupported transaction type cases fail closed.
+- Sanitized log preview must not expose credential-like fields.
+- No production DB, no real money, no live OroPlay API call, no external network, no client secret, no runtime wallet mutation, no runtime ledger mutation, no Prisma write, no migration, no deploy, and no aliases.
+
+ORO-3B is blocked until `smoke:oroplay-callback-runtime-simulation` passes and runtime safety gates are approved.
+
+ORO-3B dependencies before any callback processing:
 
 - member mapping.
 - idempotency.

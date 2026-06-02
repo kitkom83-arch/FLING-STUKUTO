@@ -6,6 +6,8 @@ ORO-2C defines the readiness contract for a future OroPlay callback runtime. It 
 
 ORO-2B is closed. The existing fail-closed callback stub remains the default behavior.
 
+ORO-2C readiness closed. ORO-3A simulation current. runtime mutation still blocked.
+
 ## Non-goals
 
 - No production DB.
@@ -120,3 +122,18 @@ ORO-3 is blocked until:
 - Sanitized callback logging is approved.
 - Ledger transaction, audit log, and reconciliation records are approved.
 - Provider-compatible alias requirements are confirmed and safety-gated.
+
+## ORO-3A Current Simulation
+
+ORO-3A is a runtime simulation harness only. It may read mock state, return mock balance decisions, return transaction decisions, and produce `ledgerIntent` / `reconciliationIntent` mock objects for review.
+
+Runtime mutation still blocked:
+
+- no production DB.
+- no real money.
+- no live OroPlay API call.
+- no external network.
+- no runtime wallet mutation.
+- no runtime ledger mutation.
+- no Prisma write.
+- no alias enablement for `/api/balance` or `/api/transaction`.

@@ -8,11 +8,15 @@ ORO-2B status: current staging callback stub route skeleton. This phase adds fai
 
 ORO-2C status: current callback runtime readiness contract only. This phase adds docs/static/mock readiness coverage for member mapping, payload validation, idempotency, sanitized callback logs, and ledger/reconciliation prerequisites.
 
+ORO-3A status: ORO-3A simulation only. This phase adds a mock runtime simulation harness for decisions and intent objects only.
+
 This is not a live callback runtime. ORO-2A does not create Express routes, does not connect Prisma or a database, does not mutate wallet state, does not post ledger entries, does not call OroPlay, and does not use real credentials.
 
 ORO-2B is also not a live callback runtime. It does not connect Prisma or a database, does not mutate wallet state, does not post ledger entries, does not call OroPlay, does not use real credentials, and does not return a live success response.
 
 ORO-2C is also not a live callback runtime. It does not query production DB, does not perform Prisma write operations, does not mutate wallet state, does not mutate ledger state, does not call OroPlay, does not enable provider-compatible aliases, and does not convert the ORO-2B fail-closed stub into runtime processing.
+
+ORO-3A is also not a live callback runtime. ORO-2B fail-closed route remains default; no runtime wallet/ledger mutation is allowed, no production DB is used, no Prisma write is allowed, and provider-compatible aliases remain disabled.
 
 ## ORO-2C Callback Runtime Readiness Contract
 
@@ -168,4 +172,16 @@ ORO-3 Ledger/Reconciliation dependency must define and approve:
 - Sanitized callback log metadata boundary.
 - Ledger/reconciliation boundary with no runtime wallet mutation, no runtime ledger mutation, and no Prisma write.
 - ORO-2B fail-closed stub remains fail-closed.
+- Optional alias disabled guard for `POST /api/balance` and `POST /api/transaction`.
+
+`smoke:oroplay-callback-runtime-simulation` covers:
+
+- ORO-3A simulation only.
+- Valid balance simulation from mock state.
+- Transaction decision simulation with `ledgerIntent` / `reconciliationIntent` only.
+- Duplicate `transactionCode` idempotent replay without double intent.
+- Conflicting duplicate manual_review / fail-closed.
+- Unknown, blocked, inactive, insufficient balance, malformed, finished-round, and unsupported transaction cases fail closed.
+- Sanitized log preview.
+- ORO-2B fail-closed route remains default.
 - Optional alias disabled guard for `POST /api/balance` and `POST /api/transaction`.

@@ -2024,3 +2024,51 @@ Boundary:
 - No runtime ledger mutation.
 - No migration.
 - No deploy.
+
+## 62. ORO-3A OroPlay Callback Runtime Simulation Coverage
+
+ORO-3A status: Callback Runtime Simulation Harness is docs/static/mock only. It adds a simulation doc, isolated runtime simulator, scenario list, and local smoke coverage. It does not add production DB access, real money runtime flow, live OroPlay API calls, external network, runtime wallet mutation, runtime ledger mutation, Prisma write, migration, deploy, payout, auto-credit, real client secrets, or provider alias enablement.
+
+Docs:
+
+- `docs/OROPLAY_CALLBACK_RUNTIME_SIMULATION.md`
+- `docs/OROPLAY_CALLBACK_RUNTIME_READINESS.md`
+- `docs/OROPLAY_CALLBACK_API_DESIGN.md`
+- `docs/OROPLAY_INTEGRATION_PLAN.md`
+- `docs/API_MAPPING.md`
+- `docs/PHASE_ROADMAP.md`
+- `docs/SMOKE_COVERAGE.md`
+
+Script:
+
+- `src/local-smoke-tests/oroplayCallbackRuntimeSimulationSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:oroplay-callback-runtime-simulation
+```
+
+Coverage:
+
+- Confirms runtime simulation coverage for balance and transaction decisions.
+- Confirms idempotency/replay coverage for duplicate `transactionCode`, conflicting duplicate, and finished round replay.
+- Confirms ledger intent only coverage with `ledgerIntent` / `reconciliationIntent` mock objects only.
+- Confirms no mutation coverage for wallet, ledger, Prisma, DB writes, provider aliases, and external network markers.
+- Confirms sanitizer coverage for authorization, password, secret, token, clientSecret, DATABASE_URL, PIN, and deviceId fields.
+- Confirms ORO-2B fail-closed route remains fail-closed.
+- Confirms optional alias disabled guard for `/api/balance` and `/api/transaction`.
+
+Boundary:
+
+- Runtime simulation only.
+- No production DB.
+- No real money.
+- No live OroPlay API call.
+- No external network.
+- No client secret.
+- No runtime wallet mutation.
+- No runtime ledger mutation.
+- No Prisma write.
+- No migration.
+- No deploy.
