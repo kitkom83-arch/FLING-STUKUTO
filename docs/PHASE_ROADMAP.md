@@ -111,7 +111,9 @@ OroPlay phase sequence after current mock/contract phases:
 - ORO-4B: runtime skeleton certification / staging wiring precheck. ORO-4B closed.
 - ORO-4C: callback runtime shadow invocation harness / no live route wiring. ORO-4C closed.
 - ORO-4D: Callback Request/Response Envelope Mapper / Runtime Shadow Response Contract. ORO-4D closed.
-- ORO-4E: Callback Controller Facade Dry-Run / Still No Express Route Wiring. ORO-4E current.
+- ORO-4E: Callback Controller Facade Dry-Run / Still No Express Route Wiring. ORO-4E closed.
+- ORO-4F: Staging Route Wiring Design Contract / No Express Mount Yet. ORO-4F closed.
+- ORO-4G: Staging Route Wiring Preflight / Mount Readiness Checklist. ORO-4G current.
 - ORO-2B current/fail-closed route skeleton remains the active fail-closed runtime default.
 - ORO-3 is not allowed until ORO-2B passes; ORO-2C and ORO-3A add newer gates before runtime work.
 - ORO-3B is not allowed until ORO-2B and ORO-2C are closed and ORO-3A passes.
@@ -234,11 +236,31 @@ ORO-4E current/controller facade dry-run. This phase adds only Callback Controll
 
 ORO-4E simulates mock auth decision, request envelope mapper, runtime shadow invocation, response envelope, and sanitized log preview by direct function call only. It does not wire any Express route, does not edit `src/app.js`, does not open `/api/balance` or `/api/transaction`, does not enable callback runtime, does not call OroPlay, does not access production DB, does not mutate wallet or ledger state, does not write through Prisma, does not create a DB transaction, does not migrate, does not deploy, does not payout, and does not auto-credit. Default response behavior remains fail_closed with activationAllowed=false.
 
-## ORO-4F current/staging route wiring design
+## ORO-4F current/staging route wiring design (closed)
 
-ORO-4F current/staging route wiring design. This phase adds only Staging Route Wiring Design Contract docs, isolated mock fixtures, an isolated design helper, local smoke coverage, package registration, and runAllLocalSmoke registration.
+ORO-4F current/staging route wiring design marker retained for existing smoke coverage; ORO-4F is closed. This phase adds only Staging Route Wiring Design Contract docs, isolated mock fixtures, an isolated design helper, local smoke coverage, package registration, and runAllLocalSmoke registration.
 
 ORO-4F documents future staging-only paths `/api/oroplay/balance` and `/api/oroplay/transaction` while keeping `/api/balance` and `/api/transaction` disabled. It does not mount any Express route, does not edit `src/app.js`, does not wire runtime into live routes, does not call OroPlay, does not access production DB, does not mutate wallet or ledger state, does not write through Prisma, does not create a DB transaction, does not migrate, does not deploy, does not payout, and does not auto-credit. Default route activation remains blocked with expressRouteMounted=false, publicAliasMounted=false, runtimeWiredToLiveRoute=false, productionConfigTouched=false, and activationAllowed=false.
+
+## ORO-4G current/staging route wiring preflight
+
+ORO-4G current/staging route wiring preflight. This phase adds only Staging Route Wiring Preflight / Mount Readiness Checklist docs, isolated mock fixtures, an isolated preflight helper, local smoke coverage, package registration, and runAllLocalSmoke registration.
+
+ORO-4G documents the gates required before a future staging route mount can be considered: clean git state, Safe CI for HEAD, targeted OroPlay smokes, secret-shaped scan, `git diff --check`, disabled public aliases, unchanged `src/app.js`, callback auth strategy, request and response envelope mapping, idempotency, duplicate transaction behavior, insufficient balance behavior, invalid user behavior, malformed payload behavior, sanitizer/log redaction, rollback plan, staging-only flag strategy, observability/audit plan, ledger reconciliation gate, and UAT signoff checklist.
+
+ORO-4G keeps route candidates `/api/oroplay/balance` and `/api/oroplay/transaction` inactive, unmounted, non-public, and candidate-only. It keeps `/api/balance` and `/api/transaction` blocked until a separate explicit public alias phase. It does not mount any Express route, does not edit `src/app.js`, does not wire runtime into live routes, does not call OroPlay, does not access production DB, does not mutate wallet or ledger state, does not write through Prisma, does not create a DB transaction, does not migrate, does not deploy, does not payout, and does not auto-credit.
+
+ORO-4G CLOSED target criteria:
+
+- `docs/OROPLAY_CALLBACK_STAGING_ROUTE_PREFLIGHT.md` exists and states PRE-MOUNT ONLY, NO EXPRESS MOUNT, NO PUBLIC ALIAS, and NO RUNTIME MUTATION.
+- `src/game-provider-mock/oroplayCallbackStagingRoutePreflight.js` returns `BLOCKED` for failed gates and `NOT_READY_TO_MOUNT` for clean preflight, with no ready-to-mount path.
+- Fixtures cover clean, public alias blocked, Express mount blocked, wallet mutation blocked, ledger mutation blocked, Prisma write blocked, credential leak blocked, external network blocked, live OroPlay call blocked, and rollback readiness.
+- `smoke:oroplay-callback-staging-route-preflight` passes and confirms no mount, no public alias, no mutation, no DB write, rollback readiness, and no ready-to-mount result.
+- `runAllLocalSmoke.js`, `docs/API_MAPPING.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`, `docs/PHASE_ROADMAP.md`, and `docs/SMOKE_COVERAGE.md` include ORO-4G static/local-only coverage.
+
+Next phase suggestion: ORO-4H Staging Route Wiring Dry-Run Gate / Still No Public Alias.
+
+ORO-4H should still avoid opening `/api/balance` or `/api/transaction`. Public aliases require a separate explicit approval phase after staging-only dry-run evidence.
 - ORO-3B blocked until ORO-3A pass.
 
 ORO-3B status marker:

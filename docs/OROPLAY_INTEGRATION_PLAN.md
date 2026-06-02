@@ -168,8 +168,14 @@ ORO-4E current. Callback Controller Facade Dry-Run / Still No Express Route Wiri
 
 ORO-4E simulates mock auth decision, request envelope mapper, runtime shadow invocation, response envelope, and sanitized log preview by direct function call only. It keeps default response behavior fail_closed, expressRouteWired=false, runtimeWiredToLiveRoute=false, aliasBalanceEnabled=false, aliasTransactionEnabled=false, walletMutationAllowed=false, ledgerMutationAllowed=false, prismaWriteAllowed=false, externalNetworkAllowed=false, and activationAllowed=false. It does not wire Express routes, edit `src/app.js`, open public aliases, call OroPlay, mutate wallet or ledger state, write through Prisma, migrate, deploy, payout, auto-credit, or change production config.
 
-## ORO-4F Current
+## ORO-4F Current (Closed)
 
-ORO-4F current. Staging Route Wiring Design Contract / No Express Mount Yet is docs, contract, static/mock harness, and local smoke only.
+ORO-4F current marker retained for existing smoke coverage; ORO-4F is closed. Staging Route Wiring Design Contract / No Express Mount Yet is docs, contract, static/mock harness, and local smoke only.
 
 ORO-4F documents future staging-only route paths `/api/oroplay/balance` and `/api/oroplay/transaction` while keeping public aliases `/api/balance` and `/api/transaction` disabled. It keeps expressRouteMounted=false, publicAliasMounted=false, runtimeWiredToLiveRoute=false, walletMutationAllowed=false, ledgerMutationAllowed=false, prismaWriteAllowed=false, externalNetworkAllowed=false, productionConfigTouched=false, and activationAllowed=false. It does not wire Express routes, edit `src/app.js`, open public aliases, call OroPlay, mutate wallet or ledger state, write through Prisma, migrate, deploy, payout, auto-credit, or change production config.
+
+## ORO-4G Current
+
+ORO-4G current. Staging Route Wiring Preflight / Mount Readiness Checklist is docs, contract, static/mock harness, and local smoke only.
+
+ORO-4G answers which gates must pass before a future staging route mount can be considered. It adds preflight gate evaluation, mount readiness summary, rollback readiness checks, and smoke coverage while keeping mount readiness `NOT_READY_TO_MOUNT_BY_DEFAULT`. It keeps route candidates `/api/oroplay/balance` and `/api/oroplay/transaction` inactive and candidate-only, keeps `/api/balance` and `/api/transaction` blocked, and does not wire Express routes, edit `src/app.js`, open public aliases, call OroPlay, mutate wallet or ledger state, write through Prisma, migrate, deploy, payout, auto-credit, or change production config.

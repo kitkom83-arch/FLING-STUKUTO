@@ -2549,6 +2549,65 @@ Boundary:
 - No `/api/balance` alias.
 - No `/api/transaction` alias.
 
+## 74. ORO-4G OroPlay Callback Staging Route Preflight Coverage
+
+ORO-4G callback staging route preflight coverage. The phase is Staging Route Wiring Preflight / Mount Readiness Checklist only. It defines static preflight gates and rollback readiness for a possible future staging route mount while keeping all runtime route wiring, public aliases, wallet mutation, ledger mutation, Prisma writes, external network, production config changes, and activation blocked.
+
+Docs:
+
+- `docs/OROPLAY_CALLBACK_STAGING_ROUTE_PREFLIGHT.md`
+- `docs/OROPLAY_CALLBACK_STAGING_ROUTE_WIRING_DESIGN.md`
+- `docs/SMOKE_COVERAGE.md`
+- `docs/PHASE_ROADMAP.md`
+- `docs/API_MAPPING.md`
+- `docs/OROPLAY_INTEGRATION_PLAN.md`
+
+Script:
+
+- `src/local-smoke-tests/oroplayCallbackStagingRoutePreflightSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:oroplay-callback-staging-route-preflight
+```
+
+Coverage:
+
+- Confirms ORO-4G docs, preflight helper, fixtures, package script, and `runAllLocalSmoke` registration exist.
+- Confirms clean preflight returns phase `ORO-4G`, `NOT_READY_TO_MOUNT`, `expressMountAllowed=false`, and `publicAliasAllowed=false`.
+- Confirms no case returns a ready-to-mount status.
+- Confirms route candidates `/api/oroplay/balance` and `/api/oroplay/transaction` remain inactive, unmounted, non-public, and candidate-only.
+- Confirms public aliases `/api/balance` and `/api/transaction` remain blocked.
+- Confirms attempted Express mount fails the `noExpressMount` gate.
+- Confirms wallet mutation, ledger mutation, and Prisma write attempts fail preflight.
+- Confirms external network and live OroPlay call attempts fail preflight.
+- Confirms rollback readiness includes disable staging flag, remove route mount, keep fail-closed behavior, preserve sanitized logs, stop external traffic, verify no wallet/ledger mutation occurred, run targeted smoke, and run Safe CI.
+- Confirms report output does not echo credential marker values or credential-shaped values.
+- Confirms no runtime route wiring is added to `src/app.js`.
+
+Boundary:
+
+- Preflight checklist only.
+- Static/mock harness only.
+- No Express route mount.
+- No public alias.
+- No runtime route.
+- No production DB.
+- No real money.
+- No live OroPlay API call.
+- No external network.
+- No runtime wallet mutation.
+- No runtime ledger mutation.
+- No Prisma write.
+- No DB transaction.
+- No migration.
+- No deploy.
+- No payout.
+- No auto-credit.
+- No `/api/balance` alias.
+- No `/api/transaction` alias.
+
 ## 65. ORO-3D OroPlay Callback Runtime Readiness Gate Coverage
 
 ORO-3D status: Callback Runtime Readiness Gate / Pre-Implementation Certification Pack is docs/static/mock only. It adds readiness gate coverage, pre-implementation certification pack coverage, blocker matrix coverage, no mutation coverage, no alias coverage, and no live traffic coverage. It does not add production DB access, real money runtime flow, live OroPlay API calls, external network, runtime wallet mutation, runtime ledger mutation, Prisma write, migration, deploy, payout, auto-credit, real client secrets, or provider alias enablement.

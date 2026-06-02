@@ -68,6 +68,7 @@
     "smoke:oroplay-callback-request-response-envelope": "node src/local-smoke-tests/oroplayCallbackRequestResponseEnvelopeSmoke.js",
     "smoke:oroplay-callback-controller-facade-dry-run": "node src/local-smoke-tests/oroplayCallbackControllerFacadeDryRunSmoke.js",
     "smoke:oroplay-callback-staging-route-wiring-design": "node src/local-smoke-tests/oroplayCallbackStagingRouteWiringDesignSmoke.js",
+    "smoke:oroplay-callback-staging-route-preflight": "node src/local-smoke-tests/oroplayCallbackStagingRoutePreflightSmoke.js",
     "smoke:member-qr-deposit-ux": "node src/local-smoke-tests/memberQrDepositUxSmoke.js",
     "smoke:deposit-verification-source": "node src/local-smoke-tests/depositVerificationSourceSmoke.js",
     "smoke:deposit-ledger-reconciliation-guard": "node src/local-smoke-tests/depositLedgerReconciliationGuardSmoke.js",
