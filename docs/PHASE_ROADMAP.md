@@ -29,6 +29,7 @@ Safety boundary: docs/static only. No production DB, no real money, no live prov
 | Phase AT Live Certification | Final approval gate before live payment/provider/bank use. | Security checklist, provider credentials checklist, webhook signature checklist, rollback proof, backup/restore proof, reconciliation proof, final approval. | Certification docs/evidence only unless explicitly approved. | Direct live use without approval, production DB mutation from uncertified flow, real payout, secret hardcoding, missing audit/reconciliation. | Security PASS, provider credential PASS, webhook signature PASS, rollback PASS, backup/restore PASS, reconciliation PASS, audit PASS, permission PASS, secret scan PASS, final approval. | Live is blocked until all certification evidence and final approval are recorded. | Certification only; no live operation by default. |
 | ORO-0 OroPlay Docs Only | Align docs with current OroPlay production context and safe Seamless Wallet plan. | Docs/static only: current status, integration plan, Seamless Wallet contract, API mapping, roadmap, smoke coverage. | `docs/OROPLAY_CURRENT_STATUS.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`, `docs/OROPLAY_SEAMLESS_WALLET_CONTRACT.md`, `docs/API_MAPPING.md`, `docs/PHASE_ROADMAP.md`, `docs/SMOKE_COVERAGE.md`. | Runtime code, routes, controllers, services, migrations, deploy, production DB, real money runtime flow, live payout, live provider calls, callback wallet mutation, hardcoded secrets. | `npm run check`, `npm run smoke:master-spec-mapping`, `git diff --check`. | OroPlay docs and planning rows exist, contain no secrets, and preserve docs/static boundary. | Docs/static only; no runtime behavior change. |
 | ORO-2A OroPlay Callback API Design / Staging Route Boundary | Define callback route plan, Basic Auth boundary, payload shape, amount intent, sanitizer, and no-mutation rules. | Design/staging-boundary only; docs/static plus isolated mock boundary and static smoke. | `docs/OROPLAY_CALLBACK_API_DESIGN.md`, `src/game-provider-mock/oroplayCallbackBoundary.js`, `src/local-smoke-tests/oroplayCallbackBoundarySmoke.js`, `package.json`, `src/local-smoke-tests/runAllLocalSmoke.js`, `docs/API_MAPPING.md`, `docs/PHASE_ROADMAP.md`, `docs/SMOKE_COVERAGE.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`, `docs/OROPLAY_SEAMLESS_WALLET_CONTRACT.md`. | Express callback route, production DB, real money, live OroPlay API call, external network, real client secret, runtime wallet mutation, runtime ledger mutation, auto-credit, payout, migration, deploy. | `npm run check`, `npm run smoke:oroplay-callback-boundary`, `npm run smoke:oroplay-seamless-contract`, `git diff --check`, secret scan. | Smoke confirms preferred routes, optional provider-required aliases, Basic Auth env-only boundary, payload shape, amount rule, no runtime mutation, sanitizer, and static secret scan. | Docs/static/mock boundary only; no runtime behavior change. |
+| ORO-2B Staging Callback Stub Route Skeleton | Add fail-closed staging callback route skeletons for preferred OroPlay callback paths. | Staging/mock/fail-closed route skeleton only; no alias mount; no callback processing. | `src/controllers/oroplayCallbackStub.controller.js`, `src/routes/oroplayCallbackStub.routes.js`, `src/game-provider-mock/oroplayCallbackStubContract.js`, `src/local-smoke-tests/oroplayCallbackStubSmoke.js`, `src/app.js`, `package.json`, `src/local-smoke-tests/runAllLocalSmoke.js`, `docs/OROPLAY_CALLBACK_API_DESIGN.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`, `docs/API_MAPPING.md`, `docs/SMOKE_COVERAGE.md`, `docs/PHASE_ROADMAP.md`. | Production DB, real money, live OroPlay API call, external network, real client secret, runtime wallet mutation, runtime ledger mutation, auto-credit, payout, migration, deploy, provider alias mount. | `npm run check`, `npm run smoke:oroplay-callback-stub`, `npm run smoke:oroplay-callback-boundary`, `npm run smoke:oroplay-seamless-contract`, `git diff --check`, secret scan. | Smoke confirms route skeletons, fail-closed response, optional alias disabled guard, sanitizer, no mutation, no live provider, and no secret-shaped values. | ORO-2B current/fail-closed route skeleton; no runtime wallet or ledger behavior. |
 
 ## Phase Gates
 
@@ -93,9 +94,9 @@ OroPlay phase sequence after current mock/contract phases:
 
 - ORO-0: docs only.
 - ORO-1: mock contract only.
-- ORO-2A: callback API design / staging route boundary only.
-- ORO-2B: future staging callback stub only if approved.
-- ORO-3: member mapping, ledger source of truth, callback logs, game transactions, idempotency, and reconciliation alignment.
+- ORO-2A: closed callback API design / staging route boundary only.
+- ORO-2B: current/fail-closed route skeleton.
+- ORO-3: member mapping, ledger source of truth, callback logs, game transactions, idempotency, and reconciliation alignment. ORO-3 is not allowed until ORO-2B passes.
 - ORO-4: sandbox/staging integration.
 - ORO-5: live certification only after approval.
 
@@ -119,6 +120,22 @@ ORO-2A status marker:
 - Basic Auth boundary uses env-only credentials.
 - payload boundary covers `userCode`, `transactionCode`, `roundId`, `amount`, and `isFinished`.
 - negative amount is bet/debit intent; positive amount is win/credit intent; zero or malformed amount is invalid.
+- no production DB.
+- no real money.
+- no live OroPlay API call.
+- no external network.
+- no client secret.
+- no runtime wallet mutation.
+- no runtime ledger mutation.
+- no migration.
+- no deploy.
+
+ORO-2B status marker:
+
+- current/fail-closed route skeleton.
+- active skeleton routes are `POST /api/oroplay/balance` and `POST /api/oroplay/transaction`.
+- optional aliases `POST /api/balance` and `POST /api/transaction` are disabled/provider-required-only.
+- default response is disabled/fail-closed.
 - no production DB.
 - no real money.
 - no live OroPlay API call.

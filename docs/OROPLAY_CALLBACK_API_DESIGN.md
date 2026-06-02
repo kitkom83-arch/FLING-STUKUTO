@@ -2,7 +2,44 @@
 
 ORO-2A status: design/staging-boundary only. This phase documents the callback route boundary and adds an isolated mock/static smoke guard only.
 
+ORO-2A closure: closed.
+
+ORO-2B status: current staging callback stub route skeleton. This phase adds fail-closed Express route skeletons only.
+
 This is not a live callback runtime. ORO-2A does not create Express routes, does not connect Prisma or a database, does not mutate wallet state, does not post ledger entries, does not call OroPlay, and does not use real credentials.
+
+ORO-2B is also not a live callback runtime. It does not connect Prisma or a database, does not mutate wallet state, does not post ledger entries, does not call OroPlay, does not use real credentials, and does not return a live success response.
+
+## ORO-2B Staging Callback Stub Route Skeleton
+
+ORO-2B adds a staging callback stub route skeleton with fail-closed default behavior:
+
+- `POST /api/oroplay/balance`
+- `POST /api/oroplay/transaction`
+
+Default behavior is fail-closed. If the staging callback stub is not explicitly enabled by placeholder env key name `OROPLAY_STAGING_CALLBACK_STUB_ENABLED`, the route returns a disabled/fail-closed response. If it is explicitly enabled for staging route-shape checks, it still returns route-skeleton/fail-closed behavior and does not process callbacks.
+
+The response is sanitized and must not echo authorization, credentials, env values, tokens, passwords, secrets, `DATABASE_URL`, PIN values, or device identifiers.
+
+ORO-2B route skeleton limitations:
+
+- No runtime wallet mutation.
+- No runtime ledger mutation.
+- No production DB.
+- No real money.
+- No live OroPlay API.
+- No external network.
+- No real client secret.
+- No auto-credit.
+- No payout.
+- No migration.
+- No deploy.
+- No live provider.
+
+Optional provider-compatible aliases remain disabled in ORO-2B:
+
+- `POST /api/balance` remains disabled and provider-required-only.
+- `POST /api/transaction` remains disabled and provider-required-only.
 
 ## Preferred Internal Routes
 
@@ -68,9 +105,9 @@ The amount rule classifies intent only. ORO-2A must not credit, debit, auto-cred
 - No migration.
 - No deploy.
 
-## Future ORO-2B / ORO-3 Dependency
+## Future ORO-3 Dependency
 
-ORO-2B Future Staging Callback Stub may add a disabled/staging-only route stub only after approval. It must still fail closed without wallet or ledger mutation until ORO-3 guard work is complete.
+ORO-2B Staging Callback Stub adds only disabled/staging-only route skeletons. It must still fail closed without wallet or ledger mutation until ORO-3 guard work is complete.
 
 ORO-3 Ledger/Reconciliation dependency must define and approve:
 
@@ -93,4 +130,14 @@ ORO-3 Ledger/Reconciliation dependency must define and approve:
 - Amount intent rule.
 - No runtime wallet, ledger, or production DB mutation.
 - Sanitized callback log shape.
+- Static secret-shaped value scan.
+
+`smoke:oroplay-callback-stub` covers:
+
+- Route skeleton files and `/api/oroplay` mount.
+- `POST /api/oroplay/balance` and `POST /api/oroplay/transaction` skeleton routes.
+- Optional alias disabled guard for `POST /api/balance` and `POST /api/transaction`.
+- Fail-closed disabled/staging-only response contract.
+- No wallet mutation, no ledger mutation, no production DB, no external network, and no real money safety flags.
+- Sanitized response guard for authorization, credentials, token, password, secret, client secret, `DATABASE_URL`, PIN, and device identifier fields.
 - Static secret-shaped value scan.

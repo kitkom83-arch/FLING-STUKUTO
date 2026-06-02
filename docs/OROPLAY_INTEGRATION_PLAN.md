@@ -8,8 +8,8 @@ ORO sequence status: planning only. The current production direction is Seamless
 | --- | --- | --- | --- |
 | ORO-0 docs/status alignment | Record current production context and safe plan. | Docs/static only. | Docs updated with no secrets and no runtime code. |
 | ORO-1 mock Seamless Wallet contract | Create mock-only callback and wallet contract. | Static/mock harness only. | Contract smoke confirms auth, balance, transaction, duplicate, and leak guards. |
-| ORO-2A Callback API Design / Staging Route Boundary | Design callback routing, auth boundary, payload shape, amount intent, and sanitizer behavior. | Docs/static plus isolated mock boundary only; no Express route. | `smoke:oroplay-callback-boundary` confirms route/auth/payload/amount/no-mutation/sanitizer boundary. |
-| ORO-2B Future Staging Callback Stub | Optional disabled staging route stub only if explicitly approved later. | Staging stub only; no wallet or ledger mutation. | Stub fails closed until member mapping, ledger, idempotency, logs, and reconciliation are approved. |
+| ORO-2A Callback API Design / Staging Route Boundary | Design callback routing, auth boundary, payload shape, amount intent, and sanitizer behavior. | Closed docs/static plus isolated mock boundary only; no Express route. | `smoke:oroplay-callback-boundary` confirms route/auth/payload/amount/no-mutation/sanitizer boundary. |
+| ORO-2B Staging Fail-Closed Callback Stub | Add preferred route skeletons that fail closed by default. | Current staging stub only; no wallet or ledger mutation; no aliases. | `smoke:oroplay-callback-stub` confirms route skeleton, fail-closed behavior, alias-disabled guard, sanitizer, and no-mutation boundary. |
 | ORO-3 wallet/ledger/reconciliation design | Align member mapping, wallet ledger source of truth, callback logs, game transactions, idempotency, duplicate guards, and reconciliation reports. | Design/static only until approved. | Ledger and reconciliation guard checklist complete. |
 | ORO-4 outbound service design | Plan provider credential exchange, vendor list, game list, detail, launch URL, and betting history services. | Service design only; no public member credential endpoint. | Provider request/response mapping and redaction rules documented. |
 | ORO-5 admin read-only provider status page | Plan admin read-only provider health/status view. | Admin read-only design. | No write controls; no secret display; status-only payload. |
@@ -26,7 +26,7 @@ ORO sequence status: planning only. The current production direction is Seamless
 - No live provider call until sandbox/staging evidence and certification are approved.
 - No migration or deploy in ORO-2A.
 
-## ORO-2A Current Scope
+## ORO-2A Closed Scope
 
 - Preferred callback routes: `POST /api/oroplay/balance` and `POST /api/oroplay/transaction`.
 - Optional provider-compatible aliases: `POST /api/balance` and `POST /api/transaction` only if OroPlay requires them later.
@@ -34,6 +34,25 @@ ORO sequence status: planning only. The current production direction is Seamless
 - Request boundary covers `userCode`, `transactionCode`, `roundId`, `amount`, and `isFinished`.
 - Negative amount means bet/debit intent; positive amount means win/credit intent; zero or malformed amount is rejected.
 - ORO-2A does not add runtime wallet mutation, runtime ledger mutation, production DB access, real money, live OroPlay API calls, external network, migrations, deploys, or real client secrets.
+
+ORO-2A callback design boundary is closed.
+
+## ORO-2B Current Scope
+
+ORO-2B staging fail-closed callback stub is current.
+
+- Active skeleton routes: `POST /api/oroplay/balance` and `POST /api/oroplay/transaction`.
+- Default route behavior: disabled/fail-closed unless the staging stub placeholder env key is explicitly enabled.
+- Enabled staging stub behavior still fails closed and does not process a live callback.
+- Optional aliases `POST /api/balance` and `POST /api/transaction` remain disabled and provider-required-only.
+- No production DB, no real money, no live OroPlay API call, no external network, no client secret, no runtime wallet mutation, no runtime ledger mutation, no migration, and no deploy.
+
+ORO-2C / ORO-3 dependencies before any callback processing:
+
+- member mapping.
+- idempotency.
+- ledger/reconciliation guard.
+- sanitized callback log design.
 
 ## Current Integration Direction
 

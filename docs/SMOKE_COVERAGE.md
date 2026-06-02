@@ -1923,3 +1923,53 @@ Boundary:
 - No payout.
 - No migration.
 - No deploy.
+
+## 60. ORO-2B OroPlay Callback Stub Coverage
+
+ORO-2B status: Staging Callback Stub Route Skeleton is fail-closed route skeleton only. It adds preferred Express callback stub routes for OroPlay staging shape checks, but it does not add callback processing, production DB access, real money runtime flow, live OroPlay API calls, external network, runtime wallet mutation, runtime ledger mutation, migration, deploy, payout, auto-credit, or real client secrets.
+
+Docs:
+
+- `docs/OROPLAY_CALLBACK_API_DESIGN.md`
+- `docs/OROPLAY_INTEGRATION_PLAN.md`
+- `docs/API_MAPPING.md`
+- `docs/PHASE_ROADMAP.md`
+- `docs/SMOKE_COVERAGE.md`
+
+Script:
+
+- `src/local-smoke-tests/oroplayCallbackStubSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:oroplay-callback-stub
+```
+
+Coverage:
+
+- Confirms route skeleton files and controller files exist.
+- Confirms `src/app.js` mounts `/api/oroplay`.
+- Confirms route skeleton check for `POST /api/oroplay/balance` and `POST /api/oroplay/transaction`.
+- Confirms optional alias disabled guard for `POST /api/balance` and `POST /api/transaction`.
+- Confirms controller source has no Prisma, DB, wallet mutation, ledger mutation, fetch, axios, or external network call.
+- Confirms fail-closed behavior with disabled/staging-only response contract and no live success claim.
+- Confirms no mutation guard for wallet and ledger safety flags.
+- Confirms no secret leak guard for authorization, credential, password, secret, token, client secret, `DATABASE_URL`, PIN, and device identifier fields.
+- Confirms static secret-shaped value scan.
+- If backend local is already open on port 4000, confirms the preferred routes do not return `404` and fail closed rather than returning success runtime behavior.
+
+Boundary:
+
+- Staging/mock/fail-closed route skeleton only.
+- No production DB.
+- No real money.
+- No live OroPlay API call.
+- No external network.
+- No real client secret.
+- No runtime wallet mutation.
+- No runtime ledger mutation.
+- No auto-credit.
+- No payout.
+- No migration.
+- No deploy.
