@@ -96,3 +96,9 @@ ORO-4B does not mutate wallet or ledger state:
 - no real money
 - no payout
 - no auto-credit
+
+## ORO-4C shadow invocation handoff
+
+ORO-4C may call isolated mock shadow invocation helpers directly, but that is not staging route wiring. The ORO-2B fail-closed route remains preserved, the ORO-4A disabled gate remains preserved, and this ORO-4B precheck remains a blocker for any future live route wiring.
+
+ORO-4C keeps `activationAllowed=false`, `runtimeWiredToLiveRoute=false`, `aliasBalanceEnabled=false`, `aliasTransactionEnabled=false`, `walletMutationAllowed=false`, `ledgerMutationAllowed=false`, `prismaWriteAllowed=false`, and `networkAllowed=false`.

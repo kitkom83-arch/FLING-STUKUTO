@@ -146,6 +146,12 @@ ORO-4A does not wire runtime into live routes, does not mutate wallet or ledger,
 
 ## ORO-4B Current
 
-ORO-4B current. Runtime Skeleton Certification / Staging Wiring Precheck is docs, contract, static/mock harness, and local smoke only.
+ORO-4B closed. Runtime Skeleton Certification / Staging Wiring Precheck is docs, contract, static/mock harness, and local smoke only.
 
 ORO-4B keeps activationAllowed=false, runtimeWiredToLiveRoute=false, aliasBalanceEnabled=false, aliasTransactionEnabled=false, walletMutationAllowed=false, ledgerMutationAllowed=false, prismaWriteAllowed=false, externalNetworkAllowed=false, and productionConfigTouched=false. Future staging wiring still requires manual approval, rollback / kill switch evidence, sanitized audit proof, wallet/ledger dry-run evidence, and reconciliation guard evidence.
+
+## ORO-4C Current
+
+ORO-4C current. Callback Runtime Shadow Invocation Harness / No Live Route Wiring is docs, contract, static/mock harness, and local smoke only.
+
+ORO-4C invokes isolated mock functions directly against fixtures. It keeps default decision fail_closed, certified mock state shadow_ready_only, activationAllowed=false, runtimeWiredToLiveRoute=false, aliasBalanceEnabled=false, aliasTransactionEnabled=false, walletMutationAllowed=false, ledgerMutationAllowed=false, prismaWriteAllowed=false, and networkAllowed=false. It does not wire runtime into routes, open public aliases, call OroPlay, mutate wallet or ledger state, write through Prisma, migrate, deploy, payout, auto-credit, or change production config.

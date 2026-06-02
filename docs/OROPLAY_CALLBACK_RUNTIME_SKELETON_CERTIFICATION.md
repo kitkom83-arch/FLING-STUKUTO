@@ -145,3 +145,7 @@ ORO-4B uses safe redaction markers only, including auth-header-redaction-marker,
 ## explicit no-real-money boundary
 
 ORO-4B is not a live callback runtime and not a money movement phase. It must not debit, credit, settle, reconcile for real money, pay out, auto-credit, mutate wallet, mutate ledger, write through Prisma, call OroPlay, migrate, deploy, or enable aliases.
+
+## ORO-4C handoff boundary
+
+ORO-4C may invoke isolated mock shadow functions directly after ORO-4B evidence, but it is not route wiring. ORO-4C must keep activationAllowed=false, runtimeWiredToLiveRoute=false, aliasBalanceEnabled=false, aliasTransactionEnabled=false, walletMutationAllowed=false, ledgerMutationAllowed=false, prismaWriteAllowed=false, and networkAllowed=false.

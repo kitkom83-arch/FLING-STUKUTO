@@ -238,3 +238,9 @@ There is no live OroPlay callback runtime, no runtime wallet mutation, no runtim
 ORO-4B adds runtime skeleton certification and staging wiring precheck evidence only. It does not change the callback API surface and does not wire the ORO-4A skeleton into `/api/oroplay/balance`, `/api/oroplay/transaction`, `/api/balance`, or `/api/transaction`.
 
 Future env names are recorded as names only. ORO-4B does not read env values, print env values, add live provider credentials, call OroPlay, mutate wallet or ledger state, write through Prisma, migrate, deploy, or activate aliases.
+
+## ORO-4C shadow invocation only
+
+ORO-4C adds a callback runtime shadow invocation harness only. It does not change the callback API surface and does not wire shadow invocation into `/api/oroplay/balance`, `/api/oroplay/transaction`, `/api/balance`, or `/api/transaction`.
+
+The shadow harness calls isolated mock functions directly, reads fixtures only, returns balance decisions or debit/credit/ledger/reconciliation intent objects only, and keeps activationAllowed=false, runtimeWiredToLiveRoute=false, aliasBalanceEnabled=false, aliasTransactionEnabled=false, walletMutationAllowed=false, ledgerMutationAllowed=false, prismaWriteAllowed=false, and networkAllowed=false.

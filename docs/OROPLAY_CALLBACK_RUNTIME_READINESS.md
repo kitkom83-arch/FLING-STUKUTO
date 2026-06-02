@@ -155,3 +155,9 @@ ORO-3A closed. ORO-3B closed. ORO-3C closed. ORO-3D current readiness gate / cer
 ORO-3A closed. ORO-3B closed. ORO-3C closed. ORO-3D closed. ORO-3E current design freeze / staging-only activation plan only.
 
 Runtime mutation still blocked. staging-only activation remains closed by default. ORO-3E does not enable callback runtime, wallet mutation, ledger mutation, Prisma write, live traffic, external network, production DB, real money, provider-compatible aliases, migration, or deploy.
+
+## ORO-4C Current Shadow Invocation
+
+ORO-4A closed. ORO-4B closed. ORO-4C current shadow invocation harness only.
+
+The shadow invocation harness reads mock fixtures only and returns mock balance decisions or transaction intent objects only. It preserves fail_closed default behavior, shadow_ready_only certified mock state, ORO-2B fail-closed route behavior, ORO-4A disabled gate behavior, and ORO-4B staging precheck behavior. It does not enable runtime route wiring, provider-compatible aliases, wallet mutation, ledger mutation, Prisma write, external network, production DB, real money, migration, deploy, payout, or auto-credit.

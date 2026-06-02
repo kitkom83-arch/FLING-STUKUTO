@@ -107,6 +107,9 @@ OroPlay phase sequence after current mock/contract phases:
 - ORO-3D: member mapping source approval, wallet source of truth, callback logs, game transactions, idempotency storage, ledger boundary, rollback/compensation, and reconciliation alignment. ORO-3D blocked until ORO-3C pass.
 - ORO-3E: implementation design freeze / staging-only activation plan. ORO-3E closed.
 - ORO-3F: callback local smoke environment normalization / pre-implementation port guard. ORO-3F current.
+- ORO-4A: callback runtime implementation skeleton / staging-disabled runtime gate. ORO-4A closed.
+- ORO-4B: runtime skeleton certification / staging wiring precheck. ORO-4B closed.
+- ORO-4C: callback runtime shadow invocation harness / no live route wiring. ORO-4C current.
 - ORO-2B current/fail-closed route skeleton remains the active fail-closed runtime default.
 - ORO-3 is not allowed until ORO-2B passes; ORO-2C and ORO-3A add newer gates before runtime work.
 - ORO-3B is not allowed until ORO-2B and ORO-2C are closed and ORO-3A passes.
@@ -205,11 +208,17 @@ ORO-4A current/runtime implementation skeleton. This phase adds only disabled-by
 
 ORO-4B blocked until ORO-4A pass. ORO-4A does not enable callback runtime, production DB, real money, live OroPlay traffic, external network, runtime wallet mutation, runtime ledger mutation, Prisma write, DB transaction, migration, deploy, payout, auto-credit, `/api/balance`, or `/api/transaction`.
 
-## ORO-4B current/runtime skeleton certification
+## ORO-4B closed/runtime skeleton certification
 
-ORO-4B current/runtime skeleton certification and staging wiring precheck. This phase adds only certification docs, staging wiring precheck docs, an isolated mock helper, local smoke coverage, package registration, and runAllLocalSmoke registration.
+ORO-4B closed/runtime skeleton certification and staging wiring precheck. This phase adds only certification docs, staging wiring precheck docs, an isolated mock helper, local smoke coverage, package registration, and runAllLocalSmoke registration.
 
 ORO-4B does not enable callback runtime, staging activation, production DB, real money, live OroPlay traffic, external network, runtime wallet mutation, runtime ledger mutation, Prisma write, DB transaction, migration, deploy, payout, auto-credit, `/api/balance`, or `/api/transaction`. Future staging wiring remains blocked until manual approval and activation evidence are recorded.
+
+## ORO-4C current/runtime shadow invocation
+
+ORO-4C current/runtime shadow invocation harness. This phase adds only shadow invocation docs, isolated mock fixtures, an isolated shadow invoker, local smoke coverage, package registration, and runAllLocalSmoke registration.
+
+ORO-4C directly invokes mock functions only. It does not wire the runtime skeleton into live routes, does not open `/api/balance` or `/api/transaction`, does not enable callback runtime, does not call OroPlay, does not access production DB, does not mutate wallet or ledger state, does not write through Prisma, does not create a DB transaction, does not migrate, does not deploy, does not payout, and does not auto-credit. Default decision remains fail_closed and certified mock state is shadow_ready_only with activationAllowed=false.
 - ORO-3B blocked until ORO-3A pass.
 
 ORO-3B status marker:
