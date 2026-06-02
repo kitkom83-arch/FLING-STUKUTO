@@ -1957,11 +1957,16 @@ Coverage:
 - Confirms no mutation guard for wallet and ledger safety flags.
 - Confirms no secret leak guard for authorization, credential, password, secret, token, client secret, `DATABASE_URL`, PIN, and device identifier fields.
 - Confirms static secret-shaped value scan.
-- If backend local is already open on port 4000, confirms the preferred routes do not return `404` and fail closed rather than returning success runtime behavior.
+- Supports local `OROPLAY_CALLBACK_STUB_BASE_URL` or `BASE_URL` normalization for loopback targets, with root and `/api` inputs normalized without a double `/api` path.
+- Checks `/api/health` before live route assertions and runs those assertions only when the PG77 health contract is present.
+- If local port 4000 is occupied by an unrelated service, records local port conflict / wrong service when `/api/health` returns `404` and `/health` responds from that service.
+- If a PG77 local backend is confirmed, verifies the preferred routes do not return `404` and fail closed rather than returning success runtime behavior.
+- `smoke:all-local` remains guarded by `NODE_ENV=development-local|test` and a local `LOCAL_ADMIN_PASSWORD` value outside the repo.
 
 Boundary:
 
 - Staging/mock/fail-closed route skeleton only.
+- Local smoke diagnosis only; no runtime callback activation.
 - No production DB.
 - No real money.
 - No live OroPlay API call.
@@ -2264,6 +2269,55 @@ Coverage:
 - Confirms no live traffic coverage and no external network markers.
 - Confirms ORO-2B fail-closed route remains fail-closed.
 - Confirms ORO-3F is blocked until ORO-3E passes.
+
+## 67. ORO-3F OroPlay Callback Local Smoke Environment Normalization Coverage
+
+ORO-3F status: Callback Local Smoke Environment Normalization / Pre-Implementation Port Guard is docs/smoke/local-diagnosis only. It improves the callback stub smoke target selection and wrong-service diagnostics before runtime implementation. It does not add callback processing, production DB access, real money runtime flow, live OroPlay API calls, external network, runtime wallet mutation, runtime ledger mutation, Prisma write, migration, deploy, payout, auto-credit, real client secrets, runtime route, controller, service, or provider alias enablement.
+
+Docs:
+
+- `docs/OROPLAY_CALLBACK_RUNTIME_READINESS_GATE.md`
+- `docs/OROPLAY_CALLBACK_IMPLEMENTATION_DESIGN_FREEZE.md`
+- `docs/OROPLAY_CALLBACK_STAGING_ONLY_ACTIVATION_PLAN.md`
+- `docs/SMOKE_COVERAGE.md`
+- `docs/PHASE_ROADMAP.md`
+
+Script:
+
+- `src/local-smoke-tests/oroplayCallbackStubSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:oroplay-callback-stub
+```
+
+Coverage:
+
+- Confirms `OROPLAY_CALLBACK_STUB_BASE_URL` and `BASE_URL` are local-only smoke target inputs.
+- Confirms root and `/api` target inputs normalize without a double `/api` path.
+- Confirms `/api/health` must match the PG77 health contract before live callback route assertions run.
+- Confirms wrong-service listeners on local port 4000 are classified as local port conflict / wrong service.
+- Confirms `POST /api/oroplay/balance` and `POST /api/oroplay/transaction` still fail closed when a PG77 backend is confirmed.
+- Confirms optional aliases `POST /api/balance` and `POST /api/transaction` remain disabled.
+- Confirms `smoke:all-local` still requires `NODE_ENV=development-local|test` and `LOCAL_ADMIN_PASSWORD`.
+
+Boundary:
+
+- Smoke/local diagnosis only.
+- No production DB.
+- No real money.
+- No live OroPlay API call.
+- No external network.
+- No client secret.
+- No runtime wallet mutation.
+- No runtime ledger mutation.
+- No Prisma write.
+- No migration.
+- No deploy.
+- No `/api/balance` alias.
+- No `/api/transaction` alias.
+- ORO-2B fail-closed route remains runtime-disabled.
 
 Boundary:
 

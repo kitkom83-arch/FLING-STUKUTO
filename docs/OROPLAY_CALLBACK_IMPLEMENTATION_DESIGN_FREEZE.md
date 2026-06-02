@@ -157,6 +157,16 @@ Staging-only activation remains disabled by default and depends on a future ORO-
 
 ORO-3F is blocked until ORO-3E passes. ORO-3F must review design freeze smoke, staging-only activation plan, monitoring plan, rollback plan, emergency disable plan, idempotency plan, wallet bridge approval, ledger bridge approval, Prisma write approval, and alias approval before any runtime activation.
 
+## ORO-3F local smoke environment normalization
+
+ORO-3F is limited to callback local smoke environment normalization and pre-implementation port guard evidence. It may improve smoke diagnosis and docs, but it does not implement callback runtime behavior.
+
+The callback stub smoke may read `OROPLAY_CALLBACK_STUB_BASE_URL` or `BASE_URL` for a local loopback target only. The smoke must not print the configured value, must reject embedded credentials, and must normalize root/API paths without producing a double `/api` path.
+
+The live route assertion for `POST /api/oroplay/balance` and `POST /api/oroplay/transaction` is valid only after `/api/health` identifies the PG77 backend. When an unrelated service owns local port 4000 and `/api/health` returns `404`, the result is a local port conflict / wrong service diagnostic, not an OroPlay callback regression.
+
+ORO-3F does not add runtime routes, controllers, wallet services, ledger services, Prisma writes, migrations, deploy steps, external network calls, live OroPlay traffic, or provider-compatible aliases.
+
 ## no live runtime statement
 
 ORO-3E is not a live callback runtime and does not process live OroPlay callbacks.

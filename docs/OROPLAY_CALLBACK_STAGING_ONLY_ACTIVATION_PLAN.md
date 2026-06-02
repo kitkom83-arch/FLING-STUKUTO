@@ -157,3 +157,15 @@ Production activation is excluded. ORO-3E does not permit production DB, real mo
 ## ORO-3F prerequisites
 
 ORO-3F is blocked until ORO-3E passes. Staging-only activation still requires explicit ORO-3F approval and remains disabled by default.
+
+## ORO-3F callback local smoke normalization
+
+ORO-3F may normalize local callback smoke behavior before any runtime implementation. This is not staging activation and does not enable provider callback traffic.
+
+Local callback smoke may use `OROPLAY_CALLBACK_STUB_BASE_URL` or `BASE_URL` only for a local loopback PG77 backend. The smoke checks `/api/health` first; route assertions are allowed only when the PG77 health contract is present.
+
+If local port 4000 is occupied by an unrelated service, `/api/health` may return `404` while `/health` responds from that service. In that case, the smoke must classify the result as local port conflict / wrong service and skip live-route callback assertions.
+
+`smoke:all-local` still requires `NODE_ENV` set to `development-local` or `test` and `LOCAL_ADMIN_PASSWORD` set outside the repo. ORO-3F does not edit `.env`, does not add real credentials, and does not print credential-like values.
+
+ORO-3F keeps `/api/balance` and `/api/transaction` disabled. The ORO-2B fail-closed route skeleton remains runtime-disabled.

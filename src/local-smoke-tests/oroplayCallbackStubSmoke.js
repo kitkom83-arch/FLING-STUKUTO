@@ -3,6 +3,7 @@
 const assert = require("assert");
 const fs = require("fs");
 const http = require("http");
+const https = require("https");
 const path = require("path");
 
 const {
@@ -19,6 +20,8 @@ const ROUTE_FILE = "src/routes/oroplayCallbackStub.routes.js";
 const CONTROLLER_FILE = "src/controllers/oroplayCallbackStub.controller.js";
 const CONTRACT_FILE = "src/game-provider-mock/oroplayCallbackStubContract.js";
 const SMOKE_FILE = "src/local-smoke-tests/oroplayCallbackStubSmoke.js";
+const DEFAULT_STUB_BASE_URL = "http://127.0.0.1:4000/api";
+const LOOPBACK_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
 const STATIC_SCAN_FILES = [
   "src/app.js",
   ROUTE_FILE,
@@ -50,6 +53,96 @@ function assertNotIncludes(label, text, markers) {
   for (const marker of markers) {
     assert(!text.includes(marker), `${label} must not include marker: ${marker}`);
   }
+}
+
+function parseUrl(value) {
+  try {
+    return new URL(value);
+  } catch (_error) {
+    return null;
+  }
+}
+
+function normalizeHost(hostname) {
+  return String(hostname || "").toLowerCase().replace(/^\[/, "").replace(/\]$/, "");
+}
+
+function isLoopbackHost(hostname) {
+  return LOOPBACK_HOSTS.has(normalizeHost(hostname));
+}
+
+function removeTrailingSlashes(value) {
+  return String(value || "").replace(/\/+$/, "");
+}
+
+function rootPathFromConfiguredPath(pathname) {
+  const cleanPath = removeTrailingSlashes(pathname || "");
+  if (!cleanPath || cleanPath === "/") return "";
+
+  const segments = cleanPath.split("/");
+  const apiIndex = segments.findIndex((segment) => segment.toLowerCase() === "api");
+  if (apiIndex === -1) return cleanPath;
+
+  const rootSegments = segments.slice(0, apiIndex);
+  const rootPath = rootSegments.join("/");
+  return rootPath === "/" ? "" : rootPath;
+}
+
+function normalizeStubBaseUrl() {
+  const configured =
+    process.env.OROPLAY_CALLBACK_STUB_BASE_URL || process.env.BASE_URL || DEFAULT_STUB_BASE_URL;
+  const source = process.env.OROPLAY_CALLBACK_STUB_BASE_URL
+    ? "OROPLAY_CALLBACK_STUB_BASE_URL"
+    : process.env.BASE_URL
+      ? "BASE_URL"
+      : "default";
+  const parsed = parseUrl(String(configured || "").trim());
+
+  if (!parsed || !["http:", "https:"].includes(parsed.protocol)) {
+    throw new Error(`${source} must be a valid HTTP(S) URL. Value is not printed.`);
+  }
+  if (parsed.username || parsed.password) {
+    throw new Error(`${source} must not contain embedded credentials. Value is not printed.`);
+  }
+  if (parsed.search || parsed.hash) {
+    throw new Error(`${source} must not include query string or fragment. Value is not printed.`);
+  }
+  if (!isLoopbackHost(parsed.hostname)) {
+    throw new Error(`${source} must target localhost, 127.0.0.1, or ::1 for this local-only smoke.`);
+  }
+
+  const rootPath = rootPathFromConfiguredPath(parsed.pathname);
+  const rootBaseUrl = `${parsed.origin}${rootPath}`;
+  const apiBaseUrl = `${rootBaseUrl}/api`;
+  return { source, rootBaseUrl, apiBaseUrl };
+}
+
+function buildUrl(baseUrl, pathname) {
+  return `${removeTrailingSlashes(baseUrl)}/${String(pathname || "").replace(/^\/+/, "")}`;
+}
+
+function parseJsonBody(body) {
+  try {
+    return JSON.parse(body);
+  } catch (_error) {
+    return null;
+  }
+}
+
+function isPg77HealthResponse(result) {
+  if (!result || result.statusCode !== 200) return false;
+  const payload = parseJsonBody(result.body);
+  const data = payload && payload.data;
+  return Boolean(
+    payload &&
+      payload.success === true &&
+      data &&
+      data.ok === true &&
+      data.status === "ok" &&
+      typeof data.databaseConnected === "boolean" &&
+      data.externalModes &&
+      typeof data.externalModes === "object"
+  );
 }
 
 function assertNoCredentialShape(label, text) {
@@ -252,10 +345,15 @@ function assertDocsAndRegistration() {
   assertIncludes("Smoke coverage", readRequired("docs/SMOKE_COVERAGE.md"), [
     "smoke:oroplay-callback-stub",
     "optional alias disabled guard",
+    "OROPLAY_CALLBACK_STUB_BASE_URL",
+    "local port conflict / wrong service",
+    "/api/health",
   ]);
   assertIncludes("Phase roadmap", readRequired("docs/PHASE_ROADMAP.md"), [
     "ORO-2B Staging Callback Stub Route Skeleton",
     "ORO-3 is not allowed until ORO-2B passes",
+    "ORO-3F current/local smoke normalization",
+    "local port 4000 wrong service is classified as local port conflict / wrong service",
   ]);
 }
 
@@ -265,17 +363,21 @@ function assertStaticSecretScan() {
   }
 }
 
-function postLocal(pathname) {
+function requestLocal(urlValue, options = {}) {
   return new Promise((resolve) => {
-    const request = http.request(
+    const parsed = parseUrl(urlValue);
+    if (!parsed) return resolve({ available: false, reason: "invalid_url" });
+    const transport = parsed.protocol === "https:" ? https : http;
+    const body = options.body ? JSON.stringify(options.body) : null;
+    const request = transport.request(
       {
-        hostname: "127.0.0.1",
-        port: 4000,
-        path: pathname,
-        method: "POST",
+        hostname: normalizeHost(parsed.hostname),
+        port: parsed.port || (parsed.protocol === "https:" ? 443 : 80),
+        path: `${parsed.pathname}${parsed.search}`,
+        method: options.method || "GET",
         headers: {
-          "Content-Type": "application/json",
           Accept: "application/json",
+          ...(body ? { "Content-Type": "application/json" } : {}),
         },
         timeout: 1500,
       },
@@ -297,32 +399,83 @@ function postLocal(pathname) {
     });
     request.on("error", (error) => {
       if (error.code === "ECONNREFUSED") return resolve({ available: false, reason: error.code });
+      if (error.code === "ENOTFOUND") return resolve({ available: false, reason: error.code });
       return resolve({ available: true, statusCode: 0, body: "", error });
     });
-    request.write(JSON.stringify({ userCode: "stub-user" }));
+    if (body) request.write(body);
     request.end();
   });
 }
 
+function postLocal(baseUrl, pathname) {
+  return requestLocal(buildUrl(baseUrl, pathname), {
+    method: "POST",
+    body: { userCode: "stub-user" },
+  });
+}
+
+async function isPg77BackendTarget(config) {
+  const apiHealth = await requestLocal(buildUrl(config.apiBaseUrl, "/health"));
+  if (!apiHealth.available) {
+    console.log(
+      `ORO-2B local route check skipped: PG77 backend not listening on ${config.source} target (${apiHealth.reason}).`
+    );
+    return false;
+  }
+
+  if (isPg77HealthResponse(apiHealth)) {
+    console.log("ORO-2B local route check target: PG77 /api/health contract PASS.");
+    return true;
+  }
+
+  if (apiHealth.statusCode === 404) {
+    const rootHealth = await requestLocal(buildUrl(config.rootBaseUrl, "/health"));
+    if (rootHealth.available) {
+      const classification = isPg77HealthResponse(rootHealth)
+        ? "PG77 /health responded but /api/health did not; verify BASE_URL points at the API base"
+        : "local port conflict / wrong service";
+      console.log(
+        `ORO-2B local route check skipped: ${classification}; /api/health returned 404 and /health responded.`
+      );
+      return false;
+    }
+    console.log("ORO-2B local route check skipped: /api/health returned 404 and /health was unavailable.");
+    return false;
+  }
+
+  console.log(
+    `ORO-2B local route check skipped: /api/health did not match PG77 health contract (status ${apiHealth.statusCode}).`
+  );
+  return false;
+}
+
 async function assertLocalRouteIfBackendOpen() {
-  const checks = ["/api/oroplay/balance", "/api/oroplay/transaction"];
+  const config = normalizeStubBaseUrl();
+  const isPg77Target = await isPg77BackendTarget(config);
+  if (!isPg77Target) return;
+
+  const checks = [
+    { label: "/api/oroplay/balance", pathname: "/oroplay/balance" },
+    { label: "/api/oroplay/transaction", pathname: "/oroplay/transaction" },
+  ];
   for (const pathname of checks) {
-    const result = await postLocal(pathname);
+    const result = await postLocal(config.apiBaseUrl, pathname.pathname);
     if (!result.available) {
-      console.log(`ORO-2B local route check skipped: backend not listening on port 4000 (${result.reason}).`);
+      console.log(`ORO-2B local route check skipped: PG77 backend route unavailable (${result.reason}).`);
       return;
     }
-    assert.notStrictEqual(result.statusCode, 404, `${pathname} must not return 404 when backend is open.`);
+    assert.notStrictEqual(result.statusCode, 404, `${pathname.label} must not return 404 when PG77 backend is open.`);
     assert(
       result.statusCode === 503 || result.statusCode === 501,
-      `${pathname} must return fail-closed 503 or 501, got ${result.statusCode}.`
+      `${pathname.label} must return fail-closed 503 or 501, got ${result.statusCode}.`
     );
+    assertNoCredentialShape(`${pathname.label} response`, result.body);
     const payload = JSON.parse(result.body);
-    assert.strictEqual(payload.success, false, `${pathname} must not report success.`);
-    assert.strictEqual(payload.result, "fail_closed", `${pathname} must fail closed.`);
-    assert.strictEqual(payload.safety.failClosed, true, `${pathname} must mark failClosed.`);
-    assert.strictEqual(payload.safety.noWalletMutation, true, `${pathname} must mark noWalletMutation.`);
-    assert.strictEqual(payload.safety.noLedgerMutation, true, `${pathname} must mark noLedgerMutation.`);
+    assert.strictEqual(payload.success, false, `${pathname.label} must not report success.`);
+    assert.strictEqual(payload.result, "fail_closed", `${pathname.label} must fail closed.`);
+    assert.strictEqual(payload.safety.failClosed, true, `${pathname.label} must mark failClosed.`);
+    assert.strictEqual(payload.safety.noWalletMutation, true, `${pathname.label} must mark noWalletMutation.`);
+    assert.strictEqual(payload.safety.noLedgerMutation, true, `${pathname.label} must mark noLedgerMutation.`);
   }
 }
 

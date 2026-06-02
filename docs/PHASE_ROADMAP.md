@@ -105,6 +105,8 @@ OroPlay phase sequence after current mock/contract phases:
 - ORO-3B: current/adapter contract. ORO-3B current/adapter contract. ORO-3B closed.
 - ORO-3C: current/execution plan. ORO-3C current/execution plan. Historical gate: ORO-3C blocked until ORO-3B pass.
 - ORO-3D: member mapping source approval, wallet source of truth, callback logs, game transactions, idempotency storage, ledger boundary, rollback/compensation, and reconciliation alignment. ORO-3D blocked until ORO-3C pass.
+- ORO-3E: implementation design freeze / staging-only activation plan. ORO-3E closed.
+- ORO-3F: callback local smoke environment normalization / pre-implementation port guard. ORO-3F current.
 - ORO-2B current/fail-closed route skeleton remains the active fail-closed runtime default.
 - ORO-3 is not allowed until ORO-2B passes; ORO-2C and ORO-3A add newer gates before runtime work.
 - ORO-3B is not allowed until ORO-2B and ORO-2C are closed and ORO-3A passes.
@@ -299,3 +301,25 @@ ORO-3E status marker:
 - no migration.
 - no deploy.
 - ORO-3F blocked until ORO-3E pass.
+
+ORO-3F status marker:
+
+- ORO-3F current/local smoke normalization.
+- ORO-3E closed.
+- local callback stub smoke supports `OROPLAY_CALLBACK_STUB_BASE_URL` or `BASE_URL` for loopback targets only.
+- root and `/api` local targets normalize without double `/api`.
+- `/api/health` must identify PG77-real-core before live callback route assertions run.
+- local port 4000 wrong service is classified as local port conflict / wrong service.
+- `smoke:all-local` still requires `NODE_ENV=development-local|test` and `LOCAL_ADMIN_PASSWORD`.
+- ORO-2B fail-closed route remains default.
+- optional aliases `POST /api/balance` and `POST /api/transaction` remain disabled/provider-required-only.
+- no production DB.
+- no real money.
+- no live OroPlay API call.
+- no external network.
+- no client secret.
+- no runtime wallet mutation.
+- no runtime ledger mutation.
+- no Prisma write.
+- no migration.
+- no deploy.

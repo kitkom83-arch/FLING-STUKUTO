@@ -163,3 +163,15 @@ ORO-3D does not enable `/api/balance` or `/api/transaction`; ORO-2B fail-closed 
 ORO-3D closed. ORO-3E implementation design freeze current. The readiness gate remains closed for runtime mutation.
 
 ORO-3E freezes the implementation design and staging-only activation plan only. It does not enable callback runtime, wallet mutation, ledger mutation, Prisma write, live OroPlay traffic, external network, production DB, real money, migration, deploy, or provider-compatible aliases.
+
+## ORO-3F local smoke normalization current
+
+ORO-3F normalizes local callback smoke diagnosis before any runtime callback implementation. It is docs/smoke/local-diagnosis only and does not activate callback runtime behavior.
+
+The ORO-2B callback stub smoke may use `OROPLAY_CALLBACK_STUB_BASE_URL` or `BASE_URL` for a local loopback API target. The smoke normalizes the value so a root URL or `/api` URL does not produce a double `/api` path.
+
+The live-route assertion must run only when `/api/health` returns the PG77 health contract. If `/api/health` returns `404` while `/health` responds from another local service, the smoke records a local port conflict / wrong service diagnostic and skips the route assertion. This is a local environment blocker, not callback regression evidence.
+
+`smoke:all-local` still requires `NODE_ENV` to be `development-local` or `test`, plus `LOCAL_ADMIN_PASSWORD` in the local shell. ORO-3F does not change `.env`, does not print secret values, and does not stop unrelated local processes.
+
+ORO-3F does not enable `/api/balance` or `/api/transaction`; ORO-2B fail-closed preferred routes remain the only callback route skeleton.
