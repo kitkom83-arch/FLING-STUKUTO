@@ -143,3 +143,9 @@ ORO-3F blocked until design freeze smoke passes. ORO-3E does not enable callback
 ORO-4A current. Callback runtime implementation skeleton is disabled by default and guarded by a staging-disabled runtime gate.
 
 ORO-4A does not wire runtime into live routes, does not mutate wallet or ledger, does not write through Prisma, does not call OroPlay, does not add external network behavior, does not enable production activation, and does not enable `/api/balance` or `/api/transaction`.
+
+## ORO-4B Current
+
+ORO-4B current. Runtime Skeleton Certification / Staging Wiring Precheck is docs, contract, static/mock harness, and local smoke only.
+
+ORO-4B keeps activationAllowed=false, runtimeWiredToLiveRoute=false, aliasBalanceEnabled=false, aliasTransactionEnabled=false, walletMutationAllowed=false, ledgerMutationAllowed=false, prismaWriteAllowed=false, externalNetworkAllowed=false, and productionConfigTouched=false. Future staging wiring still requires manual approval, rollback / kill switch evidence, sanitized audit proof, wallet/ledger dry-run evidence, and reconciliation guard evidence.

@@ -59,3 +59,9 @@ Diagnostics must be safe and non-sensitive:
 ## no live runtime statement
 
 The staging disabled runtime gate is not live callback runtime. It is a static/mock guard for future phases only.
+
+## ORO-4B staging wiring precheck preservation
+
+ORO-4B preserves this disabled gate as a precheck-only certification step. A fully certified mock state may only report staging_precheck_ready, while runtime enabled, production enabled, wallet mutation allowed, ledger mutation allowed, Prisma write allowed, external network allowed, and public alias enabled all remain false.
+
+ORO-4B requires manual approval before any future staging wiring and does not edit env files, production config, routes, controllers, wallet services, ledger services, Prisma schema, or migrations.

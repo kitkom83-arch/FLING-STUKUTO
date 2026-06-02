@@ -121,3 +121,9 @@ Runtime activation remains blocked until every gate has evidence:
 ## explicit no-mutation statement
 
 ORO-4A is not a live callback runtime. It is a disabled runtime implementation skeleton. It must not debit, credit, insert, update, persist, reconcile, deploy, call a provider, or enable aliases.
+
+## ORO-4B certification precheck current
+
+ORO-4B certifies that this ORO-4A runtime skeleton is still disabled before any future staging wiring. The certification output is mock/static only: default state fail_closed, certified mock state staging_precheck_ready, and activation still false.
+
+ORO-4B does not wire this skeleton into live routes, does not enable `/api/balance` or `/api/transaction`, does not mutate wallet or ledger state, does not write through Prisma, does not call OroPlay, does not read env values, and does not touch production config.

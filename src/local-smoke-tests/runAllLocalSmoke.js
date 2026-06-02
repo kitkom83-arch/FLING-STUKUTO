@@ -65,6 +65,8 @@ const RELATED_FILES = [
   "src/game-provider-mock/oroplayCallbackRuntimeDisabledGate.js",
   "src/game-provider-mock/oroplayCallbackRuntimeImplementationSkeleton.js",
   "src/local-smoke-tests/oroplayCallbackRuntimeImplementationSkeletonSmoke.js",
+  "src/game-provider-mock/oroplayCallbackStagingWiringPrecheck.js",
+  "src/local-smoke-tests/oroplayCallbackStagingWiringPrecheckSmoke.js",
   "src/payment-provider-mock/memberQrDepositUxContract.js",
   "src/payment-provider-mock/memberQrDepositMockHarness.js",
   "src/local-smoke-tests/memberQrDepositUxSmoke.js",
@@ -135,6 +137,8 @@ const RELATED_FILES = [
   "docs/OROPLAY_CALLBACK_STAGING_ONLY_ACTIVATION_PLAN.md",
   "docs/OROPLAY_CALLBACK_RUNTIME_IMPLEMENTATION_SKELETON.md",
   "docs/OROPLAY_CALLBACK_STAGING_DISABLED_RUNTIME_GATE.md",
+  "docs/OROPLAY_CALLBACK_RUNTIME_SKELETON_CERTIFICATION.md",
+  "docs/OROPLAY_CALLBACK_STAGING_WIRING_PRECHECK.md",
   "docs/SMOKE_COVERAGE.md",
   "docs/MEMBER_QR_DEPOSIT_UX_CONTRACT.md",
   "docs/MEMBER_QR_DEPOSIT_MOCK_UAT_CHECKLIST.md",
@@ -224,6 +228,11 @@ const summary = [
   {
     key: "oroplayCallbackRuntimeImplementationSkeleton",
     label: "oroplay-callback-runtime-implementation-skeleton",
+    status: "PENDING",
+  },
+  {
+    key: "oroplayCallbackStagingWiringPrecheck",
+    label: "oroplay-callback-staging-wiring-precheck",
     status: "PENDING",
   },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
@@ -616,6 +625,18 @@ const steps = [
     name: "node --check oroplayCallbackRuntimeImplementationSkeletonSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/oroplayCallbackRuntimeImplementationSkeletonSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackStagingWiringPrecheck",
+    command: nodeCommand,
+    args: ["--check", "src/game-provider-mock/oroplayCallbackStagingWiringPrecheck.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackStagingWiringPrecheckSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oroplayCallbackStagingWiringPrecheckSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -1057,6 +1078,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oroplay-callback-runtime-implementation-skeleton"]),
     summaryKey: "oroplayCallbackRuntimeImplementationSkeleton",
+  },
+  {
+    name: "npm run smoke:oroplay-callback-staging-wiring-precheck",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oroplay-callback-staging-wiring-precheck"]),
+    summaryKey: "oroplayCallbackStagingWiringPrecheck",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

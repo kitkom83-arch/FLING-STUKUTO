@@ -181,3 +181,9 @@ ORO-3F does not enable `/api/balance` or `/api/transaction`; ORO-2B fail-closed 
 ORO-4A skeleton current. The runtime implementation skeleton remains disabled by default and the staging-disabled gate remains fail-closed unless future certified mock evidence is explicitly supplied.
 
 ORO-4A is not runtime activation. It keeps wallet mutation, ledger mutation, Prisma write, live OroPlay traffic, external network, production DB, real money, migration, deploy, payout, auto-credit, `/api/balance`, and `/api/transaction` blocked.
+
+## ORO-4B certification precheck current
+
+ORO-4B certification precheck current. It verifies the ORO-4A skeleton remains disabled and confirms future staging wiring blockers without enabling runtime behavior.
+
+The ORO-4B precheck keeps activationAllowed=false, runtimeWiredToLiveRoute=false, walletMutationAllowed=false, ledgerMutationAllowed=false, prismaWriteAllowed=false, externalNetworkAllowed=false, aliasBalanceEnabled=false, and aliasTransactionEnabled=false.

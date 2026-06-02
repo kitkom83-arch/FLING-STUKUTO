@@ -2250,6 +2250,62 @@ Boundary:
 - No `/api/balance` alias.
 - No `/api/transaction` alias.
 
+## 69. ORO-4B OroPlay Callback Staging Wiring Precheck Coverage
+
+ORO-4B staging wiring precheck coverage. The phase is Runtime Skeleton Certification / Staging Wiring Precheck only. It does not add callback processing, production DB access, real money runtime flow, live OroPlay API calls, external network, runtime wallet mutation, runtime ledger mutation, Prisma write, DB transaction, migration, deploy, payout, auto-credit, real client secrets, runtime route wiring, controller wiring, service wiring, production config changes, or provider alias enablement.
+
+Docs:
+
+- `docs/OROPLAY_CALLBACK_RUNTIME_SKELETON_CERTIFICATION.md`
+- `docs/OROPLAY_CALLBACK_STAGING_WIRING_PRECHECK.md`
+- `docs/SMOKE_COVERAGE.md`
+- `docs/PHASE_ROADMAP.md`
+
+Script:
+
+- `src/local-smoke-tests/oroplayCallbackStagingWiringPrecheckSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:oroplay-callback-staging-wiring-precheck
+```
+
+Coverage:
+
+- Confirms new docs exist and contain certification/precheck scope markers.
+- Confirms precheck helper exports exist.
+- Confirms package script registration exists.
+- Confirms `runAllLocalSmoke` registration exists.
+- Confirms certification default state fail_closed.
+- Confirms certified mock state can only become staging_precheck_ready.
+- Confirms activationAllowed, runtimeWiredToLiveRoute, aliasBalanceEnabled, aliasTransactionEnabled, walletMutationAllowed, ledgerMutationAllowed, prismaWriteAllowed, externalNetworkAllowed, and productionConfigTouched stay false.
+- Confirms future env names are names only and values are neither read nor displayed.
+- Confirms ORO-2B fail-closed route remains fail-closed.
+- Confirms ORO-4A disabled gate remains disabled.
+- Confirms no public alias is enabled and no live route wiring is added.
+- Confirms the new mock helper has no Prisma import, no wallet/ledger service import, and no network call marker.
+- Confirms new files avoid CI secret-scan false-positive marker text.
+
+Boundary:
+
+- Certification/precheck only.
+- No production DB.
+- No real money.
+- No live OroPlay API call.
+- No external network.
+- No client secret value.
+- No runtime wallet mutation.
+- No runtime ledger mutation.
+- No Prisma write.
+- No DB transaction.
+- No migration.
+- No deploy.
+- No payout.
+- No auto-credit.
+- No `/api/balance` alias.
+- No `/api/transaction` alias.
+
 ## 65. ORO-3D OroPlay Callback Runtime Readiness Gate Coverage
 
 ORO-3D status: Callback Runtime Readiness Gate / Pre-Implementation Certification Pack is docs/static/mock only. It adds readiness gate coverage, pre-implementation certification pack coverage, blocker matrix coverage, no mutation coverage, no alias coverage, and no live traffic coverage. It does not add production DB access, real money runtime flow, live OroPlay API calls, external network, runtime wallet mutation, runtime ledger mutation, Prisma write, migration, deploy, payout, auto-credit, real client secrets, or provider alias enablement.

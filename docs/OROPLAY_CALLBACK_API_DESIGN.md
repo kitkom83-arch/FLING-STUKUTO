@@ -232,3 +232,9 @@ There is no runtime wallet/ledger mutation, no provider-compatible alias enabled
 ORO-4A callback runtime implementation skeleton only. It records intent-only auth, member mapping, idempotency, wallet, ledger, reconciliation, and sanitized log boundaries.
 
 There is no live OroPlay callback runtime, no runtime wallet mutation, no runtime ledger mutation, no Prisma write, no live route wiring, no `/api/balance` alias, and no `/api/transaction` alias. The ORO-2B fail-closed route remains runtime-disabled.
+
+## ORO-4B staging wiring precheck only
+
+ORO-4B adds runtime skeleton certification and staging wiring precheck evidence only. It does not change the callback API surface and does not wire the ORO-4A skeleton into `/api/oroplay/balance`, `/api/oroplay/transaction`, `/api/balance`, or `/api/transaction`.
+
+Future env names are recorded as names only. ORO-4B does not read env values, print env values, add live provider credentials, call OroPlay, mutate wallet or ledger state, write through Prisma, migrate, deploy, or activate aliases.
