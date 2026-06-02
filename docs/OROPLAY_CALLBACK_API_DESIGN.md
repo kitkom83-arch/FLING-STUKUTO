@@ -226,3 +226,9 @@ ORO-3D readiness gate only. ORO-2B fail-closed route remains default. There is n
 ORO-3E design freeze / staging-only activation plan only. ORO-2B fail-closed route remains default.
 
 There is no runtime wallet/ledger mutation, no provider-compatible alias enabled, no live callback runtime, no production DB, no real money, no external network, no Prisma write, no migration, and no deploy. `/api/balance` and `/api/transaction` remain disabled aliases.
+
+## ORO-4A callback runtime implementation skeleton only
+
+ORO-4A callback runtime implementation skeleton only. It records intent-only auth, member mapping, idempotency, wallet, ledger, reconciliation, and sanitized log boundaries.
+
+There is no live OroPlay callback runtime, no runtime wallet mutation, no runtime ledger mutation, no Prisma write, no live route wiring, no `/api/balance` alias, and no `/api/transaction` alias. The ORO-2B fail-closed route remains runtime-disabled.

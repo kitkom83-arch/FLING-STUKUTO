@@ -169,3 +169,9 @@ If local port 4000 is occupied by an unrelated service, `/api/health` may return
 `smoke:all-local` still requires `NODE_ENV` set to `development-local` or `test` and `LOCAL_ADMIN_PASSWORD` set outside the repo. ORO-3F does not edit `.env`, does not add real credentials, and does not print credential-like values.
 
 ORO-3F keeps `/api/balance` and `/api/transaction` disabled. The ORO-2B fail-closed route skeleton remains runtime-disabled.
+
+## ORO-4A disabled runtime gate current
+
+ORO-4A disabled runtime gate current. The staging activation flag remains documentation-only and disabled by default.
+
+ORO-4A does not change ENV, does not edit `.env` or `.env.example`, does not enable production activation, does not enable live provider traffic, does not enable wallet mutation, does not enable ledger mutation, does not enable Prisma write, and does not enable provider-compatible aliases.

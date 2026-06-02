@@ -186,3 +186,9 @@ ORO-3E does not import Prisma client, open DB transactions, or write records thr
 ## no alias provider-compatible route enabled
 
 ORO-3E does not enable `/api/balance` or `/api/transaction`; the ORO-2B fail-closed stub remains the active callback route boundary.
+
+## ORO-4A callback runtime implementation skeleton current
+
+ORO-4A callback runtime implementation skeleton current. It is a disabled-by-default runtime skeleton and staging-disabled gate only.
+
+ORO-4A does not wire runtime implementation into live routes, does not convert ORO-2B fail-closed routes into runtime processing, does not enable `/api/balance` or `/api/transaction`, does not mutate wallet, does not mutate ledger, does not write through Prisma, does not call external networks, and does not activate production runtime.

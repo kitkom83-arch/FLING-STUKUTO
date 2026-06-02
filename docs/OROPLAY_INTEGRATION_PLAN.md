@@ -137,3 +137,9 @@ ORO-3A closed. ORO-3B closed. ORO-3C closed. ORO-3D current readiness gate / cer
 ORO-3A closed. ORO-3B closed. ORO-3C closed. ORO-3D closed. ORO-3E current design freeze / staging-only activation plan only.
 
 ORO-3F blocked until design freeze smoke passes. ORO-3E does not enable callback runtime, staging activation, production activation, runtime wallet mutation, runtime ledger mutation, Prisma write, provider-compatible aliases, external network, live OroPlay traffic, production DB, real money, migration, or deploy.
+
+## ORO-4A Current
+
+ORO-4A current. Callback runtime implementation skeleton is disabled by default and guarded by a staging-disabled runtime gate.
+
+ORO-4A does not wire runtime into live routes, does not mutate wallet or ledger, does not write through Prisma, does not call OroPlay, does not add external network behavior, does not enable production activation, and does not enable `/api/balance` or `/api/transaction`.

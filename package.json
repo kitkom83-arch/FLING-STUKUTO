@@ -62,6 +62,7 @@
     "smoke:oroplay-callback-runtime-execution-plan": "node src/local-smoke-tests/oroplayCallbackRuntimeExecutionPlanSmoke.js",
     "smoke:oroplay-callback-runtime-readiness-gate": "node src/local-smoke-tests/oroplayCallbackRuntimeReadinessGateSmoke.js",
     "smoke:oroplay-callback-implementation-design-freeze": "node src/local-smoke-tests/oroplayCallbackImplementationDesignFreezeSmoke.js",
+    "smoke:oroplay-callback-runtime-implementation-skeleton": "node src/local-smoke-tests/oroplayCallbackRuntimeImplementationSkeletonSmoke.js",
     "smoke:member-qr-deposit-ux": "node src/local-smoke-tests/memberQrDepositUxSmoke.js",
     "smoke:deposit-verification-source": "node src/local-smoke-tests/depositVerificationSourceSmoke.js",
     "smoke:deposit-ledger-reconciliation-guard": "node src/local-smoke-tests/depositLedgerReconciliationGuardSmoke.js",

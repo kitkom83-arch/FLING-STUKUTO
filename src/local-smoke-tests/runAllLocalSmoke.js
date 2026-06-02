@@ -62,6 +62,9 @@ const RELATED_FILES = [
   "src/game-provider-mock/oroplayCallbackImplementationDesignFreeze.js",
   "src/game-provider-mock/oroplayCallbackStagingActivationPlan.js",
   "src/local-smoke-tests/oroplayCallbackImplementationDesignFreezeSmoke.js",
+  "src/game-provider-mock/oroplayCallbackRuntimeDisabledGate.js",
+  "src/game-provider-mock/oroplayCallbackRuntimeImplementationSkeleton.js",
+  "src/local-smoke-tests/oroplayCallbackRuntimeImplementationSkeletonSmoke.js",
   "src/payment-provider-mock/memberQrDepositUxContract.js",
   "src/payment-provider-mock/memberQrDepositMockHarness.js",
   "src/local-smoke-tests/memberQrDepositUxSmoke.js",
@@ -130,6 +133,8 @@ const RELATED_FILES = [
   "docs/OROPLAY_CALLBACK_PRE_IMPLEMENTATION_CERTIFICATION.md",
   "docs/OROPLAY_CALLBACK_IMPLEMENTATION_DESIGN_FREEZE.md",
   "docs/OROPLAY_CALLBACK_STAGING_ONLY_ACTIVATION_PLAN.md",
+  "docs/OROPLAY_CALLBACK_RUNTIME_IMPLEMENTATION_SKELETON.md",
+  "docs/OROPLAY_CALLBACK_STAGING_DISABLED_RUNTIME_GATE.md",
   "docs/SMOKE_COVERAGE.md",
   "docs/MEMBER_QR_DEPOSIT_UX_CONTRACT.md",
   "docs/MEMBER_QR_DEPOSIT_MOCK_UAT_CHECKLIST.md",
@@ -214,6 +219,11 @@ const summary = [
   {
     key: "oroplayCallbackImplementationDesignFreeze",
     label: "oroplay-callback-implementation-design-freeze",
+    status: "PENDING",
+  },
+  {
+    key: "oroplayCallbackRuntimeImplementationSkeleton",
+    label: "oroplay-callback-runtime-implementation-skeleton",
     status: "PENDING",
   },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
@@ -588,6 +598,24 @@ const steps = [
     name: "node --check oroplayCallbackImplementationDesignFreezeSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/oroplayCallbackImplementationDesignFreezeSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackRuntimeDisabledGate",
+    command: nodeCommand,
+    args: ["--check", "src/game-provider-mock/oroplayCallbackRuntimeDisabledGate.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackRuntimeImplementationSkeleton",
+    command: nodeCommand,
+    args: ["--check", "src/game-provider-mock/oroplayCallbackRuntimeImplementationSkeleton.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackRuntimeImplementationSkeletonSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oroplayCallbackRuntimeImplementationSkeletonSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -1023,6 +1051,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oroplay-callback-implementation-design-freeze"]),
     summaryKey: "oroplayCallbackImplementationDesignFreeze",
+  },
+  {
+    name: "npm run smoke:oroplay-callback-runtime-implementation-skeleton",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oroplay-callback-runtime-implementation-skeleton"]),
+    summaryKey: "oroplayCallbackRuntimeImplementationSkeleton",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

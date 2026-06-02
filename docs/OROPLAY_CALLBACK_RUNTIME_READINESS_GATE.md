@@ -175,3 +175,9 @@ The live-route assertion must run only when `/api/health` returns the PG77 healt
 `smoke:all-local` still requires `NODE_ENV` to be `development-local` or `test`, plus `LOCAL_ADMIN_PASSWORD` in the local shell. ORO-3F does not change `.env`, does not print secret values, and does not stop unrelated local processes.
 
 ORO-3F does not enable `/api/balance` or `/api/transaction`; ORO-2B fail-closed preferred routes remain the only callback route skeleton.
+
+## ORO-4A skeleton current
+
+ORO-4A skeleton current. The runtime implementation skeleton remains disabled by default and the staging-disabled gate remains fail-closed unless future certified mock evidence is explicitly supplied.
+
+ORO-4A is not runtime activation. It keeps wallet mutation, ledger mutation, Prisma write, live OroPlay traffic, external network, production DB, real money, migration, deploy, payout, auto-credit, `/api/balance`, and `/api/transaction` blocked.

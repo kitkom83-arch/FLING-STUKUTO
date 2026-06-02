@@ -198,6 +198,12 @@ ORO-3A status marker:
 - no Prisma write.
 - no migration.
 - no deploy.
+
+## ORO-4A current/runtime implementation skeleton
+
+ORO-4A current/runtime implementation skeleton. This phase adds only disabled-by-default runtime skeleton docs, a staging-disabled gate, intent-only mock functions, and local smoke coverage.
+
+ORO-4B blocked until ORO-4A pass. ORO-4A does not enable callback runtime, production DB, real money, live OroPlay traffic, external network, runtime wallet mutation, runtime ledger mutation, Prisma write, DB transaction, migration, deploy, payout, auto-credit, `/api/balance`, or `/api/transaction`.
 - ORO-3B blocked until ORO-3A pass.
 
 ORO-3B status marker:
