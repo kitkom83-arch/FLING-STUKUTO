@@ -201,3 +201,9 @@ ORO-3B does not enable `/api/balance` or `/api/transaction`. The only existing c
 ## ORO-3D readiness gate current
 
 ORO-3B closed. ORO-3C closed. ORO-3D readiness gate current. The adapter contract remains no-mutation and design-only; future runtime implementation remains blocked until certification evidence is reviewed.
+
+## ORO-3E design freeze current
+
+ORO-3B closed. ORO-3C closed. ORO-3D closed. ORO-3E design freeze current.
+
+The adapter contract remains frozen as design-only. ORO-3E does not enable runtime adapter processing, wallet mutation, ledger mutation, Prisma write, provider-compatible aliases, live traffic, external network, production DB, real money, migration, or deploy.

@@ -142,3 +142,9 @@ Live provider traffic requires staging callback pass, provider approval, monitor
 ## ORO-3E entry criteria
 
 ORO-3E is blocked until ORO-3D passes. Entry requires targeted smoke pass, certification checklist review, blocker matrix review, and explicit approval boundaries for any future implementation work.
+
+## ORO-3E design freeze current
+
+ORO-3D closed. ORO-3E design freeze current. The certification is not runtime approval.
+
+ORO-3E may freeze the future implementation design only while runtime callback implementation, wallet mutation, ledger mutation, Prisma write, provider-compatible alias enablement, live provider traffic, external network, production DB, real money, migration, and deploy remain blocked.

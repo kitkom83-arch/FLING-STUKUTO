@@ -149,3 +149,9 @@ ORO-3B defines callback adapter contract and wallet-ledger bridge intent shapes 
 ## ORO-3D Current Readiness Gate
 
 ORO-3A closed. ORO-3B closed. ORO-3C closed. ORO-3D current readiness gate / certification pack only. Runtime mutation still blocked, and the runtime readiness gate remains closed. ORO-3D does not enable callback runtime, wallet mutation, ledger mutation, Prisma write, live traffic, external network, production DB, real money, or provider-compatible aliases.
+
+## ORO-3E Current Design Freeze
+
+ORO-3A closed. ORO-3B closed. ORO-3C closed. ORO-3D closed. ORO-3E current design freeze / staging-only activation plan only.
+
+Runtime mutation still blocked. staging-only activation remains closed by default. ORO-3E does not enable callback runtime, wallet mutation, ledger mutation, Prisma write, live traffic, external network, production DB, real money, provider-compatible aliases, migration, or deploy.

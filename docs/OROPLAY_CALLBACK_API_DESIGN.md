@@ -220,3 +220,9 @@ ORO-3D readiness gate only. ORO-2B fail-closed route remains default. There is n
 - ORO-2B fail-closed route remains default.
 - No provider-compatible alias enabled.
 - No runtime wallet/ledger mutation.
+
+## ORO-3E design freeze / staging-only activation plan only
+
+ORO-3E design freeze / staging-only activation plan only. ORO-2B fail-closed route remains default.
+
+There is no runtime wallet/ledger mutation, no provider-compatible alias enabled, no live callback runtime, no production DB, no real money, no external network, no Prisma write, no migration, and no deploy. `/api/balance` and `/api/transaction` remain disabled aliases.

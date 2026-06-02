@@ -166,6 +166,14 @@ ORO-3A runtime simulation only; not production runtime; no alias enabled.
 
 ORO-2B fail-closed route exists. ORO-2C readiness contract closed. ORO-3A runtime simulation closed. ORO-3B adapter contract only. ORO-3B adapter contract closed. ORO-3C execution plan only. ORO-3C execution plan closed. ORO-3D readiness gate only; not production runtime; no alias enabled; no runtime wallet/ledger mutation; runtime gate closed.
 
+ORO-2B fail-closed route exists. ORO-2C readiness contract closed. ORO-3A runtime simulation closed. ORO-3B adapter contract closed. ORO-3C execution plan closed. ORO-3D readiness gate closed. ORO-3E design freeze / staging-only activation plan only; not production runtime; no alias enabled; no runtime wallet/ledger mutation; staging-only activation disabled by default.
+
+ORO-3E callback endpoint mapping:
+
+- `/api/oroplay/balance`: ORO-2B fail-closed route exists; ORO-2C readiness contract closed; ORO-3A runtime simulation closed; ORO-3B adapter contract closed; ORO-3C execution plan closed; ORO-3D readiness gate closed; ORO-3E design freeze / staging-only activation plan only; not production runtime; no alias enabled; no runtime wallet/ledger mutation; staging-only activation disabled by default.
+- `/api/oroplay/transaction`: ORO-2B fail-closed route exists; ORO-2C readiness contract closed; ORO-3A runtime simulation closed; ORO-3B adapter contract closed; ORO-3C execution plan closed; ORO-3D readiness gate closed; ORO-3E design freeze / staging-only activation plan only; not production runtime; no alias enabled; no runtime wallet/ledger mutation; staging-only activation disabled by default.
+- `/api/balance` and `/api/transaction`: no alias enabled; not production runtime; staging-only activation disabled by default; no runtime wallet/ledger mutation.
+
 Safety markers: mock/static/staging-only planning; future live integration requires explicit certification. Current production direction is Seamless Wallet unless confirmed otherwise. Provider credential handling must remain internal service only and env-only.
 
 | area | future endpoint or service | method | current phase | integration mode | safety |

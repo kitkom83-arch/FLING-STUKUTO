@@ -2232,3 +2232,52 @@ Boundary:
 - No migration.
 - No deploy.
 - No alias provider-compatible route enabled.
+
+## 66. ORO-3E OroPlay Callback Implementation Design Freeze Coverage
+
+ORO-3E status: Callback Runtime Implementation Design Freeze / Staging-Only Activation Plan is docs/static/mock only. It adds design freeze coverage, staging-only activation plan coverage, feature flags default-closed coverage, no mutation coverage, no alias coverage, and no live traffic coverage. It does not add production DB access, real money runtime flow, live OroPlay API calls, external network, runtime wallet mutation, runtime ledger mutation, Prisma write, migration, deploy, payout, auto-credit, real client secrets, live provider env, runtime route, controller, or provider alias enablement.
+
+Docs:
+
+- `docs/OROPLAY_CALLBACK_IMPLEMENTATION_DESIGN_FREEZE.md`
+- `docs/OROPLAY_CALLBACK_STAGING_ONLY_ACTIVATION_PLAN.md`
+
+Smoke:
+
+```powershell
+npm run smoke:oroplay-callback-implementation-design-freeze
+```
+
+Coverage:
+
+- Confirms design freeze coverage for ORO-3E docs, helper exports, package script, and `runAllLocalSmoke` registration.
+- Confirms closed evidence for ORO-2B, ORO-2C, ORO-3A, ORO-3B, ORO-3C, and ORO-3D.
+- Confirms default design freeze passes but runtime remains blocked.
+- Confirms frozen callback contract coverage.
+- Confirms frozen wallet/ledger boundary coverage.
+- Confirms staging-only activation plan coverage.
+- Confirms feature flags default-closed coverage.
+- Confirms dangerous staging activation flags fail closed with blocked reasons.
+- Confirms emergency disable plan, monitoring plan, and rollback plan are required.
+- Confirms no mutation coverage for wallet, ledger, Prisma, migration, deploy, payout, and auto-credit.
+- Confirms no alias coverage for `/api/balance` and `/api/transaction`.
+- Confirms no live traffic coverage and no external network markers.
+- Confirms ORO-2B fail-closed route remains fail-closed.
+- Confirms ORO-3F is blocked until ORO-3E passes.
+
+Boundary:
+
+- Design freeze only.
+- Staging-only activation plan only.
+- Feature flag names are documentation-only.
+- No production DB.
+- No real money.
+- No live OroPlay API call.
+- No external network.
+- No client secret.
+- No runtime wallet mutation.
+- No runtime ledger mutation.
+- No Prisma write.
+- No migration.
+- No deploy.
+- No alias provider-compatible route enabled.

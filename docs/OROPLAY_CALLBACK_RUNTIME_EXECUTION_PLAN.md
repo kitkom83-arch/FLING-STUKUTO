@@ -207,3 +207,9 @@ ORO-3C does not enable `/api/balance` or `/api/transaction`. The only existing c
 ## ORO-3D readiness gate current
 
 ORO-3C closed. ORO-3D readiness gate current. The execution plan remains no-mutation and remains plan-only until the readiness gate and pre-implementation certification pack pass. ORO-3D does not enable runtime wallet mutation, runtime ledger mutation, Prisma write, live OroPlay traffic, external network, production DB, real money, or `/api/balance` and `/api/transaction` aliases.
+
+## ORO-3E design freeze current
+
+ORO-3C closed. ORO-3D closed. ORO-3E design freeze current. The execution plan remains no-mutation.
+
+ORO-3E freezes implementation design and staging-only activation planning only. It does not execute wallet steps, ledger steps, transaction log steps, audit steps, reconciliation steps, Prisma writes, provider aliases, live traffic, external network, production DB, real money, migration, or deploy.

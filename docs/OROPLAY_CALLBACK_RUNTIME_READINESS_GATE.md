@@ -157,3 +157,9 @@ ORO-3D does not import Prisma client, open DB transactions, or write records thr
 ## no alias provider-compatible route enabled
 
 ORO-3D does not enable `/api/balance` or `/api/transaction`; ORO-2B fail-closed preferred routes remain the only callback route skeleton.
+
+## ORO-3E implementation design freeze current
+
+ORO-3D closed. ORO-3E implementation design freeze current. The readiness gate remains closed for runtime mutation.
+
+ORO-3E freezes the implementation design and staging-only activation plan only. It does not enable callback runtime, wallet mutation, ledger mutation, Prisma write, live OroPlay traffic, external network, production DB, real money, migration, deploy, or provider-compatible aliases.

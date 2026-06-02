@@ -131,3 +131,9 @@ ORO-3C callback runtime wallet-ledger execution plan is current and remains exec
 ## ORO-3D Current
 
 ORO-3A closed. ORO-3B closed. ORO-3C closed. ORO-3D current readiness gate / certification pack only. ORO-3E blocked until readiness gate smoke passes and the pre-implementation certification checklist is reviewed. ORO-3D does not enable production DB, real money, live OroPlay traffic, external network, runtime wallet mutation, runtime ledger mutation, Prisma write, migration, deploy, or provider-compatible aliases.
+
+## ORO-3E Current
+
+ORO-3A closed. ORO-3B closed. ORO-3C closed. ORO-3D closed. ORO-3E current design freeze / staging-only activation plan only.
+
+ORO-3F blocked until design freeze smoke passes. ORO-3E does not enable callback runtime, staging activation, production activation, runtime wallet mutation, runtime ledger mutation, Prisma write, provider-compatible aliases, external network, live OroPlay traffic, production DB, real money, migration, or deploy.
