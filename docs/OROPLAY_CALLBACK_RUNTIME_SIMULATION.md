@@ -6,6 +6,8 @@ ORO-3A provides a mock callback runtime simulation harness for OroPlay balance a
 
 ORO-2C readiness closed. ORO-3A is the current simulation phase.
 
+ORO-3A closed. ORO-3B adapter contract current. The simulation remains no-mutation and still does not enable wallet mutation, ledger mutation, Prisma write, or provider aliases.
+
 ## Non-goals
 
 - No production DB.
@@ -89,3 +91,5 @@ ORO-3B is blocked until:
 - Ledger transaction, audit log, and reconciliation boundaries are approved.
 - Manual review behavior for conflicting replay is approved.
 - Secret redaction and callback log policy are approved.
+
+ORO-3B current adapter contract work builds on this no-mutation simulation output. ORO-3C remains blocked until `smoke:oroplay-callback-runtime-adapter-contract` passes.

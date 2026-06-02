@@ -50,6 +50,9 @@ const RELATED_FILES = [
   "src/game-provider-mock/oroplayCallbackRuntimeSimulator.js",
   "src/game-provider-mock/oroplayCallbackRuntimeScenarios.js",
   "src/local-smoke-tests/oroplayCallbackRuntimeSimulationSmoke.js",
+  "src/game-provider-mock/oroplayCallbackRuntimeAdapterContract.js",
+  "src/game-provider-mock/oroplayWalletLedgerBridgeDesign.js",
+  "src/local-smoke-tests/oroplayCallbackRuntimeAdapterContractSmoke.js",
   "src/payment-provider-mock/memberQrDepositUxContract.js",
   "src/payment-provider-mock/memberQrDepositMockHarness.js",
   "src/local-smoke-tests/memberQrDepositUxSmoke.js",
@@ -113,6 +116,7 @@ const RELATED_FILES = [
   "docs/OROPLAY_INTEGRATION_PLAN.md",
   "docs/OROPLAY_SEAMLESS_WALLET_CONTRACT.md",
   "docs/OROPLAY_CALLBACK_API_DESIGN.md",
+  "docs/OROPLAY_CALLBACK_RUNTIME_ADAPTER_CONTRACT.md",
   "docs/SMOKE_COVERAGE.md",
   "docs/MEMBER_QR_DEPOSIT_UX_CONTRACT.md",
   "docs/MEMBER_QR_DEPOSIT_MOCK_UAT_CHECKLIST.md",
@@ -179,6 +183,11 @@ const summary = [
   { key: "oroplayCallbackStub", label: "oroplay-callback-stub", status: "PENDING" },
   { key: "oroplayCallbackReadiness", label: "oroplay-callback-readiness", status: "PENDING" },
   { key: "oroplayCallbackRuntimeSimulation", label: "oroplay-callback-runtime-simulation", status: "PENDING" },
+  {
+    key: "oroplayCallbackRuntimeAdapterContract",
+    label: "oroplay-callback-runtime-adapter-contract",
+    status: "PENDING",
+  },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
   { key: "depositVerificationSource", label: "deposit-verification-source", status: "PENDING" },
   {
@@ -479,6 +488,24 @@ const steps = [
     name: "node --check oroplayCallbackRuntimeSimulationSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/oroplayCallbackRuntimeSimulationSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackRuntimeAdapterContract",
+    command: nodeCommand,
+    args: ["--check", "src/game-provider-mock/oroplayCallbackRuntimeAdapterContract.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayWalletLedgerBridgeDesign",
+    command: nodeCommand,
+    args: ["--check", "src/game-provider-mock/oroplayWalletLedgerBridgeDesign.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackRuntimeAdapterContractSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oroplayCallbackRuntimeAdapterContractSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -890,6 +917,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oroplay-callback-runtime-simulation"]),
     summaryKey: "oroplayCallbackRuntimeSimulation",
+  },
+  {
+    name: "npm run smoke:oroplay-callback-runtime-adapter-contract",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oroplay-callback-runtime-adapter-contract"]),
+    summaryKey: "oroplayCallbackRuntimeAdapterContract",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

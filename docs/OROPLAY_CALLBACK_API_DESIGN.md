@@ -10,6 +10,8 @@ ORO-2C status: current callback runtime readiness contract only. This phase adds
 
 ORO-3A status: ORO-3A simulation only. This phase adds a mock runtime simulation harness for decisions and intent objects only.
 
+ORO-3B status: ORO-3B adapter contract only. This phase adds adapter contract and wallet-ledger bridge design outputs only.
+
 This is not a live callback runtime. ORO-2A does not create Express routes, does not connect Prisma or a database, does not mutate wallet state, does not post ledger entries, does not call OroPlay, and does not use real credentials.
 
 ORO-2B is also not a live callback runtime. It does not connect Prisma or a database, does not mutate wallet state, does not post ledger entries, does not call OroPlay, does not use real credentials, and does not return a live success response.
@@ -17,6 +19,8 @@ ORO-2B is also not a live callback runtime. It does not connect Prisma or a data
 ORO-2C is also not a live callback runtime. It does not query production DB, does not perform Prisma write operations, does not mutate wallet state, does not mutate ledger state, does not call OroPlay, does not enable provider-compatible aliases, and does not convert the ORO-2B fail-closed stub into runtime processing.
 
 ORO-3A is also not a live callback runtime. ORO-2B fail-closed route remains default; no runtime wallet/ledger mutation is allowed, no production DB is used, no Prisma write is allowed, and provider-compatible aliases remain disabled.
+
+ORO-3B is also not a live callback runtime. ORO-2B fail-closed route remains default; ORO-3B adapter contract only returns plan/intent objects, keeps no runtime wallet/ledger mutation, and has no provider-compatible alias enabled.
 
 ## ORO-2C Callback Runtime Readiness Contract
 
@@ -185,3 +189,15 @@ ORO-3 Ledger/Reconciliation dependency must define and approve:
 - Sanitized log preview.
 - ORO-2B fail-closed route remains default.
 - Optional alias disabled guard for `POST /api/balance` and `POST /api/transaction`.
+
+`smoke:oroplay-callback-runtime-adapter-contract` covers:
+
+- ORO-3B adapter contract only.
+- Balance callback adapter plan.
+- Transaction callback adapter plan for bet/debit and win/credit intent objects.
+- Wallet, ledger, transaction log, audit, and reconciliation intent shapes.
+- Duplicate replay, conflicting replay, insufficient balance, finished round, unsupported type, malformed payload, unknown member, blocked member, and inactive member fail-closed behavior.
+- Sanitized audit preview.
+- ORO-2B fail-closed route remains default.
+- No provider-compatible alias enabled.
+- No runtime wallet/ledger mutation.

@@ -8,6 +8,8 @@ ORO-2B is closed. The existing fail-closed callback stub remains the default beh
 
 ORO-2C readiness closed. ORO-3A simulation current. runtime mutation still blocked.
 
+ORO-3A closed. ORO-3B adapter contract current. Runtime mutation still blocked and the wallet-ledger bridge is design only.
+
 ## Non-goals
 
 - No production DB.
@@ -137,3 +139,7 @@ Runtime mutation still blocked:
 - no runtime ledger mutation.
 - no Prisma write.
 - no alias enablement for `/api/balance` or `/api/transaction`.
+
+## ORO-3B Adapter Contract Current
+
+ORO-3B defines callback adapter contract and wallet-ledger bridge intent shapes only. It does not mutate wallet state, does not mutate ledger state, does not write Prisma records, does not call OroPlay, and does not enable provider-compatible aliases.

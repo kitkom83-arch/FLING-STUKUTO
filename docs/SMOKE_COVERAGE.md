@@ -2072,3 +2072,61 @@ Boundary:
 - No Prisma write.
 - No migration.
 - No deploy.
+
+## 63. ORO-3B OroPlay Callback Runtime Adapter Contract Coverage
+
+ORO-3B status: Callback Runtime Adapter Contract / Wallet-Ledger Bridge Design is docs/static/mock only. It adds an adapter contract doc, isolated adapter contract helper, wallet-ledger bridge design helper, and local smoke coverage. It does not add production DB access, real money runtime flow, live OroPlay API calls, external network, runtime wallet mutation, runtime ledger mutation, Prisma write, migration, deploy, payout, auto-credit, real client secrets, or provider alias enablement.
+
+Docs:
+
+- `docs/OROPLAY_CALLBACK_RUNTIME_ADAPTER_CONTRACT.md`
+- `docs/OROPLAY_CALLBACK_RUNTIME_SIMULATION.md`
+- `docs/OROPLAY_CALLBACK_RUNTIME_READINESS.md`
+- `docs/OROPLAY_CALLBACK_API_DESIGN.md`
+- `docs/OROPLAY_INTEGRATION_PLAN.md`
+- `docs/API_MAPPING.md`
+- `docs/PHASE_ROADMAP.md`
+- `docs/SMOKE_COVERAGE.md`
+
+Script:
+
+- `src/local-smoke-tests/oroplayCallbackRuntimeAdapterContractSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:oroplay-callback-runtime-adapter-contract
+```
+
+Coverage:
+
+- Confirms adapter contract coverage for ORO-3B docs, helper exports, package script, and `runAllLocalSmoke` registration.
+- Confirms balance callback adapter plan coverage.
+- Confirms walletIntent coverage for bet transaction debit and win transaction credit intent only.
+- Confirms ledgerIntent coverage with no runtime ledger write.
+- confirms transactionLogIntent coverage with no runtime transaction write.
+- confirms reconciliationIntent coverage.
+- Confirms duplicate transactionCode idempotent replay handling.
+- Confirms conflicting duplicate manual_review / fail-closed handling.
+- Confirms unknown, blocked, inactive, insufficient balance, malformed, finished-round replay, and unsupported transaction type cases fail closed.
+- Confirms sanitizer coverage for authorization, password, secret, token, clientSecret, DATABASE_URL, PIN, and deviceId fields.
+- Confirms no mutation coverage for wallet, ledger, Prisma, provider aliases, and external network markers.
+- Confirms ORO-2B fail-closed route remains fail-closed.
+- Confirms no alias `/api/balance` or `/api/transaction` enabled.
+- Confirms docs say ORO-3C is blocked until ORO-3B passes.
+
+Boundary:
+
+- Adapter contract only.
+- Wallet-ledger bridge design only.
+- Intent objects only.
+- No production DB.
+- No real money.
+- No live OroPlay API call.
+- No external network.
+- No client secret.
+- No runtime wallet mutation.
+- No runtime ledger mutation.
+- No Prisma write.
+- No migration.
+- No deploy.
