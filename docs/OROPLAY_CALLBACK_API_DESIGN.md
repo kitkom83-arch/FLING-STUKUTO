@@ -12,6 +12,8 @@ ORO-3A status: ORO-3A simulation only. This phase adds a mock runtime simulation
 
 ORO-3B status: ORO-3B adapter contract only. This phase adds adapter contract and wallet-ledger bridge design outputs only.
 
+ORO-3C status: ORO-3C execution plan only. This phase adds callback runtime wallet-ledger execution plan and no-mutation runtime gate outputs only.
+
 This is not a live callback runtime. ORO-2A does not create Express routes, does not connect Prisma or a database, does not mutate wallet state, does not post ledger entries, does not call OroPlay, and does not use real credentials.
 
 ORO-2B is also not a live callback runtime. It does not connect Prisma or a database, does not mutate wallet state, does not post ledger entries, does not call OroPlay, does not use real credentials, and does not return a live success response.
@@ -21,6 +23,8 @@ ORO-2C is also not a live callback runtime. It does not query production DB, doe
 ORO-3A is also not a live callback runtime. ORO-2B fail-closed route remains default; no runtime wallet/ledger mutation is allowed, no production DB is used, no Prisma write is allowed, and provider-compatible aliases remain disabled.
 
 ORO-3B is also not a live callback runtime. ORO-2B fail-closed route remains default; ORO-3B adapter contract only returns plan/intent objects, keeps no runtime wallet/ledger mutation, and has no provider-compatible alias enabled.
+
+ORO-3C is also not a live callback runtime. ORO-2B fail-closed route remains default; ORO-3C execution plan only returns plan/step objects, keeps no runtime wallet/ledger mutation, and has no provider-compatible alias enabled.
 
 ## ORO-2C Callback Runtime Readiness Contract
 
@@ -198,6 +202,17 @@ ORO-3 Ledger/Reconciliation dependency must define and approve:
 - Wallet, ledger, transaction log, audit, and reconciliation intent shapes.
 - Duplicate replay, conflicting replay, insufficient balance, finished round, unsupported type, malformed payload, unknown member, blocked member, and inactive member fail-closed behavior.
 - Sanitized audit preview.
+- ORO-2B fail-closed route remains default.
+- No provider-compatible alias enabled.
+- No runtime wallet/ledger mutation.
+
+`smoke:oroplay-callback-runtime-execution-plan` covers:
+
+- ORO-3C execution plan only.
+- Closed no-mutation runtime gate.
+- Wallet execution step coverage for future debit, credit, and balance read plan objects.
+- Ledger execution step coverage with no Prisma write.
+- Transaction log, audit, and reconciliation execution step coverage.
 - ORO-2B fail-closed route remains default.
 - No provider-compatible alias enabled.
 - No runtime wallet/ledger mutation.

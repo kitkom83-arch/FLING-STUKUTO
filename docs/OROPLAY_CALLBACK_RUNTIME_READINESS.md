@@ -10,6 +10,8 @@ ORO-2C readiness closed. ORO-3A simulation current. runtime mutation still block
 
 ORO-3A closed. ORO-3B adapter contract current. Runtime mutation still blocked and the wallet-ledger bridge is design only.
 
+ORO-3A closed. ORO-3B closed. ORO-3C execution plan current. Runtime mutation still blocked and the runtime gate remains closed.
+
 ## Non-goals
 
 - No production DB.

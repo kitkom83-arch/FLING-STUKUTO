@@ -6,6 +6,8 @@ ORO-3B defines the callback runtime adapter contract and wallet-ledger bridge de
 
 ORO-3B is bridge design / adapter contract only.
 
+ORO-3B closed. ORO-3C execution plan current. The adapter contract remains no-mutation and still does not enable wallet mutation, ledger mutation, Prisma write, live runtime processing, or provider-compatible aliases.
+
 ## non-goals
 
 - No production DB.

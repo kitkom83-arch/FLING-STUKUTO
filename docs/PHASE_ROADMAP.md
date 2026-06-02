@@ -33,6 +33,7 @@ Safety boundary: docs/static only. No production DB, no real money, no live prov
 | ORO-2C Callback Runtime Readiness Contract | Define readiness contract for member mapping, callback payload validation, idempotency, duplicate guard, sanitized callback logs, and ledger/reconciliation prerequisites. | Docs/static/mock readiness only; no runtime processing; no alias mount; no callback money-flow. | `docs/OROPLAY_CALLBACK_RUNTIME_READINESS.md`, `src/game-provider-mock/oroplayCallbackReadinessContract.js`, `src/game-provider-mock/oroplayCallbackReadinessHarness.js`, `src/local-smoke-tests/oroplayCallbackReadinessSmoke.js`, `package.json`, `src/local-smoke-tests/runAllLocalSmoke.js`, `docs/OROPLAY_CALLBACK_API_DESIGN.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`, `docs/API_MAPPING.md`, `docs/SMOKE_COVERAGE.md`, `docs/PHASE_ROADMAP.md`. | Production DB, real money, live OroPlay API call, external network, real client secret, runtime wallet mutation, runtime ledger mutation, Prisma write, auto-credit, payout, migration, deploy, provider alias mount. | `npm run check`, `npm run smoke:oroplay-callback-readiness`, `npm run smoke:oroplay-callback-stub`, `npm run smoke:oroplay-callback-boundary`, `npm run smoke:oroplay-seamless-contract`, `git diff --check`, secret scan. | Smoke confirms readiness contract, mock scenarios, member mapping, idempotency, sanitized log boundary, ledger/reconciliation boundary, ORO-2B fail-closed default, optional alias disabled guard, and no secret-shaped values. | ORO-2C current/readiness only; ORO-3 blocked until ORO-2C pass and runtime safety gates are approved. |
 | ORO-3A Callback Runtime Simulation Harness | Simulate OroPlay callback runtime decisions without mutation. | Docs/static/mock simulation only; no runtime processing; no alias mount; no callback money-flow. | `docs/OROPLAY_CALLBACK_RUNTIME_SIMULATION.md`, `src/game-provider-mock/oroplayCallbackRuntimeSimulator.js`, `src/game-provider-mock/oroplayCallbackRuntimeScenarios.js`, `src/local-smoke-tests/oroplayCallbackRuntimeSimulationSmoke.js`, `package.json`, `src/local-smoke-tests/runAllLocalSmoke.js`, `docs/OROPLAY_CALLBACK_RUNTIME_READINESS.md`, `docs/OROPLAY_CALLBACK_API_DESIGN.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`, `docs/API_MAPPING.md`, `docs/SMOKE_COVERAGE.md`, `docs/PHASE_ROADMAP.md`. | Production DB, real money, live OroPlay API call, external network, real client secret, runtime wallet mutation, runtime ledger mutation, Prisma write, auto-credit, payout, migration, deploy, provider alias mount. | `npm run check`, `npm run smoke:oroplay-callback-runtime-simulation`, `npm run smoke:oroplay-callback-readiness`, `npm run smoke:oroplay-callback-stub`, `npm run smoke:oroplay-callback-boundary`, `npm run smoke:oroplay-seamless-contract`, `git diff --check`, secret scan. | Smoke confirms runtime simulation coverage, idempotency/replay coverage, ledger intent only coverage, no mutation coverage, sanitizer coverage, ORO-2B fail-closed default, and alias disabled guard. | ORO-3A current/simulation; ORO-3A closed; ORO-3B blocked until ORO-3A pass. |
 | ORO-3B Callback Runtime Adapter Contract / Wallet-Ledger Bridge Design | Design the adapter contract and bridge intent shapes for future callback runtime. | Docs/static/mock adapter contract only; no runtime processing; no alias mount; no callback money-flow. | `docs/OROPLAY_CALLBACK_RUNTIME_ADAPTER_CONTRACT.md`, `src/game-provider-mock/oroplayCallbackRuntimeAdapterContract.js`, `src/game-provider-mock/oroplayWalletLedgerBridgeDesign.js`, `src/local-smoke-tests/oroplayCallbackRuntimeAdapterContractSmoke.js`, `package.json`, `src/local-smoke-tests/runAllLocalSmoke.js`, `docs/OROPLAY_CALLBACK_RUNTIME_SIMULATION.md`, `docs/OROPLAY_CALLBACK_RUNTIME_READINESS.md`, `docs/OROPLAY_CALLBACK_API_DESIGN.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`, `docs/API_MAPPING.md`, `docs/SMOKE_COVERAGE.md`, `docs/PHASE_ROADMAP.md`. | Production DB, real money, live OroPlay API call, external network, real client secret, runtime wallet mutation, runtime ledger mutation, Prisma write, auto-credit, payout, migration, deploy, provider alias mount, alias `/api/balance` or `/api/transaction`. | `npm run check`, `npm run smoke:oroplay-callback-runtime-adapter-contract`, `npm run smoke:oroplay-callback-runtime-simulation`, `npm run smoke:oroplay-callback-readiness`, `npm run smoke:oroplay-callback-stub`, `npm run smoke:oroplay-callback-boundary`, `npm run smoke:oroplay-seamless-contract`, `git diff --check`, secret scan. | Smoke confirms adapter contract coverage, walletIntent, ledgerIntent, transactionLogIntent, reconciliationIntent, sanitizer, fail-closed decisions, ORO-2B fail-closed default, alias disabled guard, and no mutation coverage. | ORO-3B current/adapter contract; ORO-3C blocked until ORO-3B pass. |
+| ORO-3C Callback Runtime Wallet-Ledger Execution Plan / Still No-Mutation Runtime Gate | Define future callback runtime execution steps for wallet, ledger, transaction log, audit, reconciliation, idempotency, and response planning. | Docs/static/mock execution plan only; runtime gate closed; no runtime processing; no alias mount; no callback money-flow. | `docs/OROPLAY_CALLBACK_RUNTIME_EXECUTION_PLAN.md`, `src/game-provider-mock/oroplayCallbackRuntimeExecutionPlan.js`, `src/game-provider-mock/oroplayCallbackRuntimeGate.js`, `src/local-smoke-tests/oroplayCallbackRuntimeExecutionPlanSmoke.js`, `package.json`, `src/local-smoke-tests/runAllLocalSmoke.js`, `docs/OROPLAY_CALLBACK_RUNTIME_ADAPTER_CONTRACT.md`, `docs/OROPLAY_CALLBACK_RUNTIME_SIMULATION.md`, `docs/OROPLAY_CALLBACK_RUNTIME_READINESS.md`, `docs/OROPLAY_CALLBACK_API_DESIGN.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`, `docs/API_MAPPING.md`, `docs/SMOKE_COVERAGE.md`, `docs/PHASE_ROADMAP.md`. | Production DB, real money, live OroPlay API call, external network, real client secret, runtime wallet mutation, runtime ledger mutation, Prisma write, auto-credit, payout, migration, deploy, provider alias mount, alias `/api/balance` or `/api/transaction`. | `npm run check`, `npm run smoke:oroplay-callback-runtime-execution-plan`, `npm run smoke:oroplay-callback-runtime-adapter-contract`, `npm run smoke:oroplay-callback-runtime-simulation`, `npm run smoke:oroplay-callback-readiness`, `npm run smoke:oroplay-callback-stub`, `npm run smoke:oroplay-callback-boundary`, `npm run smoke:oroplay-seamless-contract`, `git diff --check`, secret scan. | Smoke confirms execution plan coverage, runtime gate coverage, wallet execution step coverage, ledger execution step coverage, transaction log execution step coverage, reconciliation execution step coverage, audit sanitized coverage, ORO-2B fail-closed default, alias disabled guard, and no mutation coverage. | ORO-3C current/execution plan; ORO-3D blocked until ORO-3C pass. |
 
 ## Phase Gates
 
@@ -101,12 +102,14 @@ OroPlay phase sequence after current mock/contract phases:
 - ORO-2B: closed/fail-closed route skeleton. ORO-2B closed.
 - ORO-2C: closed/readiness contract only. ORO-2C closed.
 - ORO-3A: current/simulation. ORO-3A current/simulation. ORO-3A closed.
-- ORO-3B: current/adapter contract. ORO-3B current/adapter contract.
-- ORO-3C: member mapping source approval, wallet source of truth, callback logs, game transactions, idempotency storage, ledger boundary, rollback/compensation, and reconciliation alignment. ORO-3C blocked until ORO-3B pass.
+- ORO-3B: current/adapter contract. ORO-3B current/adapter contract. ORO-3B closed.
+- ORO-3C: current/execution plan. ORO-3C current/execution plan. Historical gate: ORO-3C blocked until ORO-3B pass.
+- ORO-3D: member mapping source approval, wallet source of truth, callback logs, game transactions, idempotency storage, ledger boundary, rollback/compensation, and reconciliation alignment. ORO-3D blocked until ORO-3C pass.
 - ORO-2B current/fail-closed route skeleton remains the active fail-closed runtime default.
 - ORO-3 is not allowed until ORO-2B passes; ORO-2C and ORO-3A add newer gates before runtime work.
 - ORO-3B is not allowed until ORO-2B and ORO-2C are closed and ORO-3A passes.
 - ORO-3C is not allowed until ORO-3B adapter contract smoke passes.
+- ORO-3D is not allowed until ORO-3C execution plan smoke passes.
 - ORO-4: sandbox/staging integration.
 - ORO-5: live certification only after approval.
 
@@ -198,6 +201,7 @@ ORO-3A status marker:
 ORO-3B status marker:
 
 - current/adapter contract only.
+- ORO-3B closed.
 - ORO-3A closed.
 - walletIntent coverage.
 - ledgerIntent coverage.
@@ -217,3 +221,29 @@ ORO-3B status marker:
 - no migration.
 - no deploy.
 - ORO-3C blocked until ORO-3B pass.
+
+ORO-3C status marker:
+
+- current/execution plan only.
+- ORO-3C current/execution plan.
+- ORO-3A closed.
+- ORO-3B closed.
+- runtime gate closed.
+- wallet execution step coverage.
+- ledger execution step coverage.
+- transaction log execution step coverage.
+- reconciliation execution step coverage.
+- audit sanitized coverage.
+- ORO-2B fail-closed route remains default.
+- optional aliases `POST /api/balance` and `POST /api/transaction` remain disabled/provider-required-only.
+- no production DB.
+- no real money.
+- no live OroPlay API call.
+- no external network.
+- no client secret.
+- no runtime wallet mutation.
+- no runtime ledger mutation.
+- no Prisma write.
+- no migration.
+- no deploy.
+- ORO-3D blocked until ORO-3C pass.

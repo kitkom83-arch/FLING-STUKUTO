@@ -53,6 +53,9 @@ const RELATED_FILES = [
   "src/game-provider-mock/oroplayCallbackRuntimeAdapterContract.js",
   "src/game-provider-mock/oroplayWalletLedgerBridgeDesign.js",
   "src/local-smoke-tests/oroplayCallbackRuntimeAdapterContractSmoke.js",
+  "src/game-provider-mock/oroplayCallbackRuntimeExecutionPlan.js",
+  "src/game-provider-mock/oroplayCallbackRuntimeGate.js",
+  "src/local-smoke-tests/oroplayCallbackRuntimeExecutionPlanSmoke.js",
   "src/payment-provider-mock/memberQrDepositUxContract.js",
   "src/payment-provider-mock/memberQrDepositMockHarness.js",
   "src/local-smoke-tests/memberQrDepositUxSmoke.js",
@@ -186,6 +189,11 @@ const summary = [
   {
     key: "oroplayCallbackRuntimeAdapterContract",
     label: "oroplay-callback-runtime-adapter-contract",
+    status: "PENDING",
+  },
+  {
+    key: "oroplayCallbackRuntimeExecutionPlan",
+    label: "oroplay-callback-runtime-execution-plan",
     status: "PENDING",
   },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
@@ -506,6 +514,24 @@ const steps = [
     name: "node --check oroplayCallbackRuntimeAdapterContractSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/oroplayCallbackRuntimeAdapterContractSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackRuntimeExecutionPlan",
+    command: nodeCommand,
+    args: ["--check", "src/game-provider-mock/oroplayCallbackRuntimeExecutionPlan.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackRuntimeGate",
+    command: nodeCommand,
+    args: ["--check", "src/game-provider-mock/oroplayCallbackRuntimeGate.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackRuntimeExecutionPlanSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oroplayCallbackRuntimeExecutionPlanSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -923,6 +949,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oroplay-callback-runtime-adapter-contract"]),
     summaryKey: "oroplayCallbackRuntimeAdapterContract",
+  },
+  {
+    name: "npm run smoke:oroplay-callback-runtime-execution-plan",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oroplay-callback-runtime-execution-plan"]),
+    summaryKey: "oroplayCallbackRuntimeExecutionPlan",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

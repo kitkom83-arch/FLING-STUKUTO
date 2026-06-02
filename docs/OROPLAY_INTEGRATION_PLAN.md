@@ -12,8 +12,9 @@ ORO sequence status: planning only. The current production direction is Seamless
 | ORO-2B Staging Fail-Closed Callback Stub | Add preferred route skeletons that fail closed by default. | Closed staging stub only; no wallet or ledger mutation; no aliases. | `smoke:oroplay-callback-stub` confirms route skeleton, fail-closed behavior, alias-disabled guard, sanitizer, and no-mutation boundary. |
 | ORO-2C Callback Runtime Readiness Contract | Define member mapping, callback payload validation, idempotency, duplicate guard, sanitized callback log, and ledger/reconciliation readiness contract. | Closed readiness contract only; no runtime processing; no wallet or ledger mutation; no aliases. | `smoke:oroplay-callback-readiness` confirms readiness contract, mock harness, sanitizer, no-mutation boundary, ORO-2B fail-closed default, and alias-disabled guard. |
 | ORO-3A Callback Runtime Simulation Harness | Simulate balance and transaction runtime decisions with mock state and intent objects only. | Closed simulation harness only; no runtime wallet mutation; no runtime ledger mutation; no Prisma write; no aliases. | `smoke:oroplay-callback-runtime-simulation` confirms simulation, idempotency/replay, sanitizer, ledger intent only, and no-mutation coverage. |
-| ORO-3B Callback Runtime Adapter Contract / Wallet-Ledger Bridge Design | Align callback simulation output to future wallet, ledger, transaction log, audit, and reconciliation intent shapes. | Current adapter contract only; no runtime wallet mutation; no runtime ledger mutation; no Prisma write; no aliases. | `smoke:oroplay-callback-runtime-adapter-contract` confirms adapter contract, bridge plan, sanitizer, fail-closed cases, and no-mutation coverage. |
-| ORO-3C Runtime Guard Approval | Approve member mapping source, wallet source of truth, idempotency storage, ledger transaction boundary, audit log boundary, reconciliation, and rollback/compensation policy. | Blocked until ORO-3B adapter contract smoke passes and runtime safety gates are approved. | Runtime mutation remains blocked until ORO-3C approval evidence is complete. |
+| ORO-3B Callback Runtime Adapter Contract / Wallet-Ledger Bridge Design | Align callback simulation output to future wallet, ledger, transaction log, audit, and reconciliation intent shapes. | Closed adapter contract only; no runtime wallet mutation; no runtime ledger mutation; no Prisma write; no aliases. | `smoke:oroplay-callback-runtime-adapter-contract` confirms adapter contract, bridge plan, sanitizer, fail-closed cases, and no-mutation coverage. |
+| ORO-3C Callback Runtime Wallet-Ledger Execution Plan | Define future wallet, ledger, transaction log, audit, reconciliation execution steps and a closed no-mutation runtime gate. | Current execution plan only; no runtime wallet mutation; no runtime ledger mutation; no Prisma write; no aliases. | `smoke:oroplay-callback-runtime-execution-plan` confirms execution plan, runtime gate, wallet/ledger/log/audit/reconciliation steps, and no-mutation coverage. |
+| ORO-3D Runtime Guard Approval | Approve member mapping source, wallet source of truth, idempotency storage, ledger transaction boundary, audit log boundary, reconciliation, and rollback/compensation policy. | ORO-3D blocked until execution plan smoke passes and runtime safety gates are approved. | Runtime mutation remains blocked until ORO-3D approval evidence is complete. |
 | ORO-4 outbound service design | Plan provider credential exchange, vendor list, game list, detail, launch URL, and betting history services. | Service design only; no public member credential endpoint. | Provider request/response mapping and redaction rules documented. |
 | ORO-5 admin read-only provider status page | Plan admin read-only provider health/status view. | Admin read-only design. | No write controls; no secret display; status-only payload. |
 | ORO-6 staging UAT with server IP whitelist and HTTPS callback | Validate staging-only callback and outbound behavior. | Staging UAT only after approval. | Server IP whitelist, HTTPS callback, auth, duplicate, insufficient balance, and invalid transaction cases pass. |
@@ -69,6 +70,8 @@ ORO-2C closed. ORO-3A current. ORO-3B blocked until simulation smoke passes.
 
 ORO-3A closed. ORO-3B current. ORO-3C blocked until adapter contract smoke passes.
 
+ORO-3A closed. ORO-3B closed. ORO-3C current. ORO-3D blocked until execution plan smoke passes.
+
 ORO-3A callback runtime simulation harness is current.
 
 - Balance simulation reads mock state only.
@@ -95,6 +98,16 @@ ORO-3B callback runtime adapter contract is current and remains design-only:
 - wallet-ledger bridge is design only.
 - no production DB, no real money, no live OroPlay API call, no external network, no client secret, no runtime wallet mutation, no runtime ledger mutation, no Prisma write, no migration, no deploy, and no aliases.
 - ORO-3C blocked until adapter contract smoke passes.
+
+ORO-3C callback runtime wallet-ledger execution plan is current and remains execution-plan-only:
+
+- execution plan output is plan/step only.
+- runtime gate remains closed.
+- wallet execution step is no-mutation.
+- ledger execution step is no-write.
+- transaction log, audit, and reconciliation steps are no-write.
+- no production DB, no real money, no live OroPlay API call, no external network, no client secret, no runtime wallet mutation, no runtime ledger mutation, no Prisma write, no migration, no deploy, and no aliases.
+- ORO-3D blocked until execution plan smoke passes.
 
 ## Current Integration Direction
 

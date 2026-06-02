@@ -8,6 +8,8 @@ ORO-2C readiness closed. ORO-3A is the current simulation phase.
 
 ORO-3A closed. ORO-3B adapter contract current. The simulation remains no-mutation and still does not enable wallet mutation, ledger mutation, Prisma write, or provider aliases.
 
+ORO-3A closed. ORO-3B closed. ORO-3C execution plan current. The simulation remains no-mutation and ORO-3C still does not enable wallet mutation, ledger mutation, Prisma write, live runtime processing, or provider aliases.
+
 ## Non-goals
 
 - No production DB.

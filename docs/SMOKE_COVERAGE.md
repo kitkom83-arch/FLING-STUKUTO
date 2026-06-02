@@ -2130,3 +2130,63 @@ Boundary:
 - No Prisma write.
 - No migration.
 - No deploy.
+
+## 64. ORO-3C OroPlay Callback Runtime Execution Plan Coverage
+
+ORO-3C status: Callback Runtime Wallet-Ledger Execution Plan / Still No-Mutation Runtime Gate is docs/static/mock only. It adds an execution plan doc, isolated execution plan helper, isolated runtime gate helper, and local smoke coverage. It does not add production DB access, real money runtime flow, live OroPlay API calls, external network, runtime wallet mutation, runtime ledger mutation, Prisma write, migration, deploy, payout, auto-credit, real client secrets, or provider alias enablement.
+
+Docs:
+
+- `docs/OROPLAY_CALLBACK_RUNTIME_EXECUTION_PLAN.md`
+- `docs/OROPLAY_CALLBACK_RUNTIME_ADAPTER_CONTRACT.md`
+- `docs/OROPLAY_CALLBACK_RUNTIME_SIMULATION.md`
+- `docs/OROPLAY_CALLBACK_RUNTIME_READINESS.md`
+- `docs/OROPLAY_CALLBACK_API_DESIGN.md`
+- `docs/OROPLAY_INTEGRATION_PLAN.md`
+- `docs/API_MAPPING.md`
+- `docs/PHASE_ROADMAP.md`
+- `docs/SMOKE_COVERAGE.md`
+
+Script:
+
+- `src/local-smoke-tests/oroplayCallbackRuntimeExecutionPlanSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:oroplay-callback-runtime-execution-plan
+```
+
+Coverage:
+
+- Confirms execution plan coverage for ORO-3C docs, helper exports, package script, and `runAllLocalSmoke` registration.
+- Confirms runtime gate coverage for closed default gate and dangerous flag fail-closed behavior.
+- Confirms wallet execution step coverage for balance read, bet/debit, and win/credit plan objects.
+- Confirms ledger execution step coverage with no runtime ledger write and no Prisma write.
+- Confirms transaction log execution step coverage with no Prisma write.
+- Confirms reconciliation execution step coverage.
+- Confirms audit sanitized coverage for authorization, password, secret, token, clientSecret, DATABASE_URL, PIN, and deviceId fields.
+- Confirms duplicate transactionCode idempotent replay handling.
+- Confirms conflicting duplicate manual_review / fail-closed handling.
+- Confirms unknown, blocked, inactive, insufficient balance, malformed, finished-round replay, canceled transaction, and unsupported transaction type cases fail closed.
+- Confirms no mutation coverage for wallet, ledger, Prisma, provider aliases, and network call markers.
+- Confirms ORO-2B fail-closed route remains fail-closed.
+- Confirms no alias `/api/balance` or `/api/transaction` enabled.
+- Confirms docs say ORO-3D is blocked until ORO-3C passes.
+
+Boundary:
+
+- Execution plan only.
+- Runtime gate closed.
+- Plan/step objects only.
+- No production DB.
+- No real money.
+- No live OroPlay API call.
+- No external network.
+- No client secret.
+- No runtime wallet mutation.
+- No runtime ledger mutation.
+- No Prisma write.
+- No migration.
+- No deploy.
+- No alias provider-compatible route enabled.
