@@ -213,3 +213,9 @@ ORO-4K does not authorize public aliases, runtime traffic, wallet mutation, ledg
 ORO-4L consumes this ORO-4K evidence pack as one static/mock input for a human approval record template and pre-mount authorization boundary.
 
 An ORO-4K `evidencePackResult=PASS` is evidence readiness only. It is not an approval record, not a signed authorization, not mount approved, and not authorization to edit `src/app.js`, mount an Express route, open public aliases, accept runtime traffic, mutate wallet or ledger state, write through Prisma, call live OroPlay, or touch real money.
+
+## Followed by ORO-4M Signed Approval Intake Gate
+
+ORO-4M consumes the ORO-4K evidence pack through the ORO-4L template boundary as one static/mock input for signed approval intake verification.
+
+ORO-4K remains an evidence pack only. It is not approval, not a signed approval record, not route mount authorization, and not permission to edit `src/app.js`, mount an Express route, open public aliases, accept runtime traffic, mutate wallet or ledger state, write through Prisma, call live OroPlay, or touch real money.

@@ -204,8 +204,14 @@ ORO-4K Current. Human Mount Review Evidence Pack / Mount Approval Boundary is do
 
 ORO-4K combines ORO-4F route wiring design, ORO-4G preflight, ORO-4H dry-run gate, ORO-4I internal shadow harness, and ORO-4J mount decision readiness evidence for human review. The static/mock evidence pack may return `evidencePackResult=PASS`, but `mountApproval` remains `pending_human_approval` and `humanApprovalRequired=true`; ORO-4K does not approve route mounting, does not edit `src/app.js`, does not open public aliases, does not accept runtime traffic, does not mutate wallet or ledger state, does not write through Prisma, does not create DB transactions, does not call live OroPlay, does not deploy, does not migrate, and does not touch real money.
 
-## ORO-4L Current
+## ORO-4L Current (Closed)
 
 ORO-4L Current. Human Approval Record / Pre-Mount Authorization Boundary is docs, static contract, mock harness, fixtures, local smoke, approval record template, and no-mount authorization boundary only.
 
 ORO-4L separates the human approval record template from actual route mount authorization. It uses ORO-4K evidence as input but keeps `signedHumanApprovalRecordPresent=false`, `preMountAuthorization=pending_manual_authorization`, `humanAuthorizationRequired=true`, and `nextPhaseRequiresSeparateAuthorization=true`. ORO-4L does not approve route mounting, does not edit `src/app.js`, does not open public aliases, does not accept runtime traffic, does not mutate wallet or ledger state, does not write through Prisma, does not create DB transactions, does not call live OroPlay, does not deploy, does not migrate, and does not touch real money.
+
+## ORO-4M Current
+
+ORO-4M Current. Pre-Mount Authorization Verification / Signed Approval Intake Gate is docs, static contract, mock harness, fixtures, local smoke, signed approval intake schema, and no-mount verification boundary only.
+
+ORO-4M separates the ORO-4L approval record template from an actual signed approval record. It can return `signedApprovalIntakeGateResult=PASS` for complete static/mock intake verification, but keeps `signedApprovalRecordPresent=false`, `signedApprovalRecordVerified=false`, `preMountAuthorization=pending_signed_approval_record`, `routeMountAuthorization=not_authorized_for_mount`, `humanAuthorizationRequired=true`, and `nextPhaseRequiresSeparateAuthorization=true`. ORO-4M does not approve route mounting, does not edit `src/app.js`, does not open public aliases, does not accept runtime traffic, does not accept chat approval as a signed record, does not accept a mock signed record as actual authorization, does not mutate wallet or ledger state, does not write through Prisma, does not create DB transactions, does not call live OroPlay, does not deploy, does not migrate, and does not touch real money.

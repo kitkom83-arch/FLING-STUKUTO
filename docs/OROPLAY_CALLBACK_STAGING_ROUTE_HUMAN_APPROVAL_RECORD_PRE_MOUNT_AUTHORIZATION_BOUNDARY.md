@@ -151,3 +151,10 @@ ORO-4L does not authorize public aliases.
 
 ORO-4L does not authorize runtime wallet or ledger mutation.
 
+## Followed by ORO-4M Signed Approval Intake Gate
+
+ORO-4M follows this boundary as a static/mock signed approval intake gate. The ORO-4L template is an input, not a signed approval record.
+
+ORO-4M may verify that an intake contract and checklist exist, but it must keep actual signed approval absent, `signedApprovalRecordVerified=false`, and `routeMountAuthorization=not_authorized_for_mount`.
+
+ORO-4M does not authorize `src/app.js` changes, Express route mount, public aliases, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, or real money.

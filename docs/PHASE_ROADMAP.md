@@ -118,7 +118,8 @@ OroPlay phase sequence after current mock/contract phases:
 - ORO-4I: Staging Route Wiring Internal Shadow Harness / Still No Express Mount. ORO-4I closed.
 - ORO-4J: Internal Shadow Harness Review / Mount Decision Readiness Gate. ORO-4J closed.
 - ORO-4K: Human Mount Review Evidence Pack / Mount Approval Boundary. ORO-4K closed.
-- ORO-4L: Human Approval Record / Pre-Mount Authorization Boundary. ORO-4L current.
+- ORO-4L: Human Approval Record / Pre-Mount Authorization Boundary. ORO-4L closed.
+- ORO-4M: Pre-Mount Authorization Verification / Signed Approval Intake Gate. ORO-4M current.
 - ORO-2B current/fail-closed route skeleton remains the active fail-closed runtime default.
 - ORO-3 is not allowed until ORO-2B passes; ORO-2C and ORO-3A add newer gates before runtime work.
 - ORO-3B is not allowed until ORO-2B and ORO-2C are closed and ORO-3A passes.
@@ -350,6 +351,22 @@ ORO-4L target criteria:
 - `runAllLocalSmoke.js`, `docs/API_MAPPING.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`, `docs/PHASE_ROADMAP.md`, and `docs/SMOKE_COVERAGE.md` include ORO-4L static/mock-only coverage.
 
 Next phase suggestion: ORO-4M requires separate explicit authorization verification before any route mount work. ORO-4L does not authorize `src/app.js` changes, Express route mount, public aliases, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, or real money.
+
+## ORO-4M current/signed approval intake gate
+
+ORO-4M current. Pre-Mount Authorization Verification / Signed Approval Intake Gate adds only no-mount docs, isolated mock fixtures, an isolated signed approval intake helper, local smoke coverage, package registration, and runAllLocalSmoke registration.
+
+ORO-4M packages ORO-4F route wiring design, ORO-4G preflight, ORO-4H dry-run gate, ORO-4I internal shadow harness, ORO-4J mount decision readiness gate, ORO-4K human mount review evidence pack, and ORO-4L human approval record template boundary as inputs for signed approval intake verification. It keeps route candidates `/api/oroplay/balance` and `/api/oroplay/transaction` inactive, unmounted, non-public, and not authorized for traffic. It keeps public aliases `/api/balance` and `/api/transaction` blocked. It does not mount any Express route, does not edit `src/app.js`, does not create an HTTP listener, does not accept runtime traffic, does not call OroPlay, does not accept chat approval as a signed record, does not accept a mock signed record as actual authorization, does not mutate wallet or ledger state, does not write through Prisma, does not create a DB transaction, does not migrate, does not deploy, and does not touch real money.
+
+ORO-4M target criteria:
+
+- `docs/OROPLAY_CALLBACK_STAGING_ROUTE_SIGNED_APPROVAL_INTAKE_GATE.md` exists and states Still No Express Mount, Still No Public Alias, Still No Runtime Wallet/Ledger Mutation, Still No Actual Signed Approval Record Intake, Still No Route Mount Authorization, and Still Separate Human Authorization Required.
+- `src/game-provider-mock/oroplayCallbackStagingRouteSignedApprovalIntakeGate.js` builds deterministic static/mock signed approval intake reports.
+- `src/game-provider-mock/oroplayCallbackStagingRouteSignedApprovalIntakeGateFixtures.js` includes happy path, missing ORO-4L boundary, missing intake contract, chat approval phrase, vague approval phrase, mock signed candidate, actual signed approval attempted, accidental mount, public alias, runtime mutation, external network, Prisma write, forbidden authorization state, and secret-like trace fixtures.
+- `smoke:oroplay-callback-staging-route-signed-approval-intake-gate` passes and confirms `signedApprovalIntakeGateResult=PASS`, `signedApprovalIntakeContractPresent=true`, `signedApprovalRecordPresent=false`, `signedApprovalRecordVerified=false`, `preMountAuthorization=pending_signed_approval_record`, `routeMountAuthorization=not_authorized_for_mount`, `humanAuthorizationRequired=true`, and `nextPhaseRequiresSeparateAuthorization=true`.
+- `runAllLocalSmoke.js`, `docs/API_MAPPING.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`, `docs/PHASE_ROADMAP.md`, and `docs/SMOKE_COVERAGE.md` include ORO-4M static/mock-only coverage.
+
+Next phase suggestion: ORO-4N can only be considered as a separate actual signed approval record review phase after explicit authorization. ORO-4M does not authorize `src/app.js` changes, Express route mount, public aliases, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, or real money.
 - ORO-3B blocked until ORO-3A pass.
 
 ORO-3B status marker:

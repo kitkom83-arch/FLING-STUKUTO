@@ -2993,3 +2993,49 @@ Boundary:
 - No migration.
 - No deploy.
 - No alias provider-compatible route enabled.
+
+## 80. ORO-4M OroPlay Callback Staging Route Signed Approval Intake Gate Coverage
+
+ORO-4M callback staging route signed approval intake gate coverage. The phase is Pre-Mount Authorization Verification / Signed Approval Intake Gate only. It separates the ORO-4L approval record template from an actual signed approval record, rejects chat or vague approval phrases, keeps mock signed candidates as schema-test inputs only, and keeps all runtime route wiring, public aliases, wallet mutation, ledger mutation, Prisma writes, DB transactions, external network, production config changes, migration, deploy, activation, live OroPlay calls, and real money blocked.
+
+Covered files:
+
+- `docs/OROPLAY_CALLBACK_STAGING_ROUTE_SIGNED_APPROVAL_INTAKE_GATE.md`
+- `src/game-provider-mock/oroplayCallbackStagingRouteSignedApprovalIntakeGate.js`
+- `src/game-provider-mock/oroplayCallbackStagingRouteSignedApprovalIntakeGateFixtures.js`
+- `src/local-smoke-tests/oroplayCallbackStagingRouteSignedApprovalIntakeGateSmoke.js`
+
+Package script:
+
+- `smoke:oroplay-callback-staging-route-signed-approval-intake-gate`
+
+Coverage assertions:
+
+- Confirms happy path returns phase `ORO-4M`, gate `oroplay_callback_staging_route_signed_approval_intake_gate`, `signedApprovalIntakeGateResult=PASS`, `signedApprovalIntakeContractPresent=true`, `signedApprovalRecordPresent=false`, `signedApprovalRecordVerified=false`, `preMountAuthorization=pending_signed_approval_record`, `routeMountAuthorization=not_authorized_for_mount`, `humanAuthorizationRequired=true`, and `nextPhaseRequiresSeparateAuthorization=true`.
+- Confirms the happy path does not return `approved`, `mount_approved`, `ready_for_live_traffic`, `production_ready`, `live_ready`, `auto_approved`, `route_mount_authorized`, or `express_mount_authorized`.
+- Confirms missing ORO-4L authorization boundary and missing signed approval intake contract fail closed.
+- Confirms chat approval phrase, vague approval phrase, actual signed approval attempt, accidental Express mount, public alias, wallet/ledger mutation, external network, Prisma write, and forbidden authorization state fail with `not_authorized_for_mount`.
+- Confirms mock signed approval candidate does not authorize route mount and remains not actual authorization.
+- Confirms sanitized trace output does not expose secret-shaped values or sensitive field names.
+- Confirms the harness does not import Express, Prisma, HTTP clients, or external network helpers.
+- Confirms `src/app.js` has no ORO-4M route mount, no `/api/oroplay/balance`, no `/api/oroplay/transaction`, no `/api/balance`, and no `/api/transaction` mount.
+
+Boundary:
+
+- Signed approval intake contract only.
+- Pre-mount authorization verification boundary only.
+- No actual signed approval record accepted in ORO-4M.
+- No chat approval accepted as signed record.
+- No mock signed record accepted as actual authorization.
+- No Express mount.
+- No `src/app.js` change.
+- No public alias.
+- No active route.
+- No runtime traffic.
+- No wallet mutation.
+- No ledger mutation.
+- No Prisma write.
+- No DB transaction.
+- No external network.
+- No live OroPlay API call.
+- No real money.
