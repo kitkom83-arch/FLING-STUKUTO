@@ -3040,6 +3040,59 @@ Boundary:
 - No live OroPlay API call.
 - No real money.
 
+## 85. ORO-4R OroPlay Callback Staging Route Signed Approval Artifact Private Hash Registry Coverage
+
+ORO-4R OroPlay Callback Staging Route Signed Approval Artifact Private Hash Registry Coverage. The phase is Signed Approval Artifact Intake Record / Private Artifact Hash Registry Boundary only. It records owner-provided private/off-repo artifact metadata and SHA256 chunks for the signed approval artifact while keeping the signed PDF, signature, local private path, and full hash literal out of the repository. It removes only `missing_actual_signed_approval_artifact` and keeps signed approval record creation, final pre-mount authorization issuance, mount authorization request submission, route mount, Express mount, public alias, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, external network, live OroPlay calls, and real money blocked.
+
+Covered files:
+
+- `docs/OROPLAY_CALLBACK_STAGING_ROUTE_SIGNED_APPROVAL_ARTIFACT_PRIVATE_HASH_REGISTRY.md`
+- `src/game-provider-mock/oroplayCallbackStagingRouteSignedApprovalArtifactPrivateHashRegistry.js`
+- `src/game-provider-mock/oroplayCallbackStagingRouteSignedApprovalArtifactPrivateHashRegistryFixtures.js`
+- `src/local-smoke-tests/oroplayCallbackStagingRouteSignedApprovalArtifactPrivateHashRegistrySmoke.js`
+
+Package script:
+
+- `smoke:oroplay-callback-staging-route-signed-approval-artifact-private-hash-registry`
+
+Coverage assertions:
+
+- Confirms happy path returns phase `ORO-4R`, gate `oroplay_callback_staging_route_signed_approval_artifact_private_hash_registry`, `signedApprovalArtifactPrivateHashRegistryResult=PASS`, `ownerSignedApprovalArtifactPrivateHashRegistered=true`, `actualSignedApprovalArtifactPresent=true`, `actualSignedApprovalArtifactStorage=private_off_repo`, `signedApprovalArtifactCommittedToRepo=false`, `signatureCommittedToRepo=false`, `signedApprovalArtifactHashChunksPresent=true`, `signedApprovalArtifactHashFormatValid=true`, `signedApprovalArtifactNormalizedHashLength=64`, `signedApprovalArtifactIntakeRecordPresent=true`, `signedApprovalArtifactAcceptedForIntake=true`, `signedApprovalArtifactAcceptedAsMountAuthorization=false`, `signedApprovalRecordPresent=false`, `finalPreMountAuthorizationDecisionPrepared=true`, `finalPreMountAuthorizationDecisionIssued=false`, `mountAuthorizationEvidencePackPrepared=true`, `mountAuthorizationEvidencePackSubmitted=false`, `mountAuthorizationRequestSubmitted=false`, `preMountAuthorization=signed_artifact_hash_registered_pending_approval_record`, `routeMountAuthorization=not_authorized_for_mount`, `expressMountAllowed=false`, `publicAliasAllowed=false`, `runtimeTrafficAllowed=false`, `humanAuthorizationRequired=true`, `separateRouteMountApprovalRequired=true`, and `nextPhaseRequiresSeparateAuthorization=true`.
+- Confirms SHA256 is stored as 8 chunks and normalized only in memory for length/hex validation.
+- Confirms missing hash chunks, invalid hash chunk, full hash literal, local absolute path, repo-committed artifact, repo-committed signature, accepted-as-mount-authorization, premature signed approval record, premature final decision, premature mount authorization request, attempted Express mount, attempted public alias, and attempted runtime traffic fail closed.
+- Confirms chat approval only and plain text approval only cannot pass as signed approval artifact evidence.
+- Confirms mock artifact cannot authorize mount.
+- Confirms `src/app.js` does not contain `/api/oroplay/balance`, `/api/oroplay/transaction`, `/api/balance`, or `/api/transaction`.
+- Confirms git tracked files do not include `PG77_ORO-4Q_OWNER_SIGNED_APPROVAL_2026-06-03.pdf`.
+- Confirms changed/new files contain no local absolute private path, no full SHA256 literal, no secret-shaped values, and result output contains no sensitive field markers.
+
+Boundary:
+
+- static/mock/private-hash-registry/no-mount smoke only.
+- Private artifact metadata and chunked hash only.
+- Signed approval PDF remains outside repository.
+- Signature remains outside repository.
+- No local absolute private path.
+- No full SHA256 literal.
+- Signed approval artifact accepted for intake only.
+- Signed approval artifact not accepted as mount authorization.
+- Signed approval record still pending.
+- Final pre-mount decision not issued.
+- Mount authorization request not submitted.
+- Route mount not authorized.
+- No `src/app.js` change.
+- No Express mount.
+- No public alias.
+- No active route.
+- No runtime traffic.
+- No wallet mutation.
+- No ledger mutation.
+- No Prisma write.
+- No DB transaction.
+- No external network.
+- No live OroPlay API call.
+- No real money.
+
 ## 84. ORO-4Q OroPlay Callback Staging Route Mount Authorization Hold Gate Coverage
 
 ORO-4Q OroPlay Callback Staging Route Mount Authorization Hold Gate Coverage. The phase is Mount Authorization Hold Gate / Actual Signed Approval Artifact Waiting Boundary only. It validates that ORO-4P acceptance review boundary passed and the final pre-mount authorization decision pack is prepared, while final pre-mount authorization is not issued, actual signed approval artifact is absent, actual signed approval record is absent, signed approval artifact acceptance and verification remain false, evidence pack is prepared but not submitted, mount authorization request is not submitted, route mount remains not authorized for mount, Express mount is not allowed, public alias is not allowed, runtime traffic is not allowed, and no runtime mutation is allowed.

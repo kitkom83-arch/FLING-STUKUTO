@@ -26,6 +26,21 @@ The waiting boundary remains active because:
 
 ORO-4Q must not receive, upload, ingest, store, or verify an actual signed approval artifact. Actual artifact handling requires a separate explicitly authorized phase.
 
+## ORO-4R private artifact hash registry note
+
+ORO-4R is a private artifact hash registry boundary after ORO-4Q. ORO-4R may record owner-provided sanitized private storage metadata and SHA256 chunks for the actual signed approval artifact, but it is not route mount approval and must not change ORO-4Q into mount approval.
+
+Removed by ORO-4R: `missing_actual_signed_approval_artifact`.
+
+Blockers that remain after ORO-4R:
+
+- `missing_signed_approval_record`
+- `final_pre_mount_authorization_decision_not_issued`
+- `mount_authorization_request_not_submitted`
+- `route_mount_authorization_not_granted`
+
+ORO-4R still must keep `signedApprovalRecordPresent=false`, `finalPreMountAuthorizationDecisionIssued=false`, `mountAuthorizationRequestSubmitted=false`, and `routeMountAuthorization=not_authorized_for_mount`.
+
 ## Mount authorization hold gate
 
 The hold gate can return `mountAuthorizationHoldGateResult=PASS` only when the safe hold state is intact:
