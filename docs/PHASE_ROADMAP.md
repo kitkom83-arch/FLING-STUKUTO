@@ -124,7 +124,8 @@ OroPlay phase sequence after current mock/contract phases:
 - ORO-4O: Signed Approval Record Artifact Intake / Pre-Mount Human Approval Evidence Boundary. ORO-4O closed.
 - ORO-4P: Signed Approval Artifact Acceptance Review / Final Pre-Mount Authorization Decision Boundary. ORO-4P closed.
 - ORO-4Q: Mount Authorization Hold Gate / Actual Signed Approval Artifact Waiting Boundary. ORO-4Q closed.
-- ORO-4R: Signed Approval Artifact Intake Record / Private Artifact Hash Registry Boundary. ORO-4R current/local pending until commit, push, and CI; not authorized for mount.
+- ORO-4R: Signed Approval Artifact Intake Record / Private Artifact Hash Registry Boundary. ORO-4R closed.
+- ORO-4S: Signed Approval Record Creation / Mount Authorization Request Preparation Boundary. ORO-4S current/local pending until commit, push, and CI; not authorized for mount.
 - ORO-2B current/fail-closed route skeleton remains the active fail-closed runtime default.
 - ORO-3 is not allowed until ORO-2B passes; ORO-2C and ORO-3A add newer gates before runtime work.
 - ORO-3B is not allowed until ORO-2B and ORO-2C are closed and ORO-3A passes.
@@ -439,7 +440,7 @@ Next phase suggestion: any phase that touches route/mount still requires separat
 
 ## ORO-4R current/private signed approval artifact hash registry
 
-ORO-4R current/local pending until commit, push, and CI. Signed Approval Artifact Intake Record / Private Artifact Hash Registry Boundary adds only no-mount docs, an isolated static/mock private hash registry helper, mock fixtures, local smoke coverage, package registration, and runAllLocalSmoke registration.
+ORO-4R closed. Signed Approval Artifact Intake Record / Private Artifact Hash Registry Boundary adds only no-mount docs, an isolated static/mock private hash registry helper, mock fixtures, local smoke coverage, package registration, and runAllLocalSmoke registration.
 
 ORO-4R packages ORO-4Q as input and records only owner-provided private/off-repo evidence that the actual signed approval artifact exists in private storage and that its SHA256 hash is registered as chunks. It removes only `missing_actual_signed_approval_artifact` while keeping `signedApprovalRecordPresent=false`, `finalPreMountAuthorizationDecisionIssued=false`, `mountAuthorizationRequestSubmitted=false`, `preMountAuthorization=signed_artifact_hash_registered_pending_approval_record`, and `routeMountAuthorization=not_authorized_for_mount`. Route mount remains not authorized for mount. Route candidates `/api/oroplay/balance` and `/api/oroplay/transaction` remain inactive, unmounted, non-public, and not authorized for traffic. Public aliases `/api/balance` and `/api/transaction` remain blocked. ORO-4R does not mount any Express route, does not edit `src/app.js`, does not create an HTTP listener, does not accept runtime traffic, does not call OroPlay, does not accept chat approval or plain text approval as a signed artifact, does not accept a mock signed artifact as actual authorization, does not commit or store the signed PDF, does not commit a signature, does not commit a local absolute private path, does not commit a full SHA256 literal, does not create an actual signed approval record, does not issue final pre-mount authorization, does not submit mount authorization request, does not mutate wallet or ledger state, does not write through Prisma, does not create a DB transaction, does not migrate, does not deploy, and does not touch real money.
 
@@ -452,6 +453,22 @@ ORO-4R target criteria:
 - `runAllLocalSmoke.js`, `docs/API_MAPPING.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`, `docs/PHASE_ROADMAP.md`, and `docs/SMOKE_COVERAGE.md` include ORO-4R static/mock/no-mount coverage.
 
 Next phase suggestion: any phase that creates a signed approval record, issues final pre-mount authorization, submits a mount authorization request, or touches route/mount still requires separate explicit authorization. ORO-4R does not authorize `src/app.js` changes, Express route mount, public aliases, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, external network, final pre-mount authorization issuance, signed approval record creation, mount authorization request submission, or real money.
+
+## ORO-4S current/signed approval record request preparation
+
+ORO-4S current/local pending until commit, push, and CI. Signed Approval Record Creation / Mount Authorization Request Preparation Boundary adds only no-mount docs, an isolated static/mock signed approval record and request preparation helper, mock fixtures, local smoke coverage, package registration, and runAllLocalSmoke registration.
+
+ORO-4S packages ORO-4R as input and records a sanitized signed approval record metadata boundary from the private artifact hash registry. It removes `missing_signed_approval_record` while keeping `finalPreMountAuthorizationDecisionIssued=false`, `mountAuthorizationRequestSubmitted=false`, `mountAuthorizationRequestSubmissionAllowed=false`, `preMountAuthorization=signed_approval_record_created_pending_mount_authorization_request_submission`, and `routeMountAuthorization=not_authorized_for_mount`. Route mount remains not authorized for mount. Route candidates `/api/oroplay/balance` and `/api/oroplay/transaction` remain inactive, unmounted, non-public, and not authorized for traffic. Public aliases `/api/balance` and `/api/transaction` remain blocked. ORO-4S does not mount any Express route, does not edit `src/app.js`, does not create an HTTP listener, does not accept runtime traffic, does not call OroPlay, does not commit or store the signed PDF, does not commit a signature, does not commit a local absolute private path, does not commit a full SHA256 literal, does not accept the signed approval record as route mount authorization, does not issue final pre-mount authorization, does not submit mount authorization request, does not mutate wallet or ledger state, does not write through Prisma, does not create a DB transaction, does not migrate, does not deploy, and does not touch real money.
+
+ORO-4S target criteria:
+
+- `docs/OROPLAY_CALLBACK_STAGING_ROUTE_SIGNED_APPROVAL_RECORD_MOUNT_AUTHORIZATION_REQUEST_PREPARATION_BOUNDARY.md` exists and states ORO-4S is not route mount approval, creates signed approval record metadata only, prepares a mount authorization request draft only, does not submit the request, does not issue final pre-mount authorization, does not enable route mount, does not enable Express mount, and does not enable runtime traffic.
+- `src/game-provider-mock/oroplayCallbackStagingRouteSignedApprovalRecordMountAuthorizationRequestPreparationBoundary.js` exports the ORO-4S status, input builder, evaluator, validator, summary builder, and SHA256 chunk normalizer.
+- `src/game-provider-mock/oroplayCallbackStagingRouteSignedApprovalRecordMountAuthorizationRequestPreparationBoundaryFixtures.js` covers baseline signed approval record metadata and negative fixtures for missing registry, missing/invalid hash chunks, full hash literal, local absolute path, repo-committed artifact/signature, missing record, record accepted as route mount authorization, request not prepared, premature request submission, premature submission allowed, premature final decision, Express mount, public alias, runtime traffic, wallet mutation, and ledger mutation attempts.
+- `src/local-smoke-tests/oroplayCallbackStagingRouteSignedApprovalRecordMountAuthorizationRequestPreparationBoundarySmoke.js` confirms static/mock/signed-approval-record/request-preparation/no-mount smoke coverage.
+- `runAllLocalSmoke.js`, `docs/API_MAPPING.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`, `docs/PHASE_ROADMAP.md`, and `docs/SMOKE_COVERAGE.md` include ORO-4S static/mock/no-mount coverage.
+
+Next phase suggestion: any phase that submits mount authorization request, issues final pre-mount authorization, or touches route/mount still requires separate explicit authorization. ORO-4S does not authorize `src/app.js` changes, Express route mount, public aliases, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, external network, final pre-mount authorization issuance, mount authorization request submission, route mount authorization, or real money.
 - ORO-3B blocked until ORO-3A pass.
 
 ORO-3B status marker:

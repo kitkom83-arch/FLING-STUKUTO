@@ -209,6 +209,20 @@ Remaining mount blockers:
 - `mount_authorization_request_not_submitted`
 - `route_mount_authorization_not_granted`
 
+## ORO-4S follow-up note
+
+ORO-4S is a signed approval record creation boundary after ORO-4R. It creates sanitized signed approval record metadata from this private hash registry and prepares a mount authorization request draft only.
+
+Removed by ORO-4S: `missing_signed_approval_record`.
+
+Remaining after ORO-4S:
+
+- `final_pre_mount_authorization_decision_not_issued`
+- `mount_authorization_request_not_submitted`
+- `route_mount_authorization_not_granted`
+
+ORO-4R remains a private artifact hash registry boundary only. ORO-4R must not be changed into mount approval, and ORO-4S must not accept the signed approval record as route mount authorization.
+
 ## Next phase requirement
 
 The next phase must require separate explicit authorization for signed approval record creation/review, final pre-mount authorization issuance, mount authorization request submission, and route mount authorization.
