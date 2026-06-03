@@ -112,6 +112,10 @@ const RELATED_FILES = [
   "src/game-provider-mock/oroplayCallbackStagingRouteSignedApprovalArtifactAcceptanceReviewFinalPreMountAuthorizationDecisionBoundaryFixtures.js",
   "src/local-smoke-tests/oroplayCallbackStagingRouteSignedApprovalArtifactAcceptanceReviewFinalPreMountAuthorizationDecisionBoundarySmoke.js",
   "docs/OROPLAY_CALLBACK_STAGING_ROUTE_SIGNED_APPROVAL_ARTIFACT_ACCEPTANCE_REVIEW_FINAL_PRE_MOUNT_AUTHORIZATION_DECISION_BOUNDARY.md",
+  "src/game-provider-mock/oroplayCallbackStagingRouteMountAuthorizationHoldGate.js",
+  "src/game-provider-mock/oroplayCallbackStagingRouteMountAuthorizationHoldGateFixtures.js",
+  "src/local-smoke-tests/oroplayCallbackStagingRouteMountAuthorizationHoldGateSmoke.js",
+  "docs/OROPLAY_CALLBACK_STAGING_ROUTE_MOUNT_AUTHORIZATION_HOLD_GATE.md",
   "src/payment-provider-mock/memberQrDepositUxContract.js",
   "src/payment-provider-mock/memberQrDepositMockHarness.js",
   "src/local-smoke-tests/memberQrDepositUxSmoke.js",
@@ -356,6 +360,11 @@ const summary = [
     key: "oroplayCallbackStagingRouteSignedApprovalArtifactAcceptanceReviewFinalPreMountAuthorizationDecisionBoundary",
     label:
       "oroplay-callback-staging-route-signed-approval-artifact-acceptance-review-final-pre-mount-authorization-decision-boundary",
+    status: "PENDING",
+  },
+  {
+    key: "oroplayCallbackStagingRouteMountAuthorizationHoldGate",
+    label: "oroplay-callback-staging-route-mount-authorization-hold-gate",
     status: "PENDING",
   },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
@@ -1051,6 +1060,24 @@ const steps = [
     summaryKey: "syntax",
   },
   {
+    name: "node --check oroplayCallbackStagingRouteMountAuthorizationHoldGate",
+    command: nodeCommand,
+    args: ["--check", "src/game-provider-mock/oroplayCallbackStagingRouteMountAuthorizationHoldGate.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackStagingRouteMountAuthorizationHoldGateFixtures",
+    command: nodeCommand,
+    args: ["--check", "src/game-provider-mock/oroplayCallbackStagingRouteMountAuthorizationHoldGateFixtures.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackStagingRouteMountAuthorizationHoldGateSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oroplayCallbackStagingRouteMountAuthorizationHoldGateSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
     name: "node --check memberQrDepositUxContract",
     command: nodeCommand,
     args: ["--check", "src/payment-provider-mock/memberQrDepositUxContract.js"],
@@ -1593,6 +1620,12 @@ const steps = [
     ]),
     summaryKey:
       "oroplayCallbackStagingRouteSignedApprovalArtifactAcceptanceReviewFinalPreMountAuthorizationDecisionBoundary",
+  },
+  {
+    name: "npm run smoke:oroplay-callback-staging-route-mount-authorization-hold-gate",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oroplay-callback-staging-route-mount-authorization-hold-gate"]),
+    summaryKey: "oroplayCallbackStagingRouteMountAuthorizationHoldGate",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

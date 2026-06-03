@@ -78,6 +78,7 @@
     "smoke:oroplay-callback-staging-route-signed-approval-record-review-mount-authorization-request-boundary": "node src/local-smoke-tests/oroplayCallbackStagingRouteSignedApprovalRecordReviewMountAuthorizationRequestBoundarySmoke.js",
     "smoke:oroplay-callback-staging-route-signed-approval-artifact-intake-pre-mount-evidence-boundary": "node src/local-smoke-tests/oroplayCallbackStagingRouteSignedApprovalArtifactIntakePreMountEvidenceBoundarySmoke.js",
     "smoke:oroplay-callback-staging-route-signed-approval-artifact-acceptance-review-final-pre-mount-authorization-decision-boundary": "node src/local-smoke-tests/oroplayCallbackStagingRouteSignedApprovalArtifactAcceptanceReviewFinalPreMountAuthorizationDecisionBoundarySmoke.js",
+    "smoke:oroplay-callback-staging-route-mount-authorization-hold-gate": "node src/local-smoke-tests/oroplayCallbackStagingRouteMountAuthorizationHoldGateSmoke.js",
     "smoke:member-qr-deposit-ux": "node src/local-smoke-tests/memberQrDepositUxSmoke.js",
     "smoke:deposit-verification-source": "node src/local-smoke-tests/depositVerificationSourceSmoke.js",
     "smoke:deposit-ledger-reconciliation-guard": "node src/local-smoke-tests/depositLedgerReconciliationGuardSmoke.js",

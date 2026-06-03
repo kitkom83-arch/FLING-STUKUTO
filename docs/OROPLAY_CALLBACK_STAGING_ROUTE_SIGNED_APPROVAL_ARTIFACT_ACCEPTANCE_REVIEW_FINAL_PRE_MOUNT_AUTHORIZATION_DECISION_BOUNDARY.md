@@ -324,4 +324,6 @@ ORO-4P must fail if any of these appear:
 
 Any phase after ORO-4P that touches route/mount must be separately authorized. The next phase must not infer authorization from this document, from ORO-4O, from a chat message, from plain text, from mock artifact metadata, from a prepared evidence pack, or from a prepared final decision pack.
 
+ORO-4Q follows ORO-4P as a mount authorization hold gate. ORO-4P remains an acceptance review and decision boundary, not mount approval; ORO-4Q only records that the prepared final pre-mount decision pack is still held pending an actual signed approval artifact, an actual signed approval record, a submitted evidence pack, a submitted mount authorization request, and a separate explicit authorization decision.
+
 Before any route/mount change, a separate explicit authorization must name the route/mount scope and must still respect no-runtime-traffic and safety guard requirements unless the new phase explicitly changes that scope.

@@ -122,7 +122,8 @@ OroPlay phase sequence after current mock/contract phases:
 - ORO-4M: Pre-Mount Authorization Verification / Signed Approval Intake Gate. ORO-4M closed.
 - ORO-4N: Signed Approval Record Review / Mount Authorization Request Boundary. ORO-4N closed.
 - ORO-4O: Signed Approval Record Artifact Intake / Pre-Mount Human Approval Evidence Boundary. ORO-4O closed.
-- ORO-4P: Signed Approval Artifact Acceptance Review / Final Pre-Mount Authorization Decision Boundary. ORO-4P current.
+- ORO-4P: Signed Approval Artifact Acceptance Review / Final Pre-Mount Authorization Decision Boundary. ORO-4P closed.
+- ORO-4Q: Mount Authorization Hold Gate / Actual Signed Approval Artifact Waiting Boundary. ORO-4Q current/local pending until commit, push, and CI.
 - ORO-2B current/fail-closed route skeleton remains the active fail-closed runtime default.
 - ORO-3 is not allowed until ORO-2B passes; ORO-2C and ORO-3A add newer gates before runtime work.
 - ORO-3B is not allowed until ORO-2B and ORO-2C are closed and ORO-3A passes.
@@ -418,6 +419,22 @@ ORO-4P target criteria:
 - `runAllLocalSmoke.js`, `docs/API_MAPPING.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`, `docs/PHASE_ROADMAP.md`, and `docs/SMOKE_COVERAGE.md` include ORO-4P static/mock-only coverage.
 
 Next phase suggestion: any phase that touches route/mount still requires separate explicit authorization. ORO-4P does not authorize `src/app.js` changes, Express route mount, public aliases, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, external network, final pre-mount authorization issuance, actual signed approval artifact storage, or real money.
+
+## ORO-4Q current/mount authorization hold gate
+
+ORO-4Q current/local pending until commit, push, and CI. Mount Authorization Hold Gate / Actual Signed Approval Artifact Waiting Boundary adds only no-mount docs, an isolated static/mock hold gate helper, mock fixtures, local smoke coverage, package registration, and runAllLocalSmoke registration.
+
+ORO-4Q packages ORO-4P signed approval artifact acceptance review as input but keeps actual signed approval artifact absent, actual signed approval record absent, artifact acceptance false, and artifact verification false. It confirms that the final pre-mount authorization decision pack is prepared but not issued, keeps `mountAuthorizationEvidencePackPrepared=true`, keeps `mountAuthorizationEvidencePackSubmitted=false`, keeps `mountAuthorizationRequestSubmitted=false`, keeps `preMountAuthorization=pending_actual_signed_approval_artifact`, keeps `routeMountAuthorization=not_authorized_for_mount`, and keeps `mountAuthorizationHoldActive=true`. Route mount remains not authorized for mount. Route candidates `/api/oroplay/balance` and `/api/oroplay/transaction` remain inactive, unmounted, non-public, and not authorized for traffic. Public aliases `/api/balance` and `/api/transaction` remain blocked. ORO-4Q does not mount any Express route, does not edit `src/app.js`, does not create an HTTP listener, does not accept runtime traffic, does not call OroPlay, does not accept chat approval or plain text approval as a signed artifact, does not accept a mock signed artifact as actual authorization, does not create or store an actual signed approval artifact, does not create an actual signed approval record, does not issue final pre-mount authorization, does not submit mount authorization request, does not mutate wallet or ledger state, does not write through Prisma, does not create a DB transaction, does not migrate, does not deploy, and does not touch real money.
+
+ORO-4Q target criteria:
+
+- `docs/OROPLAY_CALLBACK_STAGING_ROUTE_MOUNT_AUTHORIZATION_HOLD_GATE.md` exists and states ORO-4Q is not route mount approval, is a hold gate only, does not issue final pre-mount authorization, does not submit mount authorization request, does not enable route mount, does not accept chat/plain text approval as a signed approval artifact, and does not accept a mock signed artifact as actual authorization.
+- `src/game-provider-mock/oroplayCallbackStagingRouteMountAuthorizationHoldGate.js` builds deterministic static/mock mount authorization hold gate summaries.
+- `src/game-provider-mock/oroplayCallbackStagingRouteMountAuthorizationHoldGateFixtures.js` includes baseline pending actual signed approval artifact, chat approval only, plain text approval only, mock signed artifact review-only, missing signed approval record, decision pack prepared/not issued, evidence pack prepared/not submitted, request not submitted, attempted Express mount, attempted public alias, attempted runtime traffic, and attempted final decision without actual artifact fixtures.
+- `smoke:oroplay-callback-staging-route-mount-authorization-hold-gate` passes and confirms `mountAuthorizationHoldGateResult=PASS`, `signedApprovalArtifactAcceptanceReviewBoundaryPassed=true`, `finalPreMountAuthorizationDecisionPrepared=true`, `finalPreMountAuthorizationDecisionIssued=false`, `actualSignedApprovalArtifactPresent=false`, `signedApprovalRecordPresent=false`, `signedApprovalArtifactAccepted=false`, `signedApprovalArtifactVerified=false`, `chatApprovalRejectedAsSignedApprovalArtifact=true`, `plainTextApprovalRejectedAsSignedApprovalArtifact=true`, `mockSignedApprovalArtifactRejectedAsActualAuthorization=true`, `mountAuthorizationEvidencePackPrepared=true`, `mountAuthorizationEvidencePackSubmitted=false`, `mountAuthorizationRequestSubmitted=false`, `preMountAuthorization=pending_actual_signed_approval_artifact`, `routeMountAuthorization=not_authorized_for_mount`, `mountAuthorizationHoldActive=true`, `expressMountAllowed=false`, `publicAliasAllowed=false`, `runtimeTrafficAllowed=false`, `humanAuthorizationRequired=true`, `separateRouteMountApprovalRequired=true`, and `nextPhaseRequiresSeparateAuthorization=true`.
+- `runAllLocalSmoke.js`, `docs/API_MAPPING.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`, `docs/PHASE_ROADMAP.md`, and `docs/SMOKE_COVERAGE.md` include ORO-4Q static/mock/no-mount coverage.
+
+Next phase suggestion: any phase that touches route/mount still requires separate explicit authorization. ORO-4Q does not authorize `src/app.js` changes, Express route mount, public aliases, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, external network, final pre-mount authorization issuance, actual signed approval artifact storage, actual signed approval record creation, mount authorization request submission, or real money.
 - ORO-3B blocked until ORO-3A pass.
 
 ORO-3B status marker:
