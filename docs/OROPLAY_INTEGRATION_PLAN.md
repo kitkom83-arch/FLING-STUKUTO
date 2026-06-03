@@ -192,8 +192,14 @@ ORO-4I current. Staging Route Wiring Internal Shadow Harness / Still No Express 
 
 ORO-4I focuses on an internal shadow harness, static route descriptor, direct-call shadow invocation, sanitized trace, and side-effect assertions. It answers how a route candidate request, response, safety gate, side-effect check, and rollback evidence would be inspected without making the system ready to mount a route. Route candidates `/api/oroplay/balance` and `/api/oroplay/transaction` remain inactive, unmounted, non-public, and internal-shadow-only. Public aliases `/api/balance` and `/api/transaction` remain blocked. ORO-4I has no Express mount, no `src/app.js` change, no HTTP listener, no runtime traffic, no external network, no live OroPlay call, no runtime mutation, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, no deploy, no payout, no auto-credit, and no production config change.
 
-## ORO-4J Current
+## ORO-4J Current (Closed)
 
-ORO-4J current. Internal Shadow Harness Review / Mount Decision Readiness Gate is docs, static contract, mock harness, fixtures, local smoke, sanitized review report, and mount decision readiness gate only.
+ORO-4J current marker retained for existing smoke coverage; ORO-4J is closed. Internal Shadow Harness Review / Mount Decision Readiness Gate is docs, static contract, mock harness, fixtures, local smoke, sanitized review report, and mount decision readiness gate only.
 
 ORO-4J reviews ORO-4I internal shadow evidence and ORO-4H dry-run evidence before any future mount discussion. The static/mock gate may return `PASS`, but the mount decision remains `manual_review_required` or `blocked`; ORO-4J does not approve route mounting, public aliases, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, deploy, migration, payout, auto-credit, or real money.
+
+## ORO-4K Current
+
+ORO-4K Current. Human Mount Review Evidence Pack / Mount Approval Boundary is docs, static contract, mock harness, fixtures, local smoke, sanitized evidence report, human reviewer checklist, sign-off template, and no-mount approval boundary only.
+
+ORO-4K combines ORO-4F route wiring design, ORO-4G preflight, ORO-4H dry-run gate, ORO-4I internal shadow harness, and ORO-4J mount decision readiness evidence for human review. The static/mock evidence pack may return `evidencePackResult=PASS`, but `mountApproval` remains `pending_human_approval` and `humanApprovalRequired=true`; ORO-4K does not approve route mounting, does not edit `src/app.js`, does not open public aliases, does not accept runtime traffic, does not mutate wallet or ledger state, does not write through Prisma, does not create DB transactions, does not call live OroPlay, does not deploy, does not migrate, and does not touch real money.

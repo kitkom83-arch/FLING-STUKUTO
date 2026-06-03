@@ -181,3 +181,7 @@ See `docs/OROPLAY_CALLBACK_STAGING_ROUTE_INTERNAL_SHADOW_HARNESS.md` for the ORO
 ORO-4J cross-reference:
 
 See `docs/OROPLAY_CALLBACK_STAGING_ROUTE_MOUNT_DECISION_READINESS_GATE.md` for the later static/mock mount decision readiness gate. ORO-4J reviews dry-run and internal shadow evidence, but still does not approve mounting, public aliases, runtime traffic, wallet mutation, ledger mutation, Prisma writes, or live OroPlay calls.
+
+ORO-4K cross-reference:
+
+See `docs/OROPLAY_CALLBACK_STAGING_ROUTE_HUMAN_MOUNT_REVIEW_EVIDENCE_PACK.md` for the later human mount review evidence pack. ORO-4H dry-run evidence is one source for ORO-4K, but ORO-4K still does not mount routes, open public aliases, accept runtime traffic, mutate wallet or ledger state, write through Prisma, or call live OroPlay.

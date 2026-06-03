@@ -227,3 +227,7 @@ ORO-4J should still not open:
 ORO-4J reviews this internal shadow harness as static/mock evidence for a later mount decision discussion. The review checks route descriptors, direct-call shadow invocation behavior, sanitized trace boundaries, no public alias, no Express mount, and no wallet/ledger/Prisma side effects.
 
 An ORO-4J `PASS` is only a static/mock gate result. It does not approve a mount, does not approve public aliases, does not approve live traffic, and does not make `/api/oroplay/balance` or `/api/oroplay/transaction` active routes. A separate human approval is still required before any later route or mount phase.
+
+## Evidence source for ORO-4K
+
+ORO-4I is an evidence source for the ORO-4K human mount review evidence pack. ORO-4K may reference this internal shadow harness, sanitized trace boundary, and side-effect assertions for human review, but that evidence still does not approve a route mount, public aliases, live traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, or real money.

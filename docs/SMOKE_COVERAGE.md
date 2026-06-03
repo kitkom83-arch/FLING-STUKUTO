@@ -2635,6 +2635,57 @@ Boundary:
 - No `/api/balance` alias.
 - No `/api/transaction` alias.
 
+## 78. ORO-4K OroPlay Callback Staging Route Human Mount Review Evidence Pack Coverage
+
+ORO-4K callback staging route human mount review evidence pack coverage. The phase is Human Mount Review Evidence Pack / Mount Approval Boundary only. It combines ORO-4F route wiring design, ORO-4G preflight, ORO-4H dry-run gate, ORO-4I internal shadow harness, and ORO-4J mount decision readiness evidence for human review while keeping all runtime route wiring, public aliases, wallet mutation, ledger mutation, Prisma writes, DB transactions, external network, production config changes, migration, deploy, and activation blocked.
+
+Covered files:
+
+- `docs/OROPLAY_CALLBACK_STAGING_ROUTE_HUMAN_MOUNT_REVIEW_EVIDENCE_PACK.md`
+- `src/game-provider-mock/oroplayCallbackStagingRouteHumanMountReviewEvidencePack.js`
+- `src/game-provider-mock/oroplayCallbackStagingRouteHumanMountReviewEvidencePackFixtures.js`
+- `src/local-smoke-tests/oroplayCallbackStagingRouteHumanMountReviewEvidencePackSmoke.js`
+- `src/local-smoke-tests/runAllLocalSmoke.js`
+- `package.json`
+
+Smoke command:
+
+- `npm run smoke:oroplay-callback-staging-route-human-mount-review-evidence-pack`
+
+Coverage assertions:
+
+- Confirms happy path returns phase `ORO-4K`, gate `oroplay_callback_staging_route_human_mount_review_evidence_pack`, `evidencePackResult=PASS`, `mountApproval=pending_human_approval`, and `humanApprovalRequired=true`.
+- Confirms the happy path does not return `approved`, `mount_approved`, `ready_for_live_traffic`, or `production_ready`.
+- Confirms missing ORO-4I internal shadow harness evidence fails with `evidence_incomplete`.
+- Confirms missing ORO-4J mount decision gate evidence fails with `evidence_incomplete`.
+- Confirms accidental Express mount, public alias, wallet/ledger mutation, external network, and auto approval attempts fail with `not_approved_for_mount`.
+- Confirms sanitized trace output does not expose secret-shaped values or sensitive field names.
+- Confirms the harness does not import Express, Prisma, HTTP clients, or external network helpers.
+- Confirms `src/app.js` has no active mount for `/api/oroplay/balance`, `/api/oroplay/transaction`, `/api/balance`, or `/api/transaction`.
+
+Boundary:
+
+- Evidence pack only.
+- Static/mock harness only.
+- Human approval required.
+- No Express route mount.
+- No public alias.
+- No runtime route.
+- No production DB.
+- No real money.
+- No live OroPlay API call.
+- No external network.
+- No runtime wallet mutation.
+- No runtime ledger mutation.
+- No Prisma write.
+- No DB transaction.
+- No migration.
+- No deploy.
+- No payout.
+- No auto-credit.
+- No `/api/balance` alias.
+- No `/api/transaction` alias.
+
 ## 75. ORO-4H OroPlay Callback Staging Route Dry-Run Gate Coverage
 
 ORO-4H callback staging route dry-run gate coverage. The phase is Staging Route Wiring Dry-Run Gate / Still No Public Alias only. It evaluates static route descriptors and mock fixtures while keeping all runtime route wiring, public aliases, wallet mutation, ledger mutation, Prisma writes, external network, production config changes, and activation blocked.

@@ -91,3 +91,9 @@ The gate checks at least:
 ## Human approval required
 
 After ORO-4J, even when the gate result is `PASS`, a separate human approval is still required before any later phase that touches route mounting, `src/app.js`, runtime traffic, public aliases, wallet behavior, ledger behavior, Prisma writes, DB transactions, provider calls, or real money.
+
+## Reviewed by ORO-4K Human Mount Review Evidence Pack
+
+ORO-4K references this ORO-4J mount decision readiness gate as one static/mock evidence source for human review. ORO-4K can package the ORO-4J result, blockers, sanitized trace boundary, and no-side-effect assertions, but it still does not approve a route mount.
+
+An ORO-4K evidence pack result of `PASS` must leave `mountApproval=pending_human_approval`. It does not activate `/api/oroplay/balance`, does not activate `/api/oroplay/transaction`, does not open `/api/balance`, does not open `/api/transaction`, does not accept runtime traffic, and does not approve wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, or real money.

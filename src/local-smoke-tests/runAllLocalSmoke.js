@@ -91,6 +91,9 @@ const RELATED_FILES = [
   "src/game-provider-mock/oroplayCallbackStagingRouteMountDecisionReadinessGate.js",
   "src/game-provider-mock/oroplayCallbackStagingRouteMountDecisionReadinessGateFixtures.js",
   "src/local-smoke-tests/oroplayCallbackStagingRouteMountDecisionReadinessGateSmoke.js",
+  "src/game-provider-mock/oroplayCallbackStagingRouteHumanMountReviewEvidencePack.js",
+  "src/game-provider-mock/oroplayCallbackStagingRouteHumanMountReviewEvidencePackFixtures.js",
+  "src/local-smoke-tests/oroplayCallbackStagingRouteHumanMountReviewEvidencePackSmoke.js",
   "src/payment-provider-mock/memberQrDepositUxContract.js",
   "src/payment-provider-mock/memberQrDepositMockHarness.js",
   "src/local-smoke-tests/memberQrDepositUxSmoke.js",
@@ -304,6 +307,11 @@ const summary = [
   {
     key: "oroplayCallbackStagingRouteMountDecisionReadinessGate",
     label: "oroplay-callback-staging-route-mount-decision-readiness-gate",
+    status: "PENDING",
+  },
+  {
+    key: "oroplayCallbackStagingRouteHumanMountReviewEvidencePack",
+    label: "oroplay-callback-staging-route-human-mount-review-evidence-pack",
     status: "PENDING",
   },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
@@ -855,6 +863,24 @@ const steps = [
     summaryKey: "syntax",
   },
   {
+    name: "node --check oroplayCallbackStagingRouteHumanMountReviewEvidencePack",
+    command: nodeCommand,
+    args: ["--check", "src/game-provider-mock/oroplayCallbackStagingRouteHumanMountReviewEvidencePack.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackStagingRouteHumanMountReviewEvidencePackFixtures",
+    command: nodeCommand,
+    args: ["--check", "src/game-provider-mock/oroplayCallbackStagingRouteHumanMountReviewEvidencePackFixtures.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackStagingRouteHumanMountReviewEvidencePackSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oroplayCallbackStagingRouteHumanMountReviewEvidencePackSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
     name: "node --check memberQrDepositUxContract",
     command: nodeCommand,
     args: ["--check", "src/payment-provider-mock/memberQrDepositUxContract.js"],
@@ -1347,6 +1373,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oroplay-callback-staging-route-mount-decision-readiness-gate"]),
     summaryKey: "oroplayCallbackStagingRouteMountDecisionReadinessGate",
+  },
+  {
+    name: "npm run smoke:oroplay-callback-staging-route-human-mount-review-evidence-pack",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oroplay-callback-staging-route-human-mount-review-evidence-pack"]),
+    summaryKey: "oroplayCallbackStagingRouteHumanMountReviewEvidencePack",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",
