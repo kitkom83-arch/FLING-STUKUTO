@@ -94,6 +94,9 @@ const RELATED_FILES = [
   "src/game-provider-mock/oroplayCallbackStagingRouteHumanMountReviewEvidencePack.js",
   "src/game-provider-mock/oroplayCallbackStagingRouteHumanMountReviewEvidencePackFixtures.js",
   "src/local-smoke-tests/oroplayCallbackStagingRouteHumanMountReviewEvidencePackSmoke.js",
+  "src/game-provider-mock/oroplayCallbackStagingRouteHumanApprovalRecordPreMountAuthorizationBoundary.js",
+  "src/game-provider-mock/oroplayCallbackStagingRouteHumanApprovalRecordPreMountAuthorizationBoundaryFixtures.js",
+  "src/local-smoke-tests/oroplayCallbackStagingRouteHumanApprovalRecordPreMountAuthorizationBoundarySmoke.js",
   "src/payment-provider-mock/memberQrDepositUxContract.js",
   "src/payment-provider-mock/memberQrDepositMockHarness.js",
   "src/local-smoke-tests/memberQrDepositUxSmoke.js",
@@ -312,6 +315,11 @@ const summary = [
   {
     key: "oroplayCallbackStagingRouteHumanMountReviewEvidencePack",
     label: "oroplay-callback-staging-route-human-mount-review-evidence-pack",
+    status: "PENDING",
+  },
+  {
+    key: "oroplayCallbackStagingRouteHumanApprovalRecordPreMountAuthorizationBoundary",
+    label: "oroplay-callback-staging-route-human-approval-record-pre-mount-authorization-boundary",
     status: "PENDING",
   },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
@@ -881,6 +889,30 @@ const steps = [
     summaryKey: "syntax",
   },
   {
+    name: "node --check oroplayCallbackStagingRouteHumanApprovalRecordPreMountAuthorizationBoundary",
+    command: nodeCommand,
+    args: ["--check", "src/game-provider-mock/oroplayCallbackStagingRouteHumanApprovalRecordPreMountAuthorizationBoundary.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackStagingRouteHumanApprovalRecordPreMountAuthorizationBoundaryFixtures",
+    command: nodeCommand,
+    args: [
+      "--check",
+      "src/game-provider-mock/oroplayCallbackStagingRouteHumanApprovalRecordPreMountAuthorizationBoundaryFixtures.js",
+    ],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackStagingRouteHumanApprovalRecordPreMountAuthorizationBoundarySmoke",
+    command: nodeCommand,
+    args: [
+      "--check",
+      "src/local-smoke-tests/oroplayCallbackStagingRouteHumanApprovalRecordPreMountAuthorizationBoundarySmoke.js",
+    ],
+    summaryKey: "syntax",
+  },
+  {
     name: "node --check memberQrDepositUxContract",
     command: nodeCommand,
     args: ["--check", "src/payment-provider-mock/memberQrDepositUxContract.js"],
@@ -1379,6 +1411,15 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oroplay-callback-staging-route-human-mount-review-evidence-pack"]),
     summaryKey: "oroplayCallbackStagingRouteHumanMountReviewEvidencePack",
+  },
+  {
+    name: "npm run smoke:oroplay-callback-staging-route-human-approval-record-pre-mount-authorization-boundary",
+    command: npmCommand,
+    args: npmArgs([
+      "run",
+      "smoke:oroplay-callback-staging-route-human-approval-record-pre-mount-authorization-boundary",
+    ]),
+    summaryKey: "oroplayCallbackStagingRouteHumanApprovalRecordPreMountAuthorizationBoundary",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

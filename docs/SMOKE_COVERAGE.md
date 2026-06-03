@@ -2686,6 +2686,49 @@ Boundary:
 - No `/api/balance` alias.
 - No `/api/transaction` alias.
 
+## 79. ORO-4L OroPlay Callback Staging Route Human Approval Record Pre-Mount Authorization Boundary Coverage
+
+ORO-4L callback staging route human approval record pre-mount authorization boundary coverage. The phase is Human Approval Record / Pre-Mount Authorization Boundary only. It separates the human approval record template from actual mount authorization and keeps all runtime route wiring, public aliases, wallet mutation, ledger mutation, Prisma writes, DB transactions, external network, production config changes, migration, deploy, and activation blocked.
+
+Covered files:
+
+- `docs/OROPLAY_CALLBACK_STAGING_ROUTE_HUMAN_APPROVAL_RECORD_PRE_MOUNT_AUTHORIZATION_BOUNDARY.md`
+- `src/game-provider-mock/oroplayCallbackStagingRouteHumanApprovalRecordPreMountAuthorizationBoundary.js`
+- `src/game-provider-mock/oroplayCallbackStagingRouteHumanApprovalRecordPreMountAuthorizationBoundaryFixtures.js`
+- `src/local-smoke-tests/oroplayCallbackStagingRouteHumanApprovalRecordPreMountAuthorizationBoundarySmoke.js`
+
+Smoke command:
+
+- `npm run smoke:oroplay-callback-staging-route-human-approval-record-pre-mount-authorization-boundary`
+
+Coverage assertions:
+
+- Confirms happy path returns phase `ORO-4L`, gate `oroplay_callback_staging_route_human_approval_record_pre_mount_authorization_boundary`, `authorizationBoundaryResult=PASS`, `humanApprovalRecordTemplatePresent=true`, `signedHumanApprovalRecordPresent=false`, `preMountAuthorization=pending_manual_authorization`, `humanAuthorizationRequired=true`, and `nextPhaseRequiresSeparateAuthorization=true`.
+- Confirms the happy path does not return `approved`, `mount_approved`, `ready_for_live_traffic`, `production_ready`, `live_ready`, `auto_approved`, or `route_mount_authorized`.
+- Confirms missing ORO-4K evidence and missing approval record template fail with `authorization_record_incomplete`.
+- Confirms signed approval attempts, accidental Express mount, public alias, wallet/ledger mutation, external network, and Prisma write fail with `not_authorized_for_mount`.
+- Confirms sanitized trace output does not expose secret-shaped values or sensitive field names.
+- Confirms the harness does not import Express, Prisma, HTTP clients, or external network helpers.
+- Confirms `src/app.js` has no direct mount for `/api/oroplay/balance`, `/api/oroplay/transaction`, `/api/balance`, or `/api/transaction`.
+
+Boundary:
+
+- Human approval record template only.
+- Pre-mount authorization boundary only.
+- No signed approval record accepted in ORO-4L.
+- No Express mount.
+- No `src/app.js` change.
+- No public alias.
+- No active route.
+- No runtime traffic.
+- No external network.
+- No wallet mutation.
+- No ledger mutation.
+- No Prisma write.
+- No DB transaction.
+- No live OroPlay API call.
+- No real money.
+
 ## 75. ORO-4H OroPlay Callback Staging Route Dry-Run Gate Coverage
 
 ORO-4H callback staging route dry-run gate coverage. The phase is Staging Route Wiring Dry-Run Gate / Still No Public Alias only. It evaluates static route descriptors and mock fixtures while keeping all runtime route wiring, public aliases, wallet mutation, ledger mutation, Prisma writes, external network, production config changes, and activation blocked.

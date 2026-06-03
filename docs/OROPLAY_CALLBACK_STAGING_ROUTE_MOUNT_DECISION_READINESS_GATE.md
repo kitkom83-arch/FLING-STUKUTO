@@ -97,3 +97,9 @@ After ORO-4J, even when the gate result is `PASS`, a separate human approval is 
 ORO-4K references this ORO-4J mount decision readiness gate as one static/mock evidence source for human review. ORO-4K can package the ORO-4J result, blockers, sanitized trace boundary, and no-side-effect assertions, but it still does not approve a route mount.
 
 An ORO-4K evidence pack result of `PASS` must leave `mountApproval=pending_human_approval`. It does not activate `/api/oroplay/balance`, does not activate `/api/oroplay/transaction`, does not open `/api/balance`, does not open `/api/transaction`, does not accept runtime traffic, and does not approve wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, or real money.
+
+## Followed by ORO-4L Human Approval Record / Pre-Mount Authorization Boundary
+
+ORO-4L follows ORO-4K as a static/mock authorization boundary. It may confirm that the human approval record template exists, but it must keep `signedHumanApprovalRecordPresent=false` and `preMountAuthorization=pending_manual_authorization`.
+
+ORO-4L does not change the ORO-4J meaning: a mount decision readiness gate is not mount approved, is not live-ready, and is not an authorization to edit `src/app.js`, mount an Express route, open public aliases, accept runtime traffic, mutate wallet or ledger state, write through Prisma, call live OroPlay, or touch real money.

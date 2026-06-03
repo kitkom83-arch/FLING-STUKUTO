@@ -207,3 +207,9 @@ ORO-4K does not authorize `src/app.js` changes.
 ORO-4K does not authorize mounting any Express route.
 
 ORO-4K does not authorize public aliases, runtime traffic, wallet mutation, ledger mutation, Prisma writes, live OroPlay calls, or real money.
+
+## Followed by ORO-4L Human Approval Record / Pre-Mount Authorization Boundary
+
+ORO-4L consumes this ORO-4K evidence pack as one static/mock input for a human approval record template and pre-mount authorization boundary.
+
+An ORO-4K `evidencePackResult=PASS` is evidence readiness only. It is not an approval record, not a signed authorization, not mount approved, and not authorization to edit `src/app.js`, mount an Express route, open public aliases, accept runtime traffic, mutate wallet or ledger state, write through Prisma, call live OroPlay, or touch real money.

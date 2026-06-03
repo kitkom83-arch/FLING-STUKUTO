@@ -117,7 +117,8 @@ OroPlay phase sequence after current mock/contract phases:
 - ORO-4H: Staging Route Wiring Dry-Run Gate / Still No Public Alias. ORO-4H closed.
 - ORO-4I: Staging Route Wiring Internal Shadow Harness / Still No Express Mount. ORO-4I closed.
 - ORO-4J: Internal Shadow Harness Review / Mount Decision Readiness Gate. ORO-4J closed.
-- ORO-4K: Human Mount Review Evidence Pack / Mount Approval Boundary. ORO-4K current.
+- ORO-4K: Human Mount Review Evidence Pack / Mount Approval Boundary. ORO-4K closed.
+- ORO-4L: Human Approval Record / Pre-Mount Authorization Boundary. ORO-4L current.
 - ORO-2B current/fail-closed route skeleton remains the active fail-closed runtime default.
 - ORO-3 is not allowed until ORO-2B passes; ORO-2C and ORO-3A add newer gates before runtime work.
 - ORO-3B is not allowed until ORO-2B and ORO-2C are closed and ORO-3A passes.
@@ -332,7 +333,23 @@ ORO-4K target criteria:
 - `smoke:oroplay-callback-staging-route-human-mount-review-evidence-pack` passes and confirms `evidencePackResult=PASS`, `mountApproval=pending_human_approval`, `humanApprovalRequired=true`, no active route, no public alias, no runtime traffic, no mutation, no Prisma write, no external network, no live OroPlay API call, and no auto mount approval.
 - `runAllLocalSmoke.js`, `docs/API_MAPPING.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`, `docs/PHASE_ROADMAP.md`, and `docs/SMOKE_COVERAGE.md` include ORO-4K static/mock-only coverage.
 
-Next phase suggestion: ORO-4L can only be considered as a separate approval phase after human review. ORO-4K does not authorize `src/app.js` changes, Express route mount, public aliases, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, or real money.
+Next phase suggestion: ORO-4L can only be considered as a separate approval boundary phase after human review evidence. ORO-4K does not authorize `src/app.js` changes, Express route mount, public aliases, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, or real money.
+
+## ORO-4L current/human approval record pre-mount authorization boundary
+
+ORO-4L current. Human Approval Record / Pre-Mount Authorization Boundary adds only no-mount docs, isolated mock fixtures, an isolated authorization boundary helper, local smoke coverage, package registration, and runAllLocalSmoke registration.
+
+ORO-4L packages ORO-4F route wiring design, ORO-4G preflight, ORO-4H dry-run gate, ORO-4I internal shadow harness, ORO-4J mount decision readiness gate, and ORO-4K human mount review evidence pack as inputs for a human approval record template. It keeps route candidates `/api/oroplay/balance` and `/api/oroplay/transaction` inactive, unmounted, non-public, and not authorized for traffic. It keeps public aliases `/api/balance` and `/api/transaction` blocked. It does not mount any Express route, does not edit `src/app.js`, does not create an HTTP listener, does not accept runtime traffic, does not call OroPlay, does not mutate wallet or ledger state, does not write through Prisma, does not create a DB transaction, does not migrate, does not deploy, and does not touch real money.
+
+ORO-4L target criteria:
+
+- `docs/OROPLAY_CALLBACK_STAGING_ROUTE_HUMAN_APPROVAL_RECORD_PRE_MOUNT_AUTHORIZATION_BOUNDARY.md` exists and states Still No Express Mount, Still No Public Alias, Still No Runtime Wallet/Ledger Mutation, Still No Actual Mount Authorization, and Still Separate Human Authorization Required.
+- `src/game-provider-mock/oroplayCallbackStagingRouteHumanApprovalRecordPreMountAuthorizationBoundary.js` builds deterministic static/mock authorization boundary reports.
+- `src/game-provider-mock/oroplayCallbackStagingRouteHumanApprovalRecordPreMountAuthorizationBoundaryFixtures.js` includes happy path, missing ORO-4K evidence, missing template, signed approval attempt, accidental mount, public alias, runtime mutation, external network, Prisma write, and secret-like trace fixtures.
+- `smoke:oroplay-callback-staging-route-human-approval-record-pre-mount-authorization-boundary` passes and confirms `authorizationBoundaryResult=PASS`, `humanApprovalRecordTemplatePresent=true`, `signedHumanApprovalRecordPresent=false`, `preMountAuthorization=pending_manual_authorization`, `humanAuthorizationRequired=true`, and `nextPhaseRequiresSeparateAuthorization=true`.
+- `runAllLocalSmoke.js`, `docs/API_MAPPING.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`, `docs/PHASE_ROADMAP.md`, and `docs/SMOKE_COVERAGE.md` include ORO-4L static/mock-only coverage.
+
+Next phase suggestion: ORO-4M requires separate explicit authorization verification before any route mount work. ORO-4L does not authorize `src/app.js` changes, Express route mount, public aliases, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, or real money.
 - ORO-3B blocked until ORO-3A pass.
 
 ORO-3B status marker:
