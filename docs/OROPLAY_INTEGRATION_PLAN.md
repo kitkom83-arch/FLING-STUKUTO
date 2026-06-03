@@ -179,3 +179,9 @@ ORO-4F documents future staging-only route paths `/api/oroplay/balance` and `/ap
 ORO-4G current. Staging Route Wiring Preflight / Mount Readiness Checklist is docs, contract, static/mock harness, and local smoke only.
 
 ORO-4G answers which gates must pass before a future staging route mount can be considered. It adds preflight gate evaluation, mount readiness summary, rollback readiness checks, and smoke coverage while keeping mount readiness `NOT_READY_TO_MOUNT_BY_DEFAULT`. It keeps route candidates `/api/oroplay/balance` and `/api/oroplay/transaction` inactive and candidate-only, keeps `/api/balance` and `/api/transaction` blocked, and does not wire Express routes, edit `src/app.js`, open public aliases, call OroPlay, mutate wallet or ledger state, write through Prisma, migrate, deploy, payout, auto-credit, or change production config.
+
+## ORO-4H Current
+
+ORO-4H current. Staging Route Wiring Dry-Run Gate / Still No Public Alias is docs, static contract, mock harness, fixtures, and local smoke only.
+
+ORO-4H focuses on a dry-run gate, static route descriptor evaluation, and abort criteria. It answers whether future route candidate wiring would pass dry-run checks while keeping route candidates `/api/oroplay/balance` and `/api/oroplay/transaction` inactive, unmounted, non-public, and descriptor-only. Public aliases `/api/balance` and `/api/transaction` remain blocked. ORO-4H has no Express mount, no `src/app.js` change, no runtime traffic, no live OroPlay call, no runtime mutation, no wallet mutation, no ledger mutation, no Prisma write, no migration, no deploy, no payout, no auto-credit, and no production config change.

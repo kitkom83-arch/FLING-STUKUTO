@@ -82,6 +82,9 @@ const RELATED_FILES = [
   "src/game-provider-mock/oroplayCallbackStagingRoutePreflight.js",
   "src/game-provider-mock/oroplayCallbackStagingRoutePreflightFixtures.js",
   "src/local-smoke-tests/oroplayCallbackStagingRoutePreflightSmoke.js",
+  "src/game-provider-mock/oroplayCallbackStagingRouteDryRunGate.js",
+  "src/game-provider-mock/oroplayCallbackStagingRouteDryRunGateFixtures.js",
+  "src/local-smoke-tests/oroplayCallbackStagingRouteDryRunGateSmoke.js",
   "src/payment-provider-mock/memberQrDepositUxContract.js",
   "src/payment-provider-mock/memberQrDepositMockHarness.js",
   "src/local-smoke-tests/memberQrDepositUxSmoke.js",
@@ -159,6 +162,7 @@ const RELATED_FILES = [
   "docs/OROPLAY_CALLBACK_CONTROLLER_FACADE_DRY_RUN.md",
   "docs/OROPLAY_CALLBACK_STAGING_ROUTE_WIRING_DESIGN.md",
   "docs/OROPLAY_CALLBACK_STAGING_ROUTE_PREFLIGHT.md",
+  "docs/OROPLAY_CALLBACK_STAGING_ROUTE_DRY_RUN_GATE.md",
   "docs/SMOKE_COVERAGE.md",
   "docs/MEMBER_QR_DEPOSIT_UX_CONTRACT.md",
   "docs/MEMBER_QR_DEPOSIT_MOCK_UAT_CHECKLIST.md",
@@ -278,6 +282,11 @@ const summary = [
   {
     key: "oroplayCallbackStagingRoutePreflight",
     label: "oroplay-callback-staging-route-preflight",
+    status: "PENDING",
+  },
+  {
+    key: "oroplayCallbackStagingRouteDryRunGate",
+    label: "oroplay-callback-staging-route-dry-run-gate",
     status: "PENDING",
   },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
@@ -775,6 +784,24 @@ const steps = [
     summaryKey: "syntax",
   },
   {
+    name: "node --check oroplayCallbackStagingRouteDryRunGate",
+    command: nodeCommand,
+    args: ["--check", "src/game-provider-mock/oroplayCallbackStagingRouteDryRunGate.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackStagingRouteDryRunGateFixtures",
+    command: nodeCommand,
+    args: ["--check", "src/game-provider-mock/oroplayCallbackStagingRouteDryRunGateFixtures.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackStagingRouteDryRunGateSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oroplayCallbackStagingRouteDryRunGateSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
     name: "node --check memberQrDepositUxContract",
     command: nodeCommand,
     args: ["--check", "src/payment-provider-mock/memberQrDepositUxContract.js"],
@@ -1249,6 +1276,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oroplay-callback-staging-route-preflight"]),
     summaryKey: "oroplayCallbackStagingRoutePreflight",
+  },
+  {
+    name: "npm run smoke:oroplay-callback-staging-route-dry-run-gate",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oroplay-callback-staging-route-dry-run-gate"]),
+    summaryKey: "oroplayCallbackStagingRouteDryRunGate",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

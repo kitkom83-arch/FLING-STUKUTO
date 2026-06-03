@@ -114,6 +114,7 @@ OroPlay phase sequence after current mock/contract phases:
 - ORO-4E: Callback Controller Facade Dry-Run / Still No Express Route Wiring. ORO-4E closed.
 - ORO-4F: Staging Route Wiring Design Contract / No Express Mount Yet. ORO-4F closed.
 - ORO-4G: Staging Route Wiring Preflight / Mount Readiness Checklist. ORO-4G current.
+- ORO-4H: Staging Route Wiring Dry-Run Gate / Still No Public Alias. ORO-4H current.
 - ORO-2B current/fail-closed route skeleton remains the active fail-closed runtime default.
 - ORO-3 is not allowed until ORO-2B passes; ORO-2C and ORO-3A add newer gates before runtime work.
 - ORO-3B is not allowed until ORO-2B and ORO-2C are closed and ORO-3A passes.
@@ -261,6 +262,24 @@ ORO-4G CLOSED target criteria:
 Next phase suggestion: ORO-4H Staging Route Wiring Dry-Run Gate / Still No Public Alias.
 
 ORO-4H should still avoid opening `/api/balance` or `/api/transaction`. Public aliases require a separate explicit approval phase after staging-only dry-run evidence.
+
+## ORO-4H current/staging route wiring dry-run gate
+
+ORO-4H current/staging route wiring dry-run gate. This phase adds only Staging Route Wiring Dry-Run Gate / Still No Public Alias docs, isolated mock fixtures, an isolated dry-run gate helper, local smoke coverage, package registration, and runAllLocalSmoke registration.
+
+ORO-4H evaluates a static route descriptor and mock invocation to answer whether candidate staging route wiring would pass dry-run checks. It keeps route candidates `/api/oroplay/balance` and `/api/oroplay/transaction` inactive, unmounted, non-public, descriptor-only, and not approved for traffic. It keeps public aliases `/api/balance` and `/api/transaction` blocked until a separate explicit public alias phase. It does not mount any Express route, does not edit `src/app.js`, does not wire runtime into live routes, does not call OroPlay, does not access production DB, does not mutate wallet or ledger state, does not write through Prisma, does not create a DB transaction, does not migrate, does not deploy, does not payout, and does not auto-credit.
+
+ORO-4H CLOSED target criteria:
+
+- `docs/OROPLAY_CALLBACK_STAGING_ROUTE_DRY_RUN_GATE.md` exists and states DRY-RUN GATE ONLY, NO EXPRESS MOUNT, NO PUBLIC ALIAS, NO RUNTIME TRAFFIC, and NO RUNTIME MUTATION.
+- `src/game-provider-mock/oroplayCallbackStagingRouteDryRunGate.js` returns `DRY_RUN_GATE_PASS` for clean dry-run evidence and `BLOCKED` for failed gates, while `expressMountAllowed=false`, `publicAliasAllowed=false`, and `runtimeTrafficAllowed=false` remain invariant.
+- Fixtures cover clean, public alias blocked, Express mount blocked, active route blocked, `src/app.js` change blocked, wallet mutation blocked, ledger mutation blocked, Prisma write blocked, external network blocked, live OroPlay call blocked, credential leak blocked, missing idempotency blocked, and rollback missing blocked.
+- `smoke:oroplay-callback-staging-route-dry-run-gate` passes and confirms no Express mount, no public alias, no active route, no runtime traffic, no mutation, no DB write, dry-run gate pass/block behavior, and no mount-ready/public-ready status.
+- `runAllLocalSmoke.js`, `docs/API_MAPPING.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`, `docs/PHASE_ROADMAP.md`, and `docs/SMOKE_COVERAGE.md` include ORO-4H static/local-only coverage.
+
+Next phase suggestion: ORO-4I Staging Route Wiring Internal Shadow Harness / Still No Express Mount.
+
+ORO-4I should still avoid opening `/api/balance`, `/api/transaction`, a real Express mount, or runtime wallet/ledger mutation.
 - ORO-3B blocked until ORO-3A pass.
 
 ORO-3B status marker:
