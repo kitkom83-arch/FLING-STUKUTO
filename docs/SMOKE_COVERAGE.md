@@ -3091,6 +3091,62 @@ Boundary:
 - No live OroPlay API call.
 - No real money.
 
+## 83. ORO-4P OroPlay Callback Staging Route Signed Approval Artifact Acceptance Review Final Pre-Mount Authorization Decision Boundary Coverage
+
+ORO-4P callback staging route signed approval artifact acceptance review final pre-mount authorization decision boundary coverage. The phase is Signed Approval Artifact Acceptance Review / Final Pre-Mount Authorization Decision Boundary only. It validates signed approval artifact acceptance review, final pre-mount authorization decision boundary, mock artifact metadata review-only behavior, chat/plain text approval not signed artifact, evidence pack not approval, final decision pack not issued, request not submitted, route mount not authorized, and no runtime mutation while keeping all runtime route wiring, public aliases, wallet mutation, ledger mutation, Prisma writes, DB transactions, external network, production config changes, migration, deploy, activation, live OroPlay calls, and real money blocked.
+
+Covered files:
+
+- `docs/OROPLAY_CALLBACK_STAGING_ROUTE_SIGNED_APPROVAL_ARTIFACT_ACCEPTANCE_REVIEW_FINAL_PRE_MOUNT_AUTHORIZATION_DECISION_BOUNDARY.md`
+- `src/game-provider-mock/oroplayCallbackStagingRouteSignedApprovalArtifactAcceptanceReviewFinalPreMountAuthorizationDecisionBoundary.js`
+- `src/game-provider-mock/oroplayCallbackStagingRouteSignedApprovalArtifactAcceptanceReviewFinalPreMountAuthorizationDecisionBoundaryFixtures.js`
+- `src/local-smoke-tests/oroplayCallbackStagingRouteSignedApprovalArtifactAcceptanceReviewFinalPreMountAuthorizationDecisionBoundarySmoke.js`
+
+Package script:
+
+- `smoke:oroplay-callback-staging-route-signed-approval-artifact-acceptance-review-final-pre-mount-authorization-decision-boundary`
+
+Coverage assertions:
+
+- Confirms happy path returns phase `ORO-4P`, gate `oroplay_callback_staging_route_signed_approval_artifact_acceptance_review_final_pre_mount_authorization_decision_boundary`, `signedApprovalArtifactAcceptanceReviewBoundaryResult=PASS`, `signedApprovalArtifactAcceptanceReviewContractPresent=true`, `finalPreMountAuthorizationDecisionBoundaryPresent=true`, `actualSignedApprovalArtifactPresent=false`, `signedApprovalRecordPresent=false`, `signedApprovalArtifactAccepted=false`, `signedApprovalArtifactVerified=false`, `mockSignedApprovalArtifactReviewOnly=true`, `acceptanceReviewStatus=review_boundary_passed_pending_actual_signed_approval_artifact`, `finalPreMountAuthorizationDecisionPrepared=true`, `finalPreMountAuthorizationDecisionIssued=false`, `finalPreMountAuthorizationDecisionStatus=decision_pack_prepared_pending_actual_signed_approval_artifact`, `mountAuthorizationEvidencePackPrepared=true`, `mountAuthorizationEvidencePackSubmitted=false`, `mountAuthorizationRequestSubmitted=false`, `preMountAuthorization=pending_actual_signed_approval_artifact`, `routeMountAuthorization=not_authorized_for_mount`, `expressMountAllowed=false`, `publicAliasAllowed=false`, `runtimeTrafficAllowed=false`, `humanAuthorizationRequired=true`, `separateRouteMountApprovalRequired=true`, and `nextPhaseRequiresSeparateAuthorization=true`.
+- Confirms chat approval and plain text approval are not counted as signed approval artifacts.
+- Confirms mock signed approval artifact metadata validation is review-only, schema-only, and metadata-only.
+- Confirms malformed mock artifact metadata, missing signer, missing signedAt, missing scope, missing artifact digest, invalid artifact digest format, missing acceptance reviewer, missing final decision reviewer, and stale timestamp fail closed.
+- Confirms no actual signed approval artifact fixture is accepted as valid actual authorization.
+- Confirms mount authorization evidence pack is not approval and is not submitted.
+- Confirms final pre-mount authorization decision pack is not issued approval.
+- Confirms mount authorization request is not submitted.
+- Confirms route mount remains `not_authorized_for_mount`.
+- Confirms no Express mount, public alias, active route, HTTP listener, wallet mutation, ledger mutation, Prisma write, DB transaction, external network, live OroPlay API call, or secret-shaped trace output.
+
+Boundary:
+
+- Signed approval artifact acceptance review contract only.
+- Final pre-mount authorization decision boundary only.
+- Mock artifact metadata review-only.
+- Chat approval not signed artifact.
+- Plain text approval not signed artifact.
+- Evidence pack not approval.
+- Final decision pack not issued.
+- Request not submitted.
+- Route mount not authorized.
+- Express mount not allowed.
+- Public alias not allowed.
+- Runtime traffic not allowed.
+- No runtime mutation.
+- No `src/app.js` change.
+- No Express mount.
+- No public alias.
+- No active route.
+- No runtime traffic.
+- No wallet mutation.
+- No ledger mutation.
+- No Prisma write.
+- No DB transaction.
+- No external network.
+- No live OroPlay API call.
+- No real money.
+
 ## 81. ORO-4N OroPlay Callback Staging Route Signed Approval Record Review Mount Authorization Request Boundary Coverage
 
 ORO-4N callback staging route signed approval record review mount authorization request boundary coverage. The phase is Signed Approval Record Review / Mount Authorization Request Boundary only. It validates the signed approval record review contract, mount authorization request boundary, mock signed record schema-only behavior, chat approval not signed, request pack not approval, route mount not authorized, and no runtime mutation while keeping all runtime route wiring, public aliases, wallet mutation, ledger mutation, Prisma writes, DB transactions, external network, production config changes, migration, deploy, activation, live OroPlay calls, and real money blocked.

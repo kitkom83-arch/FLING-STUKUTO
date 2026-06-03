@@ -233,3 +233,11 @@ ORO-4O may reference the ORO-4K evidence pack only as static/mock evidence conte
 ORO-4O can prepare a mount authorization evidence pack, but it must keep `actualSignedApprovalArtifactPresent=false`, `signedApprovalArtifactAccepted=false`, `signedApprovalArtifactVerified=false`, `mountAuthorizationEvidencePackSubmitted=false`, `mountAuthorizationRequestSubmitted=false`, and `routeMountAuthorization=not_authorized_for_mount`.
 
 ORO-4O does not authorize `src/app.js`, Express mount, public alias, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, external network, or real money.
+
+## Followed by ORO-4P Signed Approval Artifact Acceptance Review / Final Pre-Mount Authorization Decision Boundary
+
+ORO-4P may reference the ORO-4K evidence pack only as static/mock context for signed approval artifact acceptance review. The evidence pack is not mount authorization.
+
+ORO-4P can prepare an acceptance review boundary and final pre-mount decision pack, but it must keep `actualSignedApprovalArtifactPresent=false`, `signedApprovalArtifactAccepted=false`, `signedApprovalArtifactVerified=false`, `finalPreMountAuthorizationDecisionIssued=false`, `mountAuthorizationEvidencePackSubmitted=false`, `mountAuthorizationRequestSubmitted=false`, and `routeMountAuthorization=not_authorized_for_mount`.
+
+ORO-4P does not authorize `src/app.js`, Express mount, public alias, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, external network, or real money.

@@ -216,3 +216,11 @@ ORO-4O follows the ORO-4M intake gate and ORO-4N review boundary as a static/moc
 The intake gate and review boundary are not actual signed approval artifact evidence. ORO-4O must keep `actualSignedApprovalArtifactPresent=false`, `signedApprovalArtifactAccepted=false`, `signedApprovalArtifactVerified=false`, `mountAuthorizationEvidencePackSubmitted=false`, `mountAuthorizationRequestSubmitted=false`, and `routeMountAuthorization=not_authorized_for_mount`.
 
 ORO-4O can validate mock artifact metadata schema only. It does not accept chat approval, plain text approval, or a mock signed artifact as actual authorization.
+
+## Followed by ORO-4P Signed Approval Artifact Acceptance Review / Final Pre-Mount Authorization Decision Boundary
+
+ORO-4P follows the intake/review/evidence chain as a static/mock acceptance review and final pre-mount decision boundary.
+
+The intake/review/evidence/acceptance boundary is not an actual signed approval artifact. ORO-4P must keep `actualSignedApprovalArtifactPresent=false`, `signedApprovalArtifactAccepted=false`, `signedApprovalArtifactVerified=false`, `finalPreMountAuthorizationDecisionIssued=false`, `mountAuthorizationEvidencePackSubmitted=false`, `mountAuthorizationRequestSubmitted=false`, and `routeMountAuthorization=not_authorized_for_mount`.
+
+ORO-4P does not authorize `src/app.js`, Express mount, public aliases, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, external network, or real money.

@@ -174,3 +174,11 @@ ORO-4O follows ORO-4N as static/mock signed approval artifact intake and pre-mou
 The ORO-4L approval template/intake/review is not an actual signed approval artifact. ORO-4O must keep `actualSignedApprovalArtifactPresent=false`, `signedApprovalRecordPresent=false`, `signedApprovalArtifactAccepted=false`, `signedApprovalArtifactVerified=false`, `mountAuthorizationEvidencePackSubmitted=false`, `mountAuthorizationRequestSubmitted=false`, and `routeMountAuthorization=not_authorized_for_mount`.
 
 ORO-4O does not authorize `src/app.js`, Express mount, public alias, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, external network, or real money.
+
+## Followed by ORO-4P Signed Approval Artifact Acceptance Review / Final Pre-Mount Authorization Decision Boundary
+
+ORO-4P follows the approval template, intake, review, and evidence boundaries as static/mock acceptance review and final pre-mount decision boundary only.
+
+The ORO-4L approval template/intake/review is not an actual signed artifact. ORO-4P must keep `actualSignedApprovalArtifactPresent=false`, `signedApprovalRecordPresent=false`, `signedApprovalArtifactAccepted=false`, `signedApprovalArtifactVerified=false`, `finalPreMountAuthorizationDecisionIssued=false`, `mountAuthorizationRequestSubmitted=false`, and `routeMountAuthorization=not_authorized_for_mount`.
+
+ORO-4P does not authorize `src/app.js`, Express mount, public alias, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, external network, or real money.

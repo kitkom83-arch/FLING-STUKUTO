@@ -108,6 +108,10 @@ const RELATED_FILES = [
   "src/game-provider-mock/oroplayCallbackStagingRouteSignedApprovalArtifactIntakePreMountEvidenceBoundaryFixtures.js",
   "src/local-smoke-tests/oroplayCallbackStagingRouteSignedApprovalArtifactIntakePreMountEvidenceBoundarySmoke.js",
   "docs/OROPLAY_CALLBACK_STAGING_ROUTE_SIGNED_APPROVAL_ARTIFACT_INTAKE_PRE_MOUNT_EVIDENCE_BOUNDARY.md",
+  "src/game-provider-mock/oroplayCallbackStagingRouteSignedApprovalArtifactAcceptanceReviewFinalPreMountAuthorizationDecisionBoundary.js",
+  "src/game-provider-mock/oroplayCallbackStagingRouteSignedApprovalArtifactAcceptanceReviewFinalPreMountAuthorizationDecisionBoundaryFixtures.js",
+  "src/local-smoke-tests/oroplayCallbackStagingRouteSignedApprovalArtifactAcceptanceReviewFinalPreMountAuthorizationDecisionBoundarySmoke.js",
+  "docs/OROPLAY_CALLBACK_STAGING_ROUTE_SIGNED_APPROVAL_ARTIFACT_ACCEPTANCE_REVIEW_FINAL_PRE_MOUNT_AUTHORIZATION_DECISION_BOUNDARY.md",
   "src/payment-provider-mock/memberQrDepositUxContract.js",
   "src/payment-provider-mock/memberQrDepositMockHarness.js",
   "src/local-smoke-tests/memberQrDepositUxSmoke.js",
@@ -346,6 +350,12 @@ const summary = [
   {
     key: "oroplayCallbackStagingRouteSignedApprovalArtifactIntakePreMountEvidenceBoundary",
     label: "oroplay-callback-staging-route-signed-approval-artifact-intake-pre-mount-evidence-boundary",
+    status: "PENDING",
+  },
+  {
+    key: "oroplayCallbackStagingRouteSignedApprovalArtifactAcceptanceReviewFinalPreMountAuthorizationDecisionBoundary",
+    label:
+      "oroplay-callback-staging-route-signed-approval-artifact-acceptance-review-final-pre-mount-authorization-decision-boundary",
     status: "PENDING",
   },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
@@ -1011,6 +1021,36 @@ const steps = [
     summaryKey: "syntax",
   },
   {
+    name:
+      "node --check oroplayCallbackStagingRouteSignedApprovalArtifactAcceptanceReviewFinalPreMountAuthorizationDecisionBoundary",
+    command: nodeCommand,
+    args: [
+      "--check",
+      "src/game-provider-mock/oroplayCallbackStagingRouteSignedApprovalArtifactAcceptanceReviewFinalPreMountAuthorizationDecisionBoundary.js",
+    ],
+    summaryKey: "syntax",
+  },
+  {
+    name:
+      "node --check oroplayCallbackStagingRouteSignedApprovalArtifactAcceptanceReviewFinalPreMountAuthorizationDecisionBoundaryFixtures",
+    command: nodeCommand,
+    args: [
+      "--check",
+      "src/game-provider-mock/oroplayCallbackStagingRouteSignedApprovalArtifactAcceptanceReviewFinalPreMountAuthorizationDecisionBoundaryFixtures.js",
+    ],
+    summaryKey: "syntax",
+  },
+  {
+    name:
+      "node --check oroplayCallbackStagingRouteSignedApprovalArtifactAcceptanceReviewFinalPreMountAuthorizationDecisionBoundarySmoke",
+    command: nodeCommand,
+    args: [
+      "--check",
+      "src/local-smoke-tests/oroplayCallbackStagingRouteSignedApprovalArtifactAcceptanceReviewFinalPreMountAuthorizationDecisionBoundarySmoke.js",
+    ],
+    summaryKey: "syntax",
+  },
+  {
     name: "node --check memberQrDepositUxContract",
     command: nodeCommand,
     args: ["--check", "src/payment-provider-mock/memberQrDepositUxContract.js"],
@@ -1542,6 +1582,17 @@ const steps = [
       "smoke:oroplay-callback-staging-route-signed-approval-artifact-intake-pre-mount-evidence-boundary",
     ]),
     summaryKey: "oroplayCallbackStagingRouteSignedApprovalArtifactIntakePreMountEvidenceBoundary",
+  },
+  {
+    name:
+      "npm run smoke:oroplay-callback-staging-route-signed-approval-artifact-acceptance-review-final-pre-mount-authorization-decision-boundary",
+    command: npmCommand,
+    args: npmArgs([
+      "run",
+      "smoke:oroplay-callback-staging-route-signed-approval-artifact-acceptance-review-final-pre-mount-authorization-decision-boundary",
+    ]),
+    summaryKey:
+      "oroplayCallbackStagingRouteSignedApprovalArtifactAcceptanceReviewFinalPreMountAuthorizationDecisionBoundary",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

@@ -121,3 +121,11 @@ The ORO-4N mount authorization request boundary is still not approval. It does n
 ORO-4O continues this boundary as signed approval artifact intake and pre-mount evidence preparation only. The route mount remains `not_authorized_for_mount`.
 
 The ORO-4O signed approval artifact intake boundary is still not approval. It does not authorize `src/app.js`, Express mount, public aliases, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, external network, or real money.
+
+## Followed by ORO-4P Signed Approval Artifact Acceptance Review / Final Pre-Mount Authorization Decision Boundary
+
+ORO-4P continues this boundary as signed approval artifact acceptance review and final pre-mount decision preparation only. The route mount remains `not_authorized_for_mount`.
+
+The ORO-4P final pre-mount authorization decision boundary is not issued approval. It must keep `finalPreMountAuthorizationDecisionIssued=false`, `expressMountAllowed=false`, `publicAliasAllowed=false`, `runtimeTrafficAllowed=false`, and `routeMountAuthorization=not_authorized_for_mount`.
+
+ORO-4P does not authorize `src/app.js`, Express mount, public aliases, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, external network, or real money.
