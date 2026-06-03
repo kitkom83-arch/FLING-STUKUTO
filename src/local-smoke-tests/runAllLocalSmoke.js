@@ -85,6 +85,9 @@ const RELATED_FILES = [
   "src/game-provider-mock/oroplayCallbackStagingRouteDryRunGate.js",
   "src/game-provider-mock/oroplayCallbackStagingRouteDryRunGateFixtures.js",
   "src/local-smoke-tests/oroplayCallbackStagingRouteDryRunGateSmoke.js",
+  "src/game-provider-mock/oroplayCallbackStagingRouteInternalShadowHarness.js",
+  "src/game-provider-mock/oroplayCallbackStagingRouteInternalShadowHarnessFixtures.js",
+  "src/local-smoke-tests/oroplayCallbackStagingRouteInternalShadowHarnessSmoke.js",
   "src/payment-provider-mock/memberQrDepositUxContract.js",
   "src/payment-provider-mock/memberQrDepositMockHarness.js",
   "src/local-smoke-tests/memberQrDepositUxSmoke.js",
@@ -163,6 +166,7 @@ const RELATED_FILES = [
   "docs/OROPLAY_CALLBACK_STAGING_ROUTE_WIRING_DESIGN.md",
   "docs/OROPLAY_CALLBACK_STAGING_ROUTE_PREFLIGHT.md",
   "docs/OROPLAY_CALLBACK_STAGING_ROUTE_DRY_RUN_GATE.md",
+  "docs/OROPLAY_CALLBACK_STAGING_ROUTE_INTERNAL_SHADOW_HARNESS.md",
   "docs/SMOKE_COVERAGE.md",
   "docs/MEMBER_QR_DEPOSIT_UX_CONTRACT.md",
   "docs/MEMBER_QR_DEPOSIT_MOCK_UAT_CHECKLIST.md",
@@ -287,6 +291,11 @@ const summary = [
   {
     key: "oroplayCallbackStagingRouteDryRunGate",
     label: "oroplay-callback-staging-route-dry-run-gate",
+    status: "PENDING",
+  },
+  {
+    key: "oroplayCallbackStagingRouteInternalShadowHarness",
+    label: "oroplay-callback-staging-route-internal-shadow-harness",
     status: "PENDING",
   },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
@@ -802,6 +811,24 @@ const steps = [
     summaryKey: "syntax",
   },
   {
+    name: "node --check oroplayCallbackStagingRouteInternalShadowHarness",
+    command: nodeCommand,
+    args: ["--check", "src/game-provider-mock/oroplayCallbackStagingRouteInternalShadowHarness.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackStagingRouteInternalShadowHarnessFixtures",
+    command: nodeCommand,
+    args: ["--check", "src/game-provider-mock/oroplayCallbackStagingRouteInternalShadowHarnessFixtures.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oroplayCallbackStagingRouteInternalShadowHarnessSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oroplayCallbackStagingRouteInternalShadowHarnessSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
     name: "node --check memberQrDepositUxContract",
     command: nodeCommand,
     args: ["--check", "src/payment-provider-mock/memberQrDepositUxContract.js"],
@@ -1282,6 +1309,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oroplay-callback-staging-route-dry-run-gate"]),
     summaryKey: "oroplayCallbackStagingRouteDryRunGate",
+  },
+  {
+    name: "npm run smoke:oroplay-callback-staging-route-internal-shadow-harness",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oroplay-callback-staging-route-internal-shadow-harness"]),
+    summaryKey: "oroplayCallbackStagingRouteInternalShadowHarness",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

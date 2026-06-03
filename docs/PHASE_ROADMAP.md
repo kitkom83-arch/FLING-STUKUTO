@@ -113,8 +113,9 @@ OroPlay phase sequence after current mock/contract phases:
 - ORO-4D: Callback Request/Response Envelope Mapper / Runtime Shadow Response Contract. ORO-4D closed.
 - ORO-4E: Callback Controller Facade Dry-Run / Still No Express Route Wiring. ORO-4E closed.
 - ORO-4F: Staging Route Wiring Design Contract / No Express Mount Yet. ORO-4F closed.
-- ORO-4G: Staging Route Wiring Preflight / Mount Readiness Checklist. ORO-4G current.
-- ORO-4H: Staging Route Wiring Dry-Run Gate / Still No Public Alias. ORO-4H current.
+- ORO-4G: Staging Route Wiring Preflight / Mount Readiness Checklist. ORO-4G closed.
+- ORO-4H: Staging Route Wiring Dry-Run Gate / Still No Public Alias. ORO-4H closed.
+- ORO-4I: Staging Route Wiring Internal Shadow Harness / Still No Express Mount. ORO-4I current.
 - ORO-2B current/fail-closed route skeleton remains the active fail-closed runtime default.
 - ORO-3 is not allowed until ORO-2B passes; ORO-2C and ORO-3A add newer gates before runtime work.
 - ORO-3B is not allowed until ORO-2B and ORO-2C are closed and ORO-3A passes.
@@ -280,6 +281,24 @@ ORO-4H CLOSED target criteria:
 Next phase suggestion: ORO-4I Staging Route Wiring Internal Shadow Harness / Still No Express Mount.
 
 ORO-4I should still avoid opening `/api/balance`, `/api/transaction`, a real Express mount, or runtime wallet/ledger mutation.
+
+## ORO-4I current/staging route wiring internal shadow harness
+
+ORO-4I current/staging route wiring internal shadow harness. This phase adds only Staging Route Wiring Internal Shadow Harness / Still No Express Mount docs, isolated mock fixtures, an isolated internal shadow harness helper, local smoke coverage, package registration, and runAllLocalSmoke registration.
+
+ORO-4I evaluates static route descriptors with direct-call mock invocation to answer how route candidate request envelopes, response envelopes, safety gates, side-effect assertions, and rollback evidence would be inspected. It keeps route candidates `/api/oroplay/balance` and `/api/oroplay/transaction` inactive, unmounted, non-public, descriptor-only, internal-shadow-only, and not approved for traffic. It keeps public aliases `/api/balance` and `/api/transaction` blocked until a separate explicit public alias phase. It does not mount any Express route, does not edit `src/app.js`, does not wire runtime into live routes, does not create an HTTP listener, does not call OroPlay, does not access production DB, does not mutate wallet or ledger state, does not write through Prisma, does not create a DB transaction, does not create any side effect, does not migrate, does not deploy, does not payout, and does not auto-credit.
+
+ORO-4I CLOSED target criteria:
+
+- `docs/OROPLAY_CALLBACK_STAGING_ROUTE_INTERNAL_SHADOW_HARNESS.md` exists and states INTERNAL SHADOW ONLY, NO EXPRESS MOUNT, NO PUBLIC ALIAS, NO RUNTIME TRAFFIC, NO RUNTIME MUTATION, and NO EXTERNAL NETWORK.
+- `src/game-provider-mock/oroplayCallbackStagingRouteInternalShadowHarness.js` returns `INTERNAL_SHADOW_PASS` for clean internal shadow evidence and `BLOCKED` for failed gates, while `expressMountAllowed=false`, `publicAliasAllowed=false`, `runtimeTrafficAllowed=false`, `externalNetworkAllowed=false`, and `sideEffectsAllowed=false` remain invariant.
+- Fixtures cover clean, balance shadow invocation, transaction bet shadow invocation, transaction win shadow invocation, public alias blocked, Express mount blocked, active route blocked, HTTP listener blocked, runtime traffic blocked, `src/app.js` change blocked, wallet mutation blocked, ledger mutation blocked, Prisma write blocked, DB transaction blocked, external network blocked, live OroPlay call blocked, side effect blocked, credential leak blocked, missing idempotency blocked, missing sanitized trace blocked, and rollback missing blocked.
+- `smoke:oroplay-callback-staging-route-internal-shadow-harness` passes and confirms no Express mount, no public alias, no active route, no HTTP listener, no runtime traffic, no external network, no mutation, no DB write, no side effect, internal shadow pass/block behavior, and no mount-ready/public-ready/runtime-ready status.
+- `runAllLocalSmoke.js`, `docs/API_MAPPING.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`, `docs/PHASE_ROADMAP.md`, and `docs/SMOKE_COVERAGE.md` include ORO-4I static/local-only coverage.
+
+Next phase suggestion: ORO-4J Internal Shadow Result Contract Review / Still No Express Mount.
+
+ORO-4J should still avoid opening `/api/balance`, `/api/transaction`, a real Express mount, runtime traffic, or runtime wallet/ledger mutation.
 - ORO-3B blocked until ORO-3A pass.
 
 ORO-3B status marker:

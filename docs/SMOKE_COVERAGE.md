@@ -2667,6 +2667,72 @@ Boundary:
 - No `/api/balance` alias.
 - No `/api/transaction` alias.
 
+## 76. ORO-4I OroPlay Callback Staging Route Internal Shadow Harness Coverage
+
+ORO-4I callback staging route internal shadow harness coverage. The phase is Staging Route Wiring Internal Shadow Harness / Still No Express Mount only. It evaluates static route descriptors, direct-call shadow invocation, sanitized trace output, and side-effect assertions while keeping all runtime route wiring, public aliases, wallet mutation, ledger mutation, Prisma writes, DB transactions, external network, production config changes, and activation blocked.
+
+Docs:
+
+- `docs/OROPLAY_CALLBACK_STAGING_ROUTE_INTERNAL_SHADOW_HARNESS.md`
+- `docs/SMOKE_COVERAGE.md`
+- `docs/PHASE_ROADMAP.md`
+- `docs/API_MAPPING.md`
+- `docs/OROPLAY_INTEGRATION_PLAN.md`
+
+Script:
+
+- `src/local-smoke-tests/oroplayCallbackStagingRouteInternalShadowHarnessSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:oroplay-callback-staging-route-internal-shadow-harness
+```
+
+Coverage:
+
+- Confirms ORO-4I docs, internal shadow harness helper, fixtures, package script, and `runAllLocalSmoke` registration exist.
+- Confirms clean internal shadow returns phase `ORO-4I`, `INTERNAL_SHADOW_PASS`, `harnessMode=INTERNAL_SHADOW_ONLY`, `expressMountAllowed=false`, `publicAliasAllowed=false`, `runtimeTrafficAllowed=false`, `externalNetworkAllowed=false`, and `sideEffectsAllowed=false`.
+- Confirms balance shadow invocation uses candidate `POST /api/oroplay/balance` by direct-call only and returns a sanitized response envelope.
+- Confirms transaction bet and win shadow invocations use candidate `POST /api/oroplay/transaction`, document idempotency, document duplicate fail-closed behavior, and return sanitized response envelopes.
+- Confirms public aliases `/api/balance` and `/api/transaction` remain blocked.
+- Confirms no Express mount, no public alias, no active route, no HTTP listener, no runtime traffic, and no external network.
+- Confirms wallet mutation, ledger mutation, Prisma write, DB transaction, and side effect attempts fail internal shadow gates.
+- Confirms external network and live OroPlay call attempts fail internal shadow gates.
+- Confirms request envelope missing, response envelope missing, transaction idempotency missing, and sanitized shadow trace missing fail internal shadow gates.
+- Confirms rollback gates are complete for the clean fixture and missing rollback blocks the gate.
+- Confirms report output does not echo raw marker values or credential-shaped values.
+- Confirms no mount-ready/public-ready/runtime-ready status, no live route status, and no mutation-ready status is returned.
+- Confirms no runtime route wiring is added to `src/app.js`.
+
+Boundary:
+
+- Internal shadow only.
+- Static/mock harness only.
+- Direct-call mock invocation only.
+- Sanitized shadow trace only.
+- No Express mount.
+- No public alias.
+- No active route.
+- No HTTP listener.
+- No live route.
+- No runtime traffic.
+- No external network.
+- No production DB.
+- No real money.
+- No wallet mutation.
+- No ledger mutation.
+- No Prisma write.
+- No DB transaction.
+- No side effect.
+- No live OroPlay API call.
+- No migration.
+- No deploy.
+- No payout.
+- No auto-credit.
+- No `/api/balance` alias.
+- No `/api/transaction` alias.
+
 ## 65. ORO-3D OroPlay Callback Runtime Readiness Gate Coverage
 
 ORO-3D status: Callback Runtime Readiness Gate / Pre-Implementation Certification Pack is docs/static/mock only. It adds readiness gate coverage, pre-implementation certification pack coverage, blocker matrix coverage, no mutation coverage, no alias coverage, and no live traffic coverage. It does not add production DB access, real money runtime flow, live OroPlay API calls, external network, runtime wallet mutation, runtime ledger mutation, Prisma write, migration, deploy, payout, auto-credit, real client secrets, or provider alias enablement.

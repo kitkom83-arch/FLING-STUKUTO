@@ -176,4 +176,4 @@ ORO-4I:
 Staging Route Wiring Internal Shadow Harness /
 Still No Express Mount
 
-ORO-4I should still not open `/api/balance`, `/api/transaction`, a real Express mount, or runtime wallet/ledger mutation.
+See `docs/OROPLAY_CALLBACK_STAGING_ROUTE_INTERNAL_SHADOW_HARNESS.md` for the ORO-4I internal shadow harness. ORO-4I should still not open `/api/balance`, `/api/transaction`, a real Express mount, or runtime wallet/ledger mutation.
