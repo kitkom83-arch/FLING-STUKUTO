@@ -208,3 +208,11 @@ ORO-4N follows ORO-4M as a static/mock signed approval record review and mount a
 ORO-4M still has no actual signed record and does not authorize mount. Its `signedApprovalRecordPresent=false`, `signedApprovalRecordVerified=false`, `preMountAuthorization=pending_signed_approval_record`, and `routeMountAuthorization=not_authorized_for_mount` outputs remain unchanged by ORO-4N.
 
 ORO-4N may prepare a mount authorization request pack, but it must keep `mountAuthorizationRequestSubmitted=false`, `signedApprovalRecordAccepted=false`, `signedApprovalRecordVerified=false`, and `routeMountAuthorization=not_authorized_for_mount`.
+
+## Followed by ORO-4O Signed Approval Artifact Intake / Pre-Mount Evidence Boundary
+
+ORO-4O follows the ORO-4M intake gate and ORO-4N review boundary as a static/mock signed approval artifact intake boundary.
+
+The intake gate and review boundary are not actual signed approval artifact evidence. ORO-4O must keep `actualSignedApprovalArtifactPresent=false`, `signedApprovalArtifactAccepted=false`, `signedApprovalArtifactVerified=false`, `mountAuthorizationEvidencePackSubmitted=false`, `mountAuthorizationRequestSubmitted=false`, and `routeMountAuthorization=not_authorized_for_mount`.
+
+ORO-4O can validate mock artifact metadata schema only. It does not accept chat approval, plain text approval, or a mock signed artifact as actual authorization.

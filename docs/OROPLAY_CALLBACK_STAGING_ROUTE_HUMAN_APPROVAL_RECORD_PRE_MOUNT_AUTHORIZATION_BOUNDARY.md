@@ -166,3 +166,11 @@ ORO-4N follows the ORO-4M intake gate as a static/mock signed approval record re
 The ORO-4L approval record template/intake is not an actual signed approval record. ORO-4N must keep `signedApprovalRecordPresent=false`, `signedApprovalRecordAccepted=false`, `signedApprovalRecordVerified=false`, and `routeMountAuthorization=not_authorized_for_mount`.
 
 ORO-4N can prepare a request pack for future human review, but it does not submit mount authorization and does not authorize `src/app.js`, Express mount, public alias, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, or real money.
+
+## Followed by ORO-4O Signed Approval Artifact Intake / Pre-Mount Evidence Boundary
+
+ORO-4O follows ORO-4N as static/mock signed approval artifact intake and pre-mount evidence boundary only.
+
+The ORO-4L approval template/intake/review is not an actual signed approval artifact. ORO-4O must keep `actualSignedApprovalArtifactPresent=false`, `signedApprovalRecordPresent=false`, `signedApprovalArtifactAccepted=false`, `signedApprovalArtifactVerified=false`, `mountAuthorizationEvidencePackSubmitted=false`, `mountAuthorizationRequestSubmitted=false`, and `routeMountAuthorization=not_authorized_for_mount`.
+
+ORO-4O does not authorize `src/app.js`, Express mount, public alias, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, external network, or real money.

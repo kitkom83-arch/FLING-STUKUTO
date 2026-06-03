@@ -254,3 +254,13 @@ ORO-4N must fail if any of these appear:
 Any phase after ORO-4N that touches route/mount must be separately authorized. The next phase must not infer authorization from this document, from ORO-4M, from a chat message, from a mock signed record, or from a prepared request pack.
 
 Before any route/mount change, a separate explicit authorization must name the route/mount scope and must still respect no-runtime-traffic and safety guard requirements unless the new phase explicitly changes that scope.
+
+## Followed by ORO-4O Signed Approval Artifact Intake / Pre-Mount Evidence Boundary
+
+ORO-4O follows ORO-4N as signed approval artifact intake and pre-mount human approval evidence boundary only.
+
+ORO-4N is still no actual signed record or artifact.
+
+ORO-4N still has no actual signed record or artifact and still does not authorize route mount. ORO-4O may prepare an evidence pack, but it must keep `signedApprovalRecordPresent=false`, `actualSignedApprovalArtifactPresent=false`, `signedApprovalArtifactAccepted=false`, `signedApprovalArtifactVerified=false`, `mountAuthorizationEvidencePackSubmitted=false`, `mountAuthorizationRequestSubmitted=false`, and `routeMountAuthorization=not_authorized_for_mount`.
+
+ORO-4O does not authorize `src/app.js`, Express mount, public aliases, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, external network, or real money.
