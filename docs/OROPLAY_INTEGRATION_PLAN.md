@@ -191,3 +191,9 @@ ORO-4H focuses on a dry-run gate, static route descriptor evaluation, and abort 
 ORO-4I current. Staging Route Wiring Internal Shadow Harness / Still No Express Mount is docs, static contract, mock harness, fixtures, local smoke, internal shadow invocation, and sanitized shadow trace only.
 
 ORO-4I focuses on an internal shadow harness, static route descriptor, direct-call shadow invocation, sanitized trace, and side-effect assertions. It answers how a route candidate request, response, safety gate, side-effect check, and rollback evidence would be inspected without making the system ready to mount a route. Route candidates `/api/oroplay/balance` and `/api/oroplay/transaction` remain inactive, unmounted, non-public, and internal-shadow-only. Public aliases `/api/balance` and `/api/transaction` remain blocked. ORO-4I has no Express mount, no `src/app.js` change, no HTTP listener, no runtime traffic, no external network, no live OroPlay call, no runtime mutation, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, no deploy, no payout, no auto-credit, and no production config change.
+
+## ORO-4J Current
+
+ORO-4J current. Internal Shadow Harness Review / Mount Decision Readiness Gate is docs, static contract, mock harness, fixtures, local smoke, sanitized review report, and mount decision readiness gate only.
+
+ORO-4J reviews ORO-4I internal shadow evidence and ORO-4H dry-run evidence before any future mount discussion. The static/mock gate may return `PASS`, but the mount decision remains `manual_review_required` or `blocked`; ORO-4J does not approve route mounting, public aliases, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, deploy, migration, payout, auto-credit, or real money.

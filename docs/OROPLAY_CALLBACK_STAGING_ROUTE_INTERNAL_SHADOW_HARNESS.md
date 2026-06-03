@@ -211,7 +211,8 @@ Block immediately if any of these values are true or detected:
 
 ORO-4J:
 Internal Shadow Result Contract Review /
-Still No Express Mount
+Internal Shadow Harness Review /
+Mount Decision Readiness Gate
 
 ORO-4J should still not open:
 
@@ -220,3 +221,9 @@ ORO-4J should still not open:
 - Express mount
 - runtime traffic
 - runtime wallet/ledger mutation
+
+## Reviewed by ORO-4J Mount Decision Readiness Gate
+
+ORO-4J reviews this internal shadow harness as static/mock evidence for a later mount decision discussion. The review checks route descriptors, direct-call shadow invocation behavior, sanitized trace boundaries, no public alias, no Express mount, and no wallet/ledger/Prisma side effects.
+
+An ORO-4J `PASS` is only a static/mock gate result. It does not approve a mount, does not approve public aliases, does not approve live traffic, and does not make `/api/oroplay/balance` or `/api/oroplay/transaction` active routes. A separate human approval is still required before any later route or mount phase.

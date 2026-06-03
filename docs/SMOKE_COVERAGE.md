@@ -2586,6 +2586,33 @@ Coverage:
 - Confirms report output does not echo credential marker values or credential-shaped values.
 - Confirms no runtime route wiring is added to `src/app.js`.
 
+## 77. ORO-4J OroPlay Callback Staging Route Mount Decision Readiness Gate Coverage
+
+ORO-4J callback staging route mount decision readiness gate coverage. The phase is Internal Shadow Harness Review / Mount Decision Readiness Gate only. It reviews ORO-4I internal shadow evidence, ORO-4H dry-run evidence, static route descriptors, shadow invocation behavior, sanitized trace boundaries, and no-side-effect safety checks while keeping all runtime route wiring, public aliases, wallet mutation, ledger mutation, Prisma writes, DB transactions, external network, production config changes, migration, deploy, and activation blocked.
+
+Covered files:
+
+- `docs/OROPLAY_CALLBACK_STAGING_ROUTE_MOUNT_DECISION_READINESS_GATE.md`
+- `src/game-provider-mock/oroplayCallbackStagingRouteMountDecisionReadinessGate.js`
+- `src/game-provider-mock/oroplayCallbackStagingRouteMountDecisionReadinessGateFixtures.js`
+- `src/local-smoke-tests/oroplayCallbackStagingRouteMountDecisionReadinessGateSmoke.js`
+- `src/local-smoke-tests/runAllLocalSmoke.js`
+- `package.json`
+
+Smoke command:
+
+- `npm run smoke:oroplay-callback-staging-route-mount-decision-readiness-gate`
+
+Coverage assertions:
+
+- Confirms happy path returns phase `ORO-4J`, gate `oroplay_callback_staging_route_mount_decision_readiness`, `result=PASS`, and `mountDecision=manual_review_required`.
+- Confirms `mountDecision` is never `approved` or `ready_to_mount`.
+- Confirms missing internal shadow harness, accidental Express mount, public alias, wallet mutation, and ledger mutation fixtures fail/block.
+- Confirms sanitizer masks secret-like fields and does not leak dummy token, authorization, client credential, password, database URL, private key, API key, or cookie markers.
+- Confirms the harness does not import Express, Prisma, HTTP clients, or external network helpers.
+- Confirms `src/app.js` has no active mount for `/api/oroplay/balance`, `/api/oroplay/transaction`, `/api/balance`, or `/api/transaction`.
+- Confirms reports do not include unresolved JavaScript placeholder values or invalid numeric values.
+
 Boundary:
 
 - Preflight checklist only.

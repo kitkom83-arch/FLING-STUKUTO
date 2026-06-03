@@ -299,6 +299,22 @@ ORO-4I CLOSED target criteria:
 Next phase suggestion: ORO-4J Internal Shadow Result Contract Review / Still No Express Mount.
 
 ORO-4J should still avoid opening `/api/balance`, `/api/transaction`, a real Express mount, runtime traffic, or runtime wallet/ledger mutation.
+
+## ORO-4J current/internal shadow harness review mount decision readiness gate
+
+ORO-4J current. Internal Shadow Harness Review / Mount Decision Readiness Gate adds only no-mount docs, isolated mock fixtures, an isolated mount decision readiness helper, local smoke coverage, package registration, and runAllLocalSmoke registration.
+
+ORO-4J reviews ORO-4I internal shadow harness evidence, ORO-4H dry-run evidence, static route descriptors, direct-call shadow invocation behavior, sanitized traces, secret leak guards, and no-side-effect boundaries. It keeps route candidates `/api/oroplay/balance` and `/api/oroplay/transaction` inactive, unmounted, non-public, descriptor-only, and not approved for traffic. It keeps public aliases `/api/balance` and `/api/transaction` blocked. It does not mount any Express route, does not edit `src/app.js`, does not create an HTTP listener, does not accept runtime traffic, does not call OroPlay, does not mutate wallet or ledger state, does not write through Prisma, does not create a DB transaction, does not migrate, does not deploy, and does not touch real money.
+
+ORO-4J CLOSED target criteria:
+
+- `docs/OROPLAY_CALLBACK_STAGING_ROUTE_MOUNT_DECISION_READINESS_GATE.md` exists and states Still No Express Mount, Still No Public Alias, Still No Runtime Wallet/Ledger Mutation, and human approval required.
+- `src/game-provider-mock/oroplayCallbackStagingRouteMountDecisionReadinessGate.js` returns deterministic static/mock reports with `result=PASS` only for complete review evidence and `mountDecision=manual_review_required`, not approval.
+- `src/game-provider-mock/oroplayCallbackStagingRouteMountDecisionReadinessGateFixtures.js` covers happy path, missing shadow harness, accidental Express mount, public alias, mutation, and secret-like trace cases.
+- `smoke:oroplay-callback-staging-route-mount-decision-readiness-gate` passes and confirms no mount approval, no active route, no public alias, no runtime traffic, no mutation, no Prisma write, no external network, and sanitized trace output.
+- `runAllLocalSmoke.js`, `docs/API_MAPPING.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`, `docs/PHASE_ROADMAP.md`, and `docs/SMOKE_COVERAGE.md` include ORO-4J static/mock-only coverage.
+
+Next phase suggestion: separate human mount decision review only if explicitly approved.
 - ORO-3B blocked until ORO-3A pass.
 
 ORO-3B status marker:
