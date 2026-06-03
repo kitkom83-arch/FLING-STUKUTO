@@ -219,3 +219,9 @@ An ORO-4K `evidencePackResult=PASS` is evidence readiness only. It is not an app
 ORO-4M consumes the ORO-4K evidence pack through the ORO-4L template boundary as one static/mock input for signed approval intake verification.
 
 ORO-4K remains an evidence pack only. It is not approval, not a signed approval record, not route mount authorization, and not permission to edit `src/app.js`, mount an Express route, open public aliases, accept runtime traffic, mutate wallet or ledger state, write through Prisma, call live OroPlay, or touch real money.
+
+## Followed by ORO-4N Signed Approval Record Review / Mount Authorization Request Boundary
+
+ORO-4N may reference the ORO-4K evidence pack only through the ORO-4L and ORO-4M boundaries. The evidence pack is not mount authorization.
+
+ORO-4N must keep `signedApprovalRecordPresent=false`, `signedApprovalRecordAccepted=false`, `signedApprovalRecordVerified=false`, `mountAuthorizationRequestSubmitted=false`, and `routeMountAuthorization=not_authorized_for_mount`.

@@ -200,3 +200,11 @@ ORO-4M does not authorize mounting any Express route.
 ORO-4M does not authorize public aliases.
 
 ORO-4M does not authorize runtime wallet or ledger mutation.
+
+## Followed by ORO-4N Signed Approval Record Review / Mount Authorization Request Boundary
+
+ORO-4N follows ORO-4M as a static/mock signed approval record review and mount authorization request boundary.
+
+ORO-4M still has no actual signed record and does not authorize mount. Its `signedApprovalRecordPresent=false`, `signedApprovalRecordVerified=false`, `preMountAuthorization=pending_signed_approval_record`, and `routeMountAuthorization=not_authorized_for_mount` outputs remain unchanged by ORO-4N.
+
+ORO-4N may prepare a mount authorization request pack, but it must keep `mountAuthorizationRequestSubmitted=false`, `signedApprovalRecordAccepted=false`, `signedApprovalRecordVerified=false`, and `routeMountAuthorization=not_authorized_for_mount`.

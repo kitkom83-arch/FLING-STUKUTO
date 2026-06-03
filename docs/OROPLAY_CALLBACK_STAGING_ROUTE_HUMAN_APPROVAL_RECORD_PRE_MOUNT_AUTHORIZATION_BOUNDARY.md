@@ -158,3 +158,11 @@ ORO-4M follows this boundary as a static/mock signed approval intake gate. The O
 ORO-4M may verify that an intake contract and checklist exist, but it must keep actual signed approval absent, `signedApprovalRecordVerified=false`, and `routeMountAuthorization=not_authorized_for_mount`.
 
 ORO-4M does not authorize `src/app.js` changes, Express route mount, public aliases, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, or real money.
+
+## Followed by ORO-4N Signed Approval Record Review / Mount Authorization Request Boundary
+
+ORO-4N follows the ORO-4M intake gate as a static/mock signed approval record review and mount authorization request boundary.
+
+The ORO-4L approval record template/intake is not an actual signed approval record. ORO-4N must keep `signedApprovalRecordPresent=false`, `signedApprovalRecordAccepted=false`, `signedApprovalRecordVerified=false`, and `routeMountAuthorization=not_authorized_for_mount`.
+
+ORO-4N can prepare a request pack for future human review, but it does not submit mount authorization and does not authorize `src/app.js`, Express mount, public alias, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, or real money.

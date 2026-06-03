@@ -109,3 +109,9 @@ ORO-4L does not change the ORO-4J meaning: a mount decision readiness gate is no
 ORO-4M follows ORO-4L as a static/mock signed approval intake verification boundary. It may confirm that a signed approval intake contract exists, but it must keep `signedApprovalRecordPresent=false`, `signedApprovalRecordVerified=false`, and `routeMountAuthorization=not_authorized_for_mount`.
 
 ORO-4M does not change the ORO-4J meaning: this mount decision readiness gate is not route mount authorization and is not permission to edit `src/app.js`, mount an Express route, open public aliases, accept runtime traffic, mutate wallet or ledger state, write through Prisma, call live OroPlay, or touch real money.
+
+## Followed by ORO-4N Signed Approval Record Review / Mount Authorization Request Boundary
+
+ORO-4N continues this boundary as signed approval record review and mount authorization request preparation only. The route mount remains `not_authorized_for_mount`.
+
+The ORO-4N mount authorization request boundary is still not approval. It does not authorize `src/app.js`, Express mount, public aliases, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, external network, or real money.
