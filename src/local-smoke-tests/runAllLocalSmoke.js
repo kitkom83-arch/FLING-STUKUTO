@@ -112,6 +112,11 @@ const RELATED_FILES = [
   "src/local-smoke-tests/oro4sSmoke.js",
   "src/local-smoke-tests/oro4tSmoke.js",
   "src/local-smoke-tests/oro4uSmoke.js",
+  "src/game-provider-mock/oro4vRouteMountApprovalBoundary.js",
+  "src/game-provider-mock/oro4vRouteMountApprovalBoundaryFixtures.js",
+  "src/local-smoke-tests/oro4vRouteMountApprovalBoundarySmoke.js",
+  "src/local-smoke-tests/oro4vSmoke.js",
+  "docs/ORO_4V_ROUTE_MOUNT_APPROVAL_BOUNDARY.md",
   "src/payment-provider-mock/memberQrDepositUxContract.js",
   "src/payment-provider-mock/memberQrDepositMockHarness.js",
   "src/local-smoke-tests/memberQrDepositUxSmoke.js",
@@ -353,6 +358,7 @@ const summary = [
   },
   { key: "oro4s", label: "oro-4s", status: "PENDING" },
   { key: "oro4t", label: "oro-4t", status: "PENDING" },
+  { key: "oro4v", label: "oro-4v", status: "PENDING" },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
   { key: "depositVerificationSource", label: "deposit-verification-source", status: "PENDING" },
   {
@@ -1019,6 +1025,12 @@ const steps = [
     summaryKey: "syntax",
   },
   {
+    name: "node --check oro4vSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oro4vSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
     name: "node --check memberQrDepositUxContract",
     command: nodeCommand,
     args: ["--check", "src/payment-provider-mock/memberQrDepositUxContract.js"],
@@ -1580,6 +1592,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oro-4u"]),
     summaryKey: "oro4u",
+  },
+  {
+    name: "npm run smoke:oro-4v",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oro-4v"]),
+    summaryKey: "oro4v",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

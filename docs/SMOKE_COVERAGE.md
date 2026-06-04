@@ -3040,6 +3040,54 @@ Boundary:
 - No live OroPlay API call.
 - No real money.
 
+## 89. ORO-4V Route Mount Approval Boundary Coverage
+
+ORO-4V Route Mount Approval Boundary Coverage. The phase records a separate
+route mount approval boundary as static/internal metadata only. It records
+approval boundary metadata while keeping route mount, Express mount, public
+alias, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB
+transactions, external network, live OroPlay calls, and real money blocked.
+
+Covered files:
+
+- ORO-4V boundary doc: route mount approval boundary.
+- ORO-4V mock helper: approval boundary and Express mount gate.
+- ORO-4V fixtures: happy path, hold cases, and safety attempts.
+- ORO-4V smoke wrapper: `src/local-smoke-tests/oro4vSmoke.js`.
+
+Package script:
+
+- `smoke:oro-4v`
+
+Coverage assertions:
+
+- Confirms happy path returns `finalPreMountAuthorizationDecisionIssued=true`,
+  `routeMountApprovalBoundaryResult=PASS`,
+  `routeMountApprovalStatus=approval_boundary_recorded_mount_still_not_implemented`,
+  `routeMountAuthorization=not_authorized_for_mount`,
+  `expressMountAllowed=false`, `expressMountImplemented=false`,
+  `publicAliasAllowed=false`, and `runtimeTrafficAllowed=false`.
+- Confirms approval boundary recorded but mount not implemented and still
+  requires separate implementation approval.
+- Confirms missing ORO-4U final decision, ORO-4T request submission, signed
+  approval record, private artifact hash registry, reviewer, timestamp, and
+  stale timestamp hold.
+- Confirms attempted `src/app.js` edit, Express mount, public alias, runtime
+  traffic, wallet mutation, ledger mutation, Prisma write, external network,
+  and secret-shaped output hold.
+- Confirms `src/app.js` does not contain the OroPlay callback route candidates
+  or public aliases.
+
+Boundary:
+
+- static/internal metadata only.
+- approval boundary recorded but mount not implemented.
+- Separate implementation phase remains required.
+- No `src/app.js` change.
+- No Express mount.
+- No public alias.
+- No runtime traffic.
+
 ## 86. ORO-4S OroPlay Callback Staging Route Signed Approval Record Mount Authorization Request Preparation Boundary Coverage
 
 ORO-4S OroPlay Callback Staging Route Signed Approval Record Mount Authorization Request Preparation Boundary Coverage. The phase is Signed Approval Record Creation / Mount Authorization Request Preparation Boundary only. It creates sanitized signed approval record metadata from the ORO-4R private artifact hash registry and prepares a mount authorization request draft while keeping request submission, final pre-mount authorization issuance, route mount, Express mount, public alias, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, external network, live OroPlay calls, and real money blocked.

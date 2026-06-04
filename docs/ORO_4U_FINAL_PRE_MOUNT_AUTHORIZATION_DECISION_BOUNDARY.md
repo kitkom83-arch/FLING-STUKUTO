@@ -128,3 +128,10 @@ ORO-4U must return hold/fail status when any of these are true:
 The next phase must require separate route mount authorization before any
 Express route mount, public alias, runtime traffic, wallet mutation, ledger
 mutation, Prisma write, live OroPlay API call, or real money behavior.
+
+ORO-4V follow-up may record a separate route mount approval boundary as
+static/internal metadata only. That follow-up still must keep
+`routeMountAuthorization = not_authorized_for_mount`,
+`expressMountAllowed = false`, `publicAliasAllowed = false`, and
+`runtimeTrafficAllowed = false` until a later implementation phase explicitly
+changes those values.

@@ -279,3 +279,25 @@ ORO-4U Current. Final Pre-Mount Authorization Decision Boundary is docs, static 
 ORO-4U records a final decision as static/internal metadata only. The decision recorded but mount still not authorized, because separate route mount approval remains required. It keeps `finalPreMountAuthorizationDecisionPrepared=true`, `finalPreMountAuthorizationDecisionIssued=true`, `finalPreMountAuthorizationDecisionIssuedMode=static_internal_metadata_only`, `mountAuthorizationRequestSubmitted=true`, `routeMountAuthorization=not_authorized_for_mount`, `expressMountAllowed=false`, `publicAliasAllowed=false`, `runtimeTrafficAllowed=false`, `separateRouteMountApprovalRequired=true`, and `nextPhaseRequiresSeparateAuthorization=true`.
 
 ORO-4U has no mount, no alias, and no runtime traffic. It does not edit `src/app.js`, does not mount Express routes, does not open `/api/balance`, `/api/transaction`, `/api/oroplay/balance`, or `/api/oroplay/transaction`, does not mutate wallet or ledger state, does not write through Prisma, does not create DB transactions, does not call live OroPlay, does not use external network, does not deploy, does not migrate, and does not touch real money.
+
+## ORO-4V Current
+
+ORO-4V Current. Separate Route Mount Approval Boundary / Explicit Express
+Mount Authorization Gate is docs, static contract, mock fixtures, local smoke,
+package registration, and smoke coverage only after ORO-4U.
+
+ORO-4V records approval boundary metadata. The approval boundary recorded but mount not implemented. It keeps `finalPreMountAuthorizationDecisionIssued=true`,
+`routeMountApprovalBoundaryResult=PASS`,
+`routeMountApprovalStatus=approval_boundary_recorded_mount_still_not_implemented`,
+`routeMountAuthorization=not_authorized_for_mount`, `expressMountAllowed=false`,
+`expressMountImplemented=false`, `publicAliasAllowed=false`,
+`runtimeTrafficAllowed=false`, `separateImplementationPhaseRequired=true`, and
+`nextPhaseRequiresSeparateImplementationApproval=true`.
+
+ORO-4V has no mount, no alias, and no runtime traffic. It does not edit
+`src/app.js`, does not mount Express routes, does not open `/api/balance`,
+`/api/transaction`, `/api/oroplay/balance`, or `/api/oroplay/transaction`,
+does not mutate wallet or ledger state, does not write through Prisma, does not
+create DB transactions, does not call live OroPlay, does not use external
+network, does not deploy, does not migrate, and does not touch real money. Any
+actual mount still requires a separate implementation phase.
