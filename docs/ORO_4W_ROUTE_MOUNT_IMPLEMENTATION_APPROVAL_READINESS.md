@@ -5,6 +5,8 @@
 ORO-4W prepares a separate implementation approval readiness boundary after
 the ORO-4V route mount approval boundary has been recorded.
 
+ORO-4W implementation approval readiness remains static/internal metadata only.
+
 ORO-4W is docs, static contract, mock fixtures, and local smoke only. It does
 not authorize implementation execution and does not open runtime route mount.
 
@@ -122,6 +124,13 @@ ORO-4W must return hold/fail status when any of these are true:
 ## Next phase requirements
 
 Any future actual Express mount requires a separate explicit execution phase.
+
+ORO-4X implementation approval decision may record static planning approval
+only. It must keep `routeMountAuthorization=not_authorized_for_mount`,
+`routeMountExecutionAuthorization=not_authorized_for_execution`,
+`implementationExecutionApproved = false`, `expressMountAllowed = false`,
+`expressMountImplemented = false`, `publicAliasAllowed = false`, and
+`runtimeTrafficAllowed = false`.
 
 That future phase must explicitly approve src/app.js changes, Express route
 mount, public aliases, runtime traffic, wallet/ledger behavior, DB behavior,

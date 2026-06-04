@@ -155,3 +155,7 @@ and accept runtime traffic. ORO-4V is not that implementation phase.
 ORO-4W implementation approval readiness may record readiness for that
 separate implementation approval gate only. ORO-4W still does not authorize
 src/app.js changes, Express route mount, public aliases, or runtime traffic.
+
+ORO-4X implementation approval decision may record static planning approval
+only after ORO-4W. ORO-4X still does not authorize execution, src/app.js
+changes, Express route mount, public aliases, or runtime traffic.

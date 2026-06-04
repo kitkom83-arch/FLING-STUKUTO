@@ -324,3 +324,30 @@ does not mutate wallet or ledger state, does not write through Prisma, does not
 create DB transactions, does not migrate, does not call live OroPlay, does not
 use external network, does not deploy, and does not touch real money. Any
 actual route mount still requires a separate explicit execution phase.
+
+## ORO-4X Current
+
+ORO-4X Current. Route Mount Implementation Approval Decision Boundary /
+Execution Still Not Authorized Gate is docs, static contract, mock fixtures,
+local smoke, package registration, and smoke coverage only after ORO-4W.
+
+ORO-4X records implementation approval decision issued for static planning
+only. It keeps `implementationApprovalDecisionIssued=true`,
+`implementationApprovalGranted=true`,
+`implementationApprovalScope=static_route_mount_implementation_planning_only`,
+`implementationExecutionApproved=false`,
+`routeMountExecutionAuthorization=not_authorized_for_execution`,
+`routeMountAuthorization=not_authorized_for_mount`, `expressMountAllowed=false`,
+`expressMountImplemented=false`, `publicAliasAllowed=false`,
+`runtimeTrafficAllowed=false`,
+`nextPhaseRequiresSeparateExecutionApproval=true`,
+`nextPhaseRequiresRouteMountPatchReview=true`, and
+`nextPhaseRequiresExplicitRuntimeTrafficApproval=true`.
+
+ORO-4X has no mount, no alias, and no runtime traffic. It does not edit
+`src/app.js`, does not mount Express routes, does not open `/api/balance`,
+`/api/transaction`, `/api/oroplay/balance`, or `/api/oroplay/transaction`,
+does not mutate wallet or ledger state, does not write through Prisma, does not
+create DB transactions, does not migrate, does not call live OroPlay, does not
+use external network, does not deploy, and does not touch real money. Any
+actual route mount still requires a separate execution approval phase.
