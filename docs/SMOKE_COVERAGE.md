@@ -3143,6 +3143,62 @@ Boundary:
 - No live OroPlay API call.
 - No real money.
 
+## 88. ORO-4U Final Pre-Mount Decision Boundary Coverage
+
+ORO-4U Final Pre-Mount Decision Boundary Coverage. The phase records final
+pre-mount authorization as static/internal metadata only. It issues the final
+decision record while keeping route mount, Express mount, public alias, runtime
+traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions,
+external network, live OroPlay calls, and real money blocked.
+
+Covered files:
+
+- ORO-4U boundary doc: final pre-mount decision boundary.
+- ORO-4U mock helper: final decision and route mount decision.
+- ORO-4U fixtures: happy path, hold cases, and safety attempts.
+- ORO-4U smoke wrapper: `src/local-smoke-tests/oro4uSmoke.js`.
+
+Package script:
+
+- `smoke:oro-4u`
+
+Coverage assertions:
+
+- Confirms happy path returns `finalPreMountAuthorizationDecisionPrepared=true`,
+  `finalPreMountAuthorizationDecisionIssued=true`,
+  `finalPreMountAuthorizationDecisionIssuedMode=static_internal_metadata_only`,
+  `mountAuthorizationRequestSubmitted=true`,
+  `routeMountAuthorization=not_authorized_for_mount`,
+  `expressMountAllowed=false`, `publicAliasAllowed=false`, and
+  `runtimeTrafficAllowed=false`.
+- Confirms decision output is static/internal metadata only and still requires
+  separate route mount approval.
+- Confirms missing ORO-4T request submission, signed approval record, private
+  artifact hash registry, reviewer, timestamp, and stale timestamp hold.
+- Confirms attempted Express mount, public alias, runtime traffic, wallet
+  mutation, ledger mutation, Prisma write, external network, and secret-shaped
+  output hold.
+- Confirms `src/app.js` does not contain the OroPlay callback route candidates
+  or public aliases.
+
+Boundary:
+
+- static/internal metadata only.
+- final decision issued but route mount remains blocked.
+- Separate route mount approval remains required.
+- No `src/app.js` change.
+- No Express mount.
+- No public alias.
+- No active route.
+- No runtime traffic.
+- No wallet mutation.
+- No ledger mutation.
+- No Prisma write.
+- No DB transaction.
+- No external network.
+- No live OroPlay API call.
+- No real money.
+
 ## 85. ORO-4R OroPlay Callback Staging Route Signed Approval Artifact Private Hash Registry Coverage
 
 ORO-4R OroPlay Callback Staging Route Signed Approval Artifact Private Hash Registry Coverage. The phase is Signed Approval Artifact Intake Record / Private Artifact Hash Registry Boundary only. It records owner-provided private/off-repo artifact metadata and SHA256 chunks for the signed approval artifact while keeping the signed PDF, signature, local private path, and full hash literal out of the repository. It removes only `missing_actual_signed_approval_artifact` and keeps signed approval record creation, final pre-mount authorization issuance, mount authorization request submission, route mount, Express mount, public alias, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, external network, live OroPlay calls, and real money blocked.

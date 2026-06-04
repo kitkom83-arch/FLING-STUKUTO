@@ -264,3 +264,17 @@ Remaining mount blockers:
 The next phase must require separate explicit authorization for final pre-mount authorization issuance and route mount authorization.
 
 ORO-4T must not authorize route mount, Express mount, public alias, or runtime traffic.
+
+## ORO-4U follow-up boundary
+
+ORO-4U may issue the final decision only as static/internal metadata after the
+ORO-4T request submission record. That final decision may be issued only as
+static/internal metadata and route mount remains blocked without separate
+approval.
+
+The final decision may be issued only as static/internal metadata.
+The route mount remains blocked without separate approval.
+
+ORO-4U still must not authorize Express mount, public alias, runtime traffic,
+wallet mutation, ledger mutation, Prisma write, external network, live OroPlay
+call, deploy, migration, or real money behavior.

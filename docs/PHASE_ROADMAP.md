@@ -127,6 +127,7 @@ OroPlay phase sequence after current mock/contract phases:
 - ORO-4R: Signed Approval Artifact Intake Record / Private Artifact Hash Registry Boundary. ORO-4R closed.
 - ORO-4S: Signed Approval Record Creation / Mount Authorization Request Preparation Boundary. ORO-4S current/local pending until commit, push, and CI; not authorized for mount.
 - ORO-4T: Mount Authorization Request Submission Record / Final Pre-Mount Decision Review Boundary. ORO-4T current/local pending until commit, push, and CI; not authorized for mount.
+- ORO-4U: final pre-mount decision boundary. ORO-4U current/local pending until commit, push, and CI; not authorized for mount.
 - ORO-2B current/fail-closed route skeleton remains the active fail-closed runtime default.
 - ORO-3 is not allowed until ORO-2B passes; ORO-2C and ORO-3A add newer gates before runtime work.
 - ORO-3B is not allowed until ORO-2B and ORO-2C are closed and ORO-3A passes.
@@ -486,6 +487,22 @@ ORO-4T target criteria:
 - `runAllLocalSmoke.js`, `docs/API_MAPPING.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`, `docs/PHASE_ROADMAP.md`, and `docs/SMOKE_COVERAGE.md` include ORO-4T static/mock/no-mount coverage.
 
 Next phase suggestion: any phase that issues final pre-mount authorization or touches route/mount still requires separate explicit authorization. ORO-4T does not authorize `src/app.js` changes, Express route mount, public aliases, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, external network, final pre-mount authorization issuance, route mount authorization, or real money.
+
+## ORO-4U current/local pending final pre-mount decision
+
+ORO-4U current/local pending until commit, push, and CI. Final Pre-Mount Authorization Decision Boundary adds only no-mount docs, an isolated static/mock final decision helper, mock fixtures, local smoke coverage, package registration, and runAllLocalSmoke registration.
+
+ORO-4U packages ORO-4T as input and records the final decision as static/internal metadata only. It sets `finalPreMountAuthorizationDecisionIssued=true` for internal metadata only while keeping `routeMountAuthorization=not_authorized_for_mount`. Route candidates `/api/oroplay/balance` and `/api/oroplay/transaction` remain inactive, unmounted, non-public, and not authorized for traffic. Public aliases `/api/balance` and `/api/transaction` remain blocked. ORO-4U does not mount any Express route, does not edit `src/app.js`, does not create an HTTP listener, does not accept runtime traffic, does not call OroPlay, does not mutate wallet or ledger state, does not write through Prisma, does not create a DB transaction, does not migrate, does not deploy, and does not touch real money.
+
+ORO-4U target criteria:
+
+- ORO-4U final decision boundary doc exists and states final decision issuance is static/internal metadata only, route mount remains blocked, separate route mount approval remains required, Express mount is false, public alias is false, and runtime traffic is false.
+- ORO-4U final decision helper exports status, input builder, evaluator, route mount decision builder, summary builder, and validator.
+- ORO-4U fixtures cover happy path, missing request submission, missing signed approval record, missing private artifact hash registry, missing reviewer, missing timestamp, stale timestamp, Express mount, public alias, runtime traffic, wallet mutation, ledger mutation, Prisma write, external network, and secret-shaped output attempts.
+- ORO-4U smoke confirms static/internal metadata only, no mount, no public alias, no mutation, no Prisma write, no external network, no secret-shaped output, and `smoke:oro-4u` registration.
+- `docs/API_MAPPING.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`, `docs/PHASE_ROADMAP.md`, and `docs/SMOKE_COVERAGE.md` include ORO-4U static/mock/no-mount coverage.
+
+Next phase suggestion: route mount still requires separate explicit authorization. ORO-4U does not authorize `src/app.js` changes, Express route mount, public aliases, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay calls, external network, route mount authorization, or real money.
 - ORO-3B blocked until ORO-3A pass.
 
 ORO-3B status marker:

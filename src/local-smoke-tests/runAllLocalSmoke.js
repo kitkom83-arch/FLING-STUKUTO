@@ -111,6 +111,7 @@ const RELATED_FILES = [
   "docs/OROPLAY_CALLBACK_STAGING_ROUTE_SIGNED_APPROVAL_ARTIFACT_PRIVATE_HASH_REGISTRY.md",
   "src/local-smoke-tests/oro4sSmoke.js",
   "src/local-smoke-tests/oro4tSmoke.js",
+  "src/local-smoke-tests/oro4uSmoke.js",
   "src/payment-provider-mock/memberQrDepositUxContract.js",
   "src/payment-provider-mock/memberQrDepositMockHarness.js",
   "src/local-smoke-tests/memberQrDepositUxSmoke.js",
@@ -1573,6 +1574,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oro-4t"]),
     summaryKey: "oro4t",
+  },
+  {
+    name: "npm run smoke:oro-4u",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oro-4u"]),
+    summaryKey: "oro4u",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

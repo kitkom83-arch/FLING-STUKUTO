@@ -82,6 +82,7 @@
     "smoke:oroplay-callback-staging-route-signed-approval-artifact-private-hash-registry": "node src/local-smoke-tests/oroplayCallbackStagingRouteSignedApprovalArtifactPrivateHashRegistrySmoke.js",
     "smoke:oro-4s": "node src/local-smoke-tests/oro4sSmoke.js",
     "smoke:oro-4t": "node src/local-smoke-tests/oro4tSmoke.js",
+    "smoke:oro-4u": "node src/local-smoke-tests/oro4uSmoke.js",
     "smoke:member-qr-deposit-ux": "node src/local-smoke-tests/memberQrDepositUxSmoke.js",
     "smoke:deposit-verification-source": "node src/local-smoke-tests/depositVerificationSourceSmoke.js",
     "smoke:deposit-ledger-reconciliation-guard": "node src/local-smoke-tests/depositLedgerReconciliationGuardSmoke.js",
