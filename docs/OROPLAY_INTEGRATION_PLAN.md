@@ -301,3 +301,26 @@ does not mutate wallet or ledger state, does not write through Prisma, does not
 create DB transactions, does not call live OroPlay, does not use external
 network, does not deploy, does not migrate, and does not touch real money. Any
 actual mount still requires a separate implementation phase.
+
+## ORO-4W Current
+
+ORO-4W Current. Route Mount Implementation Approval Readiness / Separate
+Implementation Approval Gate is docs, static contract, mock fixtures, local
+smoke, package registration, and smoke coverage only after ORO-4V.
+
+ORO-4W records implementation approval readiness recorded but mount not
+implemented. It keeps `implementationApprovalReadinessRecorded=true`,
+`implementationApprovalGranted=false`,
+`routeMountAuthorization=not_authorized_for_mount`, `expressMountAllowed=false`,
+`expressMountImplemented=false`, `publicAliasAllowed=false`,
+`runtimeTrafficAllowed=false`,
+`nextPhaseRequiresExplicitImplementationApproval=true`, and
+`nextPhaseRequiresSeparateExecutionApproval=true`.
+
+ORO-4W has no mount, no alias, and no runtime traffic. It does not edit
+`src/app.js`, does not mount Express routes, does not open `/api/balance`,
+`/api/transaction`, `/api/oroplay/balance`, or `/api/oroplay/transaction`,
+does not mutate wallet or ledger state, does not write through Prisma, does not
+create DB transactions, does not migrate, does not call live OroPlay, does not
+use external network, does not deploy, and does not touch real money. Any
+actual route mount still requires a separate explicit execution phase.

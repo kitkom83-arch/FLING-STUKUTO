@@ -3088,6 +3088,58 @@ Boundary:
 - No public alias.
 - No runtime traffic.
 
+## 90. ORO-4W Route Mount Implementation Approval Readiness Coverage
+
+ORO-4W Route Mount Implementation Approval Readiness Coverage. The phase
+records implementation approval readiness as static/internal metadata only. It
+keeps implementation approval, route mount, Express mount, public alias,
+runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB
+transactions, migration, external network, live OroPlay calls, and real money
+blocked.
+
+Covered files:
+
+- ORO-4W readiness doc: implementation approval readiness boundary.
+- ORO-4W mock helper: readiness summary and separate gate.
+- ORO-4W fixtures: happy path, hold cases, and safety attempts.
+- ORO-4W smoke wrapper: `src/local-smoke-tests/oro4wSmoke.js`.
+
+Package script:
+
+- `smoke:oro-4w`
+
+Coverage assertions:
+
+- Confirms happy path returns `implementationApprovalReadinessRecorded=true`,
+  `implementationApprovalGranted=false`,
+  `routeMountAuthorization=not_authorized_for_mount`,
+  `expressMountAllowed=false`, `expressMountImplemented=false`,
+  `publicAliasAllowed=false`, and `runtimeTrafficAllowed=false`.
+- Confirms implementation approval readiness recorded but mount not implemented
+  and still requires explicit implementation approval.
+- Confirms missing ORO-4V approval boundary and failed ORO-4V approval boundary
+  hold.
+- Confirms attempted `src/app.js` edit, route/controller runtime change,
+  Express mount, public alias, runtime traffic, wallet mutation, ledger
+  mutation, Prisma write, DB transaction, migration, external network, and
+  secret-shaped output hold.
+- Confirms readiness cannot be treated as implementation approval or runtime
+  mount authorization.
+- Confirms `src/app.js` does not contain the OroPlay callback route candidates
+  or public aliases.
+
+Boundary:
+
+- static/internal metadata only.
+- implementation approval readiness recorded.
+- Implementation approval not granted.
+- Next explicit implementation approval remains required.
+- Separate execution approval remains required.
+- No `src/app.js` change.
+- No Express mount.
+- No public alias.
+- No runtime traffic.
+
 ## 86. ORO-4S OroPlay Callback Staging Route Signed Approval Record Mount Authorization Request Preparation Boundary Coverage
 
 ORO-4S OroPlay Callback Staging Route Signed Approval Record Mount Authorization Request Preparation Boundary Coverage. The phase is Signed Approval Record Creation / Mount Authorization Request Preparation Boundary only. It creates sanitized signed approval record metadata from the ORO-4R private artifact hash registry and prepares a mount authorization request draft while keeping request submission, final pre-mount authorization issuance, route mount, Express mount, public alias, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, external network, live OroPlay calls, and real money blocked.

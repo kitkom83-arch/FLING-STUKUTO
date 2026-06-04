@@ -158,7 +158,7 @@ Status: Phase AS mock/static/sandbox-readiness only. These rows define future sa
 
 ## Future OroPlay API Mapping
 
-Status: ORO-2B fail-closed callback stub only remains the active runtime behavior, ORO-2C readiness contract is closed, ORO-3A runtime simulation closed, ORO-3B adapter contract closed, ORO-3C execution plan only is closed, ORO-3D readiness gate only is closed, ORO-4Q mount authorization hold gate is closed, ORO-4R private artifact hash registry is closed, ORO-4S signed approval record / mount authorization request preparation boundary is closed, ORO-4T request submission review boundary is closed, ORO-4U final pre-mount decision boundary is closed, and ORO-4V route mount approval boundary is current/local pending for OroPlay API / Seamless Wallet integration. These rows are not production runtime and do not add callback processing, services, migrations, deploy, production DB access, real money runtime flow, live payout, live provider calls, callback wallet mutation, runtime wallet mutation, runtime ledger mutation, Prisma write, provider alias enablement, or hardcoded secrets.
+Status: ORO-2B fail-closed callback stub only remains the active runtime behavior, ORO-2C readiness contract is closed, ORO-3A runtime simulation closed, ORO-3B adapter contract is closed, ORO-3C execution plan only is closed, ORO-3D readiness gate only is closed, ORO-4Q mount authorization hold gate is closed, ORO-4R private artifact hash registry is closed, ORO-4S signed approval record / mount authorization request preparation boundary is closed, ORO-4T request submission review boundary is closed, ORO-4U final pre-mount decision boundary is closed, ORO-4V route mount approval boundary is closed, and ORO-4W implementation approval readiness is current/local pending for OroPlay API / Seamless Wallet integration. These rows are not production runtime and do not add callback processing, services, migrations, deploy, production DB access, real money runtime flow, live payout, live provider calls, callback wallet mutation, runtime wallet mutation, runtime ledger mutation, Prisma write, provider alias enablement, or hardcoded secrets.
 
 ORO-2B fail-closed stub only.
 
@@ -233,3 +233,17 @@ ORO-4T callback staging route mount authorization request submission final decis
 ORO-4U final pre-mount decision boundary: ORO-4U records the final decision as static/internal metadata only after the ORO-4T request submission record. It sets `finalPreMountAuthorizationDecisionIssued=true` only for internal metadata, while `routeMountAuthorization=not_authorized_for_mount`, `expressMountAllowed=false`, `publicAliasAllowed=false`, and `runtimeTrafficAllowed=false` remain unchanged. `/api/oroplay/balance` and `/api/oroplay/transaction` remain not mounted and not authorized for mount. `/api/balance` and `/api/transaction` still have no public alias. ORO-4U does not edit `src/app.js`, does not enable Express mount, public alias, runtime traffic, wallet mutation, ledger mutation, Prisma write, DB transaction, live OroPlay call, external network, migration, deploy, payout, auto-credit, or real money.
 
 ORO-4V route mount approval boundary: ORO-4V records a separate approval boundary as static/internal metadata only after the ORO-4U final decision. It records approval boundary metadata but keeps `routeMountAuthorization=not_authorized_for_mount`, `expressMountAllowed=false`, `expressMountImplemented=false`, `publicAliasAllowed=false`, and `runtimeTrafficAllowed=false`. `/api/oroplay/balance` and `/api/oroplay/transaction` remain not mounted and not authorized for mount. `/api/balance` and `/api/transaction` still have no public alias. ORO-4V does not edit `src/app.js`, does not implement Express mount, does not enable runtime traffic, and requires a separate implementation phase before any actual route mount.
+
+ORO-4W implementation approval readiness: ORO-4W separate implementation
+approval gate records readiness for a future execution approval phase only.
+ORO-4W separate implementation approval gate is static/internal metadata only.
+It keeps `implementationApprovalReadinessRecorded=true`,
+`implementationApprovalGranted=false`,
+`routeMountAuthorization=not_authorized_for_mount`,
+`expressMountAllowed=false`, `expressMountImplemented=false`,
+`publicAliasAllowed=false`, `runtimeTrafficAllowed=false`,
+`nextPhaseRequiresExplicitImplementationApproval=true`, and
+`nextPhaseRequiresSeparateExecutionApproval=true`. ORO-4W does not edit
+`src/app.js`, does not mount Express routes, does not enable public aliases,
+does not allow runtime traffic, and does not authorize real route mount
+execution.

@@ -142,9 +142,16 @@ ORO-4V must return hold/fail status when any of these are true:
 
 ## Next phase requirements
 
+ORO-4V route mount approval boundary remains recorded as static/internal
+metadata only.
+
 Route mount authorization remains not_authorized_for_mount unless a later
 implementation phase explicitly changes it.
 
 Any future actual mount requires a separate implementation phase with explicit
 authorization to edit src/app.js, mount Express routes, expose public aliases,
 and accept runtime traffic. ORO-4V is not that implementation phase.
+
+ORO-4W implementation approval readiness may record readiness for that
+separate implementation approval gate only. ORO-4W still does not authorize
+src/app.js changes, Express route mount, public aliases, or runtime traffic.
