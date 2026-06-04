@@ -175,3 +175,12 @@ deployment posture before any runtime route work can happen.
 Any future runtime traffic requires separate explicit runtime traffic approval.
 
 ORO-4Y is not that execution phase and is not runtime traffic approval.
+
+ORO-4Z patch review decision may record the prepared patch as reviewed for an
+execution approval request only. ORO-4Z execution authorization hold still
+keeps `routeMountAuthorization=not_authorized_for_mount`,
+`routeMountExecutionAuthorization=not_authorized_for_execution`,
+`routeMountPatchApproved = false`, `routeMountPatchImplemented = false`,
+`executionApprovalGranted = false`, `implementationExecutionApproved = false`,
+`expressMountAllowed = false`, `expressMountImplemented = false`,
+`publicAliasAllowed = false`, and `runtimeTrafficAllowed = false`.

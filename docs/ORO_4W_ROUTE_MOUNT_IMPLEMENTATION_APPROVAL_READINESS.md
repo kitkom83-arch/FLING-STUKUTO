@@ -141,3 +141,8 @@ ORO-4Y execution approval readiness may prepare execution approval readiness
 and patch review metadata only after ORO-4X. ORO-4Y still does not authorize
 src/app.js changes, Express route mount, public aliases, runtime traffic, or
 route mount execution.
+
+ORO-4Z patch review decision may review the prepared patch for execution
+approval request only. ORO-4Z still keeps route mount execution authorization
+blocked and does not authorize src/app.js changes, Express route mount, public
+aliases, runtime traffic, or patch implementation.

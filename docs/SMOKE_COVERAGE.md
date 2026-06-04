@@ -3145,6 +3145,66 @@ Boundary:
 - No public alias.
 - No runtime traffic.
 
+## 93. ORO-4Z Route Mount Patch Review Decision Coverage
+
+ORO-4Z Route Mount Patch Review Decision Coverage. The phase records patch
+review decision issued and ORO-4Z execution authorization hold metadata only.
+It keeps execution approval, patch implementation, route mount, Express mount,
+public alias, runtime traffic, wallet mutation, ledger mutation, Prisma writes,
+DB transactions, migration, external network, live OroPlay calls, and real
+money blocked.
+
+Covered files:
+
+- ORO-4Z decision doc: patch review decision boundary.
+- ORO-4Z mock helper: decision summary and execution hold gate.
+- ORO-4Z fixtures: happy path, hold cases, and safety attempts.
+- ORO-4Z smoke wrapper: `src/local-smoke-tests/oro4zSmoke.js`.
+
+Package script:
+
+- `smoke:oro-4z`
+
+Coverage assertions:
+
+- Confirms happy path returns `routeMountPatchReviewDecisionIssued=true`,
+  `routeMountPatchReviewPrepared=true`, `routeMountPatchReviewed=true`,
+  `routeMountPatchReviewResult=reviewed_ready_for_execution_approval_request_only`,
+  `routeMountPatchApproved=false`, `routeMountPatchImplemented=false`,
+  `executionApprovalGranted=false`, `implementationExecutionApproved=false`,
+  `routeMountExecutionAuthorization=not_authorized_for_execution`,
+  `routeMountAuthorization=not_authorized_for_mount`,
+  `expressMountAllowed=false`, `expressMountImplemented=false`,
+  `publicAliasAllowed=false`, and `runtimeTrafficAllowed=false`.
+- Confirms patch review decision issued but execution is still not authorized.
+- Confirms missing ORO-4Y readiness, failed ORO-4Y readiness, readiness not
+  recorded, and patch review not prepared hold.
+- Confirms attempted `src/app.js` edit, route/controller runtime change,
+  Express mount, public alias, runtime traffic, wallet mutation, ledger
+  mutation, Prisma write, DB transaction, migration, external network, and
+  secret-shaped output hold.
+- Confirms patch review cannot be treated as execution authorization, patch
+  implementation approval, route mount authorization, or runtime traffic
+  approval.
+- Confirms `src/app.js` does not contain the OroPlay callback route candidates
+  or public aliases and has no ORO-4Z edit marker.
+
+Boundary:
+
+- patch review decision issued.
+- Patch review result is request only.
+- Execution approval not granted.
+- Implementation execution not approved.
+- Route mount patch not approved.
+- Route mount patch not implemented.
+- Route mount execution authorization remains blocked.
+- Actual patch implementation approval remains required.
+- Separate runtime traffic approval remains required.
+- No `src/app.js` change.
+- No Express mount.
+- No public alias.
+- No runtime traffic.
+
 ## 90. ORO-4W Route Mount Implementation Approval Readiness Coverage
 
 ORO-4W Route Mount Implementation Approval Readiness Coverage. The phase

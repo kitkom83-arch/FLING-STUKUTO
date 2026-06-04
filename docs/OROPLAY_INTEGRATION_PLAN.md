@@ -352,7 +352,7 @@ create DB transactions, does not migrate, does not call live OroPlay, does not
 use external network, does not deploy, and does not touch real money. Any
 actual route mount still requires a separate execution approval phase.
 
-## ORO-4Y Current
+## ORO-4Y Current (Closed)
 
 ORO-4Y Current. Route Mount Execution Approval Readiness / Route Mount Patch
 Review Preparation Boundary is docs, static contract, mock fixtures, local
@@ -377,4 +377,33 @@ ORO-4Y has no mount, no alias, and no runtime traffic. It does not edit
 does not mutate wallet or ledger state, does not write through Prisma, does not
 create DB transactions, does not migrate, does not call live OroPlay, does not
 use external network, does not deploy, and does not touch real money. Any
+actual route mount still requires a separate explicit execution phase.
+
+## ORO-4Z Current
+
+ORO-4Z Current. Route Mount Patch Review Decision Boundary / Execution
+Authorization Still Held Gate is docs, static contract, mock fixtures, local
+smoke, package registration, and smoke coverage only after ORO-4Y.
+
+ORO-4Z records patch review decision issued only. It keeps
+`routeMountPatchReviewDecisionIssued=true`,
+`routeMountPatchReviewPrepared=true`, `routeMountPatchReviewed=true`,
+`routeMountPatchReviewResult=reviewed_ready_for_execution_approval_request_only`,
+`routeMountPatchApproved=false`, `routeMountPatchImplemented=false`,
+`executionApprovalGranted=false`, `implementationExecutionApproved=false`,
+`routeMountExecutionAuthorization=not_authorized_for_execution`,
+`routeMountAuthorization=not_authorized_for_mount`, `expressMountAllowed=false`,
+`expressMountImplemented=false`, `publicAliasAllowed=false`,
+`runtimeTrafficAllowed=false`,
+`nextPhaseRequiresExplicitExecutionApproval=true`,
+`nextPhaseRequiresActualPatchImplementationApproval=true`, and
+`nextPhaseRequiresSeparateRuntimeTrafficApproval=true`.
+
+ORO-4Z has no mount, no alias, and no runtime traffic. It does not edit
+`src/app.js`, does not mount Express routes, does not open `/api/balance`,
+`/api/transaction`, `/api/oroplay/balance`, or `/api/oroplay/transaction`,
+does not approve patch implementation, does not grant execution approval,
+does not mutate wallet or ledger state, does not write through Prisma, does
+not create DB transactions, does not migrate, does not call live OroPlay, does
+not use external network, does not deploy, and does not touch real money. Any
 actual route mount still requires a separate explicit execution phase.

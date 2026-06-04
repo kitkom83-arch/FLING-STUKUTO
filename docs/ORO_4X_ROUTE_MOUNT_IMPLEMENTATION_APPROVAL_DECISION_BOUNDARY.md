@@ -165,3 +165,8 @@ future execution phase only. ORO-4Y still must keep
 
 ORO-4X implementation approval decision is the recorded input for ORO-4Y
 execution approval readiness.
+
+ORO-4Z patch review decision may record ORO-4Y patch review preparation as
+reviewed for execution approval request only. ORO-4Z still does not authorize
+execution, src/app.js changes, Express route mount, public aliases, runtime
+traffic, or patch implementation.

@@ -667,10 +667,9 @@ traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions,
 live OroPlay calls, external network, route mount authorization, or real
 money.
 
-## ORO-4Y current/local pending execution approval readiness
+## ORO-4Y closed execution approval readiness
 
-ORO-4Y current/local pending until commit, push, and CI. ORO-4Y execution
-approval readiness / ORO-4Y patch review preparation adds only no-mount docs,
+ORO-4Y execution approval readiness / ORO-4Y patch review preparation adds only no-mount docs,
 an isolated static/mock readiness helper, mock fixtures, local smoke coverage,
 package registration, and runAllLocalSmoke registration.
 
@@ -723,6 +722,69 @@ ORO-4Y target criteria:
 
 Next phase suggestion: actual route mount still requires a separate explicit
 execution approval phase and actual patch implementation approval. ORO-4Y does
+not authorize `src/app.js` changes, Express route mount, public aliases,
+runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB
+transactions, live OroPlay calls, external network, route mount authorization,
+or real money.
+
+## ORO-4Z current/local pending patch review decision
+
+ORO-4Z patch review decision / ORO-4Z execution authorization hold adds only
+no-mount docs, an isolated static/mock decision helper, mock fixtures, local
+smoke coverage, package registration, and runAllLocalSmoke registration.
+
+ORO-4Z records patch review decision only and cannot authorize runtime route
+execution.
+
+ORO-4Z packages ORO-4Y as input and records review decision metadata only. It
+sets `routeMountPatchReviewDecisionIssued=true`,
+`routeMountPatchReviewPrepared=true`, `routeMountPatchReviewed=true`,
+`routeMountPatchReviewResult=reviewed_ready_for_execution_approval_request_only`,
+`routeMountPatchApproved=false`, `routeMountPatchImplemented=false`,
+`executionApprovalGranted=false`, `implementationExecutionApproved=false`,
+`routeMountExecutionAuthorization=not_authorized_for_execution`,
+`routeMountAuthorization=not_authorized_for_mount`, `expressMountAllowed=false`,
+`expressMountImplemented=false`, `publicAliasAllowed=false`,
+`runtimeTrafficAllowed=false`,
+`nextPhaseRequiresExplicitExecutionApproval=true`,
+`nextPhaseRequiresActualPatchImplementationApproval=true`, and
+`nextPhaseRequiresSeparateRuntimeTrafficApproval=true`. Route candidates
+`/api/oroplay/balance` and `/api/oroplay/transaction` remain inactive,
+unmounted, non-public, and not authorized for traffic. Public aliases
+`/api/balance` and `/api/transaction` remain blocked.
+
+ORO-4Z does not mount any Express route, does not edit `src/app.js`, does not
+create an HTTP listener, does not accept runtime traffic, does not call
+OroPlay, does not mutate wallet or ledger state, does not write through
+Prisma, does not create a DB transaction, does not migrate, does not deploy,
+and does not touch real money.
+
+ORO-4Z target criteria:
+
+- ORO-4Z patch review decision doc exists and states the decision boundary is
+  review only.
+- ORO-4Z helper exports status, input builder, evaluator, execution hold gate,
+  summary builder, and validator.
+- ORO-4Z fixtures cover happy path, missing ORO-4Y readiness, failed ORO-4Y
+  readiness, missing readiness record, missing patch preparation, incorrect
+  execution approval, incorrect implementation execution approval, patch
+  approval, patch implementation, route mount authorization, route mount
+  execution authorization, Express mount, public alias, runtime traffic,
+  `src/app.js` edit, route/controller runtime change, wallet mutation, ledger
+  mutation, Prisma write, DB transaction, migration, external network,
+  secret-shaped output, explicit execution approval required, patch
+  implementation approval required, and separate runtime traffic approval
+  required.
+- ORO-4Z smoke confirms patch review decision only, no Express mount, no public
+  alias, no mutation, no Prisma write, no DB transaction, no migration, no
+  external network, no secret-shaped output, no `src/app.js` edit marker, and
+  `smoke:oro-4z` registration.
+- `docs/API_MAPPING.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`,
+  `docs/PHASE_ROADMAP.md`, and `docs/SMOKE_COVERAGE.md` include ORO-4Z
+  static/mock/no-mount coverage.
+
+Next phase suggestion: actual route mount still requires a separate explicit
+execution approval phase and actual patch implementation approval. ORO-4Z does
 not authorize `src/app.js` changes, Express route mount, public aliases,
 runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB
 transactions, live OroPlay calls, external network, route mount authorization,
