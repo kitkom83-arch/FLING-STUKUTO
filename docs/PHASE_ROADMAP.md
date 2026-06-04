@@ -133,7 +133,8 @@ OroPlay phase sequence after current mock/contract phases:
 - ORO-4X: implementation approval decision. ORO-4X closed; execution still not authorized.
 - ORO-4Y: execution approval readiness. ORO-4Y closed; execution still not authorized.
 - ORO-4Z: patch review decision. ORO-4Z closed; execution approval request only.
-- ORO-5A: execution approval request. ORO-5A current/local pending until commit, push, and CI; execution still not authorized.
+- ORO-5A: execution approval request. ORO-5A closed; execution request only.
+- ORO-5B: execution decision. ORO-5B current/local pending until commit, push, and CI; patch implementation and mount still not authorized.
 - ORO-2B current/fail-closed route skeleton remains the active fail-closed runtime default.
 - ORO-3 is not allowed until ORO-2B passes; ORO-2C and ORO-3A add newer gates before runtime work.
 - ORO-3B is not allowed until ORO-2B and ORO-2C are closed and ORO-3A passes.
@@ -792,7 +793,7 @@ runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB
 transactions, live OroPlay calls, external network, route mount authorization,
 or real money.
 
-## ORO-5A current/local pending execution approval request
+## ORO-5A closed execution approval request
 
 ORO-5A execution approval request / ORO-5A patch implementation hold adds only
 no-mount docs, an isolated static/mock request helper, mock fixtures, local
@@ -851,13 +852,79 @@ ORO-5A target criteria:
   `docs/PHASE_ROADMAP.md`, and `docs/SMOKE_COVERAGE.md` include ORO-5A
   static/mock/no-mount coverage.
 
-Next phase suggestion: a final execution approval decision still requires a
-separate explicit phase. Actual route mount still requires actual patch
-implementation approval and separate runtime traffic approval. ORO-5A does not
-authorize `src/app.js` changes, Express route mount, public aliases, runtime
-traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions,
-live OroPlay calls, external network, route mount authorization, or real
-money.
+Next phase suggestion: ORO-5B execution decision may record final execution
+approval decision only for the next patch implementation authorization
+request. Actual route mount still requires actual patch implementation
+approval and separate runtime traffic approval. ORO-5A does not authorize
+`src/app.js` changes, Express route mount, public aliases, runtime traffic,
+wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay
+calls, external network, route mount authorization, or real money.
+
+## ORO-5B current/local pending execution decision
+
+ORO-5B execution decision / ORO-5B implementation hold adds only no-mount
+docs, an isolated static/mock decision helper, mock fixtures, local smoke
+coverage, package registration, and runAllLocalSmoke registration.
+
+ORO-5B records final execution approval decision only and cannot authorize
+runtime route execution.
+
+ORO-5B packages ORO-5A as input and records decision metadata only. It sets
+`routeMountExecutionApprovalRequestSubmitted=true`,
+`routeMountExecutionApprovalRequestStatus=decision_issued`,
+`routeMountExecutionApprovalDecisionIssued=true`,
+`routeMountExecutionApprovalDecisionResult=approved_for_patch_implementation_authorization_request_only`,
+`executionApprovalDecisionIssued=true`, `executionApprovalGranted=true`,
+`routeMountExecutionAuthorization=authorized_for_patch_implementation_authorization_request_only`,
+`routeMountPatchApproved=false`,
+`routeMountPatchImplementationAuthorized=false`,
+`routeMountPatchImplemented=false`, `implementationExecutionApproved=false`,
+`routeMountAuthorization=not_authorized_for_mount`, `expressMountAllowed=false`,
+`expressMountImplemented=false`, `publicAliasAllowed=false`,
+`runtimeTrafficAllowed=false`,
+`nextPhaseRequiresPatchImplementationAuthorizationRequest=true`,
+`nextPhaseRequiresActualPatchImplementationApproval=true`, and
+`nextPhaseRequiresSeparateRuntimeTrafficApproval=true`. Route candidates
+`/api/oroplay/balance` and `/api/oroplay/transaction` remain inactive,
+unmounted, non-public, and not authorized for traffic. Public aliases
+`/api/balance` and `/api/transaction` remain blocked.
+
+ORO-5B does not mount any Express route, does not edit `src/app.js`, does not
+create an HTTP listener, does not accept runtime traffic, does not call
+OroPlay, does not mutate wallet or ledger state, does not write through
+Prisma, does not create a DB transaction, does not migrate, does not deploy,
+and does not touch real money.
+
+ORO-5B target criteria:
+
+- ORO-5B execution decision doc exists and states the final decision boundary
+  is next-request only.
+- ORO-5B helper exports status, input builder, evaluator, implementation hold
+  gate, route mount hold gate, summary builder, and validator.
+- ORO-5B fixtures cover happy path, missing ORO-5A request, request not
+  submitted, status not pending, prior decision issued, patch approval, patch
+  implementation authorization, patch implementation, implementation
+  execution, route mount authorization, route mount execution authorization,
+  Express mount, public alias, runtime traffic, `src/app.js` edit,
+  route/controller runtime change, wallet mutation, ledger mutation, Prisma
+  write, DB transaction, migration, external network, secret-shaped output,
+  patch authorization request required, and separate runtime traffic approval
+  required.
+- ORO-5B smoke confirms decision record only, no Express mount, no public
+  alias, no mutation, no Prisma write, no DB transaction, no migration, no
+  external network, no secret-shaped output, no `src/app.js` edit marker, and
+  `smoke:oro-5b` registration.
+- `docs/API_MAPPING.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`,
+  `docs/PHASE_ROADMAP.md`, and `docs/SMOKE_COVERAGE.md` include ORO-5B
+  static/mock/no-mount coverage.
+
+Next phase suggestion: patch implementation authorization request still
+requires a separate explicit phase. Actual route mount still requires actual
+patch implementation approval and separate runtime traffic approval. ORO-5B
+does not authorize `src/app.js` changes, Express route mount, public aliases,
+runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB
+transactions, live OroPlay calls, external network, route mount
+authorization, or real money.
 - ORO-3B blocked until ORO-3A pass.
 
 ORO-3B status marker:

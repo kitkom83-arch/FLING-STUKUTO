@@ -210,3 +210,7 @@ traffic blocked.
 
 ORO-5A request submission is not final execution approval, patch implementation
 approval, route mount authorization, or runtime traffic approval.
+
+ORO-5B execution decision may issue the final execution approval decision only
+after ORO-5A. ORO-5B implementation hold still keeps patch implementation,
+route mount authorization, public aliases, and runtime traffic blocked.

@@ -151,3 +151,8 @@ ORO-5A execution approval request may submit the next request only after
 ORO-4Z. It must still keep final execution approval decision, patch
 implementation authorization, route mount authorization, and runtime traffic
 blocked.
+
+ORO-5B execution decision may issue a decision after ORO-5A only for the next
+patch implementation authorization request. ORO-5B implementation hold still
+does not authorize patch implementation, route mount, public alias, or runtime
+traffic.

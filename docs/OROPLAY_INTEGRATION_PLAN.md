@@ -410,7 +410,7 @@ actual route mount still requires a separate explicit execution phase.
 
 ## ORO-5A Current
 
-ORO-5A Current. Route Mount Execution Approval Request Submission / ORO-5A
+ORO-5A Closed. Route Mount Execution Approval Request Submission / ORO-5A
 patch implementation hold is docs, static contract, mock fixtures, local
 smoke, package registration, and smoke coverage only after ORO-4Z.
 
@@ -439,3 +439,36 @@ wallet or ledger state, does not write through Prisma, does not create DB
 transactions, does not migrate, does not call live OroPlay, does not use
 external network, does not deploy, and does not touch real money. Any final
 execution approval decision still requires a separate explicit phase.
+
+## ORO-5B Current
+
+ORO-5B Current. ORO-5B execution decision / ORO-5B implementation hold is
+docs, static contract, mock fixtures, local smoke, package registration, and
+smoke coverage only after ORO-5A.
+
+ORO-5B records final execution approval decision metadata only. It keeps
+`routeMountExecutionApprovalRequestSubmitted=true`,
+`routeMountExecutionApprovalRequestStatus=decision_issued`,
+`routeMountExecutionApprovalDecisionIssued=true`,
+`routeMountExecutionApprovalDecisionResult=approved_for_patch_implementation_authorization_request_only`,
+`executionApprovalDecisionIssued=true`, `executionApprovalGranted=true`,
+`routeMountExecutionAuthorization=authorized_for_patch_implementation_authorization_request_only`,
+`routeMountPatchApproved=false`,
+`routeMountPatchImplementationAuthorized=false`,
+`routeMountPatchImplemented=false`, `implementationExecutionApproved=false`,
+`routeMountAuthorization=not_authorized_for_mount`, `expressMountAllowed=false`,
+`expressMountImplemented=false`, `publicAliasAllowed=false`,
+`runtimeTrafficAllowed=false`,
+`nextPhaseRequiresPatchImplementationAuthorizationRequest=true`,
+`nextPhaseRequiresActualPatchImplementationApproval=true`, and
+`nextPhaseRequiresSeparateRuntimeTrafficApproval=true`.
+
+ORO-5B has no mount, no alias, and no runtime traffic. It does not edit
+`src/app.js`, does not mount Express routes, does not open `/api/balance`,
+`/api/transaction`, `/api/oroplay/balance`, or `/api/oroplay/transaction`,
+does not approve patch implementation, does not authorize route mount, does
+not mutate wallet or ledger state, does not write through Prisma, does not
+create DB transactions, does not migrate, does not call live OroPlay, does
+not use external network, does not deploy, and does not touch real money. Any
+patch implementation authorization request still requires a separate explicit
+phase.

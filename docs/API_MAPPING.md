@@ -158,7 +158,7 @@ Status: Phase AS mock/static/sandbox-readiness only. These rows define future sa
 
 ## Future OroPlay API Mapping
 
-Status: ORO-2B fail-closed callback stub only remains the active runtime behavior, ORO-2C readiness contract is closed, ORO-3A runtime simulation closed, ORO-3B adapter contract is closed, ORO-3C execution plan only is closed, ORO-3D readiness gate only is closed, ORO-4Q mount authorization hold gate is closed, ORO-4R private artifact hash registry is closed, ORO-4S signed approval record / mount authorization request preparation boundary is closed, ORO-4T request submission review boundary is closed, ORO-4U final pre-mount decision boundary is closed, ORO-4V route mount approval boundary is closed, ORO-4W implementation approval readiness is closed, ORO-4X implementation approval decision is closed, ORO-4Y execution approval readiness is closed, ORO-4Z patch review decision is closed, and ORO-5A execution approval request is current/local pending for OroPlay API / Seamless Wallet integration. These rows are not production runtime and do not add callback processing, services, migrations, deploy, production DB access, real money runtime flow, live payout, live provider calls, callback wallet mutation, runtime wallet mutation, runtime ledger mutation, Prisma write, provider alias enablement, or hardcoded secrets.
+Status: ORO-2B fail-closed callback stub only remains the active runtime behavior, ORO-2C readiness contract is closed, ORO-3A runtime simulation closed, ORO-3B adapter contract is closed, ORO-3C execution plan only is closed, ORO-3D readiness gate only is closed, ORO-4Q mount authorization hold gate is closed, ORO-4R private artifact hash registry is closed, ORO-4S signed approval record / mount authorization request preparation boundary is closed, ORO-4T request submission review boundary is closed, ORO-4U final pre-mount decision boundary is closed, ORO-4V route mount approval boundary is closed, ORO-4W implementation approval readiness is closed, ORO-4X implementation approval decision is closed, ORO-4Y execution approval readiness is closed, ORO-4Z patch review decision is closed, ORO-5A execution approval request is closed, and ORO-5B execution decision is current/local pending for OroPlay API / Seamless Wallet integration. These rows are not production runtime and do not add callback processing, services, migrations, deploy, production DB access, real money runtime flow, live payout, live provider calls, callback wallet mutation, runtime wallet mutation, runtime ledger mutation, Prisma write, provider alias enablement, or hardcoded secrets.
 
 ORO-2B fail-closed stub only.
 
@@ -314,3 +314,23 @@ ORO-5A execution approval request: ORO-5A patch implementation hold records
 does not allow runtime traffic, does not approve patch implementation, does
 not issue final execution approval decision, and does not authorize route mount
 execution.
+
+ORO-5B execution decision: ORO-5B implementation hold records
+`routeMountExecutionApprovalRequestSubmitted=true`,
+`routeMountExecutionApprovalRequestStatus=decision_issued`,
+`routeMountExecutionApprovalDecisionIssued=true`,
+`routeMountExecutionApprovalDecisionResult=approved_for_patch_implementation_authorization_request_only`,
+`executionApprovalDecisionIssued=true`, `executionApprovalGranted=true`,
+`routeMountExecutionAuthorization=authorized_for_patch_implementation_authorization_request_only`,
+`routeMountPatchApproved=false`,
+`routeMountPatchImplementationAuthorized=false`,
+`routeMountPatchImplemented=false`, `implementationExecutionApproved=false`,
+`routeMountAuthorization=not_authorized_for_mount`,
+`expressMountAllowed=false`, `expressMountImplemented=false`,
+`publicAliasAllowed=false`, `runtimeTrafficAllowed=false`,
+`nextPhaseRequiresPatchImplementationAuthorizationRequest=true`,
+`nextPhaseRequiresActualPatchImplementationApproval=true`, and
+`nextPhaseRequiresSeparateRuntimeTrafficApproval=true`. ORO-5B does not edit
+`src/app.js`, does not mount Express routes, does not enable public aliases,
+does not allow runtime traffic, does not approve patch implementation, does
+not authorize route mount, and does not mutate wallet or ledger state.
