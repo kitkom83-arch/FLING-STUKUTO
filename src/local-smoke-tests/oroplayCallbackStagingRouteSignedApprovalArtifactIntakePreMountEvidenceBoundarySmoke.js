@@ -53,8 +53,8 @@ const SMOKE =
   "src/local-smoke-tests/oroplayCallbackStagingRouteSignedApprovalArtifactIntakePreMountEvidenceBoundarySmoke.js";
 const DOC =
   "docs/OROPLAY_CALLBACK_STAGING_ROUTE_SIGNED_APPROVAL_ARTIFACT_INTAKE_PRE_MOUNT_EVIDENCE_BOUNDARY.md";
-const SCRIPT =
-  "smoke:oroplay-callback-staging-route-signed-approval-artifact-intake-pre-mount-evidence-boundary";
+const WRAPPER = "src/local-smoke-tests/oro4oSmoke.js";
+const SCRIPT = "smoke:oro-4o";
 
 function readRequired(relativePath) {
   const filePath = path.join(ROOT, relativePath);
@@ -247,10 +247,10 @@ function assertDocsAndRegistration() {
   }
 
   const pkg = JSON.parse(readRequired("package.json"));
-  assert.strictEqual(pkg.scripts[SCRIPT], `node ${SMOKE}`);
+  assert.strictEqual(pkg.scripts[SCRIPT], `node ${WRAPPER}`);
 
   const runner = readRequired("src/local-smoke-tests/runAllLocalSmoke.js");
-  for (const marker of [HARNESS, FIXTURES, SMOKE, DOC, SCRIPT]) {
+  for (const marker of [WRAPPER, SCRIPT]) {
     assert(runner.includes(marker), `runAllLocalSmoke missing ${marker}.`);
   }
 

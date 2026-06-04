@@ -6,63 +6,67 @@ const path = require("path");
 
 const {
   GATE,
+  MOUNT_AUTHORIZATION_REQUEST_SUBMITTED_PENDING_FINAL_PRE_MOUNT_DECISION,
   NOT_AUTHORIZED_FOR_MOUNT,
   PASS,
-  PREPARED_NOT_SUBMITTED,
+  PENDING_FINAL_PRE_MOUNT_DECISION,
   PRIVATE_OFF_REPO,
-  SIGNED_APPROVAL_RECORD_CREATED_PENDING_MOUNT_AUTHORIZATION_REQUEST_SUBMISSION,
-  buildSignedApprovalRecordMountAuthorizationRequestPreparationInput,
-  evaluateSignedApprovalRecordMountAuthorizationRequestPreparation,
-  normalizeSignedApprovalRecordArtifactSha256Chunks,
-  validateSignedApprovalRecordMountAuthorizationRequestPreparation,
-} = require("../game-provider-mock/oroplayCallbackStagingRouteSignedApprovalRecordMountAuthorizationRequestPreparationBoundary");
+  STATIC_INTERNAL_METADATA_ONLY,
+  SUBMITTED_PENDING_FINAL_PRE_MOUNT_DECISION,
+  buildMountAuthorizationRequestSubmissionFinalDecisionReviewInput,
+  evaluateMountAuthorizationRequestSubmissionFinalDecisionReview,
+  normalizeMountAuthorizationRequestArtifactSha256Chunks,
+  validateMountAuthorizationRequestSubmissionFinalDecisionReview,
+} = require("../game-provider-mock/oroplayCallbackStagingRouteMountAuthorizationRequestSubmissionFinalDecisionReviewBoundary");
 const {
   artifactCommittedToRepoFixture,
   attemptedExpressMountFixture,
   attemptedPublicAliasFixture,
   attemptedRuntimeTrafficFixture,
-  baselineSignedApprovalRecordMountAuthorizationRequestPreparationFixture,
-  buildSignedApprovalRecordMountAuthorizationRequestPreparationFixtures,
+  baselineMountAuthorizationRequestSubmissionFinalDecisionReviewFixture,
+  buildMountAuthorizationRequestSubmissionFinalDecisionReviewFixtures,
+  externalMountAuthorizationRequestSubmittedFixture,
   finalDecisionIssuedPrematureFixture,
+  finalDecisionReviewMissingFixture,
   fullHashLiteralFixture,
   invalidHashChunkFixture,
   ledgerMutationAllowedFixture,
   localAbsolutePathFixture,
   missingArtifactHashRegistryFixture,
   missingHashChunksFixture,
+  missingSignedApprovalRecordFixture,
   mountAuthorizationRequestNotPreparedFixture,
-  mountAuthorizationRequestSubmittedPrematureFixture,
-  mountAuthorizationRequestSubmissionAllowedFixture,
+  mountAuthorizationRequestNotSubmittedFixture,
   signatureCommittedToRepoFixture,
   signedApprovalRecordAcceptedAsRouteMountAuthorizationFixture,
-  signedApprovalRecordMissingFixture,
   walletMutationAllowedFixture,
-} = require("../game-provider-mock/oroplayCallbackStagingRouteSignedApprovalRecordMountAuthorizationRequestPreparationBoundaryFixtures");
+} = require("../game-provider-mock/oroplayCallbackStagingRouteMountAuthorizationRequestSubmissionFinalDecisionReviewBoundaryFixtures");
 
 const ROOT = path.resolve(__dirname, "..", "..");
 const DOC =
-  "docs/OROPLAY_CALLBACK_STAGING_ROUTE_SIGNED_APPROVAL_RECORD_MOUNT_AUTHORIZATION_REQUEST_PREPARATION_BOUNDARY.md";
+  "docs/OROPLAY_CALLBACK_STAGING_ROUTE_MOUNT_AUTHORIZATION_REQUEST_SUBMISSION_FINAL_DECISION_REVIEW_BOUNDARY.md";
 const HARNESS =
-  "src/game-provider-mock/oroplayCallbackStagingRouteSignedApprovalRecordMountAuthorizationRequestPreparationBoundary.js";
+  "src/game-provider-mock/oroplayCallbackStagingRouteMountAuthorizationRequestSubmissionFinalDecisionReviewBoundary.js";
 const FIXTURES =
-  "src/game-provider-mock/oroplayCallbackStagingRouteSignedApprovalRecordMountAuthorizationRequestPreparationBoundaryFixtures.js";
+  "src/game-provider-mock/oroplayCallbackStagingRouteMountAuthorizationRequestSubmissionFinalDecisionReviewBoundaryFixtures.js";
 const SMOKE =
-  "src/local-smoke-tests/oroplayCallbackStagingRouteSignedApprovalRecordMountAuthorizationRequestPreparationBoundarySmoke.js";
-const WRAPPER = "src/local-smoke-tests/oro4sSmoke.js";
-const SCRIPT = "smoke:oro-4s";
+  "src/local-smoke-tests/oroplayCallbackStagingRouteMountAuthorizationRequestSubmissionFinalDecisionReviewBoundarySmoke.js";
+const WRAPPER = "src/local-smoke-tests/oro4tSmoke.js";
+const SCRIPT = "smoke:oro-4t";
 const ARTIFACT_FILE_NAME = "PG77_ORO-4Q_OWNER_SIGNED_APPROVAL_2026-06-03.pdf";
 const STATIC_SAFETY_FILES = Object.freeze([
   DOC,
   HARNESS,
   FIXTURES,
   SMOKE,
+  WRAPPER,
   "package.json",
   "src/local-smoke-tests/runAllLocalSmoke.js",
   "docs/API_MAPPING.md",
   "docs/OROPLAY_INTEGRATION_PLAN.md",
   "docs/PHASE_ROADMAP.md",
   "docs/SMOKE_COVERAGE.md",
-  "docs/OROPLAY_CALLBACK_STAGING_ROUTE_SIGNED_APPROVAL_ARTIFACT_PRIVATE_HASH_REGISTRY.md",
+  "docs/OROPLAY_CALLBACK_STAGING_ROUTE_SIGNED_APPROVAL_RECORD_MOUNT_AUTHORIZATION_REQUEST_PREPARATION_BOUNDARY.md",
 ]);
 
 function readRequired(relativePath) {
@@ -86,7 +90,7 @@ function readGitIndexText() {
 }
 
 function reportFor(fixture) {
-  return evaluateSignedApprovalRecordMountAuthorizationRequestPreparation(fixture);
+  return evaluateMountAuthorizationRequestSubmissionFinalDecisionReview(fixture);
 }
 
 function assertNoUndefinedOrNan(value) {
@@ -111,9 +115,9 @@ function assertResultHasNoSensitiveFields(value) {
 }
 
 function assertHappyPath(report) {
-  assert.strictEqual(report.phase, "ORO-4S");
+  assert.strictEqual(report.phase, "ORO-4T");
   assert.strictEqual(report.gate, GATE);
-  assert.strictEqual(report.signedApprovalRecordMountAuthorizationRequestPreparationResult, PASS);
+  assert.strictEqual(report.mountAuthorizationRequestSubmissionFinalDecisionReviewResult, PASS);
   assert.strictEqual(report.documentId, "PG77-ORO-4Q-SIGNED-APPROVAL-2026-06-03-001");
   assert.strictEqual(report.artifactFileName, ARTIFACT_FILE_NAME);
   assert.strictEqual(report.artifactStorage, PRIVATE_OFF_REPO);
@@ -124,9 +128,18 @@ function assertHappyPath(report) {
   assert(report.sanitizedPrivateStorageRef.startsWith("private://"));
   assert(!report.sanitizedPrivateStorageRef.includes(["C:", "Users"].join("\\")));
   assert.strictEqual(report.signedApprovalRecordId, "PG77-ORO-4S-SIGNED-APPROVAL-RECORD-2026-06-03-001");
-  assert.strictEqual(report.signedApprovalRecordType, "owner_signed_approval_artifact_hash_record");
-  assert.strictEqual(report.signedApprovalRecordSource, "private_artifact_hash_registry");
-  assert.strictEqual(report.signedApprovalRecordStorage, "repo_metadata_only");
+  assert.strictEqual(
+    report.mountAuthorizationRequestId,
+    "PG77-ORO-4S-MOUNT-AUTHORIZATION-REQUEST-DRAFT-2026-06-03-001"
+  );
+  assert.strictEqual(
+    report.mountAuthorizationSubmissionRecordId,
+    "PG77-ORO-4T-MOUNT-AUTHORIZATION-REQUEST-SUBMISSION-2026-06-03-001"
+  );
+  assert.strictEqual(
+    report.finalPreMountAuthorizationDecisionReviewId,
+    "PG77-ORO-4T-FINAL-PRE-MOUNT-DECISION-REVIEW-2026-06-03-001"
+  );
   assert.strictEqual(report.ownerSignedApprovalArtifactPrivateHashRegistered, true);
   assert.strictEqual(report.actualSignedApprovalArtifactPresent, true);
   assert.strictEqual(report.actualSignedApprovalArtifactStorage, PRIVATE_OFF_REPO);
@@ -143,19 +156,22 @@ function assertHappyPath(report) {
   assert.strictEqual(report.signedApprovalRecordVerifiedForIntake, true);
   assert.strictEqual(report.signedApprovalRecordAcceptedForMountRequestPreparation, true);
   assert.strictEqual(report.signedApprovalRecordAcceptedAsRouteMountAuthorization, false);
-  assert.strictEqual(
-    report.mountAuthorizationRequestId,
-    "PG77-ORO-4S-MOUNT-AUTHORIZATION-REQUEST-DRAFT-2026-06-03-001"
-  );
   assert.strictEqual(report.mountAuthorizationRequestPrepared, true);
-  assert.strictEqual(report.mountAuthorizationRequestSubmitted, false);
-  assert.strictEqual(report.mountAuthorizationRequestSubmissionAllowed, false);
-  assert.strictEqual(report.mountAuthorizationRequestStatus, PREPARED_NOT_SUBMITTED);
+  assert.strictEqual(report.mountAuthorizationRequestSubmitted, true);
+  assert.strictEqual(report.mountAuthorizationRequestSubmissionAllowed, true);
+  assert.strictEqual(report.mountAuthorizationRequestSubmissionMode, STATIC_INTERNAL_METADATA_ONLY);
+  assert.strictEqual(report.externalMountAuthorizationRequestSubmitted, false);
+  assert.strictEqual(report.mountAuthorizationRequestStatus, SUBMITTED_PENDING_FINAL_PRE_MOUNT_DECISION);
+  assert.strictEqual(report.finalPreMountAuthorizationDecisionReviewPrepared, true);
+  assert.strictEqual(
+    report.finalPreMountAuthorizationDecisionReviewStatus,
+    PENDING_FINAL_PRE_MOUNT_DECISION
+  );
   assert.strictEqual(report.finalPreMountAuthorizationDecisionPrepared, true);
   assert.strictEqual(report.finalPreMountAuthorizationDecisionIssued, false);
   assert.strictEqual(
     report.preMountAuthorization,
-    SIGNED_APPROVAL_RECORD_CREATED_PENDING_MOUNT_AUTHORIZATION_REQUEST_SUBMISSION
+    MOUNT_AUTHORIZATION_REQUEST_SUBMITTED_PENDING_FINAL_PRE_MOUNT_DECISION
   );
   assert.strictEqual(report.routeMountAuthorization, NOT_AUTHORIZED_FOR_MOUNT);
   assert.strictEqual(report.expressMountAllowed, false);
@@ -166,8 +182,8 @@ function assertHappyPath(report) {
   assert.strictEqual(report.nextPhaseRequiresSeparateAuthorization, true);
   assert(report.removedMountBlockers.includes("missing_actual_signed_approval_artifact"));
   assert(report.removedMountBlockers.includes("missing_signed_approval_record"));
+  assert(report.removedMountBlockers.includes("mount_authorization_request_not_submitted"));
   assert(report.remainingMountBlockers.includes("final_pre_mount_authorization_decision_not_issued"));
-  assert(report.remainingMountBlockers.includes("mount_authorization_request_not_submitted"));
   assert(report.remainingMountBlockers.includes("route_mount_authorization_not_granted"));
   assert.deepStrictEqual(report.blockers, []);
   assertNoUndefinedOrNan(report);
@@ -175,12 +191,11 @@ function assertHappyPath(report) {
 }
 
 function assertFailed(report, blocker) {
-  assert.strictEqual(report.signedApprovalRecordMountAuthorizationRequestPreparationResult, "FAIL");
+  assert.strictEqual(report.mountAuthorizationRequestSubmissionFinalDecisionReviewResult, "FAIL");
   assert(report.blockers.includes(blocker), `missing blocker ${blocker}.`);
   assert.strictEqual(report.signedApprovalArtifactAcceptedAsMountAuthorization, false);
   assert.strictEqual(report.signedApprovalRecordAcceptedAsRouteMountAuthorization, false);
-  assert.strictEqual(report.mountAuthorizationRequestSubmitted, false);
-  assert.strictEqual(report.mountAuthorizationRequestSubmissionAllowed, false);
+  assert.strictEqual(report.externalMountAuthorizationRequestSubmitted, false);
   assert.strictEqual(report.finalPreMountAuthorizationDecisionIssued, false);
   assert.strictEqual(report.routeMountAuthorization, NOT_AUTHORIZED_FOR_MOUNT);
   assert.strictEqual(report.expressMountAllowed, false);
@@ -190,13 +205,13 @@ function assertFailed(report, blocker) {
 }
 
 function assertBaselineHashChunks() {
-  const input = buildSignedApprovalRecordMountAuthorizationRequestPreparationInput();
+  const input = buildMountAuthorizationRequestSubmissionFinalDecisionReviewInput();
   const chunks = input.artifactRegistryMetadata.sha256Chunks;
   assert.strictEqual(chunks.length, 8, "SHA256 chunks must have 8 chunks.");
   for (const chunk of chunks) {
     assert(/^[0-9A-F]{8}$/.test(chunk), `invalid SHA256 chunk ${chunk}.`);
   }
-  const normalized = normalizeSignedApprovalRecordArtifactSha256Chunks(chunks);
+  const normalized = normalizeMountAuthorizationRequestArtifactSha256Chunks(chunks);
   assert.strictEqual(normalized.length, 64, "normalized SHA256 must have length 64.");
   assert(/^[0-9A-F]{64}$/.test(normalized), "normalized SHA256 must be valid hex.");
 }
@@ -245,33 +260,38 @@ function assertChangedFilesStaticSafety() {
 function assertDocsAndRegistration() {
   const doc = readRequired(DOC);
   for (const marker of [
-    "## Phase ORO-4S scope",
-    "## Relationship to ORO-4R",
-    "## Signed approval artifact private hash registry reference",
-    "## Signed approval record creation boundary",
-    "## Mount authorization request preparation boundary",
-    "## No request submission rule",
+    "## Phase ORO-4T scope",
+    "## Relationship to ORO-4S",
+    "## Signed approval record reference",
+    "## Mount authorization request submission record boundary",
+    "## Static/internal metadata submission rule",
+    "## No external submission rule",
+    "## Final pre-mount decision review boundary",
     "## No final decision issued rule",
     "## No route mount authorization rule",
+    "## No Express mount rule",
+    "## No public alias rule",
+    "## No runtime traffic rule",
     "## No PDF in repository rule",
     "## No signature in repository rule",
     "## No local absolute path in repository rule",
-    "## Signed approval record metadata",
-    "## Mount authorization request draft metadata",
+    "## Mount authorization request submission metadata",
+    "## Final pre-mount decision review metadata",
     "## Safety boundary",
     "## Remaining blockers",
     "## Next phase requirement",
-    "ORO-4S is not route mount approval.",
-    "ORO-4S creates a signed approval record metadata boundary only.",
-    "ORO-4S prepares a mount authorization request package only.",
-    "ORO-4S must not submit the mount authorization request.",
-    "ORO-4S must not issue final pre-mount authorization.",
-    "ORO-4S must not enable route mount.",
-    "ORO-4S must not enable Express mount.",
-    "ORO-4S must not enable runtime traffic.",
-    "ORO-4S must not commit the signed approval PDF.",
-    "ORO-4S must not commit a signature.",
-    "ORO-4S records only sanitized metadata and hash chunks.",
+    "ORO-4T is not route mount approval.",
+    "ORO-4T creates a mount authorization request submission record only.",
+    "ORO-4T submission is static/internal metadata only.",
+    "ORO-4T must not submit anything to an external network.",
+    "ORO-4T prepares final pre-mount decision review only.",
+    "ORO-4T must not issue final pre-mount authorization.",
+    "ORO-4T must not enable route mount.",
+    "ORO-4T must not enable Express mount.",
+    "ORO-4T must not enable runtime traffic.",
+    "ORO-4T must not commit the signed approval PDF.",
+    "ORO-4T must not commit a signature.",
+    "ORO-4T records only sanitized metadata and hash chunks.",
     "documentId: PG77-ORO-4Q-SIGNED-APPROVAL-2026-06-03-001",
     `artifactFileName: ${ARTIFACT_FILE_NAME}`,
     "artifactStorage: private_off_repo",
@@ -282,6 +302,8 @@ function assertDocsAndRegistration() {
     "baselineSafeCiRunId: 26891982447",
     "artifactRegistryCommit: 957b4d2941af642a51f001d0b74c51cf76db28cb",
     "artifactRegistrySafeCiRunId: 26904110250",
+    "signedApprovalRecordCommit: 7beb142dce561a53c9d833b73c0662a59d03ad47",
+    "signedApprovalRecordSafeCiRunId: 26907826949",
     "sha256Chunks: E5831182 / 83A4A30C / B3E506D5 / F880B4E1 / FCB1CCF1 / 2DB4AB46 / 84E12D6D / 7F6E62EE",
     "signedApprovalRecordId: PG77-ORO-4S-SIGNED-APPROVAL-RECORD-2026-06-03-001",
     "signedApprovalRecordType: owner_signed_approval_artifact_hash_record",
@@ -293,24 +315,20 @@ function assertDocsAndRegistration() {
     "signedApprovalRecordAcceptedForMountRequestPreparation: true",
     "signedApprovalRecordAcceptedAsRouteMountAuthorization: false",
     "mountAuthorizationRequestId: PG77-ORO-4S-MOUNT-AUTHORIZATION-REQUEST-DRAFT-2026-06-03-001",
+    "mountAuthorizationSubmissionRecordId: PG77-ORO-4T-MOUNT-AUTHORIZATION-REQUEST-SUBMISSION-2026-06-03-001",
     "mountAuthorizationRequestPrepared: true",
-    "mountAuthorizationRequestSubmitted: false",
-    "mountAuthorizationRequestSubmissionAllowed: false",
-    "mountAuthorizationRequestStatus: prepared_not_submitted",
-    "signedApprovalRecordMountAuthorizationRequestPreparationResult: PASS",
-    "ownerSignedApprovalArtifactPrivateHashRegistered: true",
-    "actualSignedApprovalArtifactPresent: true",
-    "actualSignedApprovalArtifactStorage: private_off_repo",
-    "signedApprovalArtifactCommittedToRepo: false",
-    "signatureCommittedToRepo: false",
-    "signedApprovalArtifactHashChunksPresent: true",
-    "signedApprovalArtifactHashFormatValid: true",
-    "signedApprovalArtifactIntakeRecordPresent: true",
-    "signedApprovalArtifactAcceptedForIntake: true",
-    "signedApprovalArtifactAcceptedAsMountAuthorization: false",
+    "mountAuthorizationRequestSubmitted: true",
+    "mountAuthorizationRequestSubmissionMode: static_internal_metadata_only",
+    "externalMountAuthorizationRequestSubmitted: false",
+    "mountAuthorizationRequestSubmissionAllowed: true",
+    "mountAuthorizationRequestStatus: submitted_pending_final_pre_mount_decision",
+    "finalPreMountAuthorizationDecisionReviewId: PG77-ORO-4T-FINAL-PRE-MOUNT-DECISION-REVIEW-2026-06-03-001",
+    "finalPreMountAuthorizationDecisionReviewPrepared: true",
+    "finalPreMountAuthorizationDecisionReviewStatus: pending_final_pre_mount_decision",
     "finalPreMountAuthorizationDecisionPrepared: true",
     "finalPreMountAuthorizationDecisionIssued: false",
-    "preMountAuthorization: signed_approval_record_created_pending_mount_authorization_request_submission",
+    "mountAuthorizationRequestSubmissionFinalDecisionReviewResult: PASS",
+    "preMountAuthorization: mount_authorization_request_submitted_pending_final_pre_mount_decision",
     "routeMountAuthorization: not_authorized_for_mount",
     "expressMountAllowed: false",
     "publicAliasAllowed: false",
@@ -320,8 +338,8 @@ function assertDocsAndRegistration() {
     "nextPhaseRequiresSeparateAuthorization: true",
     "`missing_actual_signed_approval_artifact`",
     "`missing_signed_approval_record`",
-    "`final_pre_mount_authorization_decision_not_issued`",
     "`mount_authorization_request_not_submitted`",
+    "`final_pre_mount_authorization_decision_not_issued`",
     "`route_mount_authorization_not_granted`",
   ]) {
     assert(doc.includes(marker), `${DOC} missing marker ${marker}.`);
@@ -339,40 +357,44 @@ function assertDocsAndRegistration() {
     [
       "docs/API_MAPPING.md",
       [
-        "ORO-4S callback staging route signed approval record mount authorization request preparation boundary",
+        "ORO-4T callback staging route mount authorization request submission final decision review boundary",
         "/api/oroplay/balance` and `/api/oroplay/transaction` remain not mounted",
         "/api/balance` and `/api/transaction` still have no public alias",
+        "static internal metadata only",
       ],
     ],
     [
       "docs/OROPLAY_INTEGRATION_PLAN.md",
       [
-        "## ORO-4S Current",
-        "signed approval record metadata and prepares a mount authorization request draft only",
-        "still requires separate mount authorization request submission and final decision issuance",
+        "## ORO-4T Current",
+        "mount authorization request submission record",
+        "still requires separate final pre-mount decision issuance",
+        "does not authorize route mount",
       ],
     ],
     [
       "docs/PHASE_ROADMAP.md",
       [
-        "ORO-4S current/signed approval record request preparation",
+        "ORO-4T current/local pending",
         "not authorized for mount",
       ],
     ],
     [
       "docs/SMOKE_COVERAGE.md",
       [
-        "ORO-4S OroPlay Callback Staging Route Signed Approval Record Mount Authorization Request Preparation Boundary Coverage",
+        "ORO-4T OroPlay Callback Staging Route Mount Authorization Request Submission Final Decision Review Boundary Coverage",
         SCRIPT,
-        "static/mock/signed-approval-record/request-preparation/no-mount smoke",
+        "static/mock/request-submission/final-decision-review/no-mount smoke",
       ],
     ],
     [
-      "docs/OROPLAY_CALLBACK_STAGING_ROUTE_SIGNED_APPROVAL_ARTIFACT_PRIVATE_HASH_REGISTRY.md",
+      "docs/OROPLAY_CALLBACK_STAGING_ROUTE_SIGNED_APPROVAL_RECORD_MOUNT_AUTHORIZATION_REQUEST_PREPARATION_BOUNDARY.md",
       [
-        "ORO-4S is a signed approval record creation boundary after ORO-4R",
-        "Removed by ORO-4S: `missing_signed_approval_record`",
+        "ORO-4T is a request submission record boundary after ORO-4S",
+        "Removed by ORO-4T: `mount_authorization_request_not_submitted`",
+        "`final_pre_mount_authorization_decision_not_issued`",
         "`route_mount_authorization_not_granted`",
+        "ORO-4S remains not route mount approval",
       ],
     ],
   ]) {
@@ -384,8 +406,8 @@ function assertDocsAndRegistration() {
 }
 
 function main() {
-  assert.strictEqual(typeof evaluateSignedApprovalRecordMountAuthorizationRequestPreparation, "function");
-  assert.strictEqual(typeof validateSignedApprovalRecordMountAuthorizationRequestPreparation, "function");
+  assert.strictEqual(typeof evaluateMountAuthorizationRequestSubmissionFinalDecisionReview, "function");
+  assert.strictEqual(typeof validateMountAuthorizationRequestSubmissionFinalDecisionReview, "function");
 
   assertDocsAndRegistration();
   assertNoActiveRouteMountInApp();
@@ -393,8 +415,9 @@ function main() {
   assertChangedFilesStaticSafety();
   assertBaselineHashChunks();
 
-  assertHappyPath(reportFor(baselineSignedApprovalRecordMountAuthorizationRequestPreparationFixture));
+  assertHappyPath(reportFor(baselineMountAuthorizationRequestSubmissionFinalDecisionReviewFixture));
 
+  assertFailed(reportFor(missingSignedApprovalRecordFixture), "signed approval record must be created");
   assertFailed(
     reportFor(missingArtifactHashRegistryFixture),
     "owner signed approval artifact private hash registry missing"
@@ -408,30 +431,33 @@ function main() {
   assertFailed(reportFor(localAbsolutePathFixture), "local absolute private artifact path must not be recorded");
   assertFailed(reportFor(artifactCommittedToRepoFixture), "signed approval artifact must not be committed to repo");
   assertFailed(reportFor(signatureCommittedToRepoFixture), "signature must not be committed to repo");
-  assertFailed(reportFor(signedApprovalRecordMissingFixture), "signed approval record must be created");
   assertFailed(
     reportFor(signedApprovalRecordAcceptedAsRouteMountAuthorizationFixture),
     "signed approval record cannot be accepted as route mount authorization"
   );
   assertFailed(
     reportFor(mountAuthorizationRequestNotPreparedFixture),
-    "mount authorization request draft must be prepared"
+    "mount authorization request must be prepared before submission record"
   );
   assertFailed(
-    reportFor(mountAuthorizationRequestSubmittedPrematureFixture),
-    "mount authorization request must not be submitted in ORO-4S"
+    reportFor(mountAuthorizationRequestNotSubmittedFixture),
+    "mount authorization request submission record must be present"
   );
   assertFailed(
-    reportFor(mountAuthorizationRequestSubmissionAllowedFixture),
-    "mount authorization request submission must not be allowed in ORO-4S"
+    reportFor(externalMountAuthorizationRequestSubmittedFixture),
+    "external mount authorization request submission must remain false"
+  );
+  assertFailed(
+    reportFor(finalDecisionReviewMissingFixture),
+    "final pre-mount authorization decision review must be prepared"
   );
   assertFailed(
     reportFor(finalDecisionIssuedPrematureFixture),
-    "final pre-mount authorization decision must not be issued in ORO-4S"
+    "final pre-mount authorization decision must not be issued in ORO-4T"
   );
-  assertFailed(reportFor(attemptedExpressMountFixture), "Express mount is not allowed in ORO-4S");
-  assertFailed(reportFor(attemptedPublicAliasFixture), "public alias is not allowed in ORO-4S");
-  assertFailed(reportFor(attemptedRuntimeTrafficFixture), "runtime traffic is not allowed in ORO-4S");
+  assertFailed(reportFor(attemptedExpressMountFixture), "Express mount is not allowed in ORO-4T");
+  assertFailed(reportFor(attemptedPublicAliasFixture), "public alias is not allowed in ORO-4T");
+  assertFailed(reportFor(attemptedRuntimeTrafficFixture), "runtime traffic is not allowed in ORO-4T");
   assertFailed(
     reportFor(walletMutationAllowedFixture),
     "forbidden runtime authorization marker present: attemptedAuthorizationStates.walletMutationAllowed"
@@ -441,34 +467,33 @@ function main() {
     "forbidden runtime authorization marker present: attemptedAuthorizationStates.ledgerMutationAllowed"
   );
 
-  const allReports = buildSignedApprovalRecordMountAuthorizationRequestPreparationFixtures().map(reportFor);
-  assert(allReports.length >= 19, "fixture set must include required ORO-4S scenarios.");
+  const allReports = buildMountAuthorizationRequestSubmissionFinalDecisionReviewFixtures().map(reportFor);
+  assert(allReports.length >= 20, "fixture set must include required ORO-4T scenarios.");
   for (const report of allReports) {
     assert.strictEqual(report.signedApprovalArtifactAcceptedAsMountAuthorization, false);
     assert.strictEqual(report.signedApprovalRecordAcceptedAsRouteMountAuthorization, false);
+    assert.strictEqual(report.externalMountAuthorizationRequestSubmitted, false);
+    assert.strictEqual(report.finalPreMountAuthorizationDecisionIssued, false);
     assert.strictEqual(report.routeMountAuthorization, NOT_AUTHORIZED_FOR_MOUNT);
     assert.strictEqual(report.expressMountAllowed, false);
     assert.strictEqual(report.publicAliasAllowed, false);
     assert.strictEqual(report.runtimeTrafficAllowed, false);
-    assert.strictEqual(report.mountAuthorizationRequestSubmitted, false);
-    assert.strictEqual(report.mountAuthorizationRequestSubmissionAllowed, false);
-    assert.strictEqual(report.finalPreMountAuthorizationDecisionIssued, false);
     assertResultHasNoSensitiveFields(report);
   }
 
-  const validation = validateSignedApprovalRecordMountAuthorizationRequestPreparation(
-    baselineSignedApprovalRecordMountAuthorizationRequestPreparationFixture
+  const validation = validateMountAuthorizationRequestSubmissionFinalDecisionReview(
+    baselineMountAuthorizationRequestSubmissionFinalDecisionReviewFixture
   );
   assert.strictEqual(validation.valid, true);
   assert.deepStrictEqual(validation.blockers, []);
   assert(validation.removedMountBlockers.includes("missing_actual_signed_approval_artifact"));
   assert(validation.removedMountBlockers.includes("missing_signed_approval_record"));
+  assert(validation.removedMountBlockers.includes("mount_authorization_request_not_submitted"));
   assert(validation.remainingMountBlockers.includes("final_pre_mount_authorization_decision_not_issued"));
-  assert(validation.remainingMountBlockers.includes("mount_authorization_request_not_submitted"));
   assert(validation.remainingMountBlockers.includes("route_mount_authorization_not_granted"));
 
   console.log(
-    "ORO-4S OroPlay callback staging route signed approval record mount authorization request preparation boundary smoke: PASS"
+    "ORO-4T OroPlay callback staging route mount authorization request submission final decision review boundary smoke: PASS"
   );
 }
 
@@ -476,7 +501,7 @@ try {
   main();
 } catch (error) {
   console.error(
-    "ORO-4S OroPlay callback staging route signed approval record mount authorization request preparation boundary smoke: FAIL"
+    "ORO-4T OroPlay callback staging route mount authorization request submission final decision review boundary smoke: FAIL"
   );
   console.error(error.message);
   process.exitCode = 1;

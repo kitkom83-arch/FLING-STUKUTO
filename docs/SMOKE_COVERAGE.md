@@ -2692,18 +2692,18 @@ ORO-4L callback staging route human approval record pre-mount authorization boun
 
 Covered files:
 
-- `docs/OROPLAY_CALLBACK_STAGING_ROUTE_HUMAN_APPROVAL_RECORD_PRE_MOUNT_AUTHORIZATION_BOUNDARY.md`
-- `src/game-provider-mock/oroplayCallbackStagingRouteHumanApprovalRecordPreMountAuthorizationBoundary.js`
-- `src/game-provider-mock/oroplayCallbackStagingRouteHumanApprovalRecordPreMountAuthorizationBoundaryFixtures.js`
-- `src/local-smoke-tests/oroplayCallbackStagingRouteHumanApprovalRecordPreMountAuthorizationBoundarySmoke.js`
+- ORO-4L boundary doc: human approval record pre-mount authorization.
+- ORO-4L mock harness: human approval pre-mount authorization boundary.
+- ORO-4L fixtures: happy path, missing evidence, mount attempts, and safety cases.
+- ORO-4L smoke wrapper: `src/local-smoke-tests/oro4lSmoke.js`.
 
 Smoke command:
 
-- `npm run smoke:oroplay-callback-staging-route-human-approval-record-pre-mount-authorization-boundary`
+- `npm run smoke:oro-4l`
 
 Coverage assertions:
 
-- Confirms happy path returns phase `ORO-4L`, gate `oroplay_callback_staging_route_human_approval_record_pre_mount_authorization_boundary`, `authorizationBoundaryResult=PASS`, `humanApprovalRecordTemplatePresent=true`, `signedHumanApprovalRecordPresent=false`, `preMountAuthorization=pending_manual_authorization`, `humanAuthorizationRequired=true`, and `nextPhaseRequiresSeparateAuthorization=true`.
+- Confirms happy path returns phase `ORO-4L`, gate alias `ORO-4L human approval boundary`, `authorizationBoundaryResult=PASS`, `humanApprovalRecordTemplatePresent=true`, `signedHumanApprovalRecordPresent=false`, `preMountAuthorization=pending_manual_authorization`, `humanAuthorizationRequired=true`, and `nextPhaseRequiresSeparateAuthorization=true`.
 - Confirms the happy path does not return `approved`, `mount_approved`, `ready_for_live_traffic`, `production_ready`, `live_ready`, `auto_approved`, or `route_mount_authorized`.
 - Confirms missing ORO-4K evidence and missing approval record template fail with `authorization_record_incomplete`.
 - Confirms signed approval attempts, accidental Express mount, public alias, wallet/ledger mutation, external network, and Prisma write fail with `not_authorized_for_mount`.
@@ -3046,18 +3046,18 @@ ORO-4S OroPlay Callback Staging Route Signed Approval Record Mount Authorization
 
 Covered files:
 
-- `docs/OROPLAY_CALLBACK_STAGING_ROUTE_SIGNED_APPROVAL_RECORD_MOUNT_AUTHORIZATION_REQUEST_PREPARATION_BOUNDARY.md`
-- `src/game-provider-mock/oroplayCallbackStagingRouteSignedApprovalRecordMountAuthorizationRequestPreparationBoundary.js`
-- `src/game-provider-mock/oroplayCallbackStagingRouteSignedApprovalRecordMountAuthorizationRequestPreparationBoundaryFixtures.js`
-- `src/local-smoke-tests/oroplayCallbackStagingRouteSignedApprovalRecordMountAuthorizationRequestPreparationBoundarySmoke.js`
+- ORO-4S boundary doc: signed approval record and request preparation.
+- ORO-4S mock harness: signed approval record request preparation.
+- ORO-4S fixtures: registry, hash, request draft, and safety cases.
+- ORO-4S smoke wrapper: `src/local-smoke-tests/oro4sSmoke.js`.
 
 Package script:
 
-- `smoke:oroplay-callback-staging-route-signed-approval-record-mount-authorization-request-preparation-boundary`
+- `smoke:oro-4s`
 
 Coverage assertions:
 
-- Confirms happy path returns phase `ORO-4S`, gate `oroplay_callback_staging_route_signed_approval_record_mount_authorization_request_preparation_boundary`, `signedApprovalRecordMountAuthorizationRequestPreparationResult=PASS`, `ownerSignedApprovalArtifactPrivateHashRegistered=true`, `actualSignedApprovalArtifactPresent=true`, `actualSignedApprovalArtifactStorage=private_off_repo`, `signedApprovalArtifactCommittedToRepo=false`, `signatureCommittedToRepo=false`, `signedApprovalArtifactHashChunksPresent=true`, `signedApprovalArtifactHashFormatValid=true`, `signedApprovalArtifactNormalizedHashLength=64`, `signedApprovalArtifactIntakeRecordPresent=true`, `signedApprovalArtifactAcceptedForIntake=true`, `signedApprovalArtifactAcceptedAsMountAuthorization=false`, `signedApprovalRecordCreated=true`, `signedApprovalRecordPresent=true`, `signedApprovalRecordVerifiedForIntake=true`, `signedApprovalRecordAcceptedForMountRequestPreparation=true`, `signedApprovalRecordAcceptedAsRouteMountAuthorization=false`, `mountAuthorizationRequestPrepared=true`, `mountAuthorizationRequestSubmitted=false`, `mountAuthorizationRequestSubmissionAllowed=false`, `mountAuthorizationRequestStatus=prepared_not_submitted`, `finalPreMountAuthorizationDecisionPrepared=true`, `finalPreMountAuthorizationDecisionIssued=false`, `preMountAuthorization=signed_approval_record_created_pending_mount_authorization_request_submission`, `routeMountAuthorization=not_authorized_for_mount`, `expressMountAllowed=false`, `publicAliasAllowed=false`, `runtimeTrafficAllowed=false`, `humanAuthorizationRequired=true`, `separateRouteMountApprovalRequired=true`, and `nextPhaseRequiresSeparateAuthorization=true`.
+- Confirms happy path returns phase `ORO-4S`, gate alias `ORO-4S request preparation boundary`, `signedApprovalRecordMountAuthorizationRequestPreparationResult=PASS`, `ownerSignedApprovalArtifactPrivateHashRegistered=true`, `actualSignedApprovalArtifactPresent=true`, `actualSignedApprovalArtifactStorage=private_off_repo`, `signedApprovalArtifactCommittedToRepo=false`, `signatureCommittedToRepo=false`, `signedApprovalArtifactHashChunksPresent=true`, `signedApprovalArtifactHashFormatValid=true`, `signedApprovalArtifactNormalizedHashLength=64`, `signedApprovalArtifactIntakeRecordPresent=true`, `signedApprovalArtifactAcceptedForIntake=true`, `signedApprovalArtifactAcceptedAsMountAuthorization=false`, `signedApprovalRecordCreated=true`, `signedApprovalRecordPresent=true`, `signedApprovalRecordVerifiedForIntake=true`, `signedApprovalRecordAcceptedForMountRequestPreparation=true`, `signedApprovalRecordAcceptedAsRouteMountAuthorization=false`, `mountAuthorizationRequestPrepared=true`, `mountAuthorizationRequestSubmitted=false`, `mountAuthorizationRequestSubmissionAllowed=false`, `mountAuthorizationRequestStatus=prepared_not_submitted`, `finalPreMountAuthorizationDecisionPrepared=true`, `finalPreMountAuthorizationDecisionIssued=false`, `preMountAuthorization=signed_approval_record_created_pending_mount_authorization_request_submission`, `routeMountAuthorization=not_authorized_for_mount`, `expressMountAllowed=false`, `publicAliasAllowed=false`, `runtimeTrafficAllowed=false`, `humanAuthorizationRequired=true`, `separateRouteMountApprovalRequired=true`, and `nextPhaseRequiresSeparateAuthorization=true`.
 - Confirms SHA256 is stored as 8 chunks and normalized only in memory for length/hex validation.
 - Confirms missing artifact hash registry, missing hash chunks, invalid hash chunk, full hash literal, local absolute path, repo-committed artifact, repo-committed signature, missing signed approval record, signed approval record accepted as route mount authorization, request not prepared, premature request submission, premature submission allowed, premature final decision, attempted Express mount, attempted public alias, attempted runtime traffic, wallet mutation allowed, and ledger mutation allowed fail closed.
 - Confirms `src/app.js` does not contain `/api/oroplay/balance`, `/api/oroplay/transaction`, `/api/balance`, or `/api/transaction`.
@@ -3076,6 +3076,58 @@ Boundary:
 - Signed approval record created and present as metadata only.
 - Signed approval record not accepted as route mount authorization.
 - Mount authorization request prepared but not submitted.
+- Final pre-mount decision not issued.
+- Route mount not authorized.
+- No `src/app.js` change.
+- No Express mount.
+- No public alias.
+- No active route.
+- No runtime traffic.
+- No wallet mutation.
+- No ledger mutation.
+- No Prisma write.
+- No DB transaction.
+- No external network.
+- No live OroPlay API call.
+- No real money.
+
+## 87. ORO-4T OroPlay Callback Staging Route Mount Authorization Request Submission Final Decision Review Boundary Coverage
+
+ORO-4T OroPlay Callback Staging Route Mount Authorization Request Submission Final Decision Review Boundary Coverage. The phase is Mount Authorization Request Submission Record / Final Pre-Mount Decision Review Boundary only. It creates static/internal mount authorization request submission metadata from ORO-4S signed approval record metadata and prepares final pre-mount decision review while keeping final pre-mount authorization issuance, route mount, Express mount, public alias, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions, external network, live OroPlay calls, and real money blocked.
+
+Covered files:
+
+- ORO-4T boundary doc: request submission and final decision review.
+- ORO-4T mock harness: request submission final decision review boundary.
+- ORO-4T fixtures: submission metadata, final review, and safety cases.
+- ORO-4T smoke wrapper: `src/local-smoke-tests/oro4tSmoke.js`.
+
+Package script:
+
+- `smoke:oro-4t`
+
+Coverage assertions:
+
+- Confirms happy path returns phase `ORO-4T`, gate alias `ORO-4T request submission review boundary`, `mountAuthorizationRequestSubmissionFinalDecisionReviewResult=PASS`, `ownerSignedApprovalArtifactPrivateHashRegistered=true`, `actualSignedApprovalArtifactPresent=true`, `actualSignedApprovalArtifactStorage=private_off_repo`, `signedApprovalArtifactCommittedToRepo=false`, `signatureCommittedToRepo=false`, `signedApprovalArtifactHashChunksPresent=true`, `signedApprovalArtifactHashFormatValid=true`, `signedApprovalArtifactNormalizedHashLength=64`, `signedApprovalArtifactIntakeRecordPresent=true`, `signedApprovalArtifactAcceptedForIntake=true`, `signedApprovalArtifactAcceptedAsMountAuthorization=false`, `signedApprovalRecordCreated=true`, `signedApprovalRecordPresent=true`, `signedApprovalRecordVerifiedForIntake=true`, `signedApprovalRecordAcceptedForMountRequestPreparation=true`, `signedApprovalRecordAcceptedAsRouteMountAuthorization=false`, `mountAuthorizationRequestPrepared=true`, `mountAuthorizationRequestSubmitted=true`, `mountAuthorizationRequestSubmissionAllowed=true`, `mountAuthorizationRequestSubmissionMode=static_internal_metadata_only`, `externalMountAuthorizationRequestSubmitted=false`, `mountAuthorizationRequestStatus=submitted_pending_final_pre_mount_decision`, `finalPreMountAuthorizationDecisionReviewPrepared=true`, `finalPreMountAuthorizationDecisionReviewStatus=pending_final_pre_mount_decision`, `finalPreMountAuthorizationDecisionPrepared=true`, `finalPreMountAuthorizationDecisionIssued=false`, `preMountAuthorization=mount_authorization_request_submitted_pending_final_pre_mount_decision`, `routeMountAuthorization=not_authorized_for_mount`, `expressMountAllowed=false`, `publicAliasAllowed=false`, `runtimeTrafficAllowed=false`, `humanAuthorizationRequired=true`, `separateRouteMountApprovalRequired=true`, and `nextPhaseRequiresSeparateAuthorization=true`.
+- Confirms SHA256 is stored as 8 chunks and normalized only in memory for length/hex validation.
+- Confirms missing signed approval record, missing artifact hash registry, missing hash chunks, invalid hash chunk, full hash literal, local absolute path, repo-committed artifact, repo-committed signature, signed approval record accepted as route mount authorization, mount authorization request not prepared, mount authorization request not submitted, external mount authorization request submitted, final decision review missing, final decision issued premature, attempted Express mount, attempted public alias, attempted runtime traffic, wallet mutation allowed, and ledger mutation allowed fail closed.
+- Confirms `src/app.js` does not contain `/api/oroplay/balance`, `/api/oroplay/transaction`, `/api/balance`, or `/api/transaction`.
+- Confirms git tracked files do not include `PG77_ORO-4Q_OWNER_SIGNED_APPROVAL_2026-06-03.pdf`.
+- Confirms changed/new files contain no local absolute private path, no full SHA256 literal, no secret-shaped values, and result output contains no sensitive field markers.
+
+Boundary:
+
+- static/mock/request-submission/final-decision-review/no-mount smoke only.
+- Private artifact metadata and chunked hash only.
+- Signed approval PDF remains outside repository.
+- Signature remains outside repository.
+- No local absolute private path.
+- No full SHA256 literal.
+- Signed approval record created and present as metadata only.
+- Signed approval record not accepted as route mount authorization.
+- Mount authorization request submitted as static/internal metadata only.
+- No external mount authorization request submission.
+- Final pre-mount decision review prepared only.
 - Final pre-mount decision not issued.
 - Route mount not authorized.
 - No `src/app.js` change.
@@ -3201,18 +3253,18 @@ ORO-4O callback staging route signed approval artifact intake pre-mount evidence
 
 Covered files:
 
-- `docs/OROPLAY_CALLBACK_STAGING_ROUTE_SIGNED_APPROVAL_ARTIFACT_INTAKE_PRE_MOUNT_EVIDENCE_BOUNDARY.md`
-- `src/game-provider-mock/oroplayCallbackStagingRouteSignedApprovalArtifactIntakePreMountEvidenceBoundary.js`
-- `src/game-provider-mock/oroplayCallbackStagingRouteSignedApprovalArtifactIntakePreMountEvidenceBoundaryFixtures.js`
-- `src/local-smoke-tests/oroplayCallbackStagingRouteSignedApprovalArtifactIntakePreMountEvidenceBoundarySmoke.js`
+- ORO-4O boundary doc: signed approval artifact intake evidence.
+- ORO-4O mock harness: artifact intake evidence boundary.
+- ORO-4O fixtures: artifact intake, evidence, and safety cases.
+- ORO-4O smoke wrapper: `src/local-smoke-tests/oro4oSmoke.js`.
 
 Package script:
 
-- `smoke:oroplay-callback-staging-route-signed-approval-artifact-intake-pre-mount-evidence-boundary`
+- `smoke:oro-4o`
 
 Coverage assertions:
 
-- Confirms happy path returns phase `ORO-4O`, gate `oroplay_callback_staging_route_signed_approval_artifact_intake_pre_mount_evidence_boundary`, `signedApprovalArtifactIntakeBoundaryResult=PASS`, `signedApprovalArtifactIntakeContractPresent=true`, `preMountHumanApprovalEvidenceBoundaryPresent=true`, `actualSignedApprovalArtifactPresent=false`, `signedApprovalRecordPresent=false`, `signedApprovalArtifactAccepted=false`, `signedApprovalArtifactVerified=false`, `mockSignedApprovalArtifactSchemaOnly=true`, `mountAuthorizationEvidencePackPrepared=true`, `mountAuthorizationEvidencePackSubmitted=false`, `mountAuthorizationRequestSubmitted=false`, `mountAuthorizationEvidenceStatus=evidence_pack_prepared_pending_actual_signed_approval_artifact`, `preMountAuthorization=pending_actual_signed_approval_artifact`, `routeMountAuthorization=not_authorized_for_mount`, `humanAuthorizationRequired=true`, `separateRouteMountApprovalRequired=true`, and `nextPhaseRequiresSeparateAuthorization=true`.
+- Confirms happy path returns phase `ORO-4O`, gate alias `ORO-4O artifact intake evidence boundary`, `signedApprovalArtifactIntakeBoundaryResult=PASS`, `signedApprovalArtifactIntakeContractPresent=true`, `preMountHumanApprovalEvidenceBoundaryPresent=true`, `actualSignedApprovalArtifactPresent=false`, `signedApprovalRecordPresent=false`, `signedApprovalArtifactAccepted=false`, `signedApprovalArtifactVerified=false`, `mockSignedApprovalArtifactSchemaOnly=true`, `mountAuthorizationEvidencePackPrepared=true`, `mountAuthorizationEvidencePackSubmitted=false`, `mountAuthorizationRequestSubmitted=false`, `mountAuthorizationEvidenceStatus=evidence_pack_prepared_pending_actual_signed_approval_artifact`, `preMountAuthorization=pending_actual_signed_approval_artifact`, `routeMountAuthorization=not_authorized_for_mount`, `humanAuthorizationRequired=true`, `separateRouteMountApprovalRequired=true`, and `nextPhaseRequiresSeparateAuthorization=true`.
 - Confirms chat approval and plain text approval are not counted as signed approval artifacts.
 - Confirms mock signed approval artifact metadata validation is schema-only and metadata-only.
 - Confirms malformed mock artifact metadata, missing signer, missing signedAt, missing scope, missing artifact digest, invalid artifact digest format, missing evidence reviewer, and stale timestamp fail closed.
@@ -3252,18 +3304,18 @@ ORO-4P callback staging route signed approval artifact acceptance review final p
 
 Covered files:
 
-- `docs/OROPLAY_CALLBACK_STAGING_ROUTE_SIGNED_APPROVAL_ARTIFACT_ACCEPTANCE_REVIEW_FINAL_PRE_MOUNT_AUTHORIZATION_DECISION_BOUNDARY.md`
-- `src/game-provider-mock/oroplayCallbackStagingRouteSignedApprovalArtifactAcceptanceReviewFinalPreMountAuthorizationDecisionBoundary.js`
-- `src/game-provider-mock/oroplayCallbackStagingRouteSignedApprovalArtifactAcceptanceReviewFinalPreMountAuthorizationDecisionBoundaryFixtures.js`
-- `src/local-smoke-tests/oroplayCallbackStagingRouteSignedApprovalArtifactAcceptanceReviewFinalPreMountAuthorizationDecisionBoundarySmoke.js`
+- ORO-4P boundary doc: artifact acceptance review and final decision.
+- ORO-4P mock harness: artifact acceptance final decision boundary.
+- ORO-4P fixtures: acceptance review, final decision, and safety cases.
+- ORO-4P smoke wrapper: `src/local-smoke-tests/oro4pSmoke.js`.
 
 Package script:
 
-- `smoke:oroplay-callback-staging-route-signed-approval-artifact-acceptance-review-final-pre-mount-authorization-decision-boundary`
+- `smoke:oro-4p`
 
 Coverage assertions:
 
-- Confirms happy path returns phase `ORO-4P`, gate `oroplay_callback_staging_route_signed_approval_artifact_acceptance_review_final_pre_mount_authorization_decision_boundary`, `signedApprovalArtifactAcceptanceReviewBoundaryResult=PASS`, `signedApprovalArtifactAcceptanceReviewContractPresent=true`, `finalPreMountAuthorizationDecisionBoundaryPresent=true`, `actualSignedApprovalArtifactPresent=false`, `signedApprovalRecordPresent=false`, `signedApprovalArtifactAccepted=false`, `signedApprovalArtifactVerified=false`, `mockSignedApprovalArtifactReviewOnly=true`, `acceptanceReviewStatus=review_boundary_passed_pending_actual_signed_approval_artifact`, `finalPreMountAuthorizationDecisionPrepared=true`, `finalPreMountAuthorizationDecisionIssued=false`, `finalPreMountAuthorizationDecisionStatus=decision_pack_prepared_pending_actual_signed_approval_artifact`, `mountAuthorizationEvidencePackPrepared=true`, `mountAuthorizationEvidencePackSubmitted=false`, `mountAuthorizationRequestSubmitted=false`, `preMountAuthorization=pending_actual_signed_approval_artifact`, `routeMountAuthorization=not_authorized_for_mount`, `expressMountAllowed=false`, `publicAliasAllowed=false`, `runtimeTrafficAllowed=false`, `humanAuthorizationRequired=true`, `separateRouteMountApprovalRequired=true`, and `nextPhaseRequiresSeparateAuthorization=true`.
+- Confirms happy path returns phase `ORO-4P`, gate alias `ORO-4P artifact acceptance review boundary`, `signedApprovalArtifactAcceptanceReviewBoundaryResult=PASS`, `signedApprovalArtifactAcceptanceReviewContractPresent=true`, `finalPreMountAuthorizationDecisionBoundaryPresent=true`, `actualSignedApprovalArtifactPresent=false`, `signedApprovalRecordPresent=false`, `signedApprovalArtifactAccepted=false`, `signedApprovalArtifactVerified=false`, `mockSignedApprovalArtifactReviewOnly=true`, `acceptanceReviewStatus=review_boundary_passed_pending_actual_signed_approval_artifact`, `finalPreMountAuthorizationDecisionPrepared=true`, `finalPreMountAuthorizationDecisionIssued=false`, `finalPreMountAuthorizationDecisionStatus=decision_pack_prepared_pending_actual_signed_approval_artifact`, `mountAuthorizationEvidencePackPrepared=true`, `mountAuthorizationEvidencePackSubmitted=false`, `mountAuthorizationRequestSubmitted=false`, `preMountAuthorization=pending_actual_signed_approval_artifact`, `routeMountAuthorization=not_authorized_for_mount`, `expressMountAllowed=false`, `publicAliasAllowed=false`, `runtimeTrafficAllowed=false`, `humanAuthorizationRequired=true`, `separateRouteMountApprovalRequired=true`, and `nextPhaseRequiresSeparateAuthorization=true`.
 - Confirms chat approval and plain text approval are not counted as signed approval artifacts.
 - Confirms mock signed approval artifact metadata validation is review-only, schema-only, and metadata-only.
 - Confirms malformed mock artifact metadata, missing signer, missing signedAt, missing scope, missing artifact digest, invalid artifact digest format, missing acceptance reviewer, missing final decision reviewer, and stale timestamp fail closed.
@@ -3308,18 +3360,18 @@ ORO-4N callback staging route signed approval record review mount authorization 
 
 Covered files:
 
-- `docs/OROPLAY_CALLBACK_STAGING_ROUTE_SIGNED_APPROVAL_RECORD_REVIEW_MOUNT_AUTHORIZATION_REQUEST_BOUNDARY.md`
-- `src/game-provider-mock/oroplayCallbackStagingRouteSignedApprovalRecordReviewMountAuthorizationRequestBoundary.js`
-- `src/game-provider-mock/oroplayCallbackStagingRouteSignedApprovalRecordReviewMountAuthorizationRequestBoundaryFixtures.js`
-- `src/local-smoke-tests/oroplayCallbackStagingRouteSignedApprovalRecordReviewMountAuthorizationRequestBoundarySmoke.js`
+- ORO-4N boundary doc: signed approval record review request boundary.
+- ORO-4N mock harness: signed approval record review request boundary.
+- ORO-4N fixtures: signed record review, request pack, and safety cases.
+- ORO-4N smoke wrapper: `src/local-smoke-tests/oro4nSmoke.js`.
 
 Package script:
 
-- `smoke:oroplay-callback-staging-route-signed-approval-record-review-mount-authorization-request-boundary`
+- `smoke:oro-4n`
 
 Coverage assertions:
 
-- Confirms happy path returns phase `ORO-4N`, gate `oroplay_callback_staging_route_signed_approval_record_review_mount_authorization_request_boundary`, `signedApprovalRecordReviewBoundaryResult=PASS`, `signedApprovalRecordReviewContractPresent=true`, `mountAuthorizationRequestBoundaryPresent=true`, `signedApprovalRecordPresent=false`, `signedApprovalRecordAccepted=false`, `signedApprovalRecordVerified=false`, `mountAuthorizationRequestPrepared=true`, `mountAuthorizationRequestSubmitted=false`, `mountAuthorizationRequestStatus=request_pack_prepared_pending_actual_signed_record`, `preMountAuthorization=pending_signed_approval_record`, `routeMountAuthorization=not_authorized_for_mount`, `humanAuthorizationRequired=true`, `separateRouteMountApprovalRequired=true`, and `nextPhaseRequiresSeparateAuthorization=true`.
+- Confirms happy path returns phase `ORO-4N`, gate alias `ORO-4N signed record review boundary`, `signedApprovalRecordReviewBoundaryResult=PASS`, `signedApprovalRecordReviewContractPresent=true`, `mountAuthorizationRequestBoundaryPresent=true`, `signedApprovalRecordPresent=false`, `signedApprovalRecordAccepted=false`, `signedApprovalRecordVerified=false`, `mountAuthorizationRequestPrepared=true`, `mountAuthorizationRequestSubmitted=false`, `mountAuthorizationRequestStatus=request_pack_prepared_pending_actual_signed_record`, `preMountAuthorization=pending_signed_approval_record`, `routeMountAuthorization=not_authorized_for_mount`, `humanAuthorizationRequired=true`, `separateRouteMountApprovalRequired=true`, and `nextPhaseRequiresSeparateAuthorization=true`.
 - Confirms chat approval and plain text approval are not counted as signed approval records.
 - Confirms mock signed record validation is schema-only and review-only.
 - Confirms malformed mock signed record, missing signer, missing signedAt, missing scope, missing approval artifact hash, missing reviewer, and stale timestamp fail closed.

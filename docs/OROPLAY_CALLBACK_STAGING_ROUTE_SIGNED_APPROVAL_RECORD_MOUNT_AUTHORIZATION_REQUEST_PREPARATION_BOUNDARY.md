@@ -203,6 +203,17 @@ Remaining mount blockers:
 - `mount_authorization_request_not_submitted`
 - `route_mount_authorization_not_granted`
 
+## ORO-4T follow-up note
+
+ORO-4T is a request submission record boundary after ORO-4S. It records the mount authorization request submission as static/internal metadata only.
+
+Removed by ORO-4T: `mount_authorization_request_not_submitted`.
+
+ORO-4S remains not route mount approval. ORO-4T also remains not route mount approval. The remaining mount blockers after ORO-4T are:
+
+- `final_pre_mount_authorization_decision_not_issued`
+- `route_mount_authorization_not_granted`
+
 ## Next phase requirement
 
 The next phase must require separate explicit authorization for mount authorization request submission, final pre-mount authorization issuance, and route mount authorization.
