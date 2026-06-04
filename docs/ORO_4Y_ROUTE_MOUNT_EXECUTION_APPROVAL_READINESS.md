@@ -184,3 +184,7 @@ keeps `routeMountAuthorization=not_authorized_for_mount`,
 `executionApprovalGranted = false`, `implementationExecutionApproved = false`,
 `expressMountAllowed = false`, `expressMountImplemented = false`,
 `publicAliasAllowed = false`, and `runtimeTrafficAllowed = false`.
+
+ORO-5A execution approval request may submit a request after ORO-4Z only. It
+must still keep final execution approval decision, patch implementation
+authorization, route mount authorization, and runtime traffic blocked.

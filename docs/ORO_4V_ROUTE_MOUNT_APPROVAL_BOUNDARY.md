@@ -168,3 +168,8 @@ ORO-4Z patch review decision may review the prepared route mount patch for
 execution approval request only. ORO-4Z still does not authorize route
 execution, src/app.js changes, Express route mount, public aliases, runtime
 traffic, or patch implementation.
+
+ORO-5A execution approval request may submit the next request only after
+ORO-4Z. It must still keep final execution approval decision, patch
+implementation authorization, route mount authorization, and runtime traffic
+blocked.

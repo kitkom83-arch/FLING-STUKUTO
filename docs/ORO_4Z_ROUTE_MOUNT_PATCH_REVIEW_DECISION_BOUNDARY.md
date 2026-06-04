@@ -198,3 +198,15 @@ approval.
 Any future runtime traffic requires separate explicit runtime traffic approval.
 
 ORO-4Z is not that execution phase and is not runtime traffic approval.
+
+## ORO-5A downstream boundary
+
+ORO-5A execution approval request may consume the ORO-4Z review result and
+submit an execution approval request only.
+
+ORO-5A patch implementation hold must keep patch implementation authorization,
+route mount authorization, execution authorization, public aliases, and runtime
+traffic blocked.
+
+ORO-5A request submission is not final execution approval, patch implementation
+approval, route mount authorization, or runtime traffic approval.
