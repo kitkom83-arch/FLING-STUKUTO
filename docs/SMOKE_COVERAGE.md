@@ -3088,6 +3088,63 @@ Boundary:
 - No public alias.
 - No runtime traffic.
 
+## 92. ORO-4Y Route Mount Execution Approval Readiness Coverage
+
+ORO-4Y Route Mount Execution Approval Readiness Coverage. The phase records
+execution approval readiness recorded and ORO-4Y patch review preparation
+metadata only. It keeps execution approval, route mount, Express mount, public
+alias, runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB
+transactions, migration, external network, live OroPlay calls, and real money
+blocked.
+
+Covered files:
+
+- ORO-4Y readiness doc: execution approval readiness boundary.
+- ORO-4Y mock helper: readiness summary and patch review gate.
+- ORO-4Y fixtures: happy path, hold cases, and safety attempts.
+- ORO-4Y smoke wrapper: `src/local-smoke-tests/oro4ySmoke.js`.
+
+Package script:
+
+- `smoke:oro-4y`
+
+Coverage assertions:
+
+- Confirms happy path returns `executionApprovalReadinessRecorded=true`,
+  `executionApprovalGranted=false`, `routeMountPatchReviewPrepared=true`,
+  `routeMountPatchReviewed=false`, `routeMountPatchApproved=false`,
+  `routeMountPatchImplemented=false`, `implementationExecutionApproved=false`,
+  `routeMountExecutionAuthorization=not_authorized_for_execution`,
+  `routeMountAuthorization=not_authorized_for_mount`,
+  `expressMountAllowed=false`, `expressMountImplemented=false`,
+  `publicAliasAllowed=false`, and `runtimeTrafficAllowed=false`.
+- Confirms execution approval readiness recorded but execution is still not
+  authorized.
+- Confirms missing ORO-4X decision, failed ORO-4X decision, implementation
+  approval not granted, and wrong approval scope hold.
+- Confirms attempted `src/app.js` edit, route/controller runtime change,
+  Express mount, public alias, runtime traffic, wallet mutation, ledger
+  mutation, Prisma write, DB transaction, migration, external network, and
+  secret-shaped output hold.
+- Confirms readiness cannot be treated as route execution authorization,
+  route mount authorization, or runtime traffic approval.
+- Confirms `src/app.js` does not contain the OroPlay callback route candidates
+  or public aliases.
+
+Boundary:
+
+- execution approval readiness recorded.
+- Patch review preparation recorded.
+- Execution approval not granted.
+- Implementation execution not approved.
+- Route mount execution authorization remains blocked.
+- Actual patch implementation approval remains required.
+- Separate runtime traffic approval remains required.
+- No `src/app.js` change.
+- No Express mount.
+- No public alias.
+- No runtime traffic.
+
 ## 90. ORO-4W Route Mount Implementation Approval Readiness Coverage
 
 ORO-4W Route Mount Implementation Approval Readiness Coverage. The phase

@@ -159,3 +159,7 @@ src/app.js changes, Express route mount, public aliases, or runtime traffic.
 ORO-4X implementation approval decision may record static planning approval
 only after ORO-4W. ORO-4X still does not authorize execution, src/app.js
 changes, Express route mount, public aliases, or runtime traffic.
+
+ORO-4Y execution approval readiness may prepare the execution approval request
+boundary only after ORO-4X. ORO-4Y still does not authorize route execution,
+src/app.js changes, Express route mount, public aliases, or runtime traffic.

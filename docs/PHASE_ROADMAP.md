@@ -130,7 +130,8 @@ OroPlay phase sequence after current mock/contract phases:
 - ORO-4U: final pre-mount decision boundary. ORO-4U closed; not authorized for mount.
 - ORO-4V: route mount approval boundary. ORO-4V closed; not authorized for mount.
 - ORO-4W: implementation approval readiness. ORO-4W closed; not authorized for mount.
-- ORO-4X: implementation approval decision. ORO-4X current/local pending until commit, push, and CI; execution still not authorized.
+- ORO-4X: implementation approval decision. ORO-4X closed; execution still not authorized.
+- ORO-4Y: execution approval readiness. ORO-4Y current/local pending until commit, push, and CI; execution still not authorized.
 - ORO-2B current/fail-closed route skeleton remains the active fail-closed runtime default.
 - ORO-3 is not allowed until ORO-2B passes; ORO-2C and ORO-3A add newer gates before runtime work.
 - ORO-3B is not allowed until ORO-2B and ORO-2C are closed and ORO-3A passes.
@@ -608,7 +609,7 @@ network, route mount authorization, or real money.
 
 ## ORO-4X current/local pending implementation approval decision
 
-ORO-4X current/local pending until commit, push, and CI. ORO-4X
+ORO-4X closed. ORO-4X
 implementation approval decision / ORO-4X execution still not authorized gate
 adds only no-mount docs, an isolated static/mock decision helper, mock
 fixtures, local smoke coverage, package registration, and runAllLocalSmoke
@@ -665,6 +666,67 @@ authorize `src/app.js` changes, Express route mount, public aliases, runtime
 traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions,
 live OroPlay calls, external network, route mount authorization, or real
 money.
+
+## ORO-4Y current/local pending execution approval readiness
+
+ORO-4Y current/local pending until commit, push, and CI. ORO-4Y execution
+approval readiness / ORO-4Y patch review preparation adds only no-mount docs,
+an isolated static/mock readiness helper, mock fixtures, local smoke coverage,
+package registration, and runAllLocalSmoke registration.
+
+ORO-4Y records execution approval readiness only and cannot authorize runtime
+route execution.
+
+ORO-4Y packages ORO-4X as input and records readiness metadata only. It sets
+`executionApprovalReadinessRecorded=true`,
+`executionApprovalGranted=false`, `routeMountPatchReviewPrepared=true`,
+`routeMountPatchReviewed=false`, `routeMountPatchApproved=false`,
+`routeMountPatchImplemented=false`, `implementationExecutionApproved=false`,
+`routeMountExecutionAuthorization=not_authorized_for_execution`,
+`routeMountAuthorization=not_authorized_for_mount`, `expressMountAllowed=false`,
+`expressMountImplemented=false`, `publicAliasAllowed=false`,
+`runtimeTrafficAllowed=false`,
+`nextPhaseRequiresExplicitExecutionApproval=true`,
+`nextPhaseRequiresActualPatchImplementationApproval=true`, and
+`nextPhaseRequiresSeparateRuntimeTrafficApproval=true`. Route candidates
+`/api/oroplay/balance` and `/api/oroplay/transaction` remain inactive,
+unmounted, non-public, and not authorized for traffic. Public aliases
+`/api/balance` and `/api/transaction` remain blocked.
+
+ORO-4Y does not mount any Express route, does not edit `src/app.js`, does not
+create an HTTP listener, does not accept runtime traffic, does not call
+OroPlay, does not mutate wallet or ledger state, does not write through
+Prisma, does not create a DB transaction, does not migrate, does not deploy,
+and does not touch real money.
+
+ORO-4Y target criteria:
+
+- ORO-4Y execution approval readiness doc exists and states the readiness
+  boundary is execution approval preparation only.
+- ORO-4Y helper exports status, input builder, evaluator, patch review gate,
+  summary builder, and validator.
+- ORO-4Y fixtures cover happy path, missing ORO-4X decision, failed ORO-4X
+  decision, implementation approval not granted, wrong approval scope,
+  implementation execution approval, route mount authorization, route mount
+  execution authorization, route mount patch implementation, Express mount,
+  public alias, runtime traffic, `src/app.js` edit, route/controller runtime
+  change, wallet mutation, ledger mutation, Prisma write, DB transaction,
+  migration, external network, secret-shaped output, explicit execution
+  approval required, and separate runtime traffic approval required.
+- ORO-4Y smoke confirms execution approval readiness only, no Express mount,
+  no public alias, no mutation, no Prisma write, no DB transaction, no
+  migration, no external network, no secret-shaped output, and
+  `smoke:oro-4y` registration.
+- `docs/API_MAPPING.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`,
+  `docs/PHASE_ROADMAP.md`, and `docs/SMOKE_COVERAGE.md` include ORO-4Y
+  static/mock/no-mount coverage.
+
+Next phase suggestion: actual route mount still requires a separate explicit
+execution approval phase and actual patch implementation approval. ORO-4Y does
+not authorize `src/app.js` changes, Express route mount, public aliases,
+runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB
+transactions, live OroPlay calls, external network, route mount authorization,
+or real money.
 - ORO-3B blocked until ORO-3A pass.
 
 ORO-3B status marker:

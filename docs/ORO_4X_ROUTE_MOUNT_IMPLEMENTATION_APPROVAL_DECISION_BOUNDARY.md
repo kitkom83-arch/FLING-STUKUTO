@@ -154,3 +154,14 @@ behavior, DB behavior, external network posture, live OroPlay posture, and
 deployment posture before any runtime route work can happen.
 
 ORO-4X is not that execution phase.
+
+ORO-4Y execution approval readiness may prepare the request boundary for that
+future execution phase only. ORO-4Y still must keep
+`routeMountAuthorization=not_authorized_for_mount`,
+`routeMountExecutionAuthorization=not_authorized_for_execution`,
+`implementationExecutionApproved = false`, `expressMountAllowed = false`,
+`expressMountImplemented = false`, `publicAliasAllowed = false`, and
+`runtimeTrafficAllowed = false`.
+
+ORO-4X implementation approval decision is the recorded input for ORO-4Y
+execution approval readiness.

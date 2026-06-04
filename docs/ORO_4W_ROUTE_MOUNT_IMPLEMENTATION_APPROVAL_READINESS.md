@@ -136,3 +136,8 @@ That future phase must explicitly approve src/app.js changes, Express route
 mount, public aliases, runtime traffic, wallet/ledger behavior, DB behavior,
 external network posture, live OroPlay posture, and deployment posture before
 any runtime route work can happen. ORO-4W is not that implementation phase.
+
+ORO-4Y execution approval readiness may prepare execution approval readiness
+and patch review metadata only after ORO-4X. ORO-4Y still does not authorize
+src/app.js changes, Express route mount, public aliases, runtime traffic, or
+route mount execution.
