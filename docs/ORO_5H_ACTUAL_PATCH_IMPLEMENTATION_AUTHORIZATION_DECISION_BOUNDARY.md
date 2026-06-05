@@ -164,7 +164,15 @@ ORO-5H must return hold/fail status when any of these are true:
 
 ## Next phase requirements
 
-The next phase is actual patch implementation execution boundary.
+The next phase is actual patch implementation execution readiness boundary.
+
+ORO-5I checks actual patch implementation execution readiness.
+
+ORO-5I prepares isolated mock execution plan only.
+
+ORO-5I still does not start execution, still does not apply runtime patch, still does not implement patch, still does not mount route, still does not open public alias, and still does not open runtime traffic.
+
+The following explicit phase after ORO-5I is actual patch implementation execution boundary.
 
 The next phase requires a separate actual patch implementation execution boundary.
 

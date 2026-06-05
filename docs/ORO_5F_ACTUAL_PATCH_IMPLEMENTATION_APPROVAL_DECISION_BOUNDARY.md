@@ -196,3 +196,9 @@ ORO-5H downstream decision later issues actual patch implementation
 authorization decision only, grants only permission to proceed to a later
 actual patch implementation execution boundary, and still does not execute
 implementation, mount route, or open runtime traffic.
+
+ORO-5I checks actual patch implementation execution readiness after ORO-5H.
+
+ORO-5I prepares isolated mock execution plan only and still does not start
+execution, apply runtime patch, implement patch, mount route, open public alias,
+or open runtime traffic.

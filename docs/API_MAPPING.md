@@ -158,7 +158,7 @@ Status: Phase AS mock/static/sandbox-readiness only. These rows define future sa
 
 ## Future OroPlay API Mapping
 
-Status: ORO-2B fail-closed callback stub only remains the active runtime behavior, ORO-2C readiness contract is closed, ORO-3A runtime simulation closed, ORO-3B adapter contract is closed, ORO-3C execution plan only is closed, ORO-3D readiness gate only is closed, ORO-4Q mount authorization hold gate is closed, ORO-4R private artifact hash registry is closed, ORO-4S signed approval record / mount authorization request preparation boundary is closed, ORO-4T request submission review boundary is closed, ORO-4U final pre-mount decision boundary is closed, ORO-4V route mount approval boundary is closed, ORO-4W implementation approval readiness is closed, ORO-4X implementation approval decision is closed, ORO-4Y execution approval readiness is closed, ORO-4Z patch review decision is closed, ORO-5A execution approval request is closed, ORO-5B execution decision is closed, ORO-5C implementation request is closed, ORO-5D implementation decision is closed, ORO-5E actual patch approval request is closed, ORO-5F actual patch approval decision is closed, ORO-5G actual patch authorization request is closed, and ORO-5H actual patch authorization decision is current/local pending for OroPlay API / Seamless Wallet integration. These rows are not production runtime and do not add callback processing, services, migrations, deploy, production DB access, real money runtime flow, live payout, live provider calls, callback wallet mutation, runtime wallet mutation, runtime ledger mutation, Prisma write, provider alias enablement, or hardcoded secrets.
+Status: ORO-2B fail-closed callback stub only remains the active runtime behavior, ORO-2C readiness contract is closed, ORO-3A runtime simulation closed, ORO-3B adapter contract is closed, ORO-3C execution plan only is closed, ORO-3D readiness gate only is closed, ORO-4Q mount authorization hold gate is closed, ORO-4R private artifact hash registry is closed, ORO-4S signed approval record / mount authorization request preparation boundary is closed, ORO-4T request submission review boundary is closed, ORO-4U final pre-mount decision boundary is closed, ORO-4V route mount approval boundary is closed, ORO-4W implementation approval readiness is closed, ORO-4X implementation approval decision is closed, ORO-4Y execution approval readiness is closed, ORO-4Z patch review decision is closed, ORO-5A execution approval request is closed, ORO-5B execution decision is closed, ORO-5C implementation request is closed, ORO-5D implementation decision is closed, ORO-5E actual patch approval request is closed, ORO-5F actual patch approval decision is closed, ORO-5G actual patch authorization request is closed, ORO-5H actual patch authorization decision is closed, and ORO-5I actual patch implementation execution readiness is current/local pending for OroPlay API / Seamless Wallet integration. These rows are not production runtime and do not add callback processing, services, migrations, deploy, production DB access, real money runtime flow, live payout, live provider calls, callback wallet mutation, runtime wallet mutation, runtime ledger mutation, Prisma write, provider alias enablement, or hardcoded secrets.
 
 ORO-2B fail-closed stub only.
 
@@ -437,5 +437,20 @@ ORO-5H still does not execute actual patch implementation, still does not
 apply patch, still does not mount route, and still does not open runtime
 traffic. The next phase is actual patch implementation execution boundary.
 next phase is actual patch implementation execution boundary.
+
+ORO-5I actual patch implementation execution readiness: ORO-5I checks actual patch implementation execution readiness after ORO-5H issued actual patch implementation authorization decision.
+
+ORO-5I prepares isolated mock execution plan only:
+`actualPatchImplementationExecutionReadinessChecked=true`,
+`actualPatchImplementationExecutionReadinessStatus=ready_for_isolated_mock_execution_boundary`,
+`isolatedMockExecutionPlanPrepared=true`, and
+`executionBoundaryEntryScope=isolated_mock_execution_plan_only`.
+
+ORO-5I still does not start execution, still does not apply runtime patch,
+still does not implement patch, still does not mount route, still does not
+open public alias, and still does not open runtime traffic. The next phase is
+actual patch implementation execution boundary. Route mount authorization
+still requires separate authorization. Runtime traffic approval still requires
+separate approval.
 
 next phase is actual patch implementation approval decision boundary.

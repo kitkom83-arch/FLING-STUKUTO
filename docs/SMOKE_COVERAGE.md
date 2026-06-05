@@ -3347,6 +3347,38 @@ Expected decision:
 - Confirms no wallet/ledger mutation, no Prisma/DB write, no migration, no
   external network, and no secret-shaped output.
 
+## 102. ORO-5I Actual Patch Implementation Execution Readiness Coverage
+
+ORO-5I Actual Patch Implementation Execution Readiness Coverage. The phase
+checks only actual patch implementation execution readiness after ORO-5H issued
+the authorization decision.
+
+Coverage files:
+
+- ORO-5I readiness doc: actual patch implementation execution readiness boundary.
+- ORO-5I mock helper: readiness summary, isolated mock execution plan, and held gates.
+- ORO-5I fixtures: happy path, hold cases, and safety attempts.
+- ORO-5I smoke wrapper: `src/local-smoke-tests/oro5iSmoke.js`.
+
+Scripts:
+
+- `smoke:oro-5i`
+
+Expected readiness:
+
+- Confirms ORO-5I checks actual patch implementation execution readiness.
+- Confirms ORO-5I prepares isolated mock execution plan only.
+- Confirms ORO-5I still does not start execution.
+- Confirms ORO-5I still does not apply runtime patch.
+- Confirms ORO-5I still does not implement patch.
+- Confirms ORO-5I still does not mount route.
+- Confirms ORO-5I still does not open public alias.
+- Confirms ORO-5I still does not open runtime traffic.
+- Confirms actual patch implementation execution boundary remains the next
+  phase, with separate route mount authorization and runtime traffic approval.
+- Confirms no wallet/ledger mutation, no Prisma/DB write, no migration, no
+  external network, no live OroPlay API call, and no secret-shaped output.
+
 ## 92. ORO-4Y Route Mount Execution Approval Readiness Coverage
 
 ORO-4Y Route Mount Execution Approval Readiness Coverage. The phase records

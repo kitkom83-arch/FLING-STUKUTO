@@ -140,7 +140,8 @@ OroPlay phase sequence after current mock/contract phases:
 - ORO-5E: actual patch approval request. ORO-5E closed; mount and runtime still not authorized.
 - ORO-5F: actual patch approval decision. ORO-5F closed; approval is only for next authorization request scope.
 - ORO-5G: actual patch authorization request. ORO-5G closed; implementation, mount, and runtime still not authorized.
-- ORO-5H: actual patch authorization decision. ORO-5H current/local pending until validation report; implementation execution boundary, mount, and runtime still not authorized.
+- ORO-5H: actual patch authorization decision. ORO-5H closed; implementation execution boundary, mount, and runtime still not authorized.
+- ORO-5I: actual patch implementation execution readiness. ORO-5I current/local pending until validation report; isolated mock execution plan only; implementation execution, mount, and runtime still not authorized.
 - ORO-2B current/fail-closed route skeleton remains the active fail-closed runtime default.
 - ORO-3 is not allowed until ORO-2B passes; ORO-2C and ORO-3A add newer gates before runtime work.
 - ORO-3B is not allowed until ORO-2B and ORO-2C are closed and ORO-3A passes.
@@ -1160,6 +1161,52 @@ ORO-5H target criteria:
   implementation execution boundary remains next, no Express mount, no public
   alias, no runtime traffic, no wallet/ledger mutation, and no Prisma/DB write.
 - `smoke:oro-5h` registration is present.
+
+## ORO-5I current/local pending actual patch implementation execution readiness
+
+ORO-5I actual patch implementation execution readiness records the readiness
+check after ORO-5H issued actual patch implementation authorization decision.
+
+ORO-5I checks actual patch implementation execution readiness metadata only:
+
+- `actualPatchImplementationExecutionReadinessChecked=true`
+- `actualPatchImplementationExecutionReadinessStatus=ready_for_isolated_mock_execution_boundary`
+- `actualPatchImplementationExecutionReadinessResult=ready`
+- `isolatedMockExecutionPlanPrepared=true`
+- `isolatedMockExecutionPlanStatus=prepared`
+- `executionBoundaryEntryScope=isolated_mock_execution_plan_only`
+
+ORO-5I prepares isolated mock execution plan only.
+
+ORO-5I still does not start execution.
+
+ORO-5I still does not apply runtime patch.
+
+ORO-5I still does not implement patch.
+
+ORO-5I still does not mount route.
+
+ORO-5I still does not open public alias.
+
+ORO-5I still does not open runtime traffic.
+
+ORO-5I target criteria:
+
+- ORO-5I readiness doc exists and states isolated mock execution plan only.
+- ORO-5I helper exports status, input builder, evaluator, isolated mock plan,
+  held gates, summary builder, and validator.
+- ORO-5I fixtures cover happy path, missing ORO-5H decision, wrong approval
+  state, wrong grant scope, implementation attempts, mount attempts, database
+  attempts, external network attempts, live OroPlay API attempts, and
+  secret-shaped output.
+- ORO-5I smoke confirms readiness checked, isolated mock plan prepared, no
+  Express mount, no public alias, no runtime traffic, no wallet/ledger
+  mutation, and no Prisma/DB write.
+- `smoke:oro-5i` registration is present.
+
+Next phase is actual patch implementation execution boundary. Route mount
+authorization still requires separate authorization. Runtime traffic approval
+still requires separate approval.
 
 Next phase is actual patch implementation authorization decision boundary.
 - ORO-3B blocked until ORO-3A pass.

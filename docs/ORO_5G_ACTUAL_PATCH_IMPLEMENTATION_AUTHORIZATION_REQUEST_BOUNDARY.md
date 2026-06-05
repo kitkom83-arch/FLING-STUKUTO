@@ -194,3 +194,9 @@ apply patch, still does not mount route, and still does not open runtime
 traffic.
 
 The next phase is actual patch implementation execution boundary.
+
+ORO-5I checks actual patch implementation execution readiness after ORO-5H.
+
+ORO-5I prepares isolated mock execution plan only and still does not start
+execution, apply runtime patch, implement patch, mount route, open public alias,
+or open runtime traffic.
