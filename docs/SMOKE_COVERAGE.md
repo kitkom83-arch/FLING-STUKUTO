@@ -3513,6 +3513,38 @@ Expected execution:
 - Confirms ORO-5M still does not call live OroPlay API.
 - Confirms no secret-shaped output.
 
+## 107. ORO-5N Route Mount Implementation Boundary Coverage
+
+ORO-5N Route Mount Implementation Boundary Coverage. The phase implements the
+internal fail-closed OroPlay callback staging mount only after ORO-5M grants
+route mount implementation boundary entry.
+
+Coverage files:
+
+- ORO-5N boundary doc: route mount implementation boundary.
+- ORO-5N mock helper: boundary output, safety locks, public alias assertion,
+  and runtime money mutation assertion.
+- ORO-5N fixtures: happy path, missing authorization, public alias, runtime
+  traffic, wallet mutation, and route/controller behavior change attempts.
+- ORO-5N smoke wrapper: `src/local-smoke-tests/oro5nSmoke.js`.
+
+Scripts:
+
+- `smoke:oro-5n`
+
+Expected execution:
+
+- Confirms ORO-5N implements internal fail-closed OroPlay callback staging mount only.
+- Confirms `src/app.js` mounts only `/api/oroplay`.
+- Confirms no `/api/balance` public alias.
+- Confirms no `/api/transaction` public alias.
+- Confirms fail-closed callback stub behavior remains fail-closed.
+- Confirms ORO-5N does not enable runtime traffic.
+- Confirms ORO-5N does not mutate wallet/ledger in runtime.
+- Confirms ORO-5N does not write Prisma/DB.
+- Confirms ORO-5N does not call live OroPlay API.
+- Confirms no secret-shaped output.
+
 ## 92. ORO-4Y Route Mount Execution Approval Readiness Coverage
 
 ORO-4Y Route Mount Execution Approval Readiness Coverage. The phase records

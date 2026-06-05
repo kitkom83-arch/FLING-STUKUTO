@@ -158,7 +158,7 @@ Status: Phase AS mock/static/sandbox-readiness only. These rows define future sa
 
 ## Future OroPlay API Mapping
 
-Status: ORO-2B fail-closed callback stub only remains the active runtime behavior, ORO-2C readiness contract is closed, ORO-3A runtime simulation closed, ORO-3B adapter contract is closed, ORO-3C execution plan only is closed, ORO-3D readiness gate only is closed, ORO-4Q mount authorization hold gate is closed, ORO-4R private artifact hash registry is closed, ORO-4S signed approval record / mount authorization request preparation boundary is closed, ORO-4T request submission review boundary is closed, ORO-4U final pre-mount decision boundary is closed, ORO-4V route mount approval boundary is closed, ORO-4W implementation approval readiness is closed, ORO-4X implementation approval decision is closed, ORO-4Y execution approval readiness is closed, ORO-4Z patch review decision is closed, ORO-5A execution approval request is closed, ORO-5B execution decision is closed, ORO-5C implementation request is closed, ORO-5D implementation decision is closed, ORO-5E actual patch approval request is closed, ORO-5F actual patch approval decision is closed, ORO-5G actual patch authorization request is closed, ORO-5H actual patch authorization decision is closed, ORO-5I actual patch implementation execution readiness is closed, ORO-5J actual patch implementation execution is closed, ORO-5K post-execution validation route mount authorization request readiness is closed, ORO-5L route mount authorization request submission is closed, and ORO-5M route mount authorization decision is current/local pending for OroPlay API / Seamless Wallet integration. These rows are not production runtime and do not add callback processing, services, migrations, deploy, production DB access, real money runtime flow, live payout, live provider calls, callback wallet mutation, runtime wallet mutation, runtime ledger mutation, Prisma write, provider alias enablement, or hardcoded secrets.
+Status: ORO-2B fail-closed callback stub only remains the active runtime behavior, ORO-2C readiness contract is closed, ORO-3A runtime simulation closed, ORO-3B adapter contract is closed, ORO-3C execution plan only is closed, ORO-3D readiness gate only is closed, ORO-4Q mount authorization hold gate is closed, ORO-4R private artifact hash registry is closed, ORO-4S signed approval record / mount authorization request preparation boundary is closed, ORO-4T request submission review boundary is closed, ORO-4U final pre-mount decision boundary is closed, ORO-4V route mount approval boundary is closed, ORO-4W implementation approval readiness is closed, ORO-4X implementation approval decision is closed, ORO-4Y execution approval readiness is closed, ORO-4Z patch review decision is closed, ORO-5A execution approval request is closed, ORO-5B execution decision is closed, ORO-5C implementation request is closed, ORO-5D implementation decision is closed, ORO-5E actual patch approval request is closed, ORO-5F actual patch approval decision is closed, ORO-5G actual patch authorization request is closed, ORO-5H actual patch authorization decision is closed, ORO-5I actual patch implementation execution readiness is closed, ORO-5J actual patch implementation execution is closed, ORO-5K post-execution validation route mount authorization request readiness is closed, ORO-5L route mount authorization request submission is closed, ORO-5M route mount authorization decision is closed, and ORO-5N route mount implementation boundary is current/local pending for OroPlay API / Seamless Wallet integration. These rows are not production runtime and do not add callback processing, services, migrations, deploy, production DB access, real money runtime flow, live payout, live provider calls, callback wallet mutation, runtime wallet mutation, runtime ledger mutation, Prisma write, provider alias enablement, or hardcoded secrets.
 
 ORO-2B fail-closed stub only.
 
@@ -526,6 +526,24 @@ runtime traffic approval, post-mount validation, and live traffic approval
 remain separate explicit phases.
 
 ORO-5M grants only permission to proceed to route mount implementation boundary.
+
+ORO-5N route mount implementation boundary: ORO-5N implements the internal
+fail-closed OroPlay callback staging mount only.
+
+ORO-5N internal fail-closed OroPlay callback staging mount only:
+
+- routeMountPatchImplementationScope=internal_fail_closed_oroplay_callback_staging_mount_only
+- srcAppChangeScope=internal_oroplay_callback_staging_mount_only
+- expressMountScope=internal_fail_closed_oroplay_callback_staging_mount_only
+- oroplayBalanceRouteMode=fail_closed_no_mutation
+- oroplayTransactionRouteMode=fail_closed_no_mutation
+- apiBalancePublicAliasMounted=false
+- apiTransactionPublicAliasMounted=false
+
+ORO-5N keeps public aliases disabled, keeps runtime traffic disabled, keeps
+wallet/ledger mutation blocked, keeps Prisma/DB writes blocked, and keeps live
+OroPlay API calls blocked. Public alias approval, runtime traffic approval,
+post-mount validation, and live traffic approval remain separate phases.
 
 next phase is route mount authorization decision boundary.
 

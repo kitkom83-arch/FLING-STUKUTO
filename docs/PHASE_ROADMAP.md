@@ -145,7 +145,8 @@ OroPlay phase sequence after current mock/contract phases:
 - ORO-5J: actual patch implementation execution. ORO-5J closed; isolated non-mounted patch artifact and post-execution evidence only; route mount, public alias, and runtime traffic still not authorized.
 - ORO-5K: post-execution validation route mount authorization request readiness. ORO-5K closed; route mount authorization request readiness only; route mount decision, Express mount, public alias, and runtime traffic still not authorized.
 - ORO-5L: route mount authorization request submission. ORO-5L closed; request submitted pending decision only; Express mount, public alias, and runtime traffic still not authorized.
-- ORO-5M: route mount authorization decision. ORO-5M current/local pending route mount authorization decision; grants only permission to proceed to a later route mount implementation boundary.
+- ORO-5M: route mount authorization decision. ORO-5M closed; grants only permission to proceed to a later route mount implementation boundary.
+- ORO-5N: route mount implementation boundary. ORO-5N current/local pending route mount implementation boundary; internal fail-closed OroPlay callback staging mount only.
 - ORO-2B current/fail-closed route skeleton remains the active fail-closed runtime default.
 - ORO-3 is not allowed until ORO-2B passes; ORO-2C and ORO-3A add newer gates before runtime work.
 - ORO-3B is not allowed until ORO-2B and ORO-2C are closed and ORO-3A passes.
@@ -1408,6 +1409,45 @@ ORO-5M target criteria:
 - `docs/API_MAPPING.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`,
   `docs/PHASE_ROADMAP.md`, and `docs/SMOKE_COVERAGE.md` include ORO-5M
   static/mock/no-mount coverage.
+
+## ORO-5N current/local pending route mount implementation boundary
+
+ORO-5N implements route mount implementation boundary after ORO-5M issued the
+route mount authorization decision.
+
+ORO-5N implements internal fail-closed OroPlay callback staging mount only:
+
+- routeMountPatchImplementationScope=internal_fail_closed_oroplay_callback_staging_mount_only
+- srcAppChangeScope=internal_oroplay_callback_staging_mount_only
+- expressMountScope=internal_fail_closed_oroplay_callback_staging_mount_only
+- oroplayBalanceRouteMode=fail_closed_no_mutation
+- oroplayTransactionRouteMode=fail_closed_no_mutation
+
+ORO-5N still does not mount public aliases.
+
+ORO-5N still does not enable runtime traffic.
+
+ORO-5N still does not mutate wallet/ledger in runtime.
+
+ORO-5N still does not write Prisma/DB.
+
+ORO-5N still does not call live OroPlay API.
+
+ORO-5N target criteria:
+
+- ORO-5N route mount implementation doc exists and states internal
+  fail-closed staging mount only.
+- ORO-5N helper exports status, boundary builder, validator, safety summary,
+  public alias assertion, and runtime money mutation assertion.
+- ORO-5N fixtures cover happy path, missing authorization, public alias
+  attempt, runtime traffic attempt, wallet mutation attempt, and
+  route/controller behavior change attempt.
+- ORO-5N smoke confirms internal fail-closed mount, no public alias, no
+  runtime traffic, no wallet/ledger mutation, no Prisma/DB write, no live
+  OroPlay API, no secret-shaped output, and `smoke:oro-5n` registration.
+- `docs/API_MAPPING.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`,
+  `docs/PHASE_ROADMAP.md`, and `docs/SMOKE_COVERAGE.md` include ORO-5N
+  internal fail-closed mount coverage.
 
 Next phase is actual patch implementation execution boundary. Route mount
 authorization still requires separate authorization. Runtime traffic approval

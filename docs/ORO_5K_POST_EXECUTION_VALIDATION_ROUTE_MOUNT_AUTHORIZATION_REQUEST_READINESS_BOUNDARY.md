@@ -230,3 +230,10 @@ request. ORO-5M grants only permission to proceed to route mount implementation
 boundary. ORO-5M still does not mount route, does not edit src/app.js, does
 not approve public alias, does not allow runtime traffic, does not mutate
 wallet/DB state, and does not call live OroPlay API.
+
+## Downstream ORO-5N implementation boundary note
+
+ORO-5N implements internal fail-closed route mount boundary after ORO-5M
+authorization. ORO-5N remains internal fail-closed OroPlay callback staging
+mount only, with no public alias, no runtime traffic, no wallet/ledger
+mutation, no Prisma/DB write, and no live OroPlay API call.

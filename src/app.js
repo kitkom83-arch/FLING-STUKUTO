@@ -73,6 +73,7 @@ staticGetHead("/admin/roles", adminUiDir, { index: "index.html" });
 staticGetHead("/admin/audit-security", adminAuditUiDir, { index: "index.html" });
 staticGetHead("/admin-wheel", adminWheelUiDir, { index: "index.html" });
 staticGetHead("/admin/lucky-wheel", adminWheelUiDir, { index: "index.html" });
+// ORO-5N: internal fail-closed OroPlay callback staging mount only.
 app.use("/api/oroplay", oroplayCallbackStubRoutes);
 app.use("/api", routes);
 app.use(notFound);

@@ -171,3 +171,11 @@ ORO-5M must hold when any of these are true:
 The next phase must be a separate route mount implementation boundary. Public
 alias approval, runtime traffic approval, post-mount validation, and live
 traffic approval remain separate explicit boundaries.
+
+## Downstream ORO-5N implementation boundary note
+
+ORO-5N implements internal fail-closed route mount boundary after ORO-5M
+authorization. ORO-5N remains internal fail-closed OroPlay callback staging
+mount only, does not mount public aliases, does not enable runtime traffic,
+does not mutate wallet/ledger, does not write Prisma/DB, and does not call
+live OroPlay API.

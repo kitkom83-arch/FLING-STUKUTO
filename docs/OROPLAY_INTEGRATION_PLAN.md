@@ -712,3 +712,25 @@ Prisma/DB, and still does not call live OroPlay API.
 The next phase is route mount implementation boundary. Public alias approval,
 runtime traffic approval, post-mount validation, and live traffic approval
 remain separate explicit phases.
+
+## ORO-5N Current
+
+ORO-5N implements route mount implementation boundary after ORO-5M authorized
+entry to the implementation boundary.
+
+ORO-5N implements internal fail-closed OroPlay callback staging mount only:
+
+- routeMountPatchImplementationScope=internal_fail_closed_oroplay_callback_staging_mount_only
+- srcAppChangeScope=internal_oroplay_callback_staging_mount_only
+- expressMountScope=internal_fail_closed_oroplay_callback_staging_mount_only
+- oroplayBalanceRouteMode=fail_closed_no_mutation
+- oroplayTransactionRouteMode=fail_closed_no_mutation
+
+ORO-5N still does not mount public aliases `/api/balance` or
+`/api/transaction`, still does not enable runtime traffic, still does not
+mutate wallet/ledger in runtime, still does not write Prisma/DB, and still
+does not call live OroPlay API.
+
+The next phase is post-mount validation boundary. Public alias approval,
+runtime traffic approval, and live traffic approval remain separate explicit
+phases.
