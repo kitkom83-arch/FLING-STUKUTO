@@ -690,3 +690,25 @@ Prisma/DB, and still does not call live OroPlay API.
 The next phase is route mount authorization decision boundary. Express mount
 implementation, public alias approval, and runtime traffic approval remain
 separate explicit phases.
+
+## ORO-5M Current
+
+ORO-5M issues route mount authorization decision after ORO-5L submitted the
+route mount authorization request.
+
+ORO-5M issues route mount authorization decision only:
+
+- routeMountAuthorizationDecisionStatus=decision_issued
+- routeMountAuthorizationDecisionResult=approved
+- routeMountAuthorizationGrantScope=route_mount_implementation_boundary_only
+- routeMountAuthorization=authorized_for_route_mount_implementation_boundary_only
+
+ORO-5M grants only permission to proceed to route mount implementation
+boundary. ORO-5M still does not implement or mount route, still does not edit
+src/app.js, still does not open public alias, still does not open runtime
+traffic, still does not mutate wallet/ledger in runtime, still does not write
+Prisma/DB, and still does not call live OroPlay API.
+
+The next phase is route mount implementation boundary. Public alias approval,
+runtime traffic approval, post-mount validation, and live traffic approval
+remain separate explicit phases.

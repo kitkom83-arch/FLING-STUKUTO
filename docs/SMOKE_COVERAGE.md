@@ -3479,6 +3479,40 @@ Expected execution:
 - Confirms ORO-5L still does not call live OroPlay API.
 - Confirms no secret-shaped output.
 
+## 106. ORO-5M Route Mount Authorization Decision Coverage
+
+ORO-5M Route Mount Authorization Decision Coverage. The phase issues the
+authorization decision after ORO-5L submitted the request and keeps the route
+mount implementation still held.
+
+Coverage files:
+
+- ORO-5M decision doc: route mount authorization decision boundary.
+- ORO-5M mock helper: decision record, implementation held gate, Express
+  mount held gate, public alias held gate, runtime traffic held gate, and
+  summary.
+- ORO-5M fixtures: happy path, hold cases, and safety attempts.
+- ORO-5M smoke wrapper: `src/local-smoke-tests/oro5mSmoke.js`.
+
+Scripts:
+
+- `smoke:oro-5m`
+
+Expected execution:
+
+- Confirms ORO-5M issues route mount authorization decision.
+- Confirms decision issued / implementation still held.
+- Confirms ORO-5M grants only permission to proceed to route mount
+  implementation boundary.
+- Confirms ORO-5M still does not mount route.
+- Confirms ORO-5M still does not edit src/app.js.
+- Confirms ORO-5M still does not open public alias.
+- Confirms ORO-5M still does not open runtime traffic.
+- Confirms ORO-5M still does not mutate wallet/ledger in runtime.
+- Confirms ORO-5M still does not write Prisma/DB.
+- Confirms ORO-5M still does not call live OroPlay API.
+- Confirms no secret-shaped output.
+
 ## 92. ORO-4Y Route Mount Execution Approval Readiness Coverage
 
 ORO-4Y Route Mount Execution Approval Readiness Coverage. The phase records

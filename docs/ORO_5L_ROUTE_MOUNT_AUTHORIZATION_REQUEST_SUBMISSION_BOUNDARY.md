@@ -226,3 +226,11 @@ ORO-5L must hold when any of these are true:
 - nextPhaseRequiresPostMountValidationBoundary = true
 
 The next phase is route mount authorization decision boundary. Express mount implementation, public alias approval, and runtime traffic approval remain separate explicit phases.
+
+## Downstream ORO-5M decision boundary note
+
+ORO-5M issues route mount authorization decision for the submitted request.
+ORO-5M grants only permission to proceed to route mount implementation
+boundary. ORO-5M still does not mount route, does not edit src/app.js, does
+not approve public alias, does not allow runtime traffic, does not mutate
+wallet/DB state, and does not call live OroPlay API.

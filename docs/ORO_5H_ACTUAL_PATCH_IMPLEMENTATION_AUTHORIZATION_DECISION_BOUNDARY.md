@@ -215,3 +215,11 @@ Required next-phase flags:
 - `nextPhaseRequiresActualPatchImplementationExecutionBoundary = true`
 - `nextPhaseRequiresSeparateRouteMountAuthorization = true`
 - `nextPhaseRequiresSeparateRuntimeTrafficApproval = true`
+
+## Downstream ORO-5M decision boundary note
+
+ORO-5M issues route mount authorization decision after ORO-5L submits the
+request. ORO-5M grants only permission to proceed to route mount implementation
+boundary. ORO-5M still does not mount route, does not edit src/app.js, does
+not approve public alias, does not allow runtime traffic, does not mutate
+wallet/DB state, and does not call live OroPlay API.

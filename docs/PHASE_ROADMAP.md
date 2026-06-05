@@ -144,7 +144,8 @@ OroPlay phase sequence after current mock/contract phases:
 - ORO-5I: actual patch implementation execution readiness. ORO-5I closed; isolated mock execution plan only; implementation execution, mount, and runtime still not authorized.
 - ORO-5J: actual patch implementation execution. ORO-5J closed; isolated non-mounted patch artifact and post-execution evidence only; route mount, public alias, and runtime traffic still not authorized.
 - ORO-5K: post-execution validation route mount authorization request readiness. ORO-5K closed; route mount authorization request readiness only; route mount decision, Express mount, public alias, and runtime traffic still not authorized.
-- ORO-5L: route mount authorization request submission. ORO-5L current/local pending until validation report; request submitted pending decision only; route mount decision, authorization grant, Express mount, public alias, and runtime traffic still not authorized.
+- ORO-5L: route mount authorization request submission. ORO-5L closed; request submitted pending decision only; Express mount, public alias, and runtime traffic still not authorized.
+- ORO-5M: route mount authorization decision. ORO-5M current/local pending route mount authorization decision; grants only permission to proceed to a later route mount implementation boundary.
 - ORO-2B current/fail-closed route skeleton remains the active fail-closed runtime default.
 - ORO-3 is not allowed until ORO-2B passes; ORO-2C and ORO-3A add newer gates before runtime work.
 - ORO-3B is not allowed until ORO-2B and ORO-2C are closed and ORO-3A passes.
@@ -1360,6 +1361,53 @@ ORO-5L target criteria:
   alias, no runtime traffic, no wallet/ledger mutation, no Prisma/DB write, no
   external network, no live OroPlay API, and no secret-shaped output.
 - Registered npm script: `smoke:oro-5l`.
+
+## ORO-5M current/local pending route mount authorization decision
+
+ORO-5M route mount authorization decision issues the decision for the ORO-5L
+submitted request.
+
+ORO-5M issues route mount authorization decision only:
+
+- routeMountAuthorizationDecisionStatus=decision_issued
+- routeMountAuthorizationDecisionResult=approved
+- routeMountAuthorizationGrantScope=route_mount_implementation_boundary_only
+- routeMountAuthorization=authorized_for_route_mount_implementation_boundary_only
+
+ORO-5M grants only permission to proceed to route mount implementation
+boundary. ORO-5M still does not implement or mount route.
+
+ORO-5M still does not edit src/app.js.
+
+ORO-5M still does not open public alias.
+
+ORO-5M still does not open runtime traffic.
+
+ORO-5M still does not mutate wallet/ledger in runtime.
+
+ORO-5M still does not write Prisma/DB.
+
+ORO-5M still does not call live OroPlay API.
+
+ORO-5M target criteria:
+
+- ORO-5M decision doc exists and states decision boundary only.
+- ORO-5M helper exports status, input builder, evaluator, decision record,
+  implementation held gate, Express mount held gate, public alias held gate,
+  runtime traffic held gate, summary builder, and validator.
+- ORO-5M fixtures cover happy path, missing ORO-5L request, invalid ORO-5L
+  request, pre-authorized implementation, route patch, runtime route, app
+  edit, route/controller change, Express mount, public alias, runtime traffic,
+  wallet mutation, ledger mutation, Prisma write, DB transaction, migration,
+  external network, live OroPlay API, and secret-shaped output cases.
+- ORO-5M smoke confirms decision issued / implementation still held, no
+  Express mount, no public alias, no mutation, no Prisma write, no DB
+  transaction, no migration, no external network, no live OroPlay API, no
+  secret-shaped output, no `src/app.js` edit marker, and `smoke:oro-5m`
+  registration.
+- `docs/API_MAPPING.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`,
+  `docs/PHASE_ROADMAP.md`, and `docs/SMOKE_COVERAGE.md` include ORO-5M
+  static/mock/no-mount coverage.
 
 Next phase is actual patch implementation execution boundary. Route mount
 authorization still requires separate authorization. Runtime traffic approval
