@@ -157,6 +157,11 @@ const RELATED_FILES = [
   "src/local-smoke-tests/oro5dRouteMountPatchImplementationAuthorizationDecisionBoundarySmoke.js",
   "src/local-smoke-tests/oro5dSmoke.js",
   "docs/ORO_5D_ROUTE_MOUNT_PATCH_IMPLEMENTATION_AUTHORIZATION_DECISION_BOUNDARY.md",
+  "src/game-provider-mock/oro5eActualPatchImplementationApprovalRequestSubmissionBoundary.js",
+  "src/game-provider-mock/oro5eActualPatchImplementationApprovalRequestSubmissionBoundaryFixtures.js",
+  "src/local-smoke-tests/oro5eActualPatchImplementationApprovalRequestSubmissionBoundarySmoke.js",
+  "src/local-smoke-tests/oro5eSmoke.js",
+  "docs/ORO_5E_ACTUAL_PATCH_IMPLEMENTATION_APPROVAL_REQUEST_SUBMISSION_BOUNDARY.md",
   "src/payment-provider-mock/memberQrDepositUxContract.js",
   "src/payment-provider-mock/memberQrDepositMockHarness.js",
   "src/local-smoke-tests/memberQrDepositUxSmoke.js",
@@ -407,6 +412,7 @@ const summary = [
   { key: "oro5b", label: "oro-5b", status: "PENDING" },
   { key: "oro5c", label: "oro-5c", status: "PENDING" },
   { key: "oro5d", label: "oro-5d", status: "PENDING" },
+  { key: "oro5e", label: "oro-5e", status: "PENDING" },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
   { key: "depositVerificationSource", label: "deposit-verification-source", status: "PENDING" },
   {
@@ -1127,6 +1133,12 @@ const steps = [
     summaryKey: "syntax",
   },
   {
+    name: "node --check oro5eSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oro5eSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
     name: "node --check memberQrDepositUxContract",
     command: nodeCommand,
     args: ["--check", "src/payment-provider-mock/memberQrDepositUxContract.js"],
@@ -1742,6 +1754,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oro-5d"]),
     summaryKey: "oro5d",
+  },
+  {
+    name: "npm run smoke:oro-5e",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oro-5e"]),
+    summaryKey: "oro5e",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

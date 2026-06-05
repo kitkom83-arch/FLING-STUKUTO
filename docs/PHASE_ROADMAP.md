@@ -136,7 +136,8 @@ OroPlay phase sequence after current mock/contract phases:
 - ORO-5A: execution approval request. ORO-5A closed; execution request only.
 - ORO-5B: execution decision. ORO-5B closed; patch implementation and mount still not authorized.
 - ORO-5C: implementation request. ORO-5C closed; mount and runtime still not authorized.
-- ORO-5D: implementation decision. ORO-5D current/local pending until commit, push, and CI; mount and runtime still not authorized.
+- ORO-5D: implementation decision. ORO-5D closed; mount and runtime still not authorized.
+- ORO-5E: actual patch approval request. ORO-5E current/local pending until validation report; mount and runtime still not authorized.
 - ORO-2B current/fail-closed route skeleton remains the active fail-closed runtime default.
 - ORO-3 is not allowed until ORO-2B passes; ORO-2C and ORO-3A add newer gates before runtime work.
 - ORO-3B is not allowed until ORO-2B and ORO-2C are closed and ORO-3A passes.
@@ -966,7 +967,7 @@ traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions,
 live OroPlay calls, external network, route mount authorization, or real
 money.
 
-## ORO-5D current/local pending implementation decision
+## ORO-5D closed implementation decision
 
 ORO-5D implementation decision / ORO-5D mount hold adds only docs, an isolated
 static/mock decision helper, mock fixtures, local smoke coverage, package
@@ -998,13 +999,52 @@ ORO-5D target criteria:
   `docs/PHASE_ROADMAP.md`, and `docs/SMOKE_COVERAGE.md` include ORO-5D
   static/mock/no-mount coverage.
 
-Next phase suggestion: actual patch implementation approval request still
-requires a separate explicit phase. Actual patch implementation, route mount,
-and runtime traffic still require separate explicit approvals. ORO-5D does not
-authorize `src/app.js` changes, Express route mount, public aliases, runtime
-traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions,
-live OroPlay calls, external network, route mount authorization, or real
-money.
+ORO-5E submitted actual patch implementation approval request after ORO-5D.
+ORO-5D did not approve actual patch implementation, did not implement patch,
+did not mount route, and did not open runtime traffic.
+
+## ORO-5E current/local pending actual patch approval request
+
+ORO-5E actual patch approval request adds only docs, an isolated static/mock
+request helper, mock fixtures, local smoke coverage, package registration, and
+runAllLocalSmoke registration.
+
+ORO-5E submitted actual patch implementation approval request metadata only.
+It sets `actualPatchImplementationApprovalRequestSubmitted=true`,
+`actualPatchImplementationApprovalRequestStatus=submitted_pending_decision`,
+`actualPatchImplementationApprovalRequestResult=pending_decision`,
+`actualPatchImplementationApprovalDecisionIssued=false`,
+`actualPatchImplementationApprovalGranted=false`,
+`routeMountPatchApproved=false`,
+`routeMountPatchImplementationAuthorized=false`,
+`routeMountPatchImplemented=false`, `implementationExecutionApproved=false`,
+`routeMountAuthorization=not_authorized_for_mount`,
+`expressMountAllowed=false`, `expressMountImplemented=false`,
+`publicAliasAllowed=false`, and `runtimeTrafficAllowed=false`.
+
+ORO-5E target criteria:
+
+- ORO-5E approval request doc exists and states request submission only.
+- ORO-5E helper exports status, input builder, evaluator, hold gates, summary
+  builder, and validator.
+- ORO-5E fixtures cover happy path, missing ORO-5D decision, wrong decision
+  state, prior request, actual patch approval decision, implementation, mount,
+  alias, traffic, mutation, DB, migration, network, and secret-shaped output
+  cases.
+- ORO-5E smoke confirms request record only, no Express mount, no public alias,
+  no mutation, no Prisma write, no DB transaction, no migration, no external
+  network, no secret-shaped output, no `src/app.js` edit marker, and
+  `smoke:oro-5e` registration.
+- `docs/API_MAPPING.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`,
+  `docs/PHASE_ROADMAP.md`, and `docs/SMOKE_COVERAGE.md` include ORO-5E
+  static/mock/no-mount coverage.
+
+Next phase suggestion: actual patch implementation approval decision boundary.
+Actual patch implementation, route mount, and runtime traffic still require
+separate explicit approvals. ORO-5E does not authorize `src/app.js` changes,
+Express route mount, public aliases, runtime traffic, wallet mutation, ledger
+mutation, Prisma writes, DB transactions, live OroPlay calls, external
+network, route mount authorization, or real money.
 - ORO-3B blocked until ORO-3A pass.
 
 ORO-3B status marker:

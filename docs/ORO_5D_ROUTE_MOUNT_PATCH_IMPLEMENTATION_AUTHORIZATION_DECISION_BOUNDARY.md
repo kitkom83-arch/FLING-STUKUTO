@@ -239,4 +239,9 @@ mount, public aliases, runtime traffic, wallet and ledger behavior, DB
 behavior, external network posture, live OroPlay posture, and deployment
 posture before any runtime route work can happen.
 
+ORO-5E submitted actual patch implementation approval request after ORO-5D.
+ORO-5E does not approve actual patch implementation, does not implement patch,
+does not mount route, and does not open runtime traffic. The next phase is the
+actual patch implementation approval decision boundary.
+
 ORO-5D is not that implementation phase and is not runtime traffic approval.

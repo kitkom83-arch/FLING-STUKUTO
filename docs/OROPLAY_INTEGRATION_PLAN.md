@@ -494,7 +494,7 @@ not mutate wallet or ledger state, does not write through Prisma, does not
 create DB transactions, does not migrate, does not call live OroPlay, does
 not use external network, does not deploy, and does not touch real money.
 
-## ORO-5D Current
+## ORO-5D Current (Closed)
 
 ORO-5D Current. ORO-5D implementation decision / ORO-5D mount hold is docs,
 static contract, mock fixtures, local smoke, package registration, and smoke
@@ -517,6 +517,39 @@ does not mutate wallet or ledger state, does not write through Prisma, does
 not create DB transactions, does not migrate, does not call live OroPlay, does
 not use external network, does not deploy, and does not touch real money.
 
-The next phase requires a separate actual patch implementation approval
-request and decision. Route mount authorization and runtime traffic approval
-remain separate approvals.
+ORO-5E submitted actual patch implementation approval request after this
+request-only ORO-5D decision. ORO-5D did not approve actual patch
+implementation, did not implement patch, did not mount route, and did not open
+runtime traffic.
+
+## ORO-5E Current
+
+ORO-5E Current. ORO-5E submitted actual patch implementation approval request
+as docs, static contract, mock fixtures, local smoke, package registration, and
+smoke coverage only after ORO-5D.
+
+ORO-5E records actual patch implementation approval request submission
+metadata only. It keeps
+`actualPatchImplementationApprovalRequestSubmitted=true`,
+`actualPatchImplementationApprovalRequestStatus=submitted_pending_decision`,
+`actualPatchImplementationApprovalRequestResult=pending_decision`,
+`actualPatchImplementationApprovalDecisionIssued=false`,
+`actualPatchImplementationApprovalGranted=false`,
+`routeMountPatchApproved=false`,
+`routeMountPatchImplementationAuthorized=false`,
+`routeMountPatchImplemented=false`, `implementationExecutionApproved=false`,
+`routeMountAuthorization=not_authorized_for_mount`,
+`expressMountAllowed=false`, `expressMountImplemented=false`,
+`publicAliasAllowed=false`, and `runtimeTrafficAllowed=false`.
+
+ORO-5E has no mount, no alias, and no runtime traffic. It does not edit
+`src/app.js`, does not mount Express routes, does not open `/api/balance`,
+`/api/transaction`, `/api/oroplay/balance`, or `/api/oroplay/transaction`,
+does not approve actual patch implementation, does not implement patch, does
+not authorize route mount, does not mutate wallet or ledger state, does not
+write through Prisma, does not create DB transactions, does not call OroPlay,
+does not use external network, does not deploy, and does not touch real money.
+
+The next phase is actual patch implementation approval decision boundary.
+Route mount authorization and runtime traffic approval remain separate
+approvals.
