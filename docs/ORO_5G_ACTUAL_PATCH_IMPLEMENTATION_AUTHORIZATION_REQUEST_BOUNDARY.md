@@ -208,3 +208,17 @@ ORO-5J prepares isolated patch artifact and post-execution evidence only and
 still does not mount route, edit src/app.js, open public alias, open runtime
 traffic, mutate wallet/ledger in runtime, write Prisma/DB, or call live OroPlay
 API.
+
+## ORO-5K downstream validation readiness
+
+ORO-5K validates post-execution evidence after ORO-5J.
+
+ORO-5K reviews isolated non-mounted patch artifact.
+
+ORO-5K records route mount authorization request readiness only.
+
+ORO-5K still does not submit route mount authorization request, still does not
+issue route mount authorization decision, still does not mount route, still
+does not edit src/app.js, still does not open public alias, still does not
+open runtime traffic, still does not mutate wallet/ledger in runtime, still
+does not write Prisma/DB, and still does not call live OroPlay API.

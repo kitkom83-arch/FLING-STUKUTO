@@ -158,7 +158,7 @@ Status: Phase AS mock/static/sandbox-readiness only. These rows define future sa
 
 ## Future OroPlay API Mapping
 
-Status: ORO-2B fail-closed callback stub only remains the active runtime behavior, ORO-2C readiness contract is closed, ORO-3A runtime simulation closed, ORO-3B adapter contract is closed, ORO-3C execution plan only is closed, ORO-3D readiness gate only is closed, ORO-4Q mount authorization hold gate is closed, ORO-4R private artifact hash registry is closed, ORO-4S signed approval record / mount authorization request preparation boundary is closed, ORO-4T request submission review boundary is closed, ORO-4U final pre-mount decision boundary is closed, ORO-4V route mount approval boundary is closed, ORO-4W implementation approval readiness is closed, ORO-4X implementation approval decision is closed, ORO-4Y execution approval readiness is closed, ORO-4Z patch review decision is closed, ORO-5A execution approval request is closed, ORO-5B execution decision is closed, ORO-5C implementation request is closed, ORO-5D implementation decision is closed, ORO-5E actual patch approval request is closed, ORO-5F actual patch approval decision is closed, ORO-5G actual patch authorization request is closed, ORO-5H actual patch authorization decision is closed, ORO-5I actual patch implementation execution readiness is closed, and ORO-5J actual patch implementation execution is current/local pending for OroPlay API / Seamless Wallet integration. These rows are not production runtime and do not add callback processing, services, migrations, deploy, production DB access, real money runtime flow, live payout, live provider calls, callback wallet mutation, runtime wallet mutation, runtime ledger mutation, Prisma write, provider alias enablement, or hardcoded secrets.
+Status: ORO-2B fail-closed callback stub only remains the active runtime behavior, ORO-2C readiness contract is closed, ORO-3A runtime simulation closed, ORO-3B adapter contract is closed, ORO-3C execution plan only is closed, ORO-3D readiness gate only is closed, ORO-4Q mount authorization hold gate is closed, ORO-4R private artifact hash registry is closed, ORO-4S signed approval record / mount authorization request preparation boundary is closed, ORO-4T request submission review boundary is closed, ORO-4U final pre-mount decision boundary is closed, ORO-4V route mount approval boundary is closed, ORO-4W implementation approval readiness is closed, ORO-4X implementation approval decision is closed, ORO-4Y execution approval readiness is closed, ORO-4Z patch review decision is closed, ORO-5A execution approval request is closed, ORO-5B execution decision is closed, ORO-5C implementation request is closed, ORO-5D implementation decision is closed, ORO-5E actual patch approval request is closed, ORO-5F actual patch approval decision is closed, ORO-5G actual patch authorization request is closed, ORO-5H actual patch authorization decision is closed, ORO-5I actual patch implementation execution readiness is closed, ORO-5J actual patch implementation execution is closed, and ORO-5K post-execution validation route mount authorization request readiness is current/local pending for OroPlay API / Seamless Wallet integration. These rows are not production runtime and do not add callback processing, services, migrations, deploy, production DB access, real money runtime flow, live payout, live provider calls, callback wallet mutation, runtime wallet mutation, runtime ledger mutation, Prisma write, provider alias enablement, or hardcoded secrets.
 
 ORO-2B fail-closed stub only.
 
@@ -468,5 +468,25 @@ does not call live OroPlay API. The next phase is post-execution validation
 boundary or route mount authorization request boundary. Route mount
 authorization, public alias approval, and runtime traffic approval still
 require separate explicit approval.
+
+ORO-5K post-execution validation route mount authorization request readiness:
+ORO-5K validates post-execution evidence after ORO-5J executed isolated
+non-mounted actual patch implementation.
+
+ORO-5K reviews isolated non-mounted patch artifact and records route mount
+authorization request readiness only:
+
+ORO-5K records route mount authorization request readiness only.
+
+- postExecutionValidationStatus=passed_for_route_mount_authorization_request_readiness
+- isolatedPatchArtifactReviewStatus=accepted_for_route_mount_authorization_request_readiness
+- routeMountAuthorizationRequestReadinessStatus=ready_to_prepare_route_mount_authorization_request
+- routeMountAuthorizationRequestPreparationScope=readiness_record_only
+
+ORO-5K does not submit route mount authorization request, does not issue route
+mount authorization decision, does not mount route, does not edit src/app.js,
+does not open public alias, does not open runtime traffic, does not mutate
+wallet/ledger in runtime, does not write Prisma/DB, and does not call live
+OroPlay API.
 
 next phase is actual patch implementation approval decision boundary.

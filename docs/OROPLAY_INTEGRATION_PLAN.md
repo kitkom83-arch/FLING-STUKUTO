@@ -650,3 +650,22 @@ does not call live OroPlay API.
 Next phase is post-execution validation boundary or route mount authorization
 request boundary. Route mount authorization, public alias approval, and runtime
 traffic approval still require separate explicit approval.
+
+## ORO-5K Current
+
+ORO-5K validates post-execution evidence after ORO-5J executed isolated
+non-mounted actual patch implementation.
+
+ORO-5K reviews isolated non-mounted patch artifact and records route mount
+authorization request readiness only:
+
+- postExecutionValidationStatus=passed_for_route_mount_authorization_request_readiness
+- isolatedPatchArtifactReviewStatus=accepted_for_route_mount_authorization_request_readiness
+- routeMountAuthorizationRequestReadinessStatus=ready_to_prepare_route_mount_authorization_request
+- routeMountAuthorizationRequestPreparationScope=readiness_record_only
+
+ORO-5K still does not submit route mount authorization request, still does not
+issue route mount authorization decision, still does not mount route, still does
+not edit src/app.js, still does not open public alias, still does not open
+runtime traffic, still does not mutate wallet/ledger in runtime, still does not
+write Prisma/DB, and still does not call live OroPlay API.

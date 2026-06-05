@@ -3411,6 +3411,40 @@ Expected execution:
   request boundary remains a separate next phase.
 - Confirms no secret-shaped output.
 
+## 104. ORO-5K Post-Execution Validation Route Mount Authorization Request Readiness Coverage
+
+ORO-5K Post-Execution Validation Route Mount Authorization Request Readiness
+Coverage. The phase validates post-execution evidence after ORO-5J and records
+route mount authorization request readiness only.
+
+Coverage files:
+
+- ORO-5K readiness doc: post-execution validation route mount authorization request readiness boundary.
+- ORO-5K mock helper: post-execution validation summary, artifact review,
+  evidence review, route mount authorization request readiness, and held gates.
+- ORO-5K fixtures: happy path, hold cases, and safety attempts.
+- ORO-5K smoke wrapper: `src/local-smoke-tests/oro5kSmoke.js`.
+
+Scripts:
+
+- `smoke:oro-5k`
+
+Expected execution:
+
+- Confirms ORO-5K validates post-execution evidence.
+- Confirms ORO-5K reviews isolated non-mounted patch artifact.
+- Confirms ORO-5K records route mount authorization request readiness only.
+- Confirms ORO-5K does not submit route mount authorization request.
+- Confirms ORO-5K does not issue route mount authorization decision.
+- Confirms ORO-5K still does not mount route.
+- Confirms ORO-5K still does not edit src/app.js.
+- Confirms ORO-5K still does not open public alias.
+- Confirms ORO-5K still does not open runtime traffic.
+- Confirms ORO-5K still does not mutate wallet/ledger in runtime.
+- Confirms ORO-5K still does not write Prisma/DB.
+- Confirms ORO-5K still does not call live OroPlay API.
+- Confirms no secret-shaped output.
+
 ## 92. ORO-4Y Route Mount Execution Approval Readiness Coverage
 
 ORO-4Y Route Mount Execution Approval Readiness Coverage. The phase records
