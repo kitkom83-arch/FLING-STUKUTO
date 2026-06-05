@@ -198,7 +198,15 @@ ORO-5I must return hold/fail status when any of these are true:
 
 ## Next phase requirements
 
-The next phase is actual patch implementation execution boundary.
+The next phase is isolated non-mounted actual patch implementation execution boundary.
+
+ORO-5J executes isolated non-mounted actual patch implementation boundary.
+
+ORO-5J prepares isolated patch artifact and post-execution evidence only.
+
+ORO-5J still does not mount route, still does not edit src/app.js, still does not open public alias, still does not open runtime traffic, still does not mutate wallet/ledger in runtime, still does not write Prisma/DB, and still does not call live OroPlay API.
+
+The following explicit phase after ORO-5J is post-execution validation boundary or route mount authorization request boundary.
 
 The next phase requires a separate actual patch implementation execution boundary.
 

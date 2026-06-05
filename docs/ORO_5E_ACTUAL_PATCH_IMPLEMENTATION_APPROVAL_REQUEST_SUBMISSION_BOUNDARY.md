@@ -234,3 +234,11 @@ ORO-5I checks actual patch implementation execution readiness after ORO-5H.
 ORO-5I prepares isolated mock execution plan only and still does not start
 execution, apply runtime patch, implement patch, mount route, open public alias,
 or open runtime traffic.
+
+ORO-5J executes isolated non-mounted actual patch implementation boundary after
+ORO-5I.
+
+ORO-5J prepares isolated patch artifact and post-execution evidence only and
+still does not mount route, edit src/app.js, open public alias, open runtime
+traffic, mutate wallet/ledger in runtime, write Prisma/DB, or call live OroPlay
+API.

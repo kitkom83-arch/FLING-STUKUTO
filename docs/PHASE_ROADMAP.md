@@ -141,7 +141,8 @@ OroPlay phase sequence after current mock/contract phases:
 - ORO-5F: actual patch approval decision. ORO-5F closed; approval is only for next authorization request scope.
 - ORO-5G: actual patch authorization request. ORO-5G closed; implementation, mount, and runtime still not authorized.
 - ORO-5H: actual patch authorization decision. ORO-5H closed; implementation execution boundary, mount, and runtime still not authorized.
-- ORO-5I: actual patch implementation execution readiness. ORO-5I current/local pending until validation report; isolated mock execution plan only; implementation execution, mount, and runtime still not authorized.
+- ORO-5I: actual patch implementation execution readiness. ORO-5I closed; isolated mock execution plan only; implementation execution, mount, and runtime still not authorized.
+- ORO-5J: actual patch implementation execution. ORO-5J current/local pending until validation report; isolated non-mounted patch artifact and post-execution evidence only; route mount, public alias, and runtime traffic still not authorized.
 - ORO-2B current/fail-closed route skeleton remains the active fail-closed runtime default.
 - ORO-3 is not allowed until ORO-2B passes; ORO-2C and ORO-3A add newer gates before runtime work.
 - ORO-3B is not allowed until ORO-2B and ORO-2C are closed and ORO-3A passes.
@@ -1203,6 +1204,55 @@ ORO-5I target criteria:
   Express mount, no public alias, no runtime traffic, no wallet/ledger
   mutation, and no Prisma/DB write.
 - `smoke:oro-5i` registration is present.
+
+## ORO-5J current/local pending actual patch implementation execution
+
+ORO-5J actual patch implementation execution records isolated non-mounted
+execution after ORO-5I checked execution readiness.
+
+ORO-5J executes isolated non-mounted actual patch implementation boundary:
+
+- `actualPatchImplementationExecutionBoundaryEntered=true`
+- `actualPatchImplementationExecutionStarted=true`
+- `actualPatchImplementationExecutionCompleted=true`
+- `actualPatchImplementationExecutionStatus=executed_isolated_non_mounted_patch`
+- `actualPatchImplementationExecutionScope=isolated_non_mounted_callback_patch_artifact_only`
+- `actualPatchImplementationPatchArtifactStatus=prepared_for_post_execution_review`
+- `postExecutionEvidencePrepared=true`
+
+ORO-5J prepares isolated patch artifact and post-execution evidence only.
+
+ORO-5J still does not mount route.
+
+ORO-5J still does not edit src/app.js.
+
+ORO-5J still does not open public alias.
+
+ORO-5J still does not open runtime traffic.
+
+ORO-5J still does not mutate wallet/ledger in runtime.
+
+ORO-5J still does not write Prisma/DB.
+
+ORO-5J still does not call live OroPlay API.
+
+ORO-5J target criteria:
+
+- ORO-5J execution doc exists and states isolated non-mounted artifact only.
+- ORO-5J helper exports status, input builder, evaluator, isolated patch
+  artifact, held gates, summary builder, and validator.
+- ORO-5J fixtures cover happy path, missing ORO-5I readiness, wrong readiness
+  state, wrong execution scope, implementation attempts, mount attempts,
+  database attempts, external network attempts, live OroPlay API attempts, and
+  secret-shaped output.
+- ORO-5J smoke confirms isolated execution, isolated patch artifact,
+  post-execution evidence, no Express mount, no public alias, no runtime
+  traffic, no wallet/ledger mutation, and no Prisma/DB write.
+- `smoke:oro-5j` registration is present.
+
+Next phase is post-execution validation boundary or route mount authorization
+request boundary. Route mount authorization, public alias approval, and runtime
+traffic approval still require separate explicit approval.
 
 Next phase is actual patch implementation execution boundary. Route mount
 authorization still requires separate authorization. Runtime traffic approval

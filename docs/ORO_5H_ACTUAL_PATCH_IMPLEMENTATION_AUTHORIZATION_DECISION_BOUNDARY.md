@@ -174,6 +174,10 @@ ORO-5I still does not start execution, still does not apply runtime patch, still
 
 The following explicit phase after ORO-5I is actual patch implementation execution boundary.
 
+ORO-5J executes isolated non-mounted actual patch implementation boundary after ORO-5I.
+
+ORO-5J prepares isolated patch artifact and post-execution evidence only and still does not mount route, edit src/app.js, open public alias, open runtime traffic, mutate wallet/ledger in runtime, write Prisma/DB, or call live OroPlay API.
+
 The next phase requires a separate actual patch implementation execution boundary.
 
 The next phase requires separate route mount authorization.

@@ -630,3 +630,23 @@ open public alias, and still does not open runtime traffic.
 Next phase is actual patch implementation execution boundary. Route mount
 authorization and runtime traffic approval still require separate explicit
 approval.
+
+## ORO-5J Current
+
+ORO-5J executes isolated non-mounted actual patch implementation boundary
+after ORO-5I checked execution readiness.
+
+ORO-5J prepares isolated patch artifact and post-execution evidence only:
+`actualPatchImplementationExecutionStatus=executed_isolated_non_mounted_patch`,
+`actualPatchImplementationExecutionScope=isolated_non_mounted_callback_patch_artifact_only`,
+`actualPatchImplementationPatchArtifactStatus=prepared_for_post_execution_review`,
+and `postExecutionEvidencePrepared=true`.
+
+ORO-5J still does not mount route, still does not edit src/app.js, still does
+not open public alias, still does not open runtime traffic, still does not
+mutate wallet/ledger in runtime, still does not write Prisma/DB, and still
+does not call live OroPlay API.
+
+Next phase is post-execution validation boundary or route mount authorization
+request boundary. Route mount authorization, public alias approval, and runtime
+traffic approval still require separate explicit approval.
