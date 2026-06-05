@@ -3543,6 +3543,44 @@ Expected execution:
 - Confirms ORO-5N does not mutate wallet/ledger in runtime.
 - Confirms ORO-5N does not write Prisma/DB.
 - Confirms ORO-5N does not call live OroPlay API.
+
+## 108. ORO-5O Post-Mount Validation Boundary Coverage
+
+ORO-5O Post-Mount Validation Boundary Coverage. The phase validates the
+post-mount state after ORO-5N without modifying `src/app.js`, runtime routes,
+controllers, Prisma schema, migrations, wallet services, ledger services, or
+live-provider services.
+
+Coverage artifacts:
+
+- ORO-5O boundary doc: post-mount validation boundary.
+- ORO-5O mock helper: boundary output, safety locks, internal mount assertion,
+  fail-closed route assertion, public alias assertion, runtime mutation
+  assertion, and external network assertion.
+- ORO-5O fixtures: happy path, missing internal mount, public alias, runtime
+  traffic, wallet mutation, ledger mutation, Prisma write, external network,
+  live OroPlay call, and optional backend-not-listening skip.
+- ORO-5O smoke wrapper: `src/local-smoke-tests/oro5oSmoke.js`.
+
+Smoke commands:
+
+- `smoke:oro-5o`
+
+Assertions:
+
+- Confirms ORO-5O validates internal `/api/oroplay` mount evidence from ORO-5N.
+- Confirms `/api/oroplay/balance` remains `fail_closed_no_mutation`.
+- Confirms `/api/oroplay/transaction` remains `fail_closed_no_mutation`.
+- Confirms `/api/balance` public alias is absent.
+- Confirms `/api/transaction` public alias is absent.
+- Confirms ORO-5O does not modify `src/app.js`.
+- Confirms ORO-5O does not modify runtime route/controller files.
+- Confirms ORO-5O does not enable runtime or live traffic.
+- Confirms ORO-5O does not mutate wallet/ledger in runtime.
+- Confirms ORO-5O does not write Prisma/DB or run migrations.
+- Confirms ORO-5O does not call external network or live OroPlay API.
+- Confirms optional local route probe is loopback-only and skips cleanly when no
+  backend is listening.
 - Confirms no secret-shaped output.
 
 ## 92. ORO-4Y Route Mount Execution Approval Readiness Coverage

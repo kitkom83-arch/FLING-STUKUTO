@@ -135,3 +135,11 @@ ORO-5N must hold when any of these are true:
 The next phase must validate the internal fail-closed mount before any further
 approval. Public aliases, runtime traffic, and live traffic remain separate
 explicit approvals.
+
+## Downstream ORO-5O post-mount validation note
+
+ORO-5O validates the post-mount state after this ORO-5N internal fail-closed
+route mount. ORO-5O is validation only: it confirms internal `/api/oroplay`
+mount evidence, fail-closed balance and transaction callback route modes, no
+public aliases, no runtime/live traffic, no wallet/ledger/Prisma/DB mutation,
+no migration, no external network, and no live OroPlay API call.

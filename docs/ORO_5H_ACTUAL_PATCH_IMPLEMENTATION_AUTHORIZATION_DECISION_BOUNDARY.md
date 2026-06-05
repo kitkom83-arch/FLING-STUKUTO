@@ -230,3 +230,10 @@ ORO-5N implements internal fail-closed route mount boundary after ORO-5M
 authorization. ORO-5N remains internal fail-closed OroPlay callback staging
 mount only, with no public alias, no runtime traffic, no wallet/ledger
 mutation, no Prisma/DB write, and no live OroPlay API call.
+
+## Downstream ORO-5O post-mount validation note
+
+ORO-5O validates the post-mount state after ORO-5N. ORO-5O remains validation
+only and does not authorize public aliases, runtime/live traffic,
+wallet/ledger/Prisma/DB mutation, migrations, external network, or live
+OroPlay API calls.

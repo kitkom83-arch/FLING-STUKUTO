@@ -734,3 +734,20 @@ does not call live OroPlay API.
 The next phase is post-mount validation boundary. Public alias approval,
 runtime traffic approval, and live traffic approval remain separate explicit
 phases.
+
+## ORO-5O Current
+
+ORO-5O validates the post-mount state after ORO-5N. The internal
+`/api/oroplay` mount remains fail-closed for balance and transaction callbacks,
+with route mode `fail_closed_no_mutation`.
+
+ORO-5O does not change `src/app.js`, route files, or controllers. It confirms
+that public aliases `/api/balance` and `/api/transaction` remain absent, runtime
+traffic remains disabled, wallet/ledger/Prisma/DB mutation remains absent,
+migrations remain absent, external network remains absent, and live OroPlay API
+calls remain absent.
+
+ORO-5O marker: internal /api/oroplay mount remains fail-closed.
+
+ORO-5O still requires separate approval before any public alias, runtime
+traffic, or live traffic work.

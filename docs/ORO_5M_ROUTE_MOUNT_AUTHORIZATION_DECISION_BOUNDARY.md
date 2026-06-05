@@ -179,3 +179,10 @@ authorization. ORO-5N remains internal fail-closed OroPlay callback staging
 mount only, does not mount public aliases, does not enable runtime traffic,
 does not mutate wallet/ledger, does not write Prisma/DB, and does not call
 live OroPlay API.
+
+## Downstream ORO-5O post-mount validation note
+
+ORO-5O validates the post-mount state after ORO-5N. ORO-5O remains validation
+only and does not authorize public aliases, runtime/live traffic,
+wallet/ledger/Prisma/DB mutation, migrations, external network, or live
+OroPlay API calls.
