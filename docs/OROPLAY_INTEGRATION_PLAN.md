@@ -591,3 +591,23 @@ implementation authorization, still does not implement patch, still does not
 mount route, and still does not open runtime traffic.
 
 Next phase is actual patch implementation authorization decision boundary.
+
+## ORO-5H Current
+
+ORO-5H issued actual patch implementation authorization decision after
+ORO-5G submitted actual patch implementation authorization request.
+
+ORO-5H records decision metadata only:
+`actualPatchImplementationAuthorizationRequestStatus=decision_issued`,
+`actualPatchImplementationAuthorizationDecisionResult=approved`,
+`actualPatchImplementationAuthorizationGranted=true`, and
+`actualPatchImplementationAuthorizationGrantScope=actual_patch_implementation_execution_boundary_only`.
+
+ORO-5H grants only permission to proceed to a later actual patch
+implementation execution boundary.
+
+ORO-5H still does not execute actual patch implementation, still does not
+apply patch, still does not mount route, and still does not open runtime
+traffic.
+
+Next phase is actual patch implementation execution boundary.

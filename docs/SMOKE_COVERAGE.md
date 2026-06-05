@@ -3318,6 +3318,35 @@ Expected request:
 - Confirms no wallet/ledger mutation, no Prisma/DB write, no migration, no
   external network, and no secret-shaped output.
 
+## 101. ORO-5H Actual Patch Implementation Authorization Decision Coverage
+
+ORO-5H Actual Patch Implementation Authorization Decision Coverage. The phase
+records only the actual patch implementation authorization decision after
+ORO-5G submitted the authorization request.
+
+Coverage files:
+
+- ORO-5H decision doc: actual patch implementation authorization decision boundary.
+- ORO-5H mock helper: decision summary and held gates.
+- ORO-5H fixtures: happy path, hold cases, and safety attempts.
+- ORO-5H smoke wrapper: `src/local-smoke-tests/oro5hSmoke.js`.
+
+Scripts:
+
+- `smoke:oro-5h`
+
+Expected decision:
+
+- Confirms ORO-5H issued actual patch implementation authorization decision.
+- Confirms decision result is approved and grant scope is actual patch implementation execution boundary only.
+- Confirms actual patch implementation execution boundary remains the next phase.
+- Confirms ORO-5H still does not execute actual patch implementation.
+- Confirms ORO-5H still does not apply patch.
+- Confirms ORO-5H still does not mount route.
+- Confirms ORO-5H still does not open runtime traffic.
+- Confirms no wallet/ledger mutation, no Prisma/DB write, no migration, no
+  external network, and no secret-shaped output.
+
 ## 92. ORO-4Y Route Mount Execution Approval Readiness Coverage
 
 ORO-4Y Route Mount Execution Approval Readiness Coverage. The phase records

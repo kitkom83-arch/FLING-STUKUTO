@@ -191,3 +191,8 @@ implementation authorization, still does not implement patch, still does not
 mount route, and still does not open runtime traffic.
 
 The next phase is actual patch implementation authorization decision boundary.
+
+ORO-5H downstream decision later issues actual patch implementation
+authorization decision only, grants only permission to proceed to a later
+actual patch implementation execution boundary, and still does not execute
+implementation, mount route, or open runtime traffic.
