@@ -137,7 +137,8 @@ OroPlay phase sequence after current mock/contract phases:
 - ORO-5B: execution decision. ORO-5B closed; patch implementation and mount still not authorized.
 - ORO-5C: implementation request. ORO-5C closed; mount and runtime still not authorized.
 - ORO-5D: implementation decision. ORO-5D closed; mount and runtime still not authorized.
-- ORO-5E: actual patch approval request. ORO-5E current/local pending until validation report; mount and runtime still not authorized.
+- ORO-5E: actual patch approval request. ORO-5E closed; mount and runtime still not authorized.
+- ORO-5F: actual patch approval decision. ORO-5F current/local pending until validation report; approval is only for next authorization request scope.
 - ORO-2B current/fail-closed route skeleton remains the active fail-closed runtime default.
 - ORO-3 is not allowed until ORO-2B passes; ORO-2C and ORO-3A add newer gates before runtime work.
 - ORO-3B is not allowed until ORO-2B and ORO-2C are closed and ORO-3A passes.
@@ -1045,6 +1046,43 @@ separate explicit approvals. ORO-5E does not authorize `src/app.js` changes,
 Express route mount, public aliases, runtime traffic, wallet mutation, ledger
 mutation, Prisma writes, DB transactions, live OroPlay calls, external
 network, route mount authorization, or real money.
+
+## ORO-5F current/local pending actual patch approval decision
+
+ORO-5F actual patch approval decision records the decision after ORO-5E
+submitted actual patch implementation approval request.
+
+ORO-5F issued actual patch implementation approval decision and grants approval
+only for next authorization request scope:
+
+- `actualPatchImplementationApprovalRequestStatus=decision_issued`
+- `actualPatchImplementationApprovalDecisionIssued=true`
+- `actualPatchImplementationApprovalDecisionResult=approved_for_actual_patch_implementation_authorization_request_only`
+- `actualPatchImplementationApprovalGranted=true`
+- `actualPatchImplementationApprovalGrantScope=actual_patch_implementation_authorization_request_only`
+
+ORO-5F still does not authorize implementation execution.
+
+ORO-5F still does not implement patch.
+
+ORO-5F still does not mount route.
+
+ORO-5F still does not open runtime traffic.
+
+ORO-5F target criteria:
+
+- ORO-5F approval decision doc exists and states decision only.
+- ORO-5F helper exports status, input builder, evaluator, held gates, summary
+  builder, and validator.
+- ORO-5F fixtures cover happy path, missing ORO-5E request, wrong ORO-5D
+  authorization, broader scope, implementation attempts, mount attempts,
+  database attempts, external network attempts, and secret-shaped output.
+- ORO-5F smoke confirms approval decision is request-scope only, no Express
+  mount, no public alias, no runtime traffic, no wallet/ledger mutation, and
+  no Prisma/DB write.
+- `smoke:oro-5f` registration is present.
+
+Next phase is actual patch implementation authorization request boundary.
 - ORO-3B blocked until ORO-3A pass.
 
 ORO-3B status marker:

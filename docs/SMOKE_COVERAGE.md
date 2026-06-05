@@ -3256,6 +3256,37 @@ Boundary:
 - No public alias.
 - No runtime traffic.
 
+## 99. ORO-5F Actual Patch Implementation Approval Decision Coverage
+
+ORO-5F Actual Patch Implementation Approval Decision Coverage. The phase
+records only the actual patch implementation approval decision after ORO-5E
+submitted the request.
+
+Coverage files:
+
+- ORO-5F decision doc: actual patch implementation approval decision boundary.
+- ORO-5F mock helper: decision summary and held gates.
+- ORO-5F fixtures: happy path, hold cases, and safety attempts.
+- ORO-5F smoke wrapper: `src/local-smoke-tests/oro5fSmoke.js`.
+
+Scripts:
+
+- `smoke:oro-5f`
+
+Expected decision:
+
+- Confirms ORO-5F issued actual patch implementation approval decision.
+- Confirms grant scope is only the next actual patch implementation
+  authorization request boundary.
+- Confirms actual patch implementation authorization request boundary remains
+  the next phase.
+- Confirms ORO-5F still does not authorize implementation execution.
+- Confirms ORO-5F still does not implement patch.
+- Confirms ORO-5F still does not mount route.
+- Confirms ORO-5F still does not open runtime traffic.
+- Confirms no wallet/ledger mutation, no Prisma/DB write, no migration, no
+  external network, and no secret-shaped output.
+
 ## 92. ORO-4Y Route Mount Execution Approval Readiness Coverage
 
 ORO-4Y Route Mount Execution Approval Readiness Coverage. The phase records

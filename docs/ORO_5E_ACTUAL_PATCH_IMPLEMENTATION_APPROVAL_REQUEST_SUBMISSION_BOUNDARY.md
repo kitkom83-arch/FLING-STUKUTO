@@ -212,3 +212,16 @@ behavior, external network posture, live OroPlay posture, and deployment
 posture before any runtime route work can happen.
 
 ORO-5E is not that implementation phase and is not runtime traffic approval.
+
+## ORO-5F downstream boundary
+
+ORO-5F issued actual patch implementation approval decision after ORO-5E
+submitted actual patch implementation approval request.
+
+ORO-5F grants approval only for next authorization request scope.
+
+ORO-5F still does not authorize implementation execution, still does not
+implement patch, still does not mount route, and still does not open runtime
+traffic.
+
+The next phase is actual patch implementation authorization request boundary.

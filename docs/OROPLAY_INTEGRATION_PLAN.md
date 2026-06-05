@@ -553,3 +553,23 @@ does not use external network, does not deploy, and does not touch real money.
 The next phase is actual patch implementation approval decision boundary.
 Route mount authorization and runtime traffic approval remain separate
 approvals.
+
+## ORO-5F Current
+
+ORO-5F issued actual patch implementation approval decision after ORO-5E
+submitted the approval request.
+
+ORO-5F records decision metadata only:
+`actualPatchImplementationApprovalRequestStatus=decision_issued`,
+`actualPatchImplementationApprovalDecisionIssued=true`,
+`actualPatchImplementationApprovalDecisionResult=approved_for_actual_patch_implementation_authorization_request_only`,
+`actualPatchImplementationApprovalGranted=true`, and
+`actualPatchImplementationApprovalGrantScope=actual_patch_implementation_authorization_request_only`.
+
+ORO-5F grants approval only for next authorization request scope.
+
+ORO-5F still does not authorize implementation execution, still does not
+implement patch, still does not mount route, and still does not open runtime
+traffic.
+
+Next phase is actual patch implementation authorization request boundary.
