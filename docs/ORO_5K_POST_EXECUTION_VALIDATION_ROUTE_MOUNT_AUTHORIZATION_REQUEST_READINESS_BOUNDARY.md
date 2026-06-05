@@ -196,3 +196,29 @@ ORO-5K does not mount Express route.
 - nextPhaseRequiresPostMountValidationBoundary = true
 
 The next phase must be a separate route mount authorization request submission boundary. It must not be inferred from ORO-5K readiness.
+
+## ORO-5L downstream request submission
+
+ORO-5L submits route mount authorization request record after ORO-5K.
+
+ORO-5L still does not issue route mount decision.
+
+ORO-5L still does not grant route mount authorization.
+
+ORO-5L still does not mount route.
+
+ORO-5L still does not edit src/app.js.
+
+ORO-5L still does not open public alias.
+
+ORO-5L still does not open runtime traffic.
+
+ORO-5L still does not mutate wallet/ledger in runtime.
+
+ORO-5L still does not write Prisma/DB.
+
+ORO-5L still does not call live OroPlay API.
+
+The next phase is route mount authorization decision boundary. Express mount
+implementation, public alias approval, and runtime traffic approval remain
+separate explicit phases.

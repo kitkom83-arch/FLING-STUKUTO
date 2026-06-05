@@ -254,3 +254,15 @@ issue route mount authorization decision, still does not mount route, still
 does not edit src/app.js, still does not open public alias, still does not
 open runtime traffic, still does not mutate wallet/ledger in runtime, still
 does not write Prisma/DB, and still does not call live OroPlay API.
+
+## ORO-5L downstream request submission
+
+ORO-5L submits route mount authorization request record after ORO-5K.
+
+ORO-5L still does not issue route mount decision, still does not grant route
+mount authorization, still does not mount route, still does not edit
+src/app.js, still does not open public alias, still does not open runtime
+traffic, still does not mutate wallet/ledger in runtime, still does not write
+Prisma/DB, and still does not call live OroPlay API.
+
+The next phase is route mount authorization decision boundary.

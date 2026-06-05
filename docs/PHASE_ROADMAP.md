@@ -143,7 +143,8 @@ OroPlay phase sequence after current mock/contract phases:
 - ORO-5H: actual patch authorization decision. ORO-5H closed; implementation execution boundary, mount, and runtime still not authorized.
 - ORO-5I: actual patch implementation execution readiness. ORO-5I closed; isolated mock execution plan only; implementation execution, mount, and runtime still not authorized.
 - ORO-5J: actual patch implementation execution. ORO-5J closed; isolated non-mounted patch artifact and post-execution evidence only; route mount, public alias, and runtime traffic still not authorized.
-- ORO-5K: post-execution validation route mount authorization request readiness. ORO-5K current/local pending until validation report; route mount authorization request readiness only; request submission, route mount decision, Express mount, public alias, and runtime traffic still not authorized.
+- ORO-5K: post-execution validation route mount authorization request readiness. ORO-5K closed; route mount authorization request readiness only; route mount decision, Express mount, public alias, and runtime traffic still not authorized.
+- ORO-5L: route mount authorization request submission. ORO-5L current/local pending until validation report; request submitted pending decision only; route mount decision, authorization grant, Express mount, public alias, and runtime traffic still not authorized.
 - ORO-2B current/fail-closed route skeleton remains the active fail-closed runtime default.
 - ORO-3 is not allowed until ORO-2B passes; ORO-2C and ORO-3A add newer gates before runtime work.
 - ORO-3B is not allowed until ORO-2B and ORO-2C are closed and ORO-3A passes.
@@ -1309,6 +1310,56 @@ ORO-5K target criteria:
   alias, no runtime traffic, no wallet/ledger mutation, no Prisma/DB write, no
   external network, no live OroPlay API, and no secret-shaped output.
 - Registered npm script: `smoke:oro-5k`.
+
+## ORO-5L current/local pending route mount authorization request submission
+
+ORO-5L route mount authorization request submission records request submission
+after ORO-5K validated post-execution evidence and readiness.
+
+ORO-5L submits route mount authorization request record only:
+
+- `routeMountAuthorizationRequestStatus=submitted_pending_decision`
+- `routeMountAuthorizationRequestResult=submitted`
+- `routeMountAuthorizationRequestScope=route_mount_authorization_decision_request_only`
+- `routeMountAuthorizationDecisionResult=pending_decision`
+
+ORO-5L still does not issue route mount decision.
+
+ORO-5L still does not grant route mount authorization.
+
+ORO-5L still does not mount route.
+
+ORO-5L still does not edit src/app.js.
+
+ORO-5L still does not open public alias.
+
+ORO-5L still does not open runtime traffic.
+
+ORO-5L still does not mutate wallet/ledger in runtime.
+
+ORO-5L still does not write Prisma/DB.
+
+ORO-5L still does not call live OroPlay API.
+
+The next phase is route mount authorization decision boundary. Express mount
+implementation, public alias approval, and runtime traffic approval remain
+separate explicit phases.
+
+ORO-5L target criteria:
+
+- ORO-5L request submission doc exists and states request submission only.
+- ORO-5L helper exports status, input builder, evaluator, request record,
+  decision held gate, implementation held gate, Express mount held gate, public
+  alias held gate, runtime traffic held gate, summary builder, and validator.
+- ORO-5L fixtures cover happy path, missing ORO-5K readiness, invalid ORO-5K
+  readiness state, prior request submission, decision/grant attempts, mount
+  attempts, database attempts, external network attempts, live OroPlay API
+  attempts, and secret-shaped output.
+- ORO-5L smoke confirms request submitted pending decision, no route mount
+  decision, no route mount authorization grant, no Express mount, no public
+  alias, no runtime traffic, no wallet/ledger mutation, no Prisma/DB write, no
+  external network, no live OroPlay API, and no secret-shaped output.
+- Registered npm script: `smoke:oro-5l`.
 
 Next phase is actual patch implementation execution boundary. Route mount
 authorization still requires separate authorization. Runtime traffic approval
