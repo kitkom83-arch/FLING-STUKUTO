@@ -573,3 +573,21 @@ implement patch, still does not mount route, and still does not open runtime
 traffic.
 
 Next phase is actual patch implementation authorization request boundary.
+
+## ORO-5G Current
+
+ORO-5G submitted actual patch implementation authorization request after
+ORO-5F issued the approval decision.
+
+ORO-5G records request metadata only:
+`actualPatchImplementationAuthorizationRequestSubmitted=true`,
+`actualPatchImplementationAuthorizationRequestStatus=submitted_pending_decision`,
+`actualPatchImplementationAuthorizationRequestResult=pending_decision`,
+`actualPatchImplementationAuthorizationDecisionIssued=false`, and
+`actualPatchImplementationAuthorizationGranted=false`.
+
+ORO-5G still does not issue authorization decision, still does not grant
+implementation authorization, still does not implement patch, still does not
+mount route, and still does not open runtime traffic.
+
+Next phase is actual patch implementation authorization decision boundary.

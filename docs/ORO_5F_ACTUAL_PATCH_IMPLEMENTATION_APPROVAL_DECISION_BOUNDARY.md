@@ -180,3 +180,14 @@ Required next-phase flags:
 - `nextPhaseRequiresActualPatchImplementationAuthorizationDecision = true`
 - `nextPhaseRequiresSeparateRouteMountAuthorization = true`
 - `nextPhaseRequiresSeparateRuntimeTrafficApproval = true`
+
+## ORO-5G downstream boundary
+
+ORO-5G submitted actual patch implementation authorization request after
+ORO-5F issued actual patch implementation approval decision.
+
+ORO-5G still does not issue authorization decision, still does not grant
+implementation authorization, still does not implement patch, still does not
+mount route, and still does not open runtime traffic.
+
+The next phase is actual patch implementation authorization decision boundary.
