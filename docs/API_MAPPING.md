@@ -158,7 +158,7 @@ Status: Phase AS mock/static/sandbox-readiness only. These rows define future sa
 
 ## Future OroPlay API Mapping
 
-Status: ORO-2B fail-closed callback stub only remains the active runtime behavior, ORO-2C readiness contract is closed, ORO-3A runtime simulation closed, ORO-3B adapter contract is closed, ORO-3C execution plan only is closed, ORO-3D readiness gate only is closed, ORO-4Q mount authorization hold gate is closed, ORO-4R private artifact hash registry is closed, ORO-4S signed approval record / mount authorization request preparation boundary is closed, ORO-4T request submission review boundary is closed, ORO-4U final pre-mount decision boundary is closed, ORO-4V route mount approval boundary is closed, ORO-4W implementation approval readiness is closed, ORO-4X implementation approval decision is closed, ORO-4Y execution approval readiness is closed, ORO-4Z patch review decision is closed, ORO-5A execution approval request is closed, ORO-5B execution decision is closed, and ORO-5C implementation request is current/local pending for OroPlay API / Seamless Wallet integration. These rows are not production runtime and do not add callback processing, services, migrations, deploy, production DB access, real money runtime flow, live payout, live provider calls, callback wallet mutation, runtime wallet mutation, runtime ledger mutation, Prisma write, provider alias enablement, or hardcoded secrets.
+Status: ORO-2B fail-closed callback stub only remains the active runtime behavior, ORO-2C readiness contract is closed, ORO-3A runtime simulation closed, ORO-3B adapter contract is closed, ORO-3C execution plan only is closed, ORO-3D readiness gate only is closed, ORO-4Q mount authorization hold gate is closed, ORO-4R private artifact hash registry is closed, ORO-4S signed approval record / mount authorization request preparation boundary is closed, ORO-4T request submission review boundary is closed, ORO-4U final pre-mount decision boundary is closed, ORO-4V route mount approval boundary is closed, ORO-4W implementation approval readiness is closed, ORO-4X implementation approval decision is closed, ORO-4Y execution approval readiness is closed, ORO-4Z patch review decision is closed, ORO-5A execution approval request is closed, ORO-5B execution decision is closed, ORO-5C implementation request is closed, and ORO-5D implementation decision is current/local pending for OroPlay API / Seamless Wallet integration. These rows are not production runtime and do not add callback processing, services, migrations, deploy, production DB access, real money runtime flow, live payout, live provider calls, callback wallet mutation, runtime wallet mutation, runtime ledger mutation, Prisma write, provider alias enablement, or hardcoded secrets.
 
 ORO-2B fail-closed stub only.
 
@@ -349,6 +349,28 @@ ORO-5C keeps `routeMountPatchApproved=false`,
 `routeMountAuthorization=not_authorized_for_mount`,
 `expressMountAllowed=false`, `expressMountImplemented=false`,
 `publicAliasAllowed=false`, and `runtimeTrafficAllowed=false`. ORO-5C does
+not edit `src/app.js`, does not mount Express routes, does not enable public
+aliases, does not allow runtime traffic, and does not mutate wallet or ledger
+state.
+
+ORO-5D implementation decision: ORO-5D mount hold records patch authorization
+decision metadata only. This is actual patch approval request only and not
+actual patch implementation:
+`routeMountPatchImplementationAuthorizationRequestSubmitted=true`,
+`routeMountPatchImplementationAuthorizationRequestStatus=decision_issued`,
+`routeMountPatchImplementationAuthorizationRequestResult=approved_for_actual_patch_implementation_approval_request_only`,
+`routeMountPatchImplementationAuthorizationDecisionIssued=true`,
+`routeMountPatchImplementationAuthorizationDecisionResult=approved_for_actual_patch_implementation_approval_request_only`,
+`routeMountPatchImplementationAuthorizationGranted=true`, and
+`routeMountPatchImplementationAuthorization=authorized_for_actual_patch_implementation_approval_request_only`.
+ORO-5D keeps `routeMountPatchApproved=false`,
+`routeMountPatchImplementationAuthorized=false`,
+`routeMountPatchImplemented=false`, `implementationExecutionApproved=false`,
+`actualPatchImplementationApprovalIssued=false`,
+`actualPatchImplementationApprovalGranted=false`,
+`routeMountAuthorization=not_authorized_for_mount`,
+`expressMountAllowed=false`, `expressMountImplemented=false`,
+`publicAliasAllowed=false`, and `runtimeTrafficAllowed=false`. ORO-5D does
 not edit `src/app.js`, does not mount Express routes, does not enable public
 aliases, does not allow runtime traffic, and does not mutate wallet or ledger
 state.

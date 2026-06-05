@@ -160,3 +160,8 @@ traffic.
 ORO-5C implementation request may submit the next patch authorization request
 only after ORO-5B. ORO-5C mount hold still keeps route mount authorization,
 public aliases, and runtime traffic blocked.
+
+## ORO-5D downstream boundary
+
+ORO-5D implementation decision remains downstream and does not authorize actual
+patch implementation, route mount, public aliases, or runtime traffic.

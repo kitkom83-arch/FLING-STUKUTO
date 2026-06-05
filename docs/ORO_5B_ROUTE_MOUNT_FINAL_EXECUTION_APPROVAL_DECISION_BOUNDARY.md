@@ -226,3 +226,11 @@ runtime traffic blocked.
 
 ORO-5C request submission is not patch implementation authorization, route
 mount authorization, or runtime traffic approval.
+
+## ORO-5D downstream boundary
+
+ORO-5D implementation decision follows ORO-5C request submission and may approve
+only the next actual patch approval request.
+
+ORO-5D mount hold must keep route mount authorization, public aliases, and
+runtime traffic blocked.

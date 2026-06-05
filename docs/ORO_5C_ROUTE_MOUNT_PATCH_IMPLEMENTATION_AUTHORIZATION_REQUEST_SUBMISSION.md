@@ -226,3 +226,14 @@ behavior, external network posture, live OroPlay posture, and deployment
 posture before any runtime route work can happen.
 
 ORO-5C is not that implementation phase and is not runtime traffic approval.
+
+## ORO-5D downstream boundary
+
+ORO-5D implementation decision may consume the ORO-5C request and issue a
+decision for actual patch approval request only.
+
+ORO-5D mount hold must keep route mount authorization, public aliases, and
+runtime traffic blocked.
+
+ORO-5D implementation decision is not actual patch implementation approval,
+route mount authorization, or runtime traffic approval.

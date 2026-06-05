@@ -239,3 +239,9 @@ only after ORO-5B.
 
 ORO-5C mount hold must keep route mount authorization, public aliases, and
 runtime traffic blocked.
+
+## ORO-5D downstream boundary
+
+ORO-5D implementation decision remains downstream of ORO-5B and ORO-5C. It may
+approve only the next actual patch approval request and must keep ORO-5D mount
+hold active.

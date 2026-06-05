@@ -135,7 +135,8 @@ OroPlay phase sequence after current mock/contract phases:
 - ORO-4Z: patch review decision. ORO-4Z closed; execution approval request only.
 - ORO-5A: execution approval request. ORO-5A closed; execution request only.
 - ORO-5B: execution decision. ORO-5B closed; patch implementation and mount still not authorized.
-- ORO-5C: implementation request. ORO-5C current/local pending until commit, push, and CI; mount and runtime still not authorized.
+- ORO-5C: implementation request. ORO-5C closed; mount and runtime still not authorized.
+- ORO-5D: implementation decision. ORO-5D current/local pending until commit, push, and CI; mount and runtime still not authorized.
 - ORO-2B current/fail-closed route skeleton remains the active fail-closed runtime default.
 - ORO-3 is not allowed until ORO-2B passes; ORO-2C and ORO-3A add newer gates before runtime work.
 - ORO-3B is not allowed until ORO-2B and ORO-2C are closed and ORO-3A passes.
@@ -927,7 +928,7 @@ runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB
 transactions, live OroPlay calls, external network, route mount
 authorization, or real money.
 
-## ORO-5C current/local pending implementation request
+## ORO-5C closed implementation request
 
 ORO-5C implementation request / ORO-5C mount hold adds only docs, an isolated
 static/mock request helper, mock fixtures, local smoke coverage, package
@@ -960,6 +961,46 @@ ORO-5C target criteria:
 Next phase suggestion: patch implementation authorization decision still
 requires a separate explicit phase. Actual patch implementation, route mount,
 and runtime traffic still require separate explicit approvals. ORO-5C does not
+authorize `src/app.js` changes, Express route mount, public aliases, runtime
+traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions,
+live OroPlay calls, external network, route mount authorization, or real
+money.
+
+## ORO-5D current/local pending implementation decision
+
+ORO-5D implementation decision / ORO-5D mount hold adds only docs, an isolated
+static/mock decision helper, mock fixtures, local smoke coverage, package
+registration, and runAllLocalSmoke registration.
+
+ORO-5D records patch authorization decision metadata only. It sets
+`routeMountPatchImplementationAuthorizationRequestSubmitted=true`,
+`routeMountPatchImplementationAuthorizationRequestStatus=decision_issued`,
+`routeMountPatchImplementationAuthorizationRequestResult=approved_for_actual_patch_implementation_approval_request_only`,
+`routeMountPatchImplementationAuthorizationDecisionIssued=true`,
+`routeMountPatchImplementationAuthorizationDecisionResult=approved_for_actual_patch_implementation_approval_request_only`,
+`routeMountPatchImplementationAuthorizationGranted=true`, and
+`routeMountPatchImplementationAuthorization=authorized_for_actual_patch_implementation_approval_request_only`.
+
+ORO-5D target criteria:
+
+- ORO-5D implementation decision doc exists and states decision record only.
+- ORO-5D helper exports status, input builder, evaluator, hold gates, summary
+  builder, and validator.
+- ORO-5D fixtures cover happy path, missing ORO-5C request, wrong pending
+  state, prior decision, patch approval, actual implementation approval,
+  implementation, mount, alias, traffic, mutation, DB, migration, network, and
+  secret-shaped output cases.
+- ORO-5D smoke confirms decision record only, no Express mount, no public alias,
+  no mutation, no Prisma write, no DB transaction, no migration, no external
+  network, no secret-shaped output, no `src/app.js` edit marker, and
+  `smoke:oro-5d` registration.
+- `docs/API_MAPPING.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`,
+  `docs/PHASE_ROADMAP.md`, and `docs/SMOKE_COVERAGE.md` include ORO-5D
+  static/mock/no-mount coverage.
+
+Next phase suggestion: actual patch implementation approval request still
+requires a separate explicit phase. Actual patch implementation, route mount,
+and runtime traffic still require separate explicit approvals. ORO-5D does not
 authorize `src/app.js` changes, Express route mount, public aliases, runtime
 traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions,
 live OroPlay calls, external network, route mount authorization, or real

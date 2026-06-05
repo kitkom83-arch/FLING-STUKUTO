@@ -475,7 +475,7 @@ phase.
 
 ## ORO-5C Current
 
-ORO-5C Current. ORO-5C implementation request / ORO-5C mount hold is docs,
+ORO-5C Closed. ORO-5C implementation request / ORO-5C mount hold is docs,
 static contract, mock fixtures, local smoke, package registration, and smoke
 coverage only after ORO-5B.
 
@@ -493,3 +493,30 @@ does not approve patch implementation, does not authorize route mount, does
 not mutate wallet or ledger state, does not write through Prisma, does not
 create DB transactions, does not migrate, does not call live OroPlay, does
 not use external network, does not deploy, and does not touch real money.
+
+## ORO-5D Current
+
+ORO-5D Current. ORO-5D implementation decision / ORO-5D mount hold is docs,
+static contract, mock fixtures, local smoke, package registration, and smoke
+coverage only after ORO-5C.
+
+ORO-5D records patch authorization decision metadata only. It keeps
+`routeMountPatchImplementationAuthorizationRequestSubmitted=true`,
+`routeMountPatchImplementationAuthorizationRequestStatus=decision_issued`,
+`routeMountPatchImplementationAuthorizationRequestResult=approved_for_actual_patch_implementation_approval_request_only`,
+`routeMountPatchImplementationAuthorizationDecisionIssued=true`,
+`routeMountPatchImplementationAuthorizationDecisionResult=approved_for_actual_patch_implementation_approval_request_only`,
+`routeMountPatchImplementationAuthorizationGranted=true`, and
+`routeMountPatchImplementationAuthorization=authorized_for_actual_patch_implementation_approval_request_only`.
+
+ORO-5D has no mount, no alias, and no runtime traffic. It does not edit
+`src/app.js`, does not mount Express routes, does not open `/api/balance`,
+`/api/transaction`, `/api/oroplay/balance`, or `/api/oroplay/transaction`,
+does not approve actual patch implementation, does not authorize route mount,
+does not mutate wallet or ledger state, does not write through Prisma, does
+not create DB transactions, does not migrate, does not call live OroPlay, does
+not use external network, does not deploy, and does not touch real money.
+
+The next phase requires a separate actual patch implementation approval
+request and decision. Route mount authorization and runtime traffic approval
+remain separate approvals.

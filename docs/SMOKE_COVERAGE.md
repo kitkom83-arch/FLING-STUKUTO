@@ -3143,6 +3143,64 @@ Boundary:
 - No public alias.
 - No runtime traffic.
 
+## 97. ORO-5D Route Mount Patch Implementation Authorization Decision Coverage
+
+ORO-5D Route Mount Patch Implementation Authorization Decision Coverage. The
+phase records patch authorization decision metadata and ORO-5D mount hold
+metadata only. It is actual patch approval request only and keeps actual patch
+implementation, route mount, Express mount, public alias, runtime traffic,
+wallet mutation, ledger mutation, Prisma writes, DB transactions, migration,
+external network, live OroPlay calls, and real money blocked.
+
+Covered files:
+
+- ORO-5D decision doc: patch authorization decision boundary.
+- ORO-5D mock helper: decision summary and hold gates.
+- ORO-5D fixtures: happy path, hold cases, and safety attempts.
+- ORO-5D smoke wrapper: `src/local-smoke-tests/oro5dSmoke.js`.
+
+Package script:
+
+- `smoke:oro-5d`
+
+Coverage assertions:
+
+- Confirms happy path returns patch authorization decision issued with
+  `routeMountPatchImplementationAuthorizationRequestSubmitted=true`,
+  `routeMountPatchImplementationAuthorizationRequestStatus=decision_issued`,
+  `routeMountPatchImplementationAuthorizationRequestResult=approved_for_actual_patch_implementation_approval_request_only`,
+  `routeMountPatchImplementationAuthorizationDecisionIssued=true`,
+  `routeMountPatchImplementationAuthorizationDecisionResult=approved_for_actual_patch_implementation_approval_request_only`,
+  `routeMountPatchImplementationAuthorizationGranted=true`, and
+  `routeMountPatchImplementationAuthorization=authorized_for_actual_patch_implementation_approval_request_only`.
+- Confirms ORO-5C patch authorization request is present and pending before
+  ORO-5D issues the decision.
+- Confirms missing ORO-5C request, request not submitted, status not pending,
+  wrong request result, missing execution decision, execution approval not
+  granted, wrong execution authorization, prior decision, and actual
+  implementation approval hold.
+- Confirms attempted `src/app.js` edit, route/controller runtime change,
+  Express mount, public alias, runtime traffic, wallet mutation, ledger
+  mutation, Prisma write, DB transaction, migration, external network, and
+  secret-shaped output hold.
+- Confirms decision cannot be treated as actual patch implementation approval,
+  route mount authorization, or runtime traffic approval.
+- Confirms `src/app.js` does not contain the OroPlay route candidates or public
+  aliases and has no ORO-5D edit marker.
+
+Boundary:
+
+- patch authorization decision issued.
+- Actual patch implementation approval remains pending.
+- Patch implementation not authorized.
+- Route mount authorization remains blocked.
+- Separate route mount authorization remains required.
+- Separate runtime traffic approval remains required.
+- No `src/app.js` change.
+- No Express mount.
+- No public alias.
+- No runtime traffic.
+
 ## 92. ORO-4Y Route Mount Execution Approval Readiness Coverage
 
 ORO-4Y Route Mount Execution Approval Readiness Coverage. The phase records
