@@ -147,6 +147,11 @@ const RELATED_FILES = [
   "src/local-smoke-tests/oro5bRouteMountFinalExecutionApprovalDecisionBoundarySmoke.js",
   "src/local-smoke-tests/oro5bSmoke.js",
   "docs/ORO_5B_ROUTE_MOUNT_FINAL_EXECUTION_APPROVAL_DECISION_BOUNDARY.md",
+  "src/game-provider-mock/oro5cRouteMountPatchImplementationAuthorizationRequestSubmission.js",
+  "src/game-provider-mock/oro5cRouteMountPatchImplementationAuthorizationRequestSubmissionFixtures.js",
+  "src/local-smoke-tests/oro5cRouteMountPatchImplementationAuthorizationRequestSubmissionSmoke.js",
+  "src/local-smoke-tests/oro5cSmoke.js",
+  "docs/ORO_5C_ROUTE_MOUNT_PATCH_IMPLEMENTATION_AUTHORIZATION_REQUEST_SUBMISSION.md",
   "src/payment-provider-mock/memberQrDepositUxContract.js",
   "src/payment-provider-mock/memberQrDepositMockHarness.js",
   "src/local-smoke-tests/memberQrDepositUxSmoke.js",
@@ -395,6 +400,7 @@ const summary = [
   { key: "oro4z", label: "oro-4z", status: "PENDING" },
   { key: "oro5a", label: "oro-5a", status: "PENDING" },
   { key: "oro5b", label: "oro-5b", status: "PENDING" },
+  { key: "oro5c", label: "oro-5c", status: "PENDING" },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
   { key: "depositVerificationSource", label: "deposit-verification-source", status: "PENDING" },
   {
@@ -1103,6 +1109,12 @@ const steps = [
     summaryKey: "syntax",
   },
   {
+    name: "node --check oro5cSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oro5cSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
     name: "node --check memberQrDepositUxContract",
     command: nodeCommand,
     args: ["--check", "src/payment-provider-mock/memberQrDepositUxContract.js"],
@@ -1706,6 +1718,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oro-5b"]),
     summaryKey: "oro5b",
+  },
+  {
+    name: "npm run smoke:oro-5c",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oro-5c"]),
+    summaryKey: "oro5c",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

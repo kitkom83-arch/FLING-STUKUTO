@@ -231,3 +231,11 @@ route mount authorization, public aliases, and runtime traffic blocked.
 
 ORO-5B execution decision is not patch implementation approval, route mount
 authorization, or runtime traffic approval.
+
+## ORO-5C downstream boundary
+
+ORO-5C implementation request may submit the next patch authorization request
+only after ORO-5B.
+
+ORO-5C mount hold must keep route mount authorization, public aliases, and
+runtime traffic blocked.

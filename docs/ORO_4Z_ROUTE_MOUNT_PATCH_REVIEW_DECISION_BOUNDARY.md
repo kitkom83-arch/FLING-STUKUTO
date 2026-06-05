@@ -214,3 +214,7 @@ approval, route mount authorization, or runtime traffic approval.
 ORO-5B execution decision may issue the final execution approval decision only
 after ORO-5A. ORO-5B implementation hold still keeps patch implementation,
 route mount authorization, public aliases, and runtime traffic blocked.
+
+ORO-5C implementation request may submit the next patch authorization request
+only after ORO-5B. ORO-5C mount hold still keeps route mount authorization,
+public aliases, and runtime traffic blocked.

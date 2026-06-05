@@ -134,7 +134,8 @@ OroPlay phase sequence after current mock/contract phases:
 - ORO-4Y: execution approval readiness. ORO-4Y closed; execution still not authorized.
 - ORO-4Z: patch review decision. ORO-4Z closed; execution approval request only.
 - ORO-5A: execution approval request. ORO-5A closed; execution request only.
-- ORO-5B: execution decision. ORO-5B current/local pending until commit, push, and CI; patch implementation and mount still not authorized.
+- ORO-5B: execution decision. ORO-5B closed; patch implementation and mount still not authorized.
+- ORO-5C: implementation request. ORO-5C current/local pending until commit, push, and CI; mount and runtime still not authorized.
 - ORO-2B current/fail-closed route skeleton remains the active fail-closed runtime default.
 - ORO-3 is not allowed until ORO-2B passes; ORO-2C and ORO-3A add newer gates before runtime work.
 - ORO-3B is not allowed until ORO-2B and ORO-2C are closed and ORO-3A passes.
@@ -860,7 +861,7 @@ approval and separate runtime traffic approval. ORO-5A does not authorize
 wallet mutation, ledger mutation, Prisma writes, DB transactions, live OroPlay
 calls, external network, route mount authorization, or real money.
 
-## ORO-5B current/local pending execution decision
+## ORO-5B closed execution decision
 
 ORO-5B execution decision / ORO-5B implementation hold adds only no-mount
 docs, an isolated static/mock decision helper, mock fixtures, local smoke
@@ -925,6 +926,44 @@ does not authorize `src/app.js` changes, Express route mount, public aliases,
 runtime traffic, wallet mutation, ledger mutation, Prisma writes, DB
 transactions, live OroPlay calls, external network, route mount
 authorization, or real money.
+
+## ORO-5C current/local pending implementation request
+
+ORO-5C implementation request / ORO-5C mount hold adds only docs, an isolated
+static/mock request helper, mock fixtures, local smoke coverage, package
+registration, and runAllLocalSmoke registration.
+
+ORO-5C records patch authorization request submitted metadata only. It sets
+`routeMountPatchImplementationAuthorizationRequestSubmitted=true`,
+`routeMountPatchImplementationAuthorizationRequestStatus=submitted_pending_decision`,
+`routeMountPatchImplementationAuthorizationRequestResult=pending_decision`,
+`routeMountPatchImplementationAuthorizationDecisionIssued=false`, and
+`routeMountPatchImplementationAuthorizationGranted=false`.
+
+ORO-5C target criteria:
+
+- ORO-5C implementation request doc exists and states request submission only.
+- ORO-5C helper exports status, input builder, evaluator, hold gates, summary
+  builder, and validator.
+- ORO-5C fixtures cover happy path, missing ORO-5B decision, wrong decision
+  state, prior request, patch approval, implementation authorization,
+  implementation, mount, alias, traffic, mutation, DB, migration, network, and
+  secret-shaped output cases.
+- ORO-5C smoke confirms request record only, no Express mount, no public alias,
+  no mutation, no Prisma write, no DB transaction, no migration, no external
+  network, no secret-shaped output, no `src/app.js` edit marker, and
+  `smoke:oro-5c` registration.
+- `docs/API_MAPPING.md`, `docs/OROPLAY_INTEGRATION_PLAN.md`,
+  `docs/PHASE_ROADMAP.md`, and `docs/SMOKE_COVERAGE.md` include ORO-5C
+  static/mock/no-mount coverage.
+
+Next phase suggestion: patch implementation authorization decision still
+requires a separate explicit phase. Actual patch implementation, route mount,
+and runtime traffic still require separate explicit approvals. ORO-5C does not
+authorize `src/app.js` changes, Express route mount, public aliases, runtime
+traffic, wallet mutation, ledger mutation, Prisma writes, DB transactions,
+live OroPlay calls, external network, route mount authorization, or real
+money.
 - ORO-3B blocked until ORO-3A pass.
 
 ORO-3B status marker:

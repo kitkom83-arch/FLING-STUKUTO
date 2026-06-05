@@ -472,3 +472,24 @@ create DB transactions, does not migrate, does not call live OroPlay, does
 not use external network, does not deploy, and does not touch real money. Any
 patch implementation authorization request still requires a separate explicit
 phase.
+
+## ORO-5C Current
+
+ORO-5C Current. ORO-5C implementation request / ORO-5C mount hold is docs,
+static contract, mock fixtures, local smoke, package registration, and smoke
+coverage only after ORO-5B.
+
+ORO-5C records patch authorization request submitted metadata only. It keeps
+`routeMountPatchImplementationAuthorizationRequestSubmitted=true`,
+`routeMountPatchImplementationAuthorizationRequestStatus=submitted_pending_decision`,
+`routeMountPatchImplementationAuthorizationRequestResult=pending_decision`,
+`routeMountPatchImplementationAuthorizationDecisionIssued=false`, and
+`routeMountPatchImplementationAuthorizationGranted=false`.
+
+ORO-5C has no mount, no alias, and no runtime traffic. It does not edit
+`src/app.js`, does not mount Express routes, does not open `/api/balance`,
+`/api/transaction`, `/api/oroplay/balance`, or `/api/oroplay/transaction`,
+does not approve patch implementation, does not authorize route mount, does
+not mutate wallet or ledger state, does not write through Prisma, does not
+create DB transactions, does not migrate, does not call live OroPlay, does
+not use external network, does not deploy, and does not touch real money.
