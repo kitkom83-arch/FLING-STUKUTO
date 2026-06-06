@@ -917,3 +917,30 @@ ORO-5U confirms:
 ORO-5U keeps wallet, ledger, Prisma, DB transaction, migration, external
 network, and live OroPlay call flags blocked. The marker is runtime traffic
 authorization request readiness only.
+
+## ORO-5V Current
+
+ORO-5V submits the runtime traffic authorization request submission record only
+after the ORO-5U readiness boundary passes.
+
+ORO-5V confirms:
+
+- dependsOnOro5uRuntimeTrafficAuthorizationRequestReadiness = true
+- runtimeTrafficAuthorizationRequestReadyFromOro5u = true
+- runtimeTrafficAuthorizationRequestPreparedFromOro5u = true
+- runtimeTrafficAuthorizationRequestSubmitted = true
+- runtimeTrafficAuthorizationRequestStatus = submitted_pending_decision
+- runtimeTrafficAuthorizationRequestResult = submitted
+- runtimeTrafficAuthorizationRequestScope = runtime_traffic_authorization_decision_request_only
+- runtimeTrafficAuthorizationDecisionIssued = false
+- runtimeTrafficAuthorizationGranted = false
+- runtimeTrafficAllowed = false
+- runtimeTrafficEnabled = false
+- liveTrafficAuthorizationRequestSubmitted = false
+- liveTrafficAuthorizationDecisionIssued = false
+- liveTrafficAllowed = false
+- liveTrafficEnabled = false
+
+ORO-5V keeps wallet, ledger, Prisma, DB transaction, migration, external
+network, and live OroPlay call flags blocked. The marker is runtime traffic
+authorization request submission record only.

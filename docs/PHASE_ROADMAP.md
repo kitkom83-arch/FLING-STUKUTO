@@ -278,6 +278,40 @@ ORO-5U target criteria:
   external or live OroPlay call, no sensitive output, and `smoke:oro-5u`
   registration.
 
+## ORO-5V current/local runtime traffic authorization request submission boundary
+
+ORO-5V submits the runtime traffic authorization request record after ORO-5U
+readiness has passed.
+
+ORO-5V confirms:
+
+- ORO-5U runtime traffic authorization request readiness dependency is present
+- runtime traffic authorization request is submitted
+- request status is `submitted_pending_decision`
+- request result is `submitted`
+- request scope is `runtime_traffic_authorization_decision_request_only`
+- runtime decision and grant remain false
+- runtime traffic and live traffic remain disabled
+- public aliases remain `fail_closed_no_mutation`
+- wallet/ledger/Prisma/DB/migration work remains blocked
+- external and live OroPlay calls remain absent
+- `smoke:oro-5v` registration
+
+ORO-5V target criteria:
+
+- ORO-5V submission doc exists and states request-submission-only scope.
+- ORO-5V helper exports status, boundary builder, validator, readiness
+  assertion, request-submission assertion, runtime decision assertion, live
+  traffic assertion, runtime mutation assertion, and external network assertion.
+- ORO-5V fixtures cover happy path, missing ORO-5U readiness, wrong alias mode,
+  request not submitted, wrong request scope, runtime decision/grant/enablement
+  attempts, live traffic attempts, mutation attempts, external call attempt,
+  live OroPlay call attempt, and sensitive output attempt.
+- ORO-5V smoke confirms submission output, docs, registration, protected
+  runtime file boundary, no runtime/live enablement, no wallet/ledger/DB
+  mutation, no external or live OroPlay call, no sensitive output, and
+  `smoke:oro-5v` registration.
+
 ## ORO-4A current/runtime implementation skeleton
 
 ORO-4A current/runtime implementation skeleton. This phase adds only disabled-by-default runtime skeleton docs, a staging-disabled gate, intent-only mock functions, and local smoke coverage.

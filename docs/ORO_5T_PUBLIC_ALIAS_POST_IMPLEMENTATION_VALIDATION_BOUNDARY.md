@@ -90,3 +90,8 @@ ORO-5U does not submit the runtime traffic authorization request, does not issue
 a runtime traffic authorization decision, does not grant runtime traffic, keeps
 runtime and live traffic disabled, keeps wallet/ledger/Prisma/DB work blocked,
 and keeps external and live OroPlay calls absent.
+
+ORO-5V submits the runtime traffic authorization request record after ORO-5U.
+ORO-5V does not issue the runtime traffic authorization decision, does not grant
+runtime traffic, and keeps live traffic disabled with wallet/ledger/Prisma/DB
+work, external calls, and live OroPlay calls absent.

@@ -3076,6 +3076,43 @@ Assertions:
 - Confirms external and live OroPlay calls remain absent.
 - Confirms no sensitive-shaped output.
 
+## 115. ORO-5V Runtime Traffic Authorization Request Submission Boundary Coverage
+
+ORO-5V Runtime Traffic Authorization Request Submission Boundary Coverage. The
+phase submits the runtime traffic authorization request record after ORO-5U
+readiness, while runtime traffic remains undecided, ungranted, and disabled.
+
+Coverage:
+
+- ORO-5V boundary doc: runtime traffic authorization request submission boundary.
+- ORO-5V mock helper: boundary output, ORO-5U dependency, request submission
+  locks, runtime decision assertions, live traffic assertion, runtime mutation
+  assertion, and external network assertion.
+- ORO-5V fixtures: happy path, missing ORO-5U readiness, wrong alias mode,
+  request not submitted, wrong request scope, runtime decision/grant/enablement
+  attempts, live traffic attempts, mutation attempts, external call attempt,
+  live OroPlay call attempt, and sensitive output attempt.
+- ORO-5V smoke wrapper: `src/local-smoke-tests/oro5vSmoke.js`.
+
+Registered smoke:
+
+- `smoke:oro-5v`
+
+Assertions:
+
+- Confirms ORO-5V emits `runtimeTrafficAuthorizationRequestSubmissionBoundaryResult=PASS`.
+- Confirms ORO-5U runtime request readiness evidence is present.
+- Confirms runtime request submission is true.
+- Confirms request status is `submitted_pending_decision`.
+- Confirms request result is `submitted`.
+- Confirms request scope is `runtime_traffic_authorization_decision_request_only`.
+- Confirms runtime decision, grant, allowed, and enabled flags remain false.
+- Confirms live traffic request, decision, allowed, and enabled flags remain false.
+- Confirms public aliases remain fail-closed no-mutation.
+- Confirms wallet/ledger/Prisma/DB/migration flags remain false.
+- Confirms external and live OroPlay calls remain absent.
+- Confirms no sensitive-shaped output.
+
 ## 89. ORO-4V Route Mount Approval Boundary Coverage
 
 ORO-4V Route Mount Approval Boundary Coverage. The phase records a separate

@@ -721,3 +721,31 @@ ORO-5U readiness-only markers:
 - externalNetworkCalled=false
 - liveOroPlayApiCalled=false
 - smoke:oro-5u
+
+ORO-5V runtime traffic authorization request submission boundary: ORO-5V submits
+the runtime traffic authorization request record after ORO-5U readiness. It is a
+request submission record only and leaves runtime traffic undecided, ungranted,
+and disabled.
+
+ORO-5V request-submission markers:
+
+- dependsOnOro5uRuntimeTrafficAuthorizationRequestReadiness=true
+- runtimeTrafficAuthorizationRequestReadyFromOro5u=true
+- runtimeTrafficAuthorizationRequestPreparedFromOro5u=true
+- runtimeTrafficAuthorizationRequestSubmitted=true
+- runtimeTrafficAuthorizationRequestStatus=submitted_pending_decision
+- runtimeTrafficAuthorizationRequestResult=submitted
+- runtimeTrafficAuthorizationRequestScope=runtime_traffic_authorization_decision_request_only
+- runtimeTrafficAuthorizationDecisionIssued=false
+- runtimeTrafficAuthorizationGranted=false
+- runtimeTrafficAllowed=false
+- runtimeTrafficEnabled=false
+- liveTrafficAuthorizationRequestSubmitted=false
+- liveTrafficAuthorizationDecisionIssued=false
+- liveTrafficAllowed=false
+- liveTrafficEnabled=false
+- apiBalancePublicAliasMode=fail_closed_no_mutation
+- apiTransactionPublicAliasMode=fail_closed_no_mutation
+- externalNetworkCalled=false
+- liveOroPlayApiCalled=false
+- smoke:oro-5v

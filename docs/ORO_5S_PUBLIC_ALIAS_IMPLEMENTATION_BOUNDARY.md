@@ -109,3 +109,8 @@ ORO-5U remains readiness-only after ORO-5T. It prepares runtime traffic
 authorization request readiness and keeps runtime request submission, runtime
 decision, runtime grant, runtime traffic, live traffic, wallet/ledger/Prisma/DB
 work, external calls, and live OroPlay calls blocked.
+
+ORO-5V submits the runtime traffic authorization request record after ORO-5U.
+ORO-5V does not issue the runtime traffic authorization decision, does not grant
+runtime traffic, does not enable runtime traffic, and does not enable live
+traffic.

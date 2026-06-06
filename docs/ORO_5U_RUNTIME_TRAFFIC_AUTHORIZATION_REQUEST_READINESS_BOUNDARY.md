@@ -106,3 +106,11 @@ The next phase requires a separate runtime traffic authorization request
 submission boundary. A later separate runtime traffic authorization decision is
 required before any runtime traffic grant. Live traffic remains a separate
 approval boundary.
+
+## Downstream ORO-5V submission note
+
+ORO-5V submits the runtime traffic authorization request record after ORO-5U.
+ORO-5V does not issue the runtime traffic authorization decision, does not grant
+runtime traffic, keeps runtime and live traffic disabled, keeps
+wallet/ledger/Prisma/DB work blocked, and keeps external and live OroPlay calls
+absent.
