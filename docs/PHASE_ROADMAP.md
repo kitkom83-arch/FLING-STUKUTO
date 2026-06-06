@@ -312,6 +312,43 @@ ORO-5V target criteria:
   mutation, no external or live OroPlay call, no sensitive output, and
   `smoke:oro-5v` registration.
 
+## ORO-5W current/local runtime traffic authorization decision boundary
+
+ORO-5W issues the runtime traffic authorization decision record after ORO-5V
+submitted the request.
+
+ORO-5W confirms:
+
+- ORO-5V runtime traffic authorization request submission dependency is present
+- runtime traffic authorization decision is issued
+- decision status is `decision_issued`
+- decision result is `approved`
+- grant scope is `runtime_traffic_enablement_boundary_only`
+- runtime traffic enablement boundary entry is allowed
+- runtime traffic remains unopened, unimplemented, and disabled
+- live traffic remains disabled
+- public aliases remain `fail_closed_no_mutation`
+- wallet/ledger/Prisma/DB/migration work remains blocked
+- external and live OroPlay calls remain absent
+- `smoke:oro-5w` registration
+
+ORO-5W target criteria:
+
+- ORO-5W decision doc exists and states decision-record-only scope.
+- ORO-5W helper exports status, boundary builder, validator, ORO-5V request
+  assertion, decision assertion, enablement-boundary grant assertion, runtime
+  traffic assertion, live traffic assertion, runtime mutation assertion, and
+  external network assertion.
+- ORO-5W fixtures cover happy path, missing ORO-5V submission, wrong request
+  status, decision not issued, denied decision, wrong grant scope, denied
+  enablement entry, runtime traffic attempts, live traffic attempts, alias mode
+  drift, mutation attempts, external call attempt, live OroPlay call attempt,
+  and sensitive output attempt.
+- ORO-5W smoke confirms decision output, docs, registration, protected runtime
+  file boundary, no runtime/live enablement, no wallet/ledger/DB mutation, no
+  external or live OroPlay call, no sensitive output, and `smoke:oro-5w`
+  registration.
+
 ## ORO-4A current/runtime implementation skeleton
 
 ORO-4A current/runtime implementation skeleton. This phase adds only disabled-by-default runtime skeleton docs, a staging-disabled gate, intent-only mock functions, and local smoke coverage.

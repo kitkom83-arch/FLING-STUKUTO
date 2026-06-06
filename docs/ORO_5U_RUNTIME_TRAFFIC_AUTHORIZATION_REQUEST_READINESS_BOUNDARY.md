@@ -114,3 +114,8 @@ ORO-5V does not issue the runtime traffic authorization decision, does not grant
 runtime traffic, keeps runtime and live traffic disabled, keeps
 wallet/ledger/Prisma/DB work blocked, and keeps external and live OroPlay calls
 absent.
+
+ORO-5W issues the runtime traffic authorization decision record after ORO-5V.
+ORO-5W grants only entry to the runtime traffic enablement boundary, keeps
+runtime traffic unopened and unimplemented, keeps live traffic disabled, and
+keeps wallet/ledger/Prisma/DB work blocked.

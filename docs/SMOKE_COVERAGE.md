@@ -3113,6 +3113,44 @@ Assertions:
 - Confirms external and live OroPlay calls remain absent.
 - Confirms no sensitive-shaped output.
 
+## 116. ORO-5W Runtime Traffic Authorization Decision Boundary Coverage
+
+ORO-5W Runtime Traffic Authorization Decision Boundary Coverage. The phase
+issues the runtime traffic authorization decision record after ORO-5V request
+submission, while runtime traffic remains unopened, unimplemented, and disabled.
+
+Coverage:
+
+- ORO-5W boundary doc: runtime traffic authorization decision boundary.
+- ORO-5W mock helper: boundary output, ORO-5V dependency, decision record,
+  enablement-boundary-only grant, runtime traffic assertion, live traffic
+  assertion, runtime mutation assertion, and external network assertion.
+- ORO-5W fixtures: happy path, missing ORO-5V submission, wrong request status,
+  decision not issued, denied decision, wrong grant scope, denied enablement
+  entry, runtime traffic attempts, live traffic attempts, alias mode drift,
+  mutation attempts, external call attempt, live OroPlay call attempt, and
+  sensitive output attempt.
+- ORO-5W smoke wrapper: `src/local-smoke-tests/oro5wSmoke.js`.
+
+Registered smoke:
+
+- `smoke:oro-5w`
+
+Assertions:
+
+- Confirms ORO-5W emits `runtimeTrafficAuthorizationDecisionBoundaryResult=PASS`.
+- Confirms ORO-5V runtime request submission evidence is present.
+- Confirms runtime decision is issued with status `decision_issued`.
+- Confirms runtime decision result is `approved`.
+- Confirms grant scope is `runtime_traffic_enablement_boundary_only`.
+- Confirms runtime enablement boundary entry is allowed.
+- Confirms runtime traffic allowed, enabled, implemented, and patch flags remain false.
+- Confirms live traffic request, decision, allowed, and enabled flags remain false.
+- Confirms public aliases remain fail-closed no-mutation.
+- Confirms wallet/ledger/Prisma/DB/migration flags remain false.
+- Confirms external and live OroPlay calls remain absent.
+- Confirms no sensitive-shaped output.
+
 ## 89. ORO-4V Route Mount Approval Boundary Coverage
 
 ORO-4V Route Mount Approval Boundary Coverage. The phase records a separate

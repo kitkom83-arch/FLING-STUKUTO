@@ -99,3 +99,11 @@ It does not open runtime traffic and does not add a live OroPlay call.
 
 The next phase requires a separate runtime traffic authorization decision
 boundary. Live traffic remains a separate approval boundary.
+
+## Downstream ORO-5W decision note
+
+ORO-5W issues the runtime traffic authorization decision record after ORO-5V.
+ORO-5W grants only entry to the runtime traffic enablement boundary, keeps
+runtime traffic unopened and unimplemented, keeps live traffic disabled, keeps
+wallet/ledger/Prisma/DB work blocked, and keeps external and live OroPlay calls
+absent.

@@ -749,3 +749,36 @@ ORO-5V request-submission markers:
 - externalNetworkCalled=false
 - liveOroPlayApiCalled=false
 - smoke:oro-5v
+
+ORO-5W runtime traffic authorization decision boundary: ORO-5W issues the
+runtime traffic authorization decision record after ORO-5V submitted the
+request. It approves only entry into the next runtime traffic enablement
+boundary and leaves runtime traffic unopened, unimplemented, and disabled.
+
+ORO-5W decision markers:
+
+- dependsOnOro5vRuntimeTrafficAuthorizationRequestSubmission=true
+- runtimeTrafficAuthorizationRequestSubmittedFromOro5v=true
+- runtimeTrafficAuthorizationRequestStatusFromOro5v=submitted_pending_decision
+- runtimeTrafficAuthorizationRequestResultFromOro5v=submitted
+- runtimeTrafficAuthorizationDecisionIssued=true
+- runtimeTrafficAuthorizationDecisionStatus=decision_issued
+- runtimeTrafficAuthorizationDecisionResult=approved
+- runtimeTrafficAuthorizationRequestStatus=decision_issued
+- runtimeTrafficAuthorizationRequestResult=approved
+- runtimeTrafficAuthorizationGranted=true
+- runtimeTrafficAuthorizationGrantScope=runtime_traffic_enablement_boundary_only
+- runtimeTrafficEnablementBoundaryEntryAllowed=true
+- runtimeTrafficAllowed=false
+- runtimeTrafficEnabled=false
+- runtimeTrafficImplemented=false
+- runtimeTrafficPatchImplemented=false
+- liveTrafficAuthorizationRequestSubmitted=false
+- liveTrafficAuthorizationDecisionIssued=false
+- liveTrafficAllowed=false
+- liveTrafficEnabled=false
+- apiBalancePublicAliasMode=fail_closed_no_mutation
+- apiTransactionPublicAliasMode=fail_closed_no_mutation
+- externalNetworkCalled=false
+- liveOroPlayApiCalled=false
+- smoke:oro-5w

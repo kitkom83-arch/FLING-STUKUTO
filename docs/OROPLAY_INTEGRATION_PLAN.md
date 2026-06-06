@@ -944,3 +944,32 @@ ORO-5V confirms:
 ORO-5V keeps wallet, ledger, Prisma, DB transaction, migration, external
 network, and live OroPlay call flags blocked. The marker is runtime traffic
 authorization request submission record only.
+
+## ORO-5W Current
+
+ORO-5W issues the runtime traffic authorization decision record only after the
+ORO-5V request submission boundary passes.
+
+ORO-5W confirms:
+
+- dependsOnOro5vRuntimeTrafficAuthorizationRequestSubmission = true
+- runtimeTrafficAuthorizationRequestSubmittedFromOro5v = true
+- runtimeTrafficAuthorizationRequestStatusFromOro5v = submitted_pending_decision
+- runtimeTrafficAuthorizationRequestResultFromOro5v = submitted
+- runtimeTrafficAuthorizationDecisionIssued = true
+- runtimeTrafficAuthorizationDecisionStatus = decision_issued
+- runtimeTrafficAuthorizationDecisionResult = approved
+- runtimeTrafficAuthorizationRequestStatus = decision_issued
+- runtimeTrafficAuthorizationRequestResult = approved
+- runtimeTrafficAuthorizationGranted = true
+- runtimeTrafficAuthorizationGrantScope = runtime_traffic_enablement_boundary_only
+- runtimeTrafficEnablementBoundaryEntryAllowed = true
+- runtimeTrafficAllowed = false
+- runtimeTrafficEnabled = false
+- liveTrafficAllowed = false
+- liveTrafficEnabled = false
+
+ORO-5W keeps runtime traffic unopened and unimplemented, keeps live traffic
+disabled, and keeps wallet, ledger, Prisma, DB transaction, migration, external
+network, and live OroPlay call flags blocked. The marker is runtime traffic
+authorization decision record only.
