@@ -118,6 +118,8 @@
     "smoke:oro-5z": "node src/local-smoke-tests/oro5zSmoke.js",
     "smoke:oro-6a-live-traffic-authorization-decision-boundary": "node src/local-smoke-tests/oro6aLiveTrafficAuthorizationDecisionBoundarySmoke.js",
     "smoke:oro-6a": "node src/local-smoke-tests/oro6aSmoke.js",
+    "smoke:oro-6b-live-traffic-enablement-readiness-boundary": "node src/local-smoke-tests/oro6bLiveTrafficEnablementReadinessBoundarySmoke.js",
+    "smoke:oro-6b": "node src/local-smoke-tests/oro6bSmoke.js",
     "smoke:member-qr-deposit-ux": "node src/local-smoke-tests/memberQrDepositUxSmoke.js",
     "smoke:deposit-verification-source": "node src/local-smoke-tests/depositVerificationSourceSmoke.js",
     "smoke:deposit-ledger-reconciliation-guard": "node src/local-smoke-tests/depositLedgerReconciliationGuardSmoke.js",

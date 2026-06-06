@@ -287,6 +287,11 @@ const RELATED_FILES = [
   "src/local-smoke-tests/oro6aLiveTrafficAuthorizationDecisionBoundarySmoke.js",
   "src/local-smoke-tests/oro6aSmoke.js",
   "docs/ORO_6A_LIVE_TRAFFIC_AUTHORIZATION_DECISION_BOUNDARY.md",
+  "src/game-provider-mock/oro6bLiveTrafficEnablementReadinessBoundary.js",
+  "src/game-provider-mock/oro6bLiveTrafficEnablementReadinessBoundaryFixtures.js",
+  "src/local-smoke-tests/oro6bLiveTrafficEnablementReadinessBoundarySmoke.js",
+  "src/local-smoke-tests/oro6bSmoke.js",
+  "docs/ORO_6B_LIVE_TRAFFIC_ENABLEMENT_READINESS_BOUNDARY.md",
   "src/payment-provider-mock/memberQrDepositUxContract.js",
   "src/payment-provider-mock/memberQrDepositMockHarness.js",
   "src/local-smoke-tests/memberQrDepositUxSmoke.js",
@@ -560,6 +565,7 @@ const summary = [
   { key: "oro5y", label: "oro-5y", status: "PENDING" },
   { key: "oro5z", label: "oro-5z", status: "PENDING" },
   { key: "oro6a", label: "oro-6a", status: "PENDING" },
+  { key: "oro6b", label: "oro-6b", status: "PENDING" },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
   { key: "depositVerificationSource", label: "deposit-verification-source", status: "PENDING" },
   {
@@ -1418,6 +1424,12 @@ const steps = [
     summaryKey: "syntax",
   },
   {
+    name: "node --check oro6bSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oro6bSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
     name: "node --check memberQrDepositUxContract",
     command: nodeCommand,
     args: ["--check", "src/payment-provider-mock/memberQrDepositUxContract.js"],
@@ -2171,6 +2183,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oro-6a"]),
     summaryKey: "oro6a",
+  },
+  {
+    name: "npm run smoke:oro-6b",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oro-6b"]),
+    summaryKey: "oro6b",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

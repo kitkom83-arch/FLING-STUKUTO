@@ -3076,6 +3076,45 @@ Assertions:
 - Confirms external and live OroPlay calls remain absent.
 - Confirms no sensitive-shaped output.
 
+## 121. ORO-6B Live Traffic Enablement Readiness Boundary Coverage
+
+ORO-6B Live Traffic Enablement Readiness Boundary Coverage. The phase checks
+only live traffic enablement readiness after ORO-6A while live traffic, real
+money, wallet mutation, ledger mutation, Prisma writes, DB transactions,
+external network, and live OroPlay calls remain blocked.
+
+Coverage:
+
+- ORO-6B boundary doc: live traffic enablement readiness boundary.
+- ORO-6B mock helper: ORO-6A record validation, live traffic readiness record
+  builder, readiness boundary validation, no-live-traffic validation,
+  no-mutation validation, and summary builder.
+- ORO-6B fixtures: happy path, missing ORO-6A decision record, ORO-6A decision
+  not issued, ORO-6A decision not approved, wrong runtime mode, live traffic
+  already enabled, wallet mutation attempt, ledger mutation attempt, Prisma
+  write attempt, DB transaction attempt, external call attempt, live OroPlay
+  call attempt, missing separate enablement requirement, and sanitized response
+  evidence.
+- ORO-6B smoke wrapper: `src/local-smoke-tests/oro6bSmoke.js`.
+
+Registered smokes:
+
+- `smoke:oro-6b-live-traffic-enablement-readiness-boundary`
+- `smoke:oro-6b`
+
+Assertions:
+
+- Confirms ORO-6B emits `liveTrafficEnablementReadinessBoundaryResult=PASS`.
+- Confirms ORO-6A live traffic authorization decision record is present.
+- Confirms ORO-6A decision is issued and approved.
+- Confirms runtime traffic remains enabled only in `fail_closed_no_mutation`.
+- Confirms live traffic enablement readiness is checked.
+- Confirms separate live traffic enablement boundary is required.
+- Confirms live traffic allowed and enabled flags remain false.
+- Confirms wallet/ledger/Prisma/DB/migration flags remain false.
+- Confirms external and live OroPlay calls remain absent.
+- Confirms no sensitive-shaped output.
+
 ## 120. ORO-6A Live Traffic Authorization Decision Boundary Coverage
 
 ORO-6A Live Traffic Authorization Decision Boundary Coverage. The phase issues

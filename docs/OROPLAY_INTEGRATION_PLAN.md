@@ -1049,3 +1049,18 @@ wallet, ledger, Prisma, DB transaction, migration, external network, and live
 OroPlay calls blocked.
 
 ORO-6A keeps live traffic enablement still pending future boundary.
+
+## ORO-6A Closed
+
+ORO-6A is closed. The live traffic authorization decision record was issued and
+approved while live traffic remained blocked.
+
+## ORO-6B Current
+
+ORO-6B creates the live traffic enablement readiness record only. It depends on
+the ORO-6A approved decision, keeps `/api/balance` and `/api/transaction` in
+fail-closed no-mutation mode, confirms readiness for a later enablement
+boundary, and keeps wallet, ledger, Prisma, DB transaction, migration, external
+network, and live OroPlay calls blocked.
+
+ORO-6B keeps live traffic enablement still pending future boundary.

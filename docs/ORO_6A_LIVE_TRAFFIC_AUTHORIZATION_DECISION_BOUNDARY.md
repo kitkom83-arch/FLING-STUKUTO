@@ -116,3 +116,8 @@ live OroPlay appears, or sensitive-shaped output is detected.
 
 The next phase requires separate live traffic enablement boundary. ORO-6A only
 issues the decision record.
+
+## ORO-6B pre-enablement readiness requirement
+
+ORO-6B is required for pre-enablement readiness. ORO-6A does not enable live traffic. ORO-6A only issues the approved decision record before a later readiness
+and enablement boundary.
