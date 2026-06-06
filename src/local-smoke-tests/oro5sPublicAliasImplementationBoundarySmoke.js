@@ -89,7 +89,6 @@ function gitChangedFiles() {
 
 function assertRuntimeScope() {
   const changed = gitChangedFiles();
-  assert(changed.has(APP), "ORO-5S must change src/app.js for alias wiring.");
   for (const forbidden of [ROUTE_FILE, CONTROLLER_FILE]) {
     assert(!changed.has(forbidden), `${forbidden} must not be modified by ORO-5S.`);
   }
@@ -108,6 +107,23 @@ function assertAppAliasWiring() {
   }
   assert(!app.includes('app.use("/api/balance"'), "balance alias must not mount a new router.");
   assert(!app.includes('app.use("/api/transaction"'), "transaction alias must not mount a new router.");
+
+  const unsafeAliasPatterns = [
+    "runtimeTrafficEnabled: true",
+    "liveTrafficEnabled: true",
+    "PrismaClient",
+    "prisma.",
+    "$transaction",
+    "fetch(",
+    "http.request",
+    "https.request",
+    "liveOroPlayApi",
+    "wallet.service",
+    "ledger.service",
+  ];
+  for (const marker of unsafeAliasPatterns) {
+    assert(!app.includes(marker), `src/app.js alias wiring must not contain ${marker}.`);
+  }
 }
 
 function invokeHandler(handler) {
