@@ -802,3 +802,35 @@ wallet/ledger/Prisma/DB mutation blocked, and keeps external and live OroPlay
 calls absent.
 
 ORO-5Q marker: public alias authorization request submitted pending decision.
+
+## ORO-5R Current
+
+ORO-5R issues the static public alias authorization decision record after
+ORO-5Q request submission. The decision status is `decision_issued`, the
+decision result is `approved`, and the grant scope is
+`public_alias_implementation_boundary_only`.
+
+ORO-5R confirms:
+
+- dependsOnOro5qPublicAliasAuthorizationRequestSubmission=true
+- publicAliasAuthorizationRequestSubmittedFromOro5q=true
+- publicAliasAuthorizationDecisionIssued=true
+- publicAliasAuthorizationDecisionStatus=decision_issued
+- publicAliasAuthorizationDecisionResult=approved
+- publicAliasAuthorizationRequestResolved=true
+- publicAliasAuthorizationGranted=true
+- publicAliasAuthorizationGrantScope=public_alias_implementation_boundary_only
+- publicAliasImplementationAuthorized=true
+- publicAliasImplementationBoundaryEntryAllowed=true
+- publicAliasImplemented=false
+- apiBalancePublicAliasMounted=false
+- apiTransactionPublicAliasMounted=false
+- runtimeTrafficEnabled=false
+
+ORO-5R keeps public alias implementation unperformed, keeps `/api/balance` and
+`/api/transaction` unmounted, keeps runtime traffic disabled, keeps
+wallet/ledger/Prisma/DB mutation blocked, and keeps external and live OroPlay
+calls absent.
+
+ORO-5R marker: public alias authorization decision issued for implementation
+boundary only.

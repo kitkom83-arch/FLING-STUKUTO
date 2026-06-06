@@ -1521,6 +1521,7 @@ ORO-5P target criteria:
 - ORO-5P smoke confirms decision/readiness output, no public alias, no runtime
   traffic, no wallet/ledger/DB mutation, no external or live OroPlay call, no
   secret-shaped output, and `smoke:oro-5p` registration.
+- ORO-5R: public alias authorization decision boundary. ORO-5R current/local public alias authorization decision boundary; decision issued and approved only for implementation boundary entry.
 
 ## ORO-5Q current/local pending public alias authorization request submission boundary
 
@@ -1564,6 +1565,48 @@ ORO-5Q target criteria:
 Next phase is actual patch implementation execution boundary. Route mount
 authorization still requires separate authorization. Runtime traffic approval
 still requires separate approval.
+
+## ORO-5R current/local public alias authorization decision boundary
+
+ORO-5R issues the static public alias authorization decision record after ORO-5Q
+request submission. It grants entry into the next public alias implementation
+boundary only. It does not implement public aliases, does not change
+`src/app.js`, and does not change runtime route/controller files.
+
+ORO-5R confirms:
+
+- ORO-5Q public alias authorization request is submitted
+- public alias authorization decision is issued
+- public alias authorization decision status is `decision_issued`
+- public alias authorization decision result is `approved`
+- public alias authorization grant scope is `public_alias_implementation_boundary_only`
+- public alias implementation boundary entry is allowed
+- public alias implementation is not performed
+- `/api/balance` public alias remains absent
+- `/api/transaction` public alias remains absent
+- runtime and live traffic remain disabled
+- wallet/ledger/Prisma/DB mutation remains absent
+- external and live OroPlay calls remain absent
+
+ORO-5R target criteria:
+
+- ORO-5R decision doc exists and states decision-only scope.
+- ORO-5R helper exports status, boundary builder, validator, safety summary,
+  ORO-5Q request assertion, decision-issued-only assertion, implementation
+  boundary grant assertion, public alias implementation assertion, runtime
+  traffic assertion, runtime mutation assertion, and external network assertion.
+- ORO-5R fixtures cover happy path, missing ORO-5Q request submission, denied
+  decision, public alias implementation attempt, balance alias mount attempt,
+  transaction alias mount attempt, runtime traffic, wallet mutation, ledger
+  mutation, Prisma write, external network, and live OroPlay call attempts.
+- ORO-5R smoke confirms decision output, implementation-boundary-only grant,
+  no public alias implementation, no runtime traffic, no wallet/ledger/DB
+  mutation, no external or live OroPlay call, no secret-shaped output, and
+  `smoke:oro-5r` registration.
+
+Next phase is public alias implementation boundary. Post-alias validation,
+runtime traffic approval, and live traffic approval still require separate
+approval boundaries.
 
 Next phase is actual patch implementation authorization decision boundary.
 - ORO-3B blocked until ORO-3A pass.
