@@ -973,3 +973,32 @@ ORO-5W keeps runtime traffic unopened and unimplemented, keeps live traffic
 disabled, and keeps wallet, ledger, Prisma, DB transaction, migration, external
 network, and live OroPlay call flags blocked. The marker is runtime traffic
 authorization decision record only.
+
+## ORO-5X Current
+
+ORO-5X enables runtime traffic only for the already mounted public aliases in
+fail-closed no-mutation mode. It is a runtime traffic enablement boundary only,
+not live traffic approval and not production money flow.
+
+ORO-5X confirms:
+
+- dependsOnOro5wRuntimeTrafficAuthorizationDecision = true
+- runtimeTrafficAuthorizationGrantedFromOro5w = true
+- runtimeTrafficAuthorizationGrantScopeFromOro5w = runtime_traffic_enablement_boundary_only
+- runtimeTrafficEnablementAuthorizedFromOro5w = true
+- runtimeTrafficEnablementBoundaryEntryAllowedFromOro5w = true
+- runtimeTrafficImplemented = true
+- runtimeTrafficPatchImplemented = true
+- runtimeTrafficAllowed = true
+- runtimeTrafficEnabled = true
+- runtimeTrafficMode = fail_closed_no_mutation
+- apiBalanceRuntimeTrafficEnabled = true
+- apiTransactionRuntimeTrafficEnabled = true
+- apiBalanceRuntimeTrafficMode = fail_closed_no_mutation
+- apiTransactionRuntimeTrafficMode = fail_closed_no_mutation
+- liveTrafficAllowed = false
+- liveTrafficEnabled = false
+
+ORO-5X keeps wallet, ledger, Prisma, DB transaction, migration, external
+network, and live OroPlay call flags blocked. The marker is runtime traffic
+enablement boundary only.

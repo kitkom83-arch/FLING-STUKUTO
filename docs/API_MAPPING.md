@@ -782,3 +782,44 @@ ORO-5W decision markers:
 - externalNetworkCalled=false
 - liveOroPlayApiCalled=false
 - smoke:oro-5w
+
+ORO-5X runtime traffic enablement boundary: ORO-5X enables runtime traffic
+only for the already mounted public aliases in fail-closed no-mutation mode. It
+does not enable live traffic, real money, wallet mutation, ledger mutation,
+Prisma writes, DB transactions, external network, or live OroPlay calls.
+
+ORO-5X enablement markers:
+
+- dependsOnOro5wRuntimeTrafficAuthorizationDecision=true
+- runtimeTrafficAuthorizationGrantedFromOro5w=true
+- runtimeTrafficAuthorizationGrantScopeFromOro5w=runtime_traffic_enablement_boundary_only
+- runtimeTrafficEnablementAuthorizedFromOro5w=true
+- runtimeTrafficEnablementBoundaryEntryAllowedFromOro5w=true
+- runtimeTrafficImplemented=true
+- runtimeTrafficPatchImplemented=true
+- runtimeTrafficAllowed=true
+- runtimeTrafficEnabled=true
+- runtimeTrafficMode=fail_closed_no_mutation
+- apiBalancePublicAliasMounted=true
+- apiTransactionPublicAliasMounted=true
+- apiBalancePublicAliasMode=fail_closed_no_mutation
+- apiTransactionPublicAliasMode=fail_closed_no_mutation
+- apiBalanceRuntimeTrafficEnabled=true
+- apiTransactionRuntimeTrafficEnabled=true
+- apiBalanceRuntimeTrafficMode=fail_closed_no_mutation
+- apiTransactionRuntimeTrafficMode=fail_closed_no_mutation
+- malformedPayloadFailClosed=true
+- unknownUserFailClosed=true
+- mockAuthMismatchFailClosed=true
+- duplicateTransactionNoDoubleMutation=true
+- unsupportedTransactionTypeFailClosedOrManualReview=true
+- responseSanitized=true
+- liveTrafficAllowed=false
+- liveTrafficEnabled=false
+- walletMutationPerformed=false
+- ledgerMutationPerformed=false
+- prismaWritePerformed=false
+- dbTransactionPerformed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCalled=false
+- smoke:oro-5x

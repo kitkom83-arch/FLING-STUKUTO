@@ -109,3 +109,9 @@ It does not open runtime traffic and does not add a live OroPlay call.
 
 The next phase requires a separate runtime traffic enablement boundary. Live
 traffic remains a separate approval boundary.
+
+## Downstream ORO-5X enablement note
+
+ORO-5X enables runtime traffic only in fail-closed no-mutation mode after
+ORO-5W. ORO-5X keeps live traffic disabled, keeps wallet/ledger/Prisma/DB work
+blocked, and keeps external and live OroPlay calls absent.

@@ -349,6 +349,47 @@ ORO-5W target criteria:
   external or live OroPlay call, no sensitive output, and `smoke:oro-5w`
   registration.
 
+## ORO-5X current/local runtime traffic enablement boundary
+
+ORO-5X enables runtime traffic only for the already mounted public aliases in
+fail-closed no-mutation mode after ORO-5W authorized entry to the enablement
+boundary.
+
+ORO-5X confirms:
+
+- ORO-5W runtime traffic authorization decision dependency is present
+- runtime traffic authorization grant scope is `runtime_traffic_enablement_boundary_only`
+- runtime traffic is implemented and enabled
+- runtime traffic mode is `fail_closed_no_mutation`
+- `/api/balance` and `/api/transaction` remain mounted
+- public alias runtime traffic is enabled only in `fail_closed_no_mutation`
+- malformed payloads, unknown users, and mock auth mismatch fail closed
+- duplicate transactions do not double mutate
+- unsupported transaction types fail closed or require manual review
+- responses remain sanitized
+- live traffic remains disabled
+- wallet/ledger/Prisma/DB/migration work remains blocked
+- external and live OroPlay calls remain absent
+- `smoke:oro-5x` registration
+
+ORO-5X target criteria:
+
+- ORO-5X enablement doc exists and states runtime-traffic-only scope.
+- ORO-5X helper exports status, boundary builder, validator, ORO-5W grant
+  assertion, fail-closed runtime assertion, public alias runtime assertion,
+  live traffic assertion, runtime mutation assertion, and external network
+  assertion.
+- ORO-5X fixtures cover happy path, missing ORO-5W grant, wrong grant scope,
+  missing boundary entry, runtime not enabled, wrong runtime mode, missing
+  alias, wrong alias mode, alias runtime traffic not enabled, wrong alias
+  runtime mode, fail-closed behavior drift, live traffic attempts, mutation
+  attempts, external call attempt, live OroPlay call attempt, and sensitive
+  output attempt.
+- ORO-5X smoke confirms enablement output, docs, registration, existing app
+  public alias wiring, protected runtime file boundary, no live traffic, no
+  wallet/ledger/DB mutation, no external or live OroPlay call, no sensitive
+  output, and `smoke:oro-5x` registration.
+
 ## ORO-4A current/runtime implementation skeleton
 
 ORO-4A current/runtime implementation skeleton. This phase adds only disabled-by-default runtime skeleton docs, a staging-disabled gate, intent-only mock functions, and local smoke coverage.

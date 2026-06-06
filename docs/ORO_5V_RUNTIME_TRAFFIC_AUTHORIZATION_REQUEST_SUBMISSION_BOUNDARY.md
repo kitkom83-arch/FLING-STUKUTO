@@ -107,3 +107,7 @@ ORO-5W grants only entry to the runtime traffic enablement boundary, keeps
 runtime traffic unopened and unimplemented, keeps live traffic disabled, keeps
 wallet/ledger/Prisma/DB work blocked, and keeps external and live OroPlay calls
 absent.
+
+ORO-5X enables runtime traffic only in fail-closed no-mutation mode after
+ORO-5W. ORO-5X keeps live traffic disabled and keeps wallet/ledger/Prisma/DB
+work blocked.

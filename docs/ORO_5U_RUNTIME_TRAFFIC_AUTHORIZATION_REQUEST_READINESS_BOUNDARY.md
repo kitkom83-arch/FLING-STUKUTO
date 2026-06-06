@@ -119,3 +119,6 @@ ORO-5W issues the runtime traffic authorization decision record after ORO-5V.
 ORO-5W grants only entry to the runtime traffic enablement boundary, keeps
 runtime traffic unopened and unimplemented, keeps live traffic disabled, and
 keeps wallet/ledger/Prisma/DB work blocked.
+
+ORO-5X enables runtime traffic only in fail-closed no-mutation mode after
+ORO-5W and keeps live traffic disabled.
