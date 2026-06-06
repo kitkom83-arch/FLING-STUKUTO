@@ -3076,6 +3076,46 @@ Assertions:
 - Confirms external and live OroPlay calls remain absent.
 - Confirms no sensitive-shaped output.
 
+## 122. ORO-6C Live Traffic Enablement Boundary Coverage
+
+ORO-6C Live Traffic Enablement Boundary Coverage. The phase enables liveTraffic
+only in the fail_closed_no_mutation boundary after ORO-6A and ORO-6B while real
+money, wallet mutation, ledger mutation, Prisma writes, DB transactions,
+external network, and live OroPlay calls remain blocked.
+
+Coverage:
+
+- ORO-6C boundary doc: live traffic enablement boundary.
+- ORO-6C mock helper: ORO-6A record validation, ORO-6B readiness validation,
+  live traffic enablement record builder, enablement boundary validation,
+  fail-closed no-mutation validation, no-mutation validation, and summary
+  builder.
+- ORO-6C fixtures: happy path, missing ORO-6A decision record, ORO-6A decision
+  not approved, missing ORO-6B readiness record, ORO-6B readiness not ready,
+  wrong runtime mode, wrong live traffic mode, wallet mutation attempt, ledger
+  mutation attempt, Prisma write attempt, DB transaction attempt, external call
+  attempt, live OroPlay call attempt, and sanitized response evidence.
+- ORO-6C smoke wrapper: `src/local-smoke-tests/oro6cSmoke.js`.
+
+Registered smokes:
+
+- `smoke:oro-6c-live-traffic-enablement-boundary`
+- `smoke:oro-6c`
+
+Assertions:
+
+- Confirms ORO-6C emits `liveTrafficEnablementBoundaryResult=PASS`.
+- Confirms ORO-6A live traffic authorization decision record is present.
+- Confirms ORO-6B live traffic enablement readiness record is present.
+- Confirms ORO-6A decision is issued and approved.
+- Confirms ORO-6B readiness is checked and ready.
+- Confirms runtime traffic remains enabled only in `fail_closed_no_mutation`.
+- Confirms live traffic is allowed and enabled only in `fail_closed_no_mutation`.
+- Confirms live traffic post-enablement validation is required next.
+- Confirms wallet/ledger/Prisma/DB/migration flags remain false.
+- Confirms external and live OroPlay calls remain absent.
+- Confirms no sensitive-shaped output.
+
 ## 121. ORO-6B Live Traffic Enablement Readiness Boundary Coverage
 
 ORO-6B Live Traffic Enablement Readiness Boundary Coverage. The phase checks

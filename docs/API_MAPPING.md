@@ -941,3 +941,33 @@ ORO-6B readiness markers:
 - externalNetworkCalled=false
 - liveOroPlayApiCalled=false
 - smoke:oro-6b
+
+ORO-6C live traffic enablement boundary: /api/balance and /api/transaction live traffic remains fail_closed_no_mutation.
+ORO-6C enables liveTraffic only as fail_closed_no_mutation boundary. It includes
+no wallet/ledger mutation, no Prisma write, no DB transaction, no external
+network, and no live OroPlay outgoing call.
+
+ORO-6C enablement markers:
+
+- dependsOnOro6aLiveTrafficAuthorizationDecisionBoundary=true
+- dependsOnOro6bLiveTrafficEnablementReadinessBoundary=true
+- oro6aLiveTrafficAuthorizationDecisionIssued=true
+- oro6aLiveTrafficAuthorizationDecisionResult=approved
+- oro6bLiveTrafficEnablementReadinessChecked=true
+- oro6bLiveTrafficEnablementReadinessStatus=ready_for_enablement_boundary
+- runtimeTrafficEnabledFromOro6b=true
+- runtimeTrafficModeFromOro6b=fail_closed_no_mutation
+- liveTrafficEnablementBoundaryResult=PASS
+- liveTrafficEnablementBoundaryEntered=true
+- liveTrafficEnablementBoundaryChecked=true
+- liveTrafficAllowed=true
+- liveTrafficEnabled=true
+- liveTrafficMode=fail_closed_no_mutation
+- nextPhaseRequiresLiveTrafficPostEnablementValidation=true
+- walletMutationPerformed=false
+- ledgerMutationPerformed=false
+- prismaWritePerformed=false
+- dbTransactionPerformed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCalled=false
+- smoke:oro-6c

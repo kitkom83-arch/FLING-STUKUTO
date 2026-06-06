@@ -1064,3 +1064,17 @@ boundary, and keeps wallet, ledger, Prisma, DB transaction, migration, external
 network, and live OroPlay calls blocked.
 
 ORO-6B keeps live traffic enablement still pending future boundary.
+
+## ORO-6B Closed
+
+ORO-6B closed with live traffic enablement readiness checked and ready for the
+next boundary while live traffic remained blocked.
+
+## ORO-6C Current
+
+ORO-6C creates the live traffic enablement boundary after the ORO-6A approved
+decision and ORO-6B readiness. It allows liveTraffic only inside the
+fail_closed_no_mutation boundary and keeps wallet, ledger, Prisma, DB
+transaction, migration, external network, and live OroPlay calls blocked.
+
+ORO-6C live traffic post-enablement validation required next.

@@ -121,3 +121,7 @@ issues the decision record.
 
 ORO-6B is required for pre-enablement readiness. ORO-6A does not enable live traffic. ORO-6A only issues the approved decision record before a later readiness
 and enablement boundary.
+
+## ORO-6C post-readiness enablement requirement
+
+ORO-6C is required after ORO-6B readiness. ORO-6A decision alone does not enable live traffic; it only records the approved decision before readiness and enablement boundaries.

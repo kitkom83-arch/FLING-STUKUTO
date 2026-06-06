@@ -116,3 +116,7 @@ live OroPlay appears; or sensitive-shaped output is detected.
 
 The next phase requires separate live traffic enablement boundary. ORO-6B only
 checks readiness.
+
+## ORO-6C live traffic enablement requirement
+
+ORO-6C is required for live traffic enablement boundary. ORO-6B does not enable live traffic; it only records readiness for the later enablement boundary.
