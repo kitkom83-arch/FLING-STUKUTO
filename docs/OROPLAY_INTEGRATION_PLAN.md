@@ -774,3 +774,31 @@ runtime traffic disabled, keeps wallet/ledger/Prisma/DB mutation blocked, and
 keeps external and live OroPlay calls absent.
 
 ORO-5P marker: public alias authorization request readiness only.
+
+## ORO-5Q Current
+
+ORO-5Q submits the static public alias authorization request record after ORO-5P
+readiness. The request status is `submitted_pending_decision`, the request
+result is `submitted`, and the request scope is
+`public_alias_authorization_decision_request_only`.
+
+ORO-5Q confirms:
+
+- dependsOnOro5pPublicAliasReadiness=true
+- publicAliasAuthorizationRequestReadinessPreparedFromOro5p=true
+- publicAliasAuthorizationRequestSubmitted=true
+- publicAliasAuthorizationRequestStatus=submitted_pending_decision
+- publicAliasAuthorizationRequestResult=submitted
+- publicAliasAuthorizationRequestScope=public_alias_authorization_decision_request_only
+- publicAliasAuthorizationDecisionIssued=false
+- publicAliasAuthorizationGranted=false
+- publicAliasImplementationAuthorized=false
+- publicAliasImplemented=false
+- runtimeTrafficEnabled=false
+
+ORO-5Q keeps aliases ungranted and unimplemented, keeps `/api/balance` and
+`/api/transaction` unmounted, keeps runtime traffic disabled, keeps
+wallet/ledger/Prisma/DB mutation blocked, and keeps external and live OroPlay
+calls absent.
+
+ORO-5Q marker: public alias authorization request submitted pending decision.

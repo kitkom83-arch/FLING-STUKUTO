@@ -3624,6 +3624,50 @@ Assertions:
 - Confirms ORO-5P does not write Prisma/DB or run migrations.
 - Confirms ORO-5P does not call external network or live OroPlay API.
 - Confirms no secret-shaped output.
+
+## 110. ORO-5Q Public Alias Authorization Request Submission Boundary Coverage
+
+ORO-5Q Public Alias Authorization Request Submission Boundary Coverage. The
+phase records a static/mock public alias authorization request submission after
+ORO-5P readiness. It does not modify `src/app.js`, runtime routes,
+controllers, Prisma schema, migrations, wallet services, ledger services, or
+live-provider services.
+
+Coverage artifacts:
+
+- ORO-5Q boundary doc: public alias authorization request submission boundary.
+- ORO-5Q mock helper: boundary output, safety locks, ORO-5P readiness
+  assertion, request-submitted-only assertion, public alias decision assertion,
+  public alias grant assertion, public alias implementation assertion, runtime
+  mutation assertion, and external network assertion.
+- ORO-5Q fixtures: happy path, missing ORO-5P readiness, public alias decision
+  attempt, public alias grant attempt, public alias implementation attempt,
+  balance alias mount attempt, transaction alias mount attempt, runtime traffic,
+  wallet mutation, ledger mutation, Prisma write, external network, and live
+  OroPlay call attempts.
+- ORO-5Q smoke wrapper: `src/local-smoke-tests/oro5qSmoke.js`.
+
+Smoke commands:
+
+- `smoke:oro-5q`
+
+Assertions:
+
+- Confirms ORO-5Q emits `publicAliasAuthorizationRequestSubmissionBoundaryResult=PASS`.
+- Confirms ORO-5P readiness evidence remains prepared.
+- Confirms public alias authorization request is submitted as static/mock.
+- Confirms public alias authorization request status is `submitted_pending_decision`.
+- Confirms public alias authorization decision is not issued.
+- Confirms public alias is not granted.
+- Confirms `/api/balance` public alias is absent.
+- Confirms `/api/transaction` public alias is absent.
+- Confirms ORO-5Q does not modify `src/app.js`.
+- Confirms ORO-5Q does not modify runtime route/controller files.
+- Confirms ORO-5Q does not enable runtime or live traffic.
+- Confirms ORO-5Q does not mutate wallet/ledger in runtime.
+- Confirms ORO-5Q does not write Prisma/DB or run migrations.
+- Confirms ORO-5Q does not call external network or live OroPlay API.
+- Confirms no secret-shaped output.
 - Confirms no secret-shaped output.
 
 ## 92. ORO-4Y Route Mount Execution Approval Readiness Coverage

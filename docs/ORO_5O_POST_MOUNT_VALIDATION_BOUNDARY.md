@@ -125,3 +125,8 @@ prepares public alias authorization request readiness only. ORO-5P does not
 submit the public alias request, issue the public alias decision, grant or
 implement public aliases, enable runtime traffic, mutate wallet/ledger state,
 write Prisma/DB, run migrations, call external network, or call live OroPlay.
+
+ORO-5Q submits the static public alias authorization request record after ORO-5P
+readiness. ORO-5Q does not issue the public alias decision, grant public alias
+authorization, authorize implementation, implement aliases, or enable runtime
+traffic.

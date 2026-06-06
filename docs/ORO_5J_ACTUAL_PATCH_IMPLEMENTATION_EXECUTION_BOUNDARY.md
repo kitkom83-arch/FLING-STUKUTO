@@ -293,3 +293,8 @@ ORO-5P records the ORO-5O validation decision and prepares public alias
 authorization request readiness only. It does not submit the public alias
 request, issue the public alias decision, grant or implement aliases, or enable
 runtime traffic.
+
+ORO-5Q submits the static public alias authorization request record after ORO-5P
+readiness. ORO-5Q does not issue the public alias decision, grant public alias
+authorization, authorize implementation, implement aliases, or enable runtime
+traffic.

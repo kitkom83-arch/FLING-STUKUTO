@@ -115,3 +115,12 @@ The next phase requires a separate public alias authorization request
 submission. A later separate decision is required before any public alias
 implementation boundary. Runtime traffic and live traffic remain separate
 explicit approvals.
+
+## Downstream ORO-5Q request submission note
+
+ORO-5Q submits the static public alias authorization request record after this
+ORO-5P readiness boundary. ORO-5Q keeps the public alias decision unissued,
+keeps public alias authorization ungranted, keeps public alias implementation
+unauthorized, keeps `/api/balance` and `/api/transaction` unmounted, keeps
+runtime traffic disabled, and keeps wallet/ledger/Prisma/DB/external/live
+OroPlay work blocked.
