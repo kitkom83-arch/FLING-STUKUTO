@@ -124,3 +124,7 @@ keeps public alias authorization ungranted, keeps public alias implementation
 unauthorized, keeps `/api/balance` and `/api/transaction` unmounted, keeps
 runtime traffic disabled, and keeps wallet/ledger/Prisma/DB/external/live
 OroPlay work blocked.
+
+ORO-5R issues the static public alias authorization decision record after ORO-5Q
+request submission. ORO-5R grants only public alias implementation boundary
+entry and keeps public aliases unimplemented and unmounted.

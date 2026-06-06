@@ -112,3 +112,11 @@ new Express mount, does not deploy, and does not add secret-shaped values.
 The next phase requires a separate public alias authorization decision boundary.
 A later separate implementation boundary is required before any public alias can
 be mounted. Runtime traffic and live traffic remain separate explicit approvals.
+
+## Downstream ORO-5R decision note
+
+ORO-5R issues the static public alias authorization decision record after this
+ORO-5Q request submission boundary. ORO-5R grants only entry into the public
+alias implementation boundary, keeps public alias implementation unperformed,
+keeps `/api/balance` and `/api/transaction` unmounted, and keeps runtime traffic
+disabled.
