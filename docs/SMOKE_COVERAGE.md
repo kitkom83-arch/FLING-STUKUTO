@@ -3752,6 +3752,48 @@ Assertions:
 - Confirms ORO-5S does not call external network or live OroPlay API.
 - Confirms no sensitive-shaped output.
 
+## 113. ORO-5T Public Alias Post-Implementation Validation Boundary Coverage
+
+ORO-5T Public Alias Post-Implementation Validation Boundary Coverage. The phase
+validates the committed ORO-5S public aliases after implementation and confirms
+they remain mapped to the existing OroPlay callback fail-closed handlers. It is
+validation-only and does not edit `src/app.js`.
+
+Coverage artifacts:
+
+- ORO-5T boundary doc: public alias post-implementation validation boundary.
+- ORO-5T mock helper: boundary output, validation locks, ORO-5S implementation
+  assertion, runtime approval assertion, runtime mutation assertion, and
+  external network assertion.
+- ORO-5T fixtures: happy path, missing ORO-5S implementation, missing balance
+  alias, missing transaction alias, wrong alias mode, malformed payload,
+  unknown user, mock auth mismatch, duplicate transaction, unsupported
+  transaction type, unsanitized response, runtime approval attempt, live
+  approval attempt, wallet mutation, ledger mutation, Prisma write, DB
+  transaction, external network, live OroPlay call, and sensitive-shaped output
+  attempts.
+- ORO-5T smoke wrapper: `src/local-smoke-tests/oro5tSmoke.js`.
+
+Smoke commands:
+
+- `smoke:oro-5t`
+
+Assertions:
+
+- Confirms ORO-5T emits `publicAliasPostImplementationValidationBoundaryResult=PASS`.
+- Confirms ORO-5S public alias implementation evidence is present.
+- Confirms `POST /api/balance` remains mounted.
+- Confirms `POST /api/transaction` remains mounted.
+- Confirms both public aliases remain in `fail_closed_no_mutation` mode.
+- Confirms malformed payload, unknown user, mock auth mismatch, duplicate
+  transaction, and unsupported transaction type cases remain fail-closed or
+  review-only with no mutation.
+- Confirms ORO-5T does not approve runtime or live traffic.
+- Confirms ORO-5T does not mutate wallet/ledger in runtime.
+- Confirms ORO-5T does not write Prisma/DB or run migrations.
+- Confirms ORO-5T does not call external network or live OroPlay API.
+- Confirms no sensitive-shaped output.
+
 ## 92. ORO-4Y Route Mount Execution Approval Readiness Coverage
 
 ORO-4Y Route Mount Execution Approval Readiness Coverage. The phase records

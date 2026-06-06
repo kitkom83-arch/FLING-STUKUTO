@@ -661,4 +661,35 @@ mutation, persistent writes, or live OroPlay calls.
 
 ORO-5S next phase is post-alias validation boundary.
 
+ORO-5T public alias post-implementation validation boundary: ORO-5T validates
+the committed ORO-5S public aliases after implementation. The validation
+confirms `POST /api/balance` and `POST /api/transaction` remain mounted, map to
+the existing OroPlay fail-closed handlers, and stay in `fail_closed_no_mutation`
+mode.
+
+ORO-5T validation-only markers:
+
+- publicAliasPostImplementationValidationBoundaryResult=PASS
+- publicAliasImplementationFromOro5s=true
+- apiBalancePublicAliasMounted=true
+- apiTransactionPublicAliasMounted=true
+- apiBalancePublicAliasMode=fail_closed_no_mutation
+- apiTransactionPublicAliasMode=fail_closed_no_mutation
+- runtimeTrafficApprovalIssued=false
+- liveTrafficApprovalIssued=false
+- runtimeTrafficEnabled=false
+- liveTrafficEnabled=false
+- walletMutationPerformed=false
+- ledgerMutationPerformed=false
+- prismaWritePerformed=false
+- dbTransactionPerformed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCalled=false
+- smoke:oro-5t
+
+ORO-5T is a validation boundary only. It does not edit `src/app.js`, does not
+approve runtime traffic, does not approve live traffic, does not perform
+wallet/ledger/Prisma/DB mutation, and does not call external or live OroPlay
+services.
+
 next phase is actual patch implementation approval decision boundary.

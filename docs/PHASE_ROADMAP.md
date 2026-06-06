@@ -1641,6 +1641,46 @@ ORO-5S target criteria:
 Next phase is post-alias validation boundary. Runtime traffic approval and live
 traffic approval still require separate approval boundaries.
 
+## ORO-5T current/local public alias post-implementation validation boundary
+
+ORO-5T validates the committed ORO-5S public alias wiring after implementation.
+The aliases are `POST /api/balance` and `POST /api/transaction`, and both must
+remain mapped to the existing OroPlay callback fail-closed handlers.
+
+ORO-5T confirms:
+
+- ORO-5S public alias implementation is present
+- `/api/balance` public alias is mounted
+- `/api/transaction` public alias is mounted
+- both aliases run in `fail_closed_no_mutation` mode
+- malformed payloads fail closed
+- unknown users fail closed
+- mock auth mismatch fails closed
+- duplicate transaction validation has no double mutation
+- unsupported transaction types fail closed or route to manual review
+- runtime and live traffic approvals remain absent
+- wallet/ledger/Prisma/DB mutation remains absent
+- external and live OroPlay calls remain absent
+- `smoke:oro-5t` registration
+
+ORO-5T target criteria:
+
+- ORO-5T validation doc exists and states validation-only scope.
+- ORO-5T helper exports status, boundary builder, validator, validation
+  assertion, runtime approval assertion, runtime mutation assertion, and
+  external network assertion.
+- ORO-5T fixtures cover happy path, missing ORO-5S implementation, alias
+  missing/wrong mode, mock request fail-closed cases, runtime/live approval
+  attempts, mutation attempts, external call attempts, and sensitive-shaped
+  output attempts.
+- ORO-5T smoke confirms alias wiring output, app alias routes, fail-closed
+  handler response, no runtime traffic approval, no live traffic approval, no
+  wallet/ledger/DB mutation, no external or live OroPlay call, no sensitive
+  output, and `smoke:oro-5t` registration.
+
+Next phase is runtime traffic authorization request readiness. Runtime traffic
+approval and live traffic approval still require separate approval boundaries.
+
 Next phase is public alias implementation boundary. Post-alias validation,
 runtime traffic approval, and live traffic approval still require separate
 approval boundaries.

@@ -96,3 +96,11 @@ Sensitive values remain absent from the boundary output:
 
 The next phase requires a separate post-alias validation boundary. Runtime
 traffic and live traffic remain separate explicit approvals.
+
+## Downstream ORO-5T validation note
+
+ORO-5T validates the public alias implementation after ORO-5S. It confirms
+`POST /api/balance` and `POST /api/transaction` remain mounted to the existing
+fail-closed handlers, stay in `fail_closed_no_mutation` mode, and do not
+approve runtime traffic, live traffic, wallet/ledger mutation, DB mutation,
+external calls, or live OroPlay calls.

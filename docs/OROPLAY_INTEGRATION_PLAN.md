@@ -862,3 +862,33 @@ calls absent.
 
 ORO-5S marker: public alias implementation is fail-closed no-mutation wiring
 only.
+
+## ORO-5T Current
+
+ORO-5T validates the committed ORO-5S public alias implementation after the
+fail-closed alias wiring is present. It is a validation boundary only.
+
+ORO-5T confirms:
+
+- publicAliasPostImplementationValidationBoundaryResult=PASS
+- publicAliasImplementationFromOro5s=true
+- apiBalancePublicAliasMounted=true
+- apiTransactionPublicAliasMounted=true
+- apiBalancePublicAliasMode=fail_closed_no_mutation
+- apiTransactionPublicAliasMode=fail_closed_no_mutation
+- malformedPayloadFailClosed=true
+- unknownUserFailClosed=true
+- mockAuthMismatchFailClosed=true
+- duplicateTransactionNoDoubleMutation=true
+- unsupportedTransactionTypeFailClosedOrManualReview=true
+- runtimeTrafficApprovalIssued=false
+- liveTrafficApprovalIssued=false
+- runtimeTrafficEnabled=false
+- liveTrafficEnabled=false
+
+ORO-5T keeps runtime traffic disabled, keeps live traffic disabled, keeps
+wallet/ledger/Prisma/DB mutation blocked, and keeps external and live OroPlay
+calls absent.
+
+ORO-5T marker: public alias post-implementation validation is fail-closed
+no-mutation verification only.
