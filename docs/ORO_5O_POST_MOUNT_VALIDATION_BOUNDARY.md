@@ -117,3 +117,11 @@ call live OroPlay, or add secret-shaped values.
 
 Any public alias, runtime traffic, or live traffic work requires a separate
 approval boundary after this validation record.
+
+## Downstream ORO-5P decision/readiness note
+
+ORO-5P issues the post-mount validation decision record after ORO-5O and
+prepares public alias authorization request readiness only. ORO-5P does not
+submit the public alias request, issue the public alias decision, grant or
+implement public aliases, enable runtime traffic, mutate wallet/ledger state,
+write Prisma/DB, run migrations, call external network, or call live OroPlay.

@@ -751,3 +751,26 @@ ORO-5O marker: internal /api/oroplay mount remains fail-closed.
 
 ORO-5O still requires separate approval before any public alias, runtime
 traffic, or live traffic work.
+
+## ORO-5P Current
+
+ORO-5P records the post-mount validation decision after ORO-5O and prepares
+public alias authorization request readiness only.
+
+ORO-5P confirms:
+
+- postMountValidationDecisionBoundaryResult=PASS
+- postMountValidationDecisionIssued=true
+- dependsOnOro5oPostMountValidation=true
+- oro5oPostMountValidationPassed=true
+- internalOroPlayMountVerifiedFromOro5o=true
+- failClosedRouteVerificationPassedFromOro5o=true
+- publicAliasAuthorizationRequestReadinessPrepared=true
+- publicAliasAuthorizationRequestScope=public_alias_authorization_request_readiness_only
+
+ORO-5P keeps the public alias authorization request unsubmitted, keeps the
+public alias decision unissued, keeps aliases ungranted and unimplemented, keeps
+runtime traffic disabled, keeps wallet/ledger/Prisma/DB mutation blocked, and
+keeps external and live OroPlay calls absent.
+
+ORO-5P marker: public alias authorization request readiness only.

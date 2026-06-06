@@ -143,3 +143,8 @@ route mount. ORO-5O is validation only: it confirms internal `/api/oroplay`
 mount evidence, fail-closed balance and transaction callback route modes, no
 public aliases, no runtime/live traffic, no wallet/ledger/Prisma/DB mutation,
 no migration, no external network, and no live OroPlay API call.
+
+ORO-5P records the ORO-5O validation decision and prepares public alias
+authorization request readiness only. It does not submit the public alias
+request, issue the public alias decision, grant or implement aliases, or enable
+runtime traffic.

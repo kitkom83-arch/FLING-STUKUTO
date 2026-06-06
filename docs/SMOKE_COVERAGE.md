@@ -3581,6 +3581,49 @@ Assertions:
 - Confirms ORO-5O does not call external network or live OroPlay API.
 - Confirms optional local route probe is loopback-only and skips cleanly when no
   backend is listening.
+
+## 109. ORO-5P Post-Mount Validation Decision Boundary Coverage
+
+ORO-5P Post-Mount Validation Decision Boundary Coverage. The phase records the
+ORO-5O post-mount validation decision and prepares public alias authorization
+request readiness only. It does not modify `src/app.js`, runtime routes,
+controllers, Prisma schema, migrations, wallet services, ledger services, or
+live-provider services.
+
+Coverage artifacts:
+
+- ORO-5P boundary doc: post-mount validation decision and public alias
+  authorization request readiness boundary.
+- ORO-5P mock helper: boundary output, safety locks, post-mount validation
+  assertion, public alias request assertion, public alias decision assertion,
+  public alias implementation assertion, runtime mutation assertion, and
+  external network assertion.
+- ORO-5P fixtures: happy path, missing ORO-5O validation, public alias request
+  submission attempt, public alias decision attempt, public alias grant attempt,
+  public alias implementation attempt, runtime traffic, wallet mutation, ledger
+  mutation, Prisma write, external network, and live OroPlay call attempts.
+- ORO-5P smoke wrapper: `src/local-smoke-tests/oro5pSmoke.js`.
+
+Smoke commands:
+
+- `smoke:oro-5p`
+
+Assertions:
+
+- Confirms ORO-5P emits `postMountValidationDecisionBoundaryResult=PASS`.
+- Confirms ORO-5O dependency evidence remains passed.
+- Confirms public alias authorization request readiness is prepared only.
+- Confirms public alias authorization request is not submitted.
+- Confirms public alias authorization decision is not issued.
+- Confirms `/api/balance` public alias is absent.
+- Confirms `/api/transaction` public alias is absent.
+- Confirms ORO-5P does not modify `src/app.js`.
+- Confirms ORO-5P does not modify runtime route/controller files.
+- Confirms ORO-5P does not enable runtime or live traffic.
+- Confirms ORO-5P does not mutate wallet/ledger in runtime.
+- Confirms ORO-5P does not write Prisma/DB or run migrations.
+- Confirms ORO-5P does not call external network or live OroPlay API.
+- Confirms no secret-shaped output.
 - Confirms no secret-shaped output.
 
 ## 92. ORO-4Y Route Mount Execution Approval Readiness Coverage

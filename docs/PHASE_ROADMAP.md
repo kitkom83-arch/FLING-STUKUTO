@@ -147,7 +147,8 @@ OroPlay phase sequence after current mock/contract phases:
 - ORO-5L: route mount authorization request submission. ORO-5L closed; request submitted pending decision only; Express mount, public alias, and runtime traffic still not authorized.
 - ORO-5M: route mount authorization decision. ORO-5M closed; grants only permission to proceed to a later route mount implementation boundary.
 - ORO-5N: route mount implementation boundary. ORO-5N closed route mount implementation boundary; internal fail-closed OroPlay callback staging mount only.
-- ORO-5O: post-mount validation boundary. ORO-5O current/local pending post-mount validation boundary; internal fail-closed route verification only.
+- ORO-5O: post-mount validation boundary. ORO-5O closed post-mount validation boundary; internal fail-closed route verification only.
+- ORO-5P: post-mount validation decision boundary. ORO-5P current/local pending post-mount validation decision boundary; public alias authorization request readiness only.
 - ORO-2B current/fail-closed route skeleton remains the active fail-closed runtime default.
 - ORO-3 is not allowed until ORO-2B passes; ORO-2C and ORO-3A add newer gates before runtime work.
 - ORO-3B is not allowed until ORO-2B and ORO-2C are closed and ORO-3A passes.
@@ -1482,6 +1483,43 @@ ORO-5O target criteria:
   or live OroPlay call, and `smoke:oro-5o` registration.
 - Optional local route probe is loopback-only and may skip when no backend is
   listening.
+
+## ORO-5P current/local pending post-mount validation decision boundary
+
+ORO-5P records the ORO-5O validation decision and prepares public alias
+authorization request readiness only. It does not submit the request, does not
+issue the public alias decision, does not grant or implement public aliases,
+does not change `src/app.js`, and does not change runtime route/controller
+files.
+
+ORO-5P confirms:
+
+- ORO-5O post-mount validation passed
+- internal `/api/oroplay` mount remains verified from ORO-5O
+- `/api/oroplay/balance` remains `fail_closed_no_mutation`
+- `/api/oroplay/transaction` remains `fail_closed_no_mutation`
+- public alias authorization request readiness is prepared only
+- `/api/balance` public alias remains absent
+- `/api/transaction` public alias remains absent
+- runtime and live traffic remain disabled
+- wallet/ledger/Prisma/DB mutation remains absent
+- external and live OroPlay calls remain absent
+
+ORO-5P target criteria:
+
+- ORO-5P decision/readiness doc exists and states readiness-only scope.
+- ORO-5P helper exports status, boundary builder, validator, safety summary,
+  post-mount validation assertion, public alias request assertion, public alias
+  decision assertion, public alias implementation assertion, runtime mutation
+  assertion, and external network assertion.
+- ORO-5P fixtures cover happy path, missing ORO-5O validation, public alias
+  request submission attempt, public alias decision attempt, public alias grant
+  attempt, public alias implementation attempt, runtime traffic, wallet
+  mutation, ledger mutation, Prisma write, external network, and live OroPlay
+  call attempts.
+- ORO-5P smoke confirms decision/readiness output, no public alias, no runtime
+  traffic, no wallet/ledger/DB mutation, no external or live OroPlay call, no
+  secret-shaped output, and `smoke:oro-5p` registration.
 
 Next phase is actual patch implementation execution boundary. Route mount
 authorization still requires separate authorization. Runtime traffic approval

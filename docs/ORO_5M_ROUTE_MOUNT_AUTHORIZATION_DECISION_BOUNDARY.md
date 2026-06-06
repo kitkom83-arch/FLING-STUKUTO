@@ -186,3 +186,8 @@ ORO-5O validates the post-mount state after ORO-5N. ORO-5O remains validation
 only and does not authorize public aliases, runtime/live traffic,
 wallet/ledger/Prisma/DB mutation, migrations, external network, or live
 OroPlay API calls.
+
+ORO-5P records the ORO-5O validation decision and prepares public alias
+authorization request readiness only. It does not submit the public alias
+request, issue the public alias decision, grant or implement aliases, or enable
+runtime traffic.
