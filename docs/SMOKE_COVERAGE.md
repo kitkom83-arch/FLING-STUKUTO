@@ -3076,6 +3076,43 @@ Assertions:
 - Confirms external and live OroPlay calls remain absent.
 - Confirms no sensitive-shaped output.
 
+## 120. ORO-6A Live Traffic Authorization Decision Boundary Coverage
+
+ORO-6A Live Traffic Authorization Decision Boundary Coverage. The phase issues
+only a live traffic authorization decision record after ORO-5Z while live
+traffic, real money, wallet mutation, ledger mutation, Prisma writes, DB
+transactions, external network, and live OroPlay calls remain blocked.
+
+Coverage:
+
+- ORO-6A boundary doc: live traffic authorization decision boundary.
+- ORO-6A mock helper: ORO-5Z record validation, live traffic decision builder,
+  decision boundary validation, no-live-traffic validation, no-mutation
+  validation, and summary builder.
+- ORO-6A fixtures: happy path, missing ORO-5Z request record, ORO-5Z request not
+  submitted, wrong runtime mode, live traffic already enabled, wallet mutation
+  attempt, ledger mutation attempt, Prisma write attempt, DB transaction
+  attempt, external call attempt, live OroPlay call attempt, missing separate
+  enablement requirement, and sanitized response evidence.
+- ORO-6A smoke wrapper: `src/local-smoke-tests/oro6aSmoke.js`.
+
+Registered smokes:
+
+- `smoke:oro-6a-live-traffic-authorization-decision-boundary`
+- `smoke:oro-6a`
+
+Assertions:
+
+- Confirms ORO-6A emits `liveTrafficAuthorizationDecisionBoundaryResult=PASS`.
+- Confirms ORO-5Z live traffic authorization request record is present.
+- Confirms runtime traffic remains enabled only in `fail_closed_no_mutation`.
+- Confirms live traffic authorization decision is issued and approved.
+- Confirms separate live traffic enablement boundary is required.
+- Confirms live traffic allowed and enabled flags remain false.
+- Confirms wallet/ledger/Prisma/DB/migration flags remain false.
+- Confirms external and live OroPlay calls remain absent.
+- Confirms no sensitive-shaped output.
+
 ## 115. ORO-5V Runtime Traffic Authorization Request Submission Boundary Coverage
 
 ORO-5V Runtime Traffic Authorization Request Submission Boundary Coverage. The

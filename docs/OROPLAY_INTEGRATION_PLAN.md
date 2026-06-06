@@ -1034,3 +1034,18 @@ traffic decision, and keeps wallet, ledger, Prisma, DB transaction, migration,
 external network, and live OroPlay calls blocked.
 
 ORO-5Z keeps live traffic decision still pending.
+
+## ORO-5Z Closed
+
+ORO-5Z is closed. The live traffic authorization request record was submitted
+while live traffic remained blocked.
+
+## ORO-6A Current
+
+ORO-6A creates the live traffic authorization decision record only. It depends
+on the ORO-5Z request submission, keeps `/api/balance` and `/api/transaction`
+in fail-closed no-mutation mode, issues an approved decision record, and keeps
+wallet, ledger, Prisma, DB transaction, migration, external network, and live
+OroPlay calls blocked.
+
+ORO-6A keeps live traffic enablement still pending future boundary.

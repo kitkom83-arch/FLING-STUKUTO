@@ -887,3 +887,30 @@ ORO-5Z request markers:
 - externalNetworkCalled=false
 - liveOroPlayApiCalled=false
 - smoke:oro-5z
+
+ORO-6A live traffic authorization decision boundary: /api/balance and /api/transaction remain fail_closed_no_mutation.
+ORO-6A issues decision only. It is still not live traffic and includes no
+wallet/ledger mutation, no Prisma write, no DB transaction, no external network,
+and no live OroPlay call.
+
+ORO-6A decision markers:
+
+- dependsOnOro5zLiveTrafficAuthorizationRequestBoundary=true
+- oro5zLiveTrafficAuthorizationRequestSubmitted=true
+- runtimeTrafficEnabledFromOro5z=true
+- runtimeTrafficModeFromOro5z=fail_closed_no_mutation
+- liveTrafficAuthorizationDecisionBoundaryResult=PASS
+- liveTrafficAuthorizationDecisionIssued=true
+- liveTrafficAuthorizationDecisionStatus=decision_issued
+- liveTrafficAuthorizationDecisionResult=approved
+- liveTrafficAllowed=false
+- liveTrafficEnabled=false
+- separateLiveTrafficEnablementRequired=true
+- nextPhaseRequiresLiveTrafficEnablementBoundary=true
+- walletMutationPerformed=false
+- ledgerMutationPerformed=false
+- prismaWritePerformed=false
+- dbTransactionPerformed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCalled=false
+- smoke:oro-6a

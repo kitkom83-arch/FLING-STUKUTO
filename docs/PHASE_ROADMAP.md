@@ -464,6 +464,44 @@ ORO-5Z target criteria:
   file boundary, no live traffic enablement, no mutation, no external or live
   OroPlay call, no sensitive output, and `smoke:oro-5z` registration.
 
+## ORO-5Z closed live traffic authorization request boundary
+
+ORO-5Z is closed. The live traffic authorization request record is submitted,
+and live traffic remains blocked.
+
+## ORO-6A current/live traffic authorization decision boundary
+
+ORO-6A issues the live traffic authorization decision record only. The next
+phase is blocked until live traffic enablement boundary.
+Marker: next phase blocked until live traffic enablement boundary.
+
+ORO-6A confirms:
+
+- ORO-5Z live traffic authorization request dependency is present.
+- Runtime traffic remains enabled only in `fail_closed_no_mutation`.
+- Live traffic authorization decision is issued.
+- The decision result is approved.
+- A separate live traffic enablement boundary is required.
+- Live traffic remains disabled.
+- Wallet/ledger/Prisma/DB/migration work remains blocked.
+- External network and live OroPlay calls remain absent.
+- `smoke:oro-6a` registration.
+
+ORO-6A target criteria:
+
+- ORO-6A live traffic authorization decision doc exists and states decision-only
+  scope.
+- ORO-6A helper exports validation status, ORO-5Z record validation, decision
+  builder, decision boundary validator, live-traffic-disabled validator,
+  no-mutation validator, and summary builder.
+- ORO-6A fixtures cover happy path, missing ORO-5Z request, ORO-5Z request not
+  submitted, wrong runtime mode, live traffic already enabled, mutation
+  attempts, external call attempt, live OroPlay call attempt, missing separate
+  enablement requirement, and sanitized response evidence.
+- ORO-6A smoke confirms output, docs, script registration, protected runtime
+  file boundary, no live traffic enablement, no mutation, no external or live
+  OroPlay call, no sensitive output, and `smoke:oro-6a` registration.
+
 ## ORO-4A current/runtime implementation skeleton
 
 ORO-4A current/runtime implementation skeleton. This phase adds only disabled-by-default runtime skeleton docs, a staging-disabled gate, intent-only mock functions, and local smoke coverage.

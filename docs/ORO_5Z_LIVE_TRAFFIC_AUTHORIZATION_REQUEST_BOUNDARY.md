@@ -121,3 +121,8 @@ sensitive-shaped output is detected.
 
 The next phase requires separate live traffic authorization decision. ORO-5Z
 only submits the request.
+
+## ORO-6A live traffic decision requirement
+
+ORO-6A is required for live traffic authorization decision. ORO-5Z does not approve or enable live traffic. ORO-5Z remains a request-only boundary until the
+separate decision record is issued and a later enablement boundary is approved.
