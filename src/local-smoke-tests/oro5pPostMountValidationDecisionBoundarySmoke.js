@@ -101,13 +101,23 @@ function gitChangedFiles() {
 
 function assertForbiddenRuntimeFilesUntouched() {
   const changed = gitChangedFiles();
-  for (const forbidden of [APP, ROUTE_FILE, CONTROLLER_FILE]) {
+  for (const forbidden of [ROUTE_FILE, CONTROLLER_FILE]) {
     assert(!changed.has(forbidden), `${forbidden} must not be modified by ORO-5P.`);
   }
+  if (changed.has(APP)) assertOro5sPublicAliasWiringOnly("ORO-5P");
 }
 
-function assertNoPublicAliasMounts() {
+function assertOro5sPublicAliasWiringOnly(label) {
   const app = readRequired(APP);
+  for (const marker of [
+    'handleOroplayBalanceStub,',
+    'handleOroplayTransactionStub,',
+    "app.post('/api/balance', handleOroplayBalanceStub);",
+    "app.post('/api/transaction', handleOroplayTransactionStub);",
+    'app.use("/api/oroplay", oroplayCallbackStubRoutes);',
+  ]) {
+    assert(app.includes(marker), `${label} compatibility missing ORO-5S marker ${marker}.`);
+  }
   for (const marker of [
     'app.use("/api/balance"',
     'app.use("/api/transaction"',
@@ -115,9 +125,22 @@ function assertNoPublicAliasMounts() {
     'app.post("/api/transaction"',
     'router.post("/api/balance"',
     'router.post("/api/transaction"',
+    "PrismaClient",
+    "prisma.",
+    "$transaction",
+    "fetch(",
+    "http.request",
+    "https.request",
+    "walletMutationPerformed: true",
+    "ledgerMutationPerformed: true",
+    "liveOroPlayApiCalled: true",
   ]) {
-    assert(!app.includes(marker), `src/app.js must not contain ${marker}.`);
+    assert(!app.includes(marker), `${label} compatibility forbids ${marker}.`);
   }
+}
+
+function assertNoPublicAliasMounts() {
+  assertOro5sPublicAliasWiringOnly("ORO-5P");
 }
 
 function assertDocsAndRegistration() {

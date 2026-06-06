@@ -122,3 +122,10 @@ new Express mount, does not deploy, and does not add secret-shaped values.
 The next phase requires a separate public alias implementation boundary. A later
 separate post-alias validation boundary is required after implementation.
 Runtime traffic and live traffic remain separate explicit approvals.
+
+## Downstream ORO-5S implementation note
+
+ORO-5S implements the public alias wiring as fail-closed no-mutation after this
+ORO-5R authorization decision boundary. ORO-5S mounts `/api/balance` and
+`/api/transaction` only to reuse the existing fail-closed callback handlers and
+keeps runtime traffic disabled.

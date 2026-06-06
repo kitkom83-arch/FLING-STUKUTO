@@ -8,6 +8,10 @@ const adminRoutes = require("./routes/admin.routes");
 const oroplayCallbackStubRoutes = require("./routes/oroplayCallbackStub.routes");
 const adminController = require("./controllers/admin.controller");
 const healthController = require("./controllers/health.controller");
+const {
+  handleOroplayBalanceStub,
+  handleOroplayTransactionStub,
+} = require("./controllers/oroplayCallbackStub.controller");
 const siteResolver = require("./middleware/siteResolver");
 const { asyncHandler, notFound, errorHandler } = require("./middleware/errorHandler");
 
@@ -75,6 +79,9 @@ staticGetHead("/admin-wheel", adminWheelUiDir, { index: "index.html" });
 staticGetHead("/admin/lucky-wheel", adminWheelUiDir, { index: "index.html" });
 // ORO-5N: internal fail-closed OroPlay callback staging mount only.
 app.use("/api/oroplay", oroplayCallbackStubRoutes);
+// ORO-5S: public aliases reuse the existing fail-closed no-mutation handlers.
+app.post('/api/balance', handleOroplayBalanceStub);
+app.post('/api/transaction', handleOroplayTransactionStub);
 app.use("/api", routes);
 app.use(notFound);
 app.use(errorHandler);

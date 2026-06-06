@@ -3713,6 +3713,45 @@ Assertions:
 - Confirms ORO-5R does not call external network or live OroPlay API.
 - Confirms no secret-shaped output.
 
+## 112. ORO-5S Public Alias Implementation Boundary Coverage
+
+ORO-5S Public Alias Implementation Boundary Coverage. The phase wires the
+public aliases to the existing OroPlay callback fail-closed handlers after
+ORO-5R authorization. It changes only `src/app.js` for runtime wiring and does
+not modify runtime route files, controller files, Prisma schema, migrations,
+wallet services, ledger services, or live-provider services.
+
+Coverage artifacts:
+
+- ORO-5S boundary doc: public alias implementation boundary.
+- ORO-5S mock helper: boundary output, safety locks, ORO-5R authorization
+  assertion, fail-closed alias assertion, runtime traffic assertion, runtime
+  mutation assertion, and external network assertion.
+- ORO-5S fixtures: happy path, missing ORO-5R grant, wrong grant scope, missing
+  balance alias, missing transaction alias, alias runtime traffic, wallet
+  mutation, ledger mutation, Prisma write, DB transaction, external network,
+  and live OroPlay call attempts.
+- ORO-5S smoke wrapper: `src/local-smoke-tests/oro5sSmoke.js`.
+
+Smoke commands:
+
+- `smoke:oro-5s`
+
+Assertions:
+
+- Confirms ORO-5S emits `publicAliasImplementationBoundaryResult=PASS`.
+- Confirms ORO-5R authorization evidence remains granted for implementation boundary entry.
+- Confirms `POST /api/balance` is wired to the existing fail-closed balance handler.
+- Confirms `POST /api/transaction` is wired to the existing fail-closed transaction handler.
+- Confirms both public aliases run in `fail_closed_no_mutation` mode.
+- Confirms ORO-5S changes only `src/app.js` among runtime files.
+- Confirms ORO-5S does not modify runtime route/controller files.
+- Confirms ORO-5S does not enable runtime or live traffic.
+- Confirms ORO-5S does not mutate wallet/ledger in runtime.
+- Confirms ORO-5S does not write Prisma/DB or run migrations.
+- Confirms ORO-5S does not call external network or live OroPlay API.
+- Confirms no sensitive-shaped output.
+
 ## 92. ORO-4Y Route Mount Execution Approval Readiness Coverage
 
 ORO-4Y Route Mount Execution Approval Readiness Coverage. The phase records

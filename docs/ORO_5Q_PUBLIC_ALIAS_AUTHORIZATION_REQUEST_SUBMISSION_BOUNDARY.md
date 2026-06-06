@@ -120,3 +120,7 @@ ORO-5Q request submission boundary. ORO-5R grants only entry into the public
 alias implementation boundary, keeps public alias implementation unperformed,
 keeps `/api/balance` and `/api/transaction` unmounted, and keeps runtime traffic
 disabled.
+
+ORO-5S implements the public alias wiring as fail-closed no-mutation after
+ORO-5R authorization. ORO-5S keeps runtime traffic disabled and keeps
+wallet/ledger/Prisma/DB/external/live OroPlay work blocked.

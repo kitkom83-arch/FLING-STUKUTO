@@ -1,0 +1,149 @@
+"use strict";
+
+const path = require("path");
+const { spawnSync } = require("child_process");
+
+const PROJECT_ROOT = path.resolve(__dirname, "..", "..");
+
+const syntaxTargets = [
+  "src/server.js",
+  "src/app.js",
+  "src/services/member.service.js",
+  "src/controllers/admin.controller.js",
+  "src/routes/admin.routes.js",
+  "src/admin-ui/app.js",
+  "src/admin-audit-ui/app.js",
+  "src/admin-wheel-ui/app.js",
+  "src/services/wheel.service.js",
+  "src/controllers/wheel.controller.js",
+  "src/routes/wheel.routes.js",
+  "src/middleware/wheelMemberAuth.js",
+  "prisma/seed.js",
+  "src/staging-scripts/stagingSafety.js",
+  "src/staging-scripts/stagingDbCheck.js",
+  "src/staging-scripts/stagingDbSeed.js",
+  "src/staging-scripts/stagingDemoSeed.js",
+  "src/staging-scripts/stagingReleaseGateSmoke.js",
+  "src/staging-scripts/stagingUatSmoke.js",
+  "src/integration-tests/payment.mock-test.js",
+  "src/integration-tests/bank.mock-test.js",
+  "src/integration-tests/sms.mock-test.js",
+  "src/integration-tests/slip-ocr.mock-test.js",
+  "src/integration-tests/game.mock-test.js",
+  "src/local-smoke-tests/stagingPreflight.js",
+  "src/local-smoke-tests/stagingSmoke.js",
+  "src/local-smoke-tests/stagingReleaseReadinessSmoke.js",
+  "src/local-smoke-tests/stagingDeployReadinessPackSmoke.js",
+  "src/local-smoke-tests/disposableStagingDbDryRunPackSmoke.js",
+  "src/staging-scripts/disposableStagingDbReadOnlyProbe.js",
+  "src/local-smoke-tests/disposableStagingDbReadOnlyProbeSmoke.js",
+  "src/local-smoke-tests/disposableStagingDbReadOnlyProbeRuntimeHarnessSmoke.js",
+  "src/local-smoke-tests/disposableStagingDbReadOnlyProbeRuntimeHarness.js",
+  "src/local-smoke-tests/productionReadinessAuditSmoke.js",
+  "src/local-smoke-tests/productionSafetyDryRunSmoke.js",
+  "src/local-smoke-tests/monitoringBackupRunbookSmoke.js",
+  "src/local-smoke-tests/financialLedgerHardeningSmoke.js",
+  "src/local-smoke-tests/financialLedgerRuntimeContractSmoke.js",
+  "src/local-smoke-tests/financialLedgerSchemaDryRunSmoke.js",
+  "src/ledger-mock/financialLedgerMockHarness.js",
+  "src/local-smoke-tests/financialLedgerMockRuntimeHarnessSmoke.js",
+  "src/ledger-mock/financialLedgerReconciliationMockReports.js",
+  "src/admin-reconciliation-readonly-ui/app.js",
+  "src/local-smoke-tests/financialLedgerReconciliationMockReportsSmoke.js",
+  "src/local-smoke-tests/financialLedgerLiveIntegrationCertificationSmoke.js",
+  "src/local-smoke-tests/financialLedgerStagingDryRunMigrationSmoke.js",
+  "src/local-smoke-tests/adminWorkScheduleUiSmoke.js",
+  "src/local-smoke-tests/adminAuditSecuritySmoke.js",
+  "src/local-smoke-tests/adminRoleManagementSmoke.js",
+  "src/local-smoke-tests/adminWheelUiSmoke.js",
+  "src/local-smoke-tests/adminWheelRuntimeSmoke.js",
+  "src/local-smoke-tests/adminBrowserRoutesSmoke.js",
+  "src/local-smoke-tests/adminMemberHistoryReadOnlySmoke.js",
+  "src/local-smoke-tests/adminBackofficeReadOnlyIntegrationSmoke.js",
+  "src/local-smoke-tests/adminGuardedBankAccountReviewSmoke.js",
+  "src/local-smoke-tests/adminOperatorHandoffSmoke.js",
+  "src/local-smoke-tests/adminBankAccountReviewReleasePackSmoke.js",
+  "src/payment-provider-mock/paymentProviderContract.js",
+  "src/payment-provider-mock/paymentProviderMockHarness.js",
+  "src/local-smoke-tests/paymentProviderContractSmoke.js",
+  "src/game-provider-mock/oroplaySeamlessContract.js",
+  "src/game-provider-mock/oroplaySeamlessMockHarness.js",
+  "src/local-smoke-tests/oroplaySeamlessContractSmoke.js",
+  "src/game-provider-mock/oroplayCallbackBoundary.js",
+  "src/local-smoke-tests/oroplayCallbackBoundarySmoke.js",
+  "src/game-provider-mock/oroplayCallbackStubContract.js",
+  "src/controllers/oroplayCallbackStub.controller.js",
+  "src/routes/oroplayCallbackStub.routes.js",
+  "src/local-smoke-tests/oroplayCallbackStubSmoke.js",
+  "src/game-provider-mock/oroplayCallbackReadinessContract.js",
+  "src/game-provider-mock/oroplayCallbackReadinessHarness.js",
+  "src/local-smoke-tests/oroplayCallbackReadinessSmoke.js",
+  "src/game-provider-mock/oroplayCallbackRuntimeSimulator.js",
+  "src/game-provider-mock/oroplayCallbackRuntimeScenarios.js",
+  "src/local-smoke-tests/oroplayCallbackRuntimeSimulationSmoke.js",
+  "src/game-provider-mock/oroplayCallbackRuntimeAdapterContract.js",
+  "src/game-provider-mock/oroplayWalletLedgerBridgeDesign.js",
+  "src/local-smoke-tests/oroplayCallbackRuntimeAdapterContractSmoke.js",
+  "src/game-provider-mock/oroplayCallbackRuntimeExecutionPlan.js",
+  "src/game-provider-mock/oroplayCallbackRuntimeGate.js",
+  "src/local-smoke-tests/oroplayCallbackRuntimeExecutionPlanSmoke.js",
+  "src/game-provider-mock/oroplayCallbackRuntimeReadinessGate.js",
+  "src/game-provider-mock/oroplayCallbackPreImplementationCertificationPack.js",
+  "src/local-smoke-tests/oroplayCallbackRuntimeReadinessGateSmoke.js",
+  "src/game-provider-mock/oroplayCallbackImplementationDesignFreeze.js",
+  "src/game-provider-mock/oroplayCallbackStagingActivationPlan.js",
+  "src/local-smoke-tests/oroplayCallbackImplementationDesignFreezeSmoke.js",
+  "src/game-provider-mock/oroplayCallbackStagingWiringPrecheck.js",
+  "src/local-smoke-tests/oroplayCallbackStagingWiringPrecheckSmoke.js",
+  "src/game-provider-mock/oroplayCallbackRuntimeShadowInvoker.js",
+  "src/game-provider-mock/oroplayCallbackRuntimeShadowFixtures.js",
+  "src/local-smoke-tests/oroplayCallbackRuntimeShadowInvocationSmoke.js",
+  "src/game-provider-mock/oroplayCallbackRequestResponseEnvelope.js",
+  "src/game-provider-mock/oroplayCallbackRequestResponseFixtures.js",
+  "src/local-smoke-tests/oroplayCallbackRequestResponseEnvelopeSmoke.js",
+  "src/game-provider-mock/oroplayCallbackControllerFacadeDryRun.js",
+  "src/game-provider-mock/oroplayCallbackControllerFacadeFixtures.js",
+  "src/local-smoke-tests/oroplayCallbackControllerFacadeDryRunSmoke.js",
+  "src/game-provider-mock/oroplayCallbackStagingRouteWiringDesign.js",
+  "src/game-provider-mock/oroplayCallbackStagingRouteWiringFixtures.js",
+  "src/local-smoke-tests/oroplayCallbackStagingRouteWiringDesignSmoke.js",
+  "src/payment-provider-mock/memberQrDepositUxContract.js",
+  "src/payment-provider-mock/memberQrDepositMockHarness.js",
+  "src/local-smoke-tests/memberQrDepositUxSmoke.js",
+  "src/local-smoke-tests/masterSpecMappingSmoke.js",
+  "src/local-smoke-tests/wheelSmoke.js",
+  "src/local-smoke-tests/runProjectCheck.js",
+  "src/local-smoke-tests/runSafetyCheck.js",
+];
+
+function runNode(label, args) {
+  console.log(`[check] ${label}`);
+  const result = spawnSync(process.execPath, args, {
+    cwd: PROJECT_ROOT,
+    env: process.env,
+    stdio: "inherit",
+    shell: false,
+  });
+
+  if (result.error) {
+    console.error(`[check] failed to start: ${result.error.message}`);
+    process.exit(1);
+  }
+
+  if (result.signal) {
+    console.error(`[check] stopped by signal: ${result.signal}`);
+    process.exit(1);
+  }
+
+  if (result.status !== 0) {
+    process.exit(typeof result.status === "number" ? result.status : 1);
+  }
+}
+
+for (const target of syntaxTargets) {
+  runNode(`node --check ${target}`, ["--check", target]);
+}
+
+runNode("node src/local-smoke-tests/runSafetyCheck.js", ["src/local-smoke-tests/runSafetyCheck.js"]);
+
+console.log("[check] PASS");

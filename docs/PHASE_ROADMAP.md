@@ -1604,6 +1604,43 @@ ORO-5R target criteria:
   mutation, no external or live OroPlay call, no secret-shaped output, and
   `smoke:oro-5r` registration.
 
+## ORO-5S current/local public alias implementation boundary
+
+ORO-5S implements the public alias wiring as fail-closed no-mutation after
+ORO-5R authorization. The aliases are `POST /api/balance` and
+`POST /api/transaction`, and both reuse the existing OroPlay callback
+fail-closed handlers.
+
+ORO-5S confirms:
+
+- ORO-5R public alias authorization decision granted implementation-boundary entry
+- public alias implementation boundary is entered
+- public alias wiring is implemented
+- `/api/balance` public alias is mounted
+- `/api/transaction` public alias is mounted
+- both aliases run in `fail_closed_no_mutation` mode
+- runtime and live traffic remain disabled
+- wallet/ledger/Prisma/DB mutation remains absent
+- external and live OroPlay calls remain absent
+
+ORO-5S target criteria:
+
+- ORO-5S implementation doc exists and states fail-closed alias-only scope.
+- ORO-5S helper exports status, boundary builder, validator, safety summary,
+  ORO-5R authorization assertion, fail-closed alias assertion, runtime traffic
+  assertion, runtime mutation assertion, and external network assertion.
+- ORO-5S fixtures cover happy path, missing ORO-5R grant, wrong grant scope,
+  missing balance alias, missing transaction alias, alias runtime traffic,
+  wallet mutation, ledger mutation, Prisma write, DB transaction, external
+  network, and live OroPlay call attempts.
+- ORO-5S smoke confirms alias wiring output, app alias routes, no route or
+  controller runtime file edits, no runtime traffic, no wallet/ledger/DB
+  mutation, no external or live OroPlay call, no sensitive output, and
+  `smoke:oro-5s` registration.
+
+Next phase is post-alias validation boundary. Runtime traffic approval and live
+traffic approval still require separate approval boundaries.
+
 Next phase is public alias implementation boundary. Post-alias validation,
 runtime traffic approval, and live traffic approval still require separate
 approval boundaries.

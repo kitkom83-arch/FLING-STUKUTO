@@ -834,3 +834,31 @@ calls absent.
 
 ORO-5R marker: public alias authorization decision issued for implementation
 boundary only.
+
+## ORO-5S Current
+
+ORO-5S implements the public alias wiring as fail-closed no-mutation after the
+ORO-5R authorization decision. The public aliases map to the existing OroPlay
+callback fail-closed handlers only.
+
+ORO-5S confirms:
+
+- dependsOnOro5rPublicAliasAuthorizationDecision=true
+- publicAliasAuthorizationGrantedFromOro5r=true
+- publicAliasAuthorizationGrantScopeFromOro5r=public_alias_implementation_boundary_only
+- publicAliasImplemented=true
+- publicAliasPatchImplemented=true
+- apiBalancePublicAliasMounted=true
+- apiTransactionPublicAliasMounted=true
+- apiBalancePublicAliasMode=fail_closed_no_mutation
+- apiTransactionPublicAliasMode=fail_closed_no_mutation
+- apiBalancePublicAliasRuntimeTrafficEnabled=false
+- apiTransactionPublicAliasRuntimeTrafficEnabled=false
+- runtimeTrafficEnabled=false
+
+ORO-5S keeps runtime traffic disabled, keeps live traffic disabled, keeps
+wallet/ledger/Prisma/DB mutation blocked, and keeps external and live OroPlay
+calls absent.
+
+ORO-5S marker: public alias implementation is fail-closed no-mutation wiring
+only.

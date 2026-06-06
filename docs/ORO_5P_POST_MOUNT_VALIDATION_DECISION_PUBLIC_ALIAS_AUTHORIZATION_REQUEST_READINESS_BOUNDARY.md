@@ -128,3 +128,7 @@ OroPlay work blocked.
 ORO-5R issues the static public alias authorization decision record after ORO-5Q
 request submission. ORO-5R grants only public alias implementation boundary
 entry and keeps public aliases unimplemented and unmounted.
+
+ORO-5S implements the public alias wiring as fail-closed no-mutation after
+ORO-5R authorization. ORO-5S keeps runtime traffic disabled and keeps
+wallet/ledger/Prisma/DB/external/live OroPlay work blocked.

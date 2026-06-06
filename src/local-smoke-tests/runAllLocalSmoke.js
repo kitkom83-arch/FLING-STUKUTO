@@ -242,6 +242,11 @@ const RELATED_FILES = [
   "src/local-smoke-tests/oro5rPublicAliasAuthorizationDecisionBoundarySmoke.js",
   "src/local-smoke-tests/oro5rSmoke.js",
   "docs/ORO_5R_PUBLIC_ALIAS_AUTHORIZATION_DECISION_BOUNDARY.md",
+  "src/game-provider-mock/oro5sPublicAliasImplementationBoundary.js",
+  "src/game-provider-mock/oro5sPublicAliasImplementationBoundaryFixtures.js",
+  "src/local-smoke-tests/oro5sPublicAliasImplementationBoundarySmoke.js",
+  "src/local-smoke-tests/oro5sSmoke.js",
+  "docs/ORO_5S_PUBLIC_ALIAS_IMPLEMENTATION_BOUNDARY.md",
   "src/payment-provider-mock/memberQrDepositUxContract.js",
   "src/payment-provider-mock/memberQrDepositMockHarness.js",
   "src/local-smoke-tests/memberQrDepositUxSmoke.js",
@@ -506,6 +511,7 @@ const summary = [
   { key: "oro5p", label: "oro-5p", status: "PENDING" },
   { key: "oro5q", label: "oro-5q", status: "PENDING" },
   { key: "oro5r", label: "oro-5r", status: "PENDING" },
+  { key: "oro5s", label: "oro-5s", status: "PENDING" },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
   { key: "depositVerificationSource", label: "deposit-verification-source", status: "PENDING" },
   {
@@ -1310,6 +1316,12 @@ const steps = [
     summaryKey: "syntax",
   },
   {
+    name: "node --check oro5sSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oro5sSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
     name: "node --check memberQrDepositUxContract",
     command: nodeCommand,
     args: ["--check", "src/payment-provider-mock/memberQrDepositUxContract.js"],
@@ -2009,6 +2021,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oro-5r"]),
     summaryKey: "oro5r",
+  },
+  {
+    name: "npm run smoke:oro-5s",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oro-5s"]),
+    summaryKey: "oro5s",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

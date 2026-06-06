@@ -137,16 +137,37 @@ function assertNoSrcAppJsEditMarkers() {
   }
 }
 
-function assertNoActiveRouteMountInApp() {
+function assertOro5sPublicAliasWiringOnly() {
   const app = readRequired("src/app.js");
-  for (const route of [
-    "/api/oroplay/balance",
-    "/api/oroplay/transaction",
-    "/api/balance",
-    "/api/transaction",
+  for (const marker of [
+    'handleOroplayBalanceStub,',
+    'handleOroplayTransactionStub,',
+    "app.post('/api/balance', handleOroplayBalanceStub);",
+    "app.post('/api/transaction', handleOroplayTransactionStub);",
+    'app.use("/api/oroplay", oroplayCallbackStubRoutes);',
   ]) {
-    assert(!app.includes(route), `src/app.js must not contain ${route}.`);
+    assert(app.includes(marker), `src/app.js missing ORO-5S fail-closed marker ${marker}.`);
   }
+  for (const marker of [
+    'app.use("/api/balance"',
+    'app.use("/api/transaction"',
+    'app.post("/api/balance"',
+    'app.post("/api/transaction"',
+    'router.post("/api/balance"',
+    'router.post("/api/transaction"',
+    "PrismaClient",
+    "prisma.",
+    "$transaction",
+    "fetch(",
+    "http.request",
+    "https.request",
+  ]) {
+    assert(!app.includes(marker), `src/app.js contains unsafe ORO-5S alias marker ${marker}.`);
+  }
+}
+
+function assertNoActiveRouteMountInApp() {
+  assertOro5sPublicAliasWiringOnly();
 }
 
 function assertNoRuntimeImplementationText() {
