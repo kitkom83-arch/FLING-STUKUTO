@@ -3076,6 +3076,46 @@ Assertions:
 - Confirms external and live OroPlay calls remain absent.
 - Confirms no sensitive-shaped output.
 
+## 123. ORO-6D Live Traffic Post-Enablement Validation Boundary Coverage
+
+ORO-6D Live Traffic Post-Enablement Validation Boundary Coverage. The phase
+validates live traffic after ORO-6C while live traffic remains
+fail_closed_no_mutation and real money, wallet mutation, ledger mutation,
+Prisma writes, DB transactions, external network, and live OroPlay calls remain
+blocked.
+
+Coverage:
+
+- ORO-6D boundary doc: live traffic post-enablement validation boundary.
+- ORO-6D mock helper: ORO-6C record validation, fail-closed no-mutation
+  validation, balance validation, transaction validation, no-mutation
+  validation, no-external/live-OroPlay validation, and summary builder.
+- ORO-6D fixtures: happy path, missing ORO-6C enablement record, live traffic
+  not enabled, wrong live traffic mode, wallet mutation attempt, ledger mutation
+  attempt, Prisma write attempt, DB transaction attempt, external call attempt,
+  live OroPlay call attempt, malformed payload still fail-closed, duplicate
+  transaction no double mutation, and sanitized response evidence.
+- ORO-6D smoke wrapper: `src/local-smoke-tests/oro6dSmoke.js`.
+
+Registered smokes:
+
+- `smoke:oro-6d-live-traffic-post-enablement-validation-boundary`
+- `smoke:oro-6d`
+
+Assertions:
+
+- Confirms ORO-6D emits `liveTrafficPostEnablementValidationBoundaryResult=PASS`.
+- Confirms ORO-6C live traffic enablement record is present.
+- Confirms live traffic allowed and enabled from ORO-6C are true.
+- Confirms live traffic mode remains `fail_closed_no_mutation`.
+- Confirms `/api/balance` live traffic remains `fail_closed_no_mutation`.
+- Confirms `/api/transaction` live traffic remains `fail_closed_no_mutation`.
+- Confirms fail-closed request behavior remains true.
+- Confirms live traffic external call authorization is required next.
+- Confirms wallet/ledger/Prisma/DB/migration flags remain false.
+- Confirms external and live OroPlay calls remain absent.
+- Confirms no sensitive-shaped output.
+
 ## 122. ORO-6C Live Traffic Enablement Boundary Coverage
 
 ORO-6C Live Traffic Enablement Boundary Coverage. The phase enables liveTraffic

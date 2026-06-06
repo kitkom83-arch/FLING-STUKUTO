@@ -580,6 +580,46 @@ ORO-6C target criteria:
   file boundary, no mutation, no external or live OroPlay call, no sensitive
   output, and `smoke:oro-6c` registration.
 
+## ORO-6C closed live traffic enablement boundary
+
+ORO-6C is closed. Live traffic is enabled only in
+`fail_closed_no_mutation`, and external/live OroPlay calls remain blocked.
+
+## ORO-6D current/live traffic post-enablement validation boundary
+
+ORO-6D validates post-enable live traffic behavior after ORO-6C. The next phase
+is blocked until external/live OroPlay call authorization request.
+Marker: next phase blocked until external/live OroPlay call authorization request.
+
+ORO-6D confirms:
+
+- ORO-6C live traffic enablement dependency is present.
+- Live traffic allowed and enabled from ORO-6C are true.
+- Live traffic mode remains `fail_closed_no_mutation`.
+- `/api/balance` live traffic remains `fail_closed_no_mutation`.
+- `/api/transaction` live traffic remains `fail_closed_no_mutation`.
+- Malformed payload, unknown user, auth mismatch, duplicate transaction, and
+  unsupported transaction cases remain fail-closed or manual-review only.
+- Wallet/ledger/Prisma/DB/migration work remains blocked.
+- External network and live OroPlay calls remain absent.
+- `smoke:oro-6d` registration.
+
+ORO-6D target criteria:
+
+- ORO-6D live traffic post-enablement validation doc exists and states
+  fail-closed no-mutation scope.
+- ORO-6D helper exports validation status, ORO-6C record validation,
+  fail-closed validation, balance validation, transaction validation,
+  no-mutation validation, no-external/live-OroPlay validation, and summary
+  builder.
+- ORO-6D fixtures cover happy path, missing ORO-6C enablement, live traffic not
+  enabled, wrong live traffic mode, mutation attempts, external call attempt,
+  live OroPlay call attempt, fail-closed request behavior, duplicate
+  transaction behavior, and sanitized response evidence.
+- ORO-6D smoke confirms output, docs, script registration, protected runtime
+  file boundary, no mutation, no external or live OroPlay call, no sensitive
+  output, and `smoke:oro-6d` registration.
+
 ## ORO-4A current/runtime implementation skeleton
 
 ORO-4A current/runtime implementation skeleton. This phase adds only disabled-by-default runtime skeleton docs, a staging-disabled gate, intent-only mock functions, and local smoke coverage.

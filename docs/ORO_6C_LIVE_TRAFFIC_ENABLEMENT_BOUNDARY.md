@@ -131,3 +131,7 @@ detected.
 
 The next phase requires live traffic post-enablement validation. ORO-6C only
 records fail-closed no-mutation live traffic enablement.
+
+## ORO-6D post-enable validation requirement
+
+ORO-6D is required after enablement. ORO-6D must confirm live traffic remains fail_closed_no_mutation and external/live OroPlay call still blocked.

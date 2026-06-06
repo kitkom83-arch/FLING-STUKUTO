@@ -1078,3 +1078,18 @@ fail_closed_no_mutation boundary and keeps wallet, ledger, Prisma, DB
 transaction, migration, external network, and live OroPlay calls blocked.
 
 ORO-6C live traffic post-enablement validation required next.
+
+## ORO-6C Closed
+
+ORO-6C is closed. Live traffic was enabled only inside the
+fail_closed_no_mutation boundary, and wallet, ledger, Prisma, DB transaction,
+migration, external network, and live OroPlay calls stayed blocked.
+
+## ORO-6D Current
+
+ORO-6D validates post-enable live traffic behavior after ORO-6C. It confirms
+`/api/balance` and `/api/transaction` live traffic remain
+fail_closed_no_mutation while wallet, ledger, Prisma, DB transaction,
+migration, external network, and live OroPlay calls stay blocked.
+
+ORO-6D external/live OroPlay call authorization still pending future boundary.

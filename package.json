@@ -122,6 +122,8 @@
     "smoke:oro-6b": "node src/local-smoke-tests/oro6bSmoke.js",
     "smoke:oro-6c-live-traffic-enablement-boundary": "node src/local-smoke-tests/oro6cLiveTrafficEnablementBoundarySmoke.js",
     "smoke:oro-6c": "node src/local-smoke-tests/oro6cSmoke.js",
+    "smoke:oro-6d-live-traffic-post-enablement-validation-boundary": "node src/local-smoke-tests/oro6dLiveTrafficPostEnablementValidationBoundarySmoke.js",
+    "smoke:oro-6d": "node src/local-smoke-tests/oro6dSmoke.js",
     "smoke:member-qr-deposit-ux": "node src/local-smoke-tests/memberQrDepositUxSmoke.js",
     "smoke:deposit-verification-source": "node src/local-smoke-tests/depositVerificationSourceSmoke.js",
     "smoke:deposit-ledger-reconciliation-guard": "node src/local-smoke-tests/depositLedgerReconciliationGuardSmoke.js",

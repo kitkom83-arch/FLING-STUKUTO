@@ -971,3 +971,40 @@ ORO-6C enablement markers:
 - externalNetworkCalled=false
 - liveOroPlayApiCalled=false
 - smoke:oro-6c
+
+ORO-6D live traffic post-enablement validation boundary: /api/balance and /api/transaction live traffic = fail_closed_no_mutation only.
+ORO-6D validates post-enable behavior. It confirms live traffic remains
+fail_closed_no_mutation and includes no wallet/ledger mutation, no Prisma
+write, no DB transaction, no external network, and no live OroPlay outgoing
+call.
+
+ORO-6D validation markers:
+
+- dependsOnOro6cLiveTrafficEnablementBoundary=true
+- liveTrafficAllowedFromOro6c=true
+- liveTrafficEnabledFromOro6c=true
+- liveTrafficModeFromOro6c=fail_closed_no_mutation
+- liveTrafficPostEnablementValidationBoundaryResult=PASS
+- liveTrafficPostEnablementValidationEntered=true
+- liveTrafficPostEnablementValidationChecked=true
+- liveTrafficPostEnablementValidationStatus=validation_passed
+- apiBalanceLiveTrafficEnabled=true
+- apiTransactionLiveTrafficEnabled=true
+- apiBalanceLiveTrafficMode=fail_closed_no_mutation
+- apiTransactionLiveTrafficMode=fail_closed_no_mutation
+- apiBalancePostEnablementValidationPassed=true
+- apiTransactionPostEnablementValidationPassed=true
+- malformedPayloadStillFailClosed=true
+- unknownUserStillFailClosed=true
+- mockAuthMismatchStillFailClosed=true
+- duplicateTransactionStillNoDoubleMutation=true
+- unsupportedTransactionTypeStillFailClosedOrManualReview=true
+- responseStillSanitized=true
+- nextPhaseRequiresLiveTrafficExternalCallAuthorizationRequest=true
+- walletMutationPerformed=false
+- ledgerMutationPerformed=false
+- prismaWritePerformed=false
+- dbTransactionPerformed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCalled=false
+- smoke:oro-6d
