@@ -892,3 +892,28 @@ calls absent.
 
 ORO-5T marker: public alias post-implementation validation is fail-closed
 no-mutation verification only.
+
+## ORO-5U Current
+
+ORO-5U prepares runtime traffic authorization request readiness only after the
+ORO-5T public alias validation boundary passes.
+
+ORO-5U confirms:
+
+- dependsOnOro5tPublicAliasPostImplementationValidation = true
+- publicAliasPostImplementationValidationFromOro5t = true
+- runtimeTrafficAuthorizationRequestReady = true
+- runtimeTrafficAuthorizationRequestPrepared = true
+- runtimeTrafficAuthorizationRequestSubmitted = false
+- runtimeTrafficAuthorizationDecisionIssued = false
+- runtimeTrafficAuthorizationGranted = false
+- runtimeTrafficAllowed = false
+- runtimeTrafficEnabled = false
+- liveTrafficAuthorizationRequestSubmitted = false
+- liveTrafficAuthorizationDecisionIssued = false
+- liveTrafficAllowed = false
+- liveTrafficEnabled = false
+
+ORO-5U keeps wallet, ledger, Prisma, DB transaction, migration, external
+network, and live OroPlay call flags blocked. The marker is runtime traffic
+authorization request readiness only.

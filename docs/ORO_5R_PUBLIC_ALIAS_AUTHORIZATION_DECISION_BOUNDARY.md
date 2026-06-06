@@ -129,3 +129,8 @@ ORO-5S implements the public alias wiring as fail-closed no-mutation after this
 ORO-5R authorization decision boundary. ORO-5S mounts `/api/balance` and
 `/api/transaction` only to reuse the existing fail-closed callback handlers and
 keeps runtime traffic disabled.
+
+ORO-5U remains readiness-only after ORO-5T. It prepares runtime traffic
+authorization request readiness without runtime request submission, runtime
+decision, runtime grant, runtime traffic enablement, live traffic enablement,
+wallet/ledger/Prisma/DB work, external calls, or live OroPlay calls.

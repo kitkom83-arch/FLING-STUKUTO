@@ -104,3 +104,8 @@ ORO-5T validates the public alias implementation after ORO-5S. It confirms
 fail-closed handlers, stay in `fail_closed_no_mutation` mode, and do not
 approve runtime traffic, live traffic, wallet/ledger mutation, DB mutation,
 external calls, or live OroPlay calls.
+
+ORO-5U remains readiness-only after ORO-5T. It prepares runtime traffic
+authorization request readiness and keeps runtime request submission, runtime
+decision, runtime grant, runtime traffic, live traffic, wallet/ledger/Prisma/DB
+work, external calls, and live OroPlay calls blocked.

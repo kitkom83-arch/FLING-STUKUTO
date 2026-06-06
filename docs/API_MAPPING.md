@@ -693,3 +693,31 @@ wallet/ledger/Prisma/DB mutation, and does not call external or live OroPlay
 services.
 
 next phase is actual patch implementation approval decision boundary.
+
+ORO-5U runtime traffic authorization request readiness boundary: ORO-5U records
+readiness for a later runtime traffic authorization request submission after
+ORO-5T validates the public aliases. It is readiness-only and keeps runtime
+traffic unsubmitted, undecided, ungranted, and disabled.
+
+ORO-5U readiness-only markers:
+
+- dependsOnOro5tPublicAliasPostImplementationValidation=true
+- publicAliasPostImplementationValidationFromOro5t=true
+- apiBalancePublicAliasMounted=true
+- apiTransactionPublicAliasMounted=true
+- apiBalancePublicAliasMode=fail_closed_no_mutation
+- apiTransactionPublicAliasMode=fail_closed_no_mutation
+- runtimeTrafficAuthorizationRequestReady=true
+- runtimeTrafficAuthorizationRequestPrepared=true
+- runtimeTrafficAuthorizationRequestSubmitted=false
+- runtimeTrafficAuthorizationDecisionIssued=false
+- runtimeTrafficAuthorizationGranted=false
+- runtimeTrafficAllowed=false
+- runtimeTrafficEnabled=false
+- liveTrafficAuthorizationRequestSubmitted=false
+- liveTrafficAuthorizationDecisionIssued=false
+- liveTrafficAllowed=false
+- liveTrafficEnabled=false
+- externalNetworkCalled=false
+- liveOroPlayApiCalled=false
+- smoke:oro-5u

@@ -242,6 +242,42 @@ ORO-3A status marker:
 - no migration.
 - no deploy.
 
+## ORO-5U current/local runtime traffic authorization request readiness boundary
+
+ORO-5U records readiness for the later runtime traffic authorization request
+submission boundary after ORO-5T has validated public aliases.
+
+ORO-5U confirms:
+
+- ORO-5T public alias post-implementation validation dependency is present
+- `POST /api/balance` and `POST /api/transaction` remain mounted
+- both public aliases remain `fail_closed_no_mutation`
+- runtime request readiness is prepared
+- runtime request submission remains false
+- runtime decision and grant remain false
+- runtime traffic and live traffic remain disabled
+- evidence checklist is complete
+- wallet/ledger/Prisma/DB/migration work remains blocked
+- external and live OroPlay calls remain absent
+- `smoke:oro-5u` registration
+
+ORO-5U target criteria:
+
+- ORO-5U readiness doc exists and states readiness-only scope.
+- ORO-5U helper exports status, boundary builder, validator, readiness
+  assertions, runtime decision assertions, live traffic assertion, evidence
+  checklist assertion, runtime mutation assertion, and external network
+  assertion.
+- ORO-5U fixtures cover happy path, missing ORO-5T validation, wrong alias
+  mode, readiness not prepared, request submission attempt, runtime decision or
+  grant attempts, live traffic attempts, incomplete checklist, mutation
+  attempts, external call attempt, live OroPlay call attempt, and sensitive
+  output attempt.
+- ORO-5U smoke confirms readiness output, docs, registration, protected runtime
+  file boundary, no runtime/live enablement, no wallet/ledger/DB mutation, no
+  external or live OroPlay call, no sensitive output, and `smoke:oro-5u`
+  registration.
+
 ## ORO-4A current/runtime implementation skeleton
 
 ORO-4A current/runtime implementation skeleton. This phase adds only disabled-by-default runtime skeleton docs, a staging-disabled gate, intent-only mock functions, and local smoke coverage.

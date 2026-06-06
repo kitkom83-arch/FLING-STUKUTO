@@ -3041,6 +3041,41 @@ Boundary:
 - No live OroPlay API call.
 - No real money.
 
+## 114. ORO-5U Runtime Traffic Authorization Request Readiness Boundary Coverage
+
+ORO-5U Runtime Traffic Authorization Request Readiness Boundary Coverage. The
+phase prepares the runtime traffic authorization request readiness record after
+ORO-5T. Runtime traffic remains unsubmitted, undecided, ungranted, and disabled.
+
+Coverage:
+
+- ORO-5U boundary doc: runtime traffic authorization request readiness boundary.
+- ORO-5U mock helper: boundary output, ORO-5T dependency, readiness locks,
+  runtime decision assertions, live traffic assertion, evidence checklist
+  assertion, runtime mutation assertion, and external network assertion.
+- ORO-5U fixtures: happy path, missing ORO-5T validation, wrong alias mode,
+  readiness not prepared, request submission attempt, runtime decision or grant
+  attempts, live traffic attempts, incomplete checklist, mutation attempts,
+  external call attempt, live OroPlay call attempt, and sensitive output attempt.
+- ORO-5U smoke wrapper: `src/local-smoke-tests/oro5uSmoke.js`.
+
+Registered smoke:
+
+- `smoke:oro-5u`
+
+Assertions:
+
+- Confirms ORO-5U emits `runtimeTrafficAuthorizationRequestReadinessBoundaryResult=PASS`.
+- Confirms ORO-5T public alias validation evidence is present.
+- Confirms runtime request readiness is ready and prepared.
+- Confirms runtime request submission remains false.
+- Confirms runtime decision, grant, allowed, and enabled flags remain false.
+- Confirms live traffic request, decision, allowed, and enabled flags remain false.
+- Confirms evidence checklist flags are true.
+- Confirms wallet/ledger/Prisma/DB/migration flags remain false.
+- Confirms external and live OroPlay calls remain absent.
+- Confirms no sensitive-shaped output.
+
 ## 89. ORO-4V Route Mount Approval Boundary Coverage
 
 ORO-4V Route Mount Approval Boundary Coverage. The phase records a separate

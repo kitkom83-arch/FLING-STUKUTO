@@ -82,3 +82,11 @@ processing.
 
 Runtime traffic and live traffic remain separate explicit approvals after this
 validation boundary.
+
+## Downstream ORO-5U readiness note
+
+ORO-5U prepares runtime traffic authorization request readiness after ORO-5T.
+ORO-5U does not submit the runtime traffic authorization request, does not issue
+a runtime traffic authorization decision, does not grant runtime traffic, keeps
+runtime and live traffic disabled, keeps wallet/ledger/Prisma/DB work blocked,
+and keeps external and live OroPlay calls absent.
