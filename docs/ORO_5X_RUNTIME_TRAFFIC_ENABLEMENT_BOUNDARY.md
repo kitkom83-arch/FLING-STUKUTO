@@ -109,3 +109,10 @@ files, env files, migration files, or deploy files.
 
 The next phase requires a separate runtime traffic post-enablement validation
 boundary. Live traffic remains a separate approval boundary.
+
+## ORO-5Y post-enable validation requirement
+
+ORO-5Y is required after enablement. ORO-5X runtime traffic remains only fail_closed_no_mutation,
+and live traffic remains blocked. ORO-5Y must validate that `/api/balance` and
+`/api/transaction` still fail closed, remain
+no-mutation, and do not call live OroPlay.

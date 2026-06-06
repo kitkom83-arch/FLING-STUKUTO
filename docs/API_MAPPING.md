@@ -823,3 +823,37 @@ ORO-5X enablement markers:
 - externalNetworkCalled=false
 - liveOroPlayApiCalled=false
 - smoke:oro-5x
+
+ORO-5Y validates post-enable behavior for the existing public aliases after
+ORO-5X. /api/balance = mounted in fail_closed_no_mutation only.
+/api/transaction = mounted in fail_closed_no_mutation only. This is not live traffic
+and includes no wallet/ledger mutation, no Prisma write, no DB
+transaction, no external network, and no live OroPlay call.
+
+ORO-5Y post-enable validation markers:
+
+- dependsOnOro5xRuntimeTrafficEnablementBoundary=true
+- runtimeTrafficEnabledFromOro5x=true
+- runtimeTrafficAllowedFromOro5x=true
+- runtimeTrafficModeFromOro5x=fail_closed_no_mutation
+- runtimeTrafficPostEnablementValidationBoundaryResult=PASS
+- runtimeTrafficPostEnablementValidationStatus=validation_passed
+- apiBalanceRuntimeTrafficMode=fail_closed_no_mutation
+- apiTransactionRuntimeTrafficMode=fail_closed_no_mutation
+- apiBalancePostEnablementValidationPassed=true
+- apiTransactionPostEnablementValidationPassed=true
+- malformedPayloadStillFailClosed=true
+- unknownUserStillFailClosed=true
+- mockAuthMismatchStillFailClosed=true
+- duplicateTransactionStillNoDoubleMutation=true
+- unsupportedTransactionTypeStillFailClosedOrManualReview=true
+- responseStillSanitized=true
+- liveTrafficAllowed=false
+- liveTrafficEnabled=false
+- walletMutationPerformed=false
+- ledgerMutationPerformed=false
+- prismaWritePerformed=false
+- dbTransactionPerformed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCalled=false
+- smoke:oro-5y

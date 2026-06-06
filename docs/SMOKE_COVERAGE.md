@@ -3194,6 +3194,47 @@ Assertions:
 - Confirms external and live OroPlay calls remain absent.
 - Confirms no sensitive-shaped output.
 
+## 118. ORO-5Y Runtime Traffic Post-Enablement Validation Boundary Coverage
+
+ORO-5Y Runtime Traffic Post-Enablement Validation Boundary Coverage. The phase
+performs fail-closed/no-mutation post-enable validation after ORO-5X while live
+traffic, real money, wallet mutation, ledger mutation, Prisma writes, DB
+transactions, external network, and live OroPlay calls remain blocked.
+
+Coverage:
+
+- ORO-5Y boundary doc: runtime traffic post-enablement validation boundary.
+- ORO-5Y mock helper: ORO-5X record validation, fail-closed runtime validation,
+  balance validation, transaction validation, live traffic validation, mutation
+  validation, and summary builder.
+- ORO-5Y fixtures: happy path, missing ORO-5X enablement record, wrong runtime
+  mode, live traffic attempt, wallet mutation attempt, ledger mutation attempt,
+  Prisma write attempt, DB transaction attempt, external call attempt, live
+  OroPlay call attempt, malformed payload fail-closed evidence, duplicate
+  transaction no-double-mutation evidence, and sanitized response evidence.
+- ORO-5Y smoke wrapper: `src/local-smoke-tests/oro5ySmoke.js`.
+
+Registered smokes:
+
+- `smoke:oro-5y-runtime-traffic-post-enablement-validation-boundary`
+- `smoke:oro-5y`
+
+Assertions:
+
+- Confirms ORO-5Y emits `runtimeTrafficPostEnablementValidationBoundaryResult=PASS`.
+- Confirms ORO-5X runtime traffic enablement record is present.
+- Confirms runtime traffic remains enabled only in `fail_closed_no_mutation`.
+- Confirms public aliases remain mounted and fail-closed no-mutation.
+- Confirms public alias post-enable validation passes.
+- Confirms malformed payload, unknown user, and auth mismatch still fail closed.
+- Confirms duplicate transaction still produces no double mutation.
+- Confirms unsupported transaction type still fails closed or requires manual review.
+- Confirms response sanitizer coverage remains present.
+- Confirms live traffic request, decision, allowed, and enabled flags remain false.
+- Confirms wallet/ledger/Prisma/DB/migration flags remain false.
+- Confirms external and live OroPlay calls remain absent.
+- Confirms no sensitive-shaped output.
+
 ## 89. ORO-4V Route Mount Approval Boundary Coverage
 
 ORO-4V Route Mount Approval Boundary Coverage. The phase records a separate

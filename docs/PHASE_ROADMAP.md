@@ -351,6 +351,8 @@ ORO-5W target criteria:
 
 ## ORO-5X current/local runtime traffic enablement boundary
 
+Marker: ORO-5X closed runtime traffic enablement boundary.
+
 ORO-5X enables runtime traffic only for the already mounted public aliases in
 fail-closed no-mutation mode after ORO-5W authorized entry to the enablement
 boundary.
@@ -389,6 +391,39 @@ ORO-5X target criteria:
   public alias wiring, protected runtime file boundary, no live traffic, no
   wallet/ledger/DB mutation, no external or live OroPlay call, no sensitive
   output, and `smoke:oro-5x` registration.
+
+## ORO-5Y current/runtime traffic post-enablement validation boundary
+
+ORO-5Y validates the runtime traffic state after ORO-5X. The next phase is
+blocked until ORO-5Y pass. Marker: next phase blocked until ORO-5Y pass.
+
+ORO-5Y confirms:
+
+- ORO-5X runtime traffic enablement dependency is present.
+- Runtime traffic remains enabled only in `fail_closed_no_mutation`.
+- `/api/balance` remains mounted in fail-closed no-mutation mode.
+- `/api/transaction` remains mounted in fail-closed no-mutation mode.
+- Malformed payload, unknown user, and auth mismatch still fail closed.
+- Duplicate transaction still produces no double mutation.
+- Unsupported transaction type still fails closed or requires manual review.
+- Response output remains sanitized.
+- Live traffic remains blocked.
+- Wallet/ledger/Prisma/DB/migration work remains blocked.
+- External network and live OroPlay calls remain absent.
+- `smoke:oro-5y` registration.
+
+ORO-5Y target criteria:
+
+- ORO-5Y post-enablement validation doc exists and states post-enable scope.
+- ORO-5Y helper exports validation status, ORO-5X record validation,
+  fail-closed runtime validation, balance validation, transaction validation,
+  live-traffic validation, mutation validation, and summary builder.
+- ORO-5Y fixtures cover happy path, missing ORO-5X enablement, wrong runtime
+  mode, live traffic attempt, mutation attempts, external call attempt, live
+  OroPlay call attempt, and post-enable fail-closed behavior evidence.
+- ORO-5Y smoke confirms output, docs, script registration, protected runtime
+  file boundary, no live traffic, no mutation, no external or live OroPlay
+  call, no sensitive output, and `smoke:oro-5y` registration.
 
 ## ORO-4A current/runtime implementation skeleton
 

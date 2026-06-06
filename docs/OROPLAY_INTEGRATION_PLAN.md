@@ -1002,3 +1002,20 @@ ORO-5X confirms:
 ORO-5X keeps wallet, ledger, Prisma, DB transaction, migration, external
 network, and live OroPlay call flags blocked. The marker is runtime traffic
 enablement boundary only.
+
+## ORO-5X Closed
+
+ORO-5X is closed. Runtime traffic is enabled only for the already mounted
+public aliases in `fail_closed_no_mutation` mode. It is not live traffic and
+does not authorize money movement, persistent writes, external network, or live
+OroPlay calls.
+
+## ORO-5Y Current
+
+ORO-5Y validates post-enable behavior after ORO-5X. It confirms `/api/balance`
+and `/api/transaction` remain mounted in fail-closed no-mutation mode, validates
+malformed payload, unknown user, auth mismatch, duplicate transaction,
+unsupported transaction, and sanitized response behavior, and keeps all live
+traffic and mutation flags blocked.
+
+ORO-5Y keeps live traffic blocked. live traffic requires separate future authorization.
