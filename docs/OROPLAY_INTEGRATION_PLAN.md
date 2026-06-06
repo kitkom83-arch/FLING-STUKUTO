@@ -1019,3 +1019,18 @@ unsupported transaction, and sanitized response behavior, and keeps all live
 traffic and mutation flags blocked.
 
 ORO-5Y keeps live traffic blocked. live traffic requires separate future authorization.
+
+## ORO-5Y Closed
+
+ORO-5Y is closed. Runtime traffic remains validated in
+`fail_closed_no_mutation` mode after ORO-5X, and live traffic remains blocked.
+
+## ORO-5Z Current
+
+ORO-5Z creates the live traffic authorization request record only. It depends on
+the ORO-5Y validation pass, keeps `/api/balance` and `/api/transaction` in
+fail-closed no-mutation mode, requires human approval and a separate live
+traffic decision, and keeps wallet, ledger, Prisma, DB transaction, migration,
+external network, and live OroPlay calls blocked.
+
+ORO-5Z keeps live traffic decision still pending.

@@ -857,3 +857,33 @@ ORO-5Y post-enable validation markers:
 - externalNetworkCalled=false
 - liveOroPlayApiCalled=false
 - smoke:oro-5y
+
+ORO-5Z live traffic authorization request boundary: /api/balance and /api/transaction remain fail_closed_no_mutation.
+ORO-5Z submits live traffic authorization request only. It is not live traffic
+and includes no wallet/ledger mutation, no Prisma write, no DB transaction, no
+external network, and no live OroPlay call.
+
+ORO-5Z request markers:
+
+- dependsOnOro5yRuntimeTrafficPostEnablementValidationBoundary=true
+- oro5yRuntimeTrafficPostEnablementValidationPassed=true
+- runtimeTrafficEnabledFromOro5y=true
+- runtimeTrafficModeFromOro5y=fail_closed_no_mutation
+- liveTrafficAuthorizationRequestBoundaryResult=PASS
+- liveTrafficAuthorizationRequestPrepared=true
+- liveTrafficAuthorizationRequestSubmitted=true
+- liveTrafficAuthorizationRequestStatus=submitted_pending_decision
+- humanApprovalRequired=true
+- separateLiveTrafficDecisionRequired=true
+- nextPhaseRequiresLiveTrafficAuthorizationDecision=true
+- liveTrafficAuthorizationDecisionIssued=false
+- liveTrafficAuthorizationDecisionStatus=pending
+- liveTrafficAllowed=false
+- liveTrafficEnabled=false
+- walletMutationPerformed=false
+- ledgerMutationPerformed=false
+- prismaWritePerformed=false
+- dbTransactionPerformed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCalled=false
+- smoke:oro-5z

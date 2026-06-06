@@ -3235,6 +3235,43 @@ Assertions:
 - Confirms external and live OroPlay calls remain absent.
 - Confirms no sensitive-shaped output.
 
+## 119. ORO-5Z Live Traffic Authorization Request Boundary Coverage
+
+ORO-5Z Live Traffic Authorization Request Boundary Coverage. The phase submits
+only a live traffic authorization request record after ORO-5Y while live traffic,
+real money, wallet mutation, ledger mutation, Prisma writes, DB transactions,
+external network, and live OroPlay calls remain blocked.
+
+Coverage:
+
+- ORO-5Z boundary doc: live traffic authorization request boundary.
+- ORO-5Z mock helper: ORO-5Y record validation, live traffic request builder,
+  request boundary validation, no-live-traffic validation, no-mutation
+  validation, and summary builder.
+- ORO-5Z fixtures: happy path, missing ORO-5Y validation record, ORO-5Y not
+  passed, wrong runtime mode, live traffic already enabled, wallet mutation
+  attempt, ledger mutation attempt, Prisma write attempt, DB transaction
+  attempt, external call attempt, live OroPlay call attempt, missing human
+  approval requirement, and sanitized response evidence.
+- ORO-5Z smoke wrapper: `src/local-smoke-tests/oro5zSmoke.js`.
+
+Registered smokes:
+
+- `smoke:oro-5z-live-traffic-authorization-request-boundary`
+- `smoke:oro-5z`
+
+Assertions:
+
+- Confirms ORO-5Z emits `liveTrafficAuthorizationRequestBoundaryResult=PASS`.
+- Confirms ORO-5Y runtime traffic post-enablement validation record is present.
+- Confirms runtime traffic remains enabled only in `fail_closed_no_mutation`.
+- Confirms live traffic authorization request is submitted pending decision.
+- Confirms human approval and separate live traffic decision are required.
+- Confirms live traffic decision issued, allowed, and enabled flags remain false.
+- Confirms wallet/ledger/Prisma/DB/migration flags remain false.
+- Confirms external and live OroPlay calls remain absent.
+- Confirms no sensitive-shaped output.
+
 ## 89. ORO-4V Route Mount Approval Boundary Coverage
 
 ORO-4V Route Mount Approval Boundary Coverage. The phase records a separate

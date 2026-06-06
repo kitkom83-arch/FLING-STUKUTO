@@ -116,3 +116,10 @@ ORO-5Y is required after enablement. ORO-5X runtime traffic remains only fail_cl
 and live traffic remains blocked. ORO-5Y must validate that `/api/balance` and
 `/api/transaction` still fail closed, remain
 no-mutation, and do not call live OroPlay.
+
+## ORO-5Z live traffic request note
+
+For ORO-5Z, runtime traffic remains fail_closed_no_mutation. live traffic still requires separate request and decision
+before any live traffic, money movement, wallet mutation, ledger mutation,
+Prisma write, DB transaction, external network call, or live OroPlay call is
+allowed.

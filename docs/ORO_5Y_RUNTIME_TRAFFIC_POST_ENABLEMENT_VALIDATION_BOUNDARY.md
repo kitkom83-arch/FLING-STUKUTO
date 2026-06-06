@@ -163,3 +163,11 @@ detected.
 
 The next phase is blocked until ORO-5Y passes. Live traffic requires a separate
 future authorization request.
+
+## ORO-5Z live traffic request requirement
+
+ORO-5Z is required for separate live traffic authorization request. ORO-5Y does
+not approve live traffic. ORO-5Z may submit a request record only; it must not
+issue a live traffic decision, enable live traffic, mutate wallet or ledger,
+write through Prisma, create DB transactions, call external network, or call
+live OroPlay.
