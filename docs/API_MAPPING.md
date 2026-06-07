@@ -1876,3 +1876,45 @@ access, or call live OroPlay.
 - migrationPerformed=false
 - deployPerformed=false
 - smoke:oro-6x
+
+## ORO-6Y Live Traffic Actual External Call Execution Live Execution Final Readiness Gate Mapping
+
+ORO-6Y records actual external call execution live execution final readiness
+only after ORO-6X issued the live-execution-readiness-only decision. The gate
+status is ready_for_separate_actual_external_call_execution_final_execution_request
+and the gate scope is final_readiness_only. It does not submit final execution
+request, approve live execution, activate actual execution, enable runtime
+execution, perform execution, open network access, or call live OroPlay.
+
+- ORO-6Y records actual external call execution live execution final readiness only
+- oro6xLiveTrafficActualExternalCallExecutionLiveExecutionDecisionBoundaryPassed=true
+- actualExternalCallExecutionLiveExecutionDecisionPreparedFromOro6x=true
+- actualExternalCallExecutionLiveExecutionDecisionIssuedFromOro6x=true
+- actualExternalCallExecutionLiveExecutionDecisionStatusFromOro6x=approved_for_live_execution_readiness_only
+- actualExternalCallExecutionLiveExecutionDecisionScopeFromOro6x=live_execution_readiness_only
+- actualExternalCallExecutionLiveExecutionFinalReadinessGatePrepared=true
+- actualExternalCallExecutionLiveExecutionFinalReadinessGateEvaluated=true
+- actualExternalCallExecutionLiveExecutionFinalReadinessGatePassed=true
+- actualExternalCallExecutionLiveExecutionFinalReadinessGateStatus=ready_for_separate_actual_external_call_execution_final_execution_request
+- actualExternalCallExecutionLiveExecutionFinalReadinessGateScope=final_readiness_only
+- actualExternalCallExecutionFinalExecutionRequestSubmitted=false
+- actualExternalCallExecutionLiveExecutionApproved=false
+- actualExternalCallExecutionActivated=false
+- actualExternalCallExecutionRuntimeEnabled=false
+- actualExternalCallExecutionEnabled=false
+- actualExternalCallExecutionAuthorized=false
+- externalCallExecutionAuthorized=false
+- externalCallExecutionPerformed=false
+- no outgoing live OroPlay API call yet
+- no wallet/ledger mutation
+- externalNetworkAllowed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCallAllowed=false
+- liveOroPlayApiCalled=false
+- walletMutationPerformed=false
+- ledgerMutationPerformed=false
+- prismaWritePerformed=false
+- dbTransactionPerformed=false
+- migrationPerformed=false
+- deployPerformed=false
+- smoke:oro-6y

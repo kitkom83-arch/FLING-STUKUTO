@@ -3041,6 +3041,72 @@ Boundary:
 - No live OroPlay API call.
 - No real money.
 
+## 138. ORO-6Y Live Traffic Actual External Call Execution Live Execution Final Readiness Gate Coverage
+
+ORO-6Y Live Traffic Actual External Call Execution Live Execution Final
+Readiness Gate coverage validates the final readiness gate after ORO-6X issued
+the live-execution-readiness-only decision. It confirms the gate is ready for a
+separate final execution request while keeping that request, live execution
+approval, actual activation, runtime enablement, execution, external network,
+live OroPlay calls, wallet mutation, ledger mutation, Prisma writes, DB
+transactions, migration, deploy, and real money blocked.
+
+Covered files:
+
+- ORO-6Y boundary doc: live traffic actual external call execution live
+  execution final readiness gate.
+- ORO-6Y mock helper: final readiness status, input builder, evaluator, summary
+  builder, and contract validator.
+- ORO-6Y fixtures: happy path, missing ORO-6X decision, non-readiness ORO-6X
+  decision, accidental live execution approval, external network, live OroPlay
+  call, wallet mutation, ledger mutation, data write, DB transaction, migration,
+  and deploy evidence.
+- ORO-6Y smoke wrapper: `src/local-smoke-tests/oro6ySmoke.js`.
+
+Package script:
+
+- ORO-6Y boundary-specific package smoke alias
+- `smoke:oro-6y`
+
+Coverage assertions:
+
+- Confirms ORO-6Y emits `phase=ORO-6Y`, final readiness status
+  `ready_for_separate_actual_external_call_execution_final_execution_request`,
+  final readiness scope `final_readiness_only`, final execution request not
+  submitted, live execution not approved, actual execution not activated,
+  runtime not enabled, external call execution not performed, no
+  wallet/ledger/DB mutation, no external or live OroPlay call, no sensitive
+  output, and package registration.
+- Confirms missing or unsafe ORO-6X live execution decision evidence fails
+  closed.
+- Confirms ORO-6X decision status must be
+  `approved_for_live_execution_readiness_only`.
+- Confirms ORO-6Y is a final-readiness-only gate.
+- Confirms final execution request, live execution approval, actual activation,
+  runtime enablement, execution enablement, authorization, execution, external
+  network, live OroPlay, wallet, ledger, Prisma, DB transaction, migration, and
+  deploy fixtures all fail closed.
+
+Boundary:
+
+- Live execution final readiness gate only.
+- Final readiness only.
+- Still no final execution request.
+- Still no live execution approval.
+- Still no actual execution activation.
+- Still no runtime enablement.
+- Still no external call execution.
+- No runtime mutation.
+- No `src/app.js` change.
+- No route/controller/service change.
+- No wallet mutation.
+- No ledger mutation.
+- No Prisma write.
+- No DB transaction.
+- No external network.
+- No live OroPlay API call.
+- No real money.
+
 ## 137. ORO-6X Live Traffic Actual External Call Execution Live Execution Decision Boundary Coverage
 
 ORO-6X Live Traffic Actual External Call Execution Live Execution Decision

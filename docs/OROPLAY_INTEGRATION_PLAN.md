@@ -1347,3 +1347,18 @@ external call execution can occur. It does not approve live execution, activate
 actual execution, enable runtime execution, enable actual execution, authorize
 execution, perform execution, or open wallet, ledger, Prisma, DB transaction,
 migration, deploy, external network, or live OroPlay calls.
+
+## ORO-6Y Current
+
+ORO-6Y records the actual external call execution live execution final
+readiness gate only after ORO-6X issued the live-execution-readiness-only
+decision. The readiness status is
+ready_for_separate_actual_external_call_execution_final_execution_request and
+the scope is final_readiness_only.
+This is a live execution final readiness gate only.
+It still requires a separate actual external call execution final execution
+request before any live external call execution can occur. It does not submit
+that request, approve live execution, activate actual execution, enable runtime
+execution, enable actual execution, authorize execution, perform execution, or
+open wallet, ledger, Prisma, DB transaction, migration, deploy, external
+network, or live OroPlay calls.

@@ -126,6 +126,12 @@ occur. ORO-6X still does not approve live execution, does not activate actual
 execution, does not enable runtime execution, and does not perform actual
 execution.
 
+ORO-6Y final readiness gate is required next and must report only
+ready_for_separate_actual_external_call_execution_final_execution_request with
+final_readiness_only scope before any later final execution request phase.
+ORO-6Y still does not submit final execution request, approve live execution,
+activate actual execution, or call live OroPlay.
+
 ## Sensitive output rules
 
 ORO-6X records only static and mock evidence. Outputs must stay sanitized and

@@ -3011,3 +3011,37 @@ Target criteria:
   no external or live OroPlay call, no sensitive output, and package
   registration.
 - `smoke:oro-6x` registration.
+
+## ORO-6Y current/live traffic actual external call execution live execution final readiness gate
+
+ORO-6Y records the actual external call execution live execution final
+readiness gate after ORO-6X issued the live-execution-readiness-only decision.
+The readiness status is
+`ready_for_separate_actual_external_call_execution_final_execution_request` and
+the scope is `final_readiness_only`.
+
+ORO-6Y still does not submit final execution request, approve live execution,
+activate actual execution, enable runtime execution, enable actual execution,
+authorize execution, perform execution, open external network, call live
+OroPlay, mutate wallet or ledger, write Prisma, open DB transactions, migrate,
+or deploy.
+
+The next phase blocked until separate final execution request remains a
+required boundary before any live execution approval or actual execution.
+
+Target criteria:
+
+- ORO-6Y final readiness doc exists and states final-readiness-only scope.
+- ORO-6Y helper exports status, input builder, evaluator, summary builder, and
+  contract validator.
+- ORO-6Y fixtures cover happy path, missing ORO-6X decision, non-readiness
+  ORO-6X decision, accidental live execution approval, external network, live
+  OroPlay call, wallet mutation, ledger mutation, data write, DB transaction,
+  migration, and deploy evidence.
+- ORO-6Y smoke confirms final readiness output, final readiness status
+  `ready_for_separate_actual_external_call_execution_final_execution_request`,
+  final readiness only scope, final execution request remains unsubmitted, live
+  execution approved remains false, actual execution remains unactivated,
+  runtime remains disabled, no wallet/ledger/DB mutation, no external or live
+  OroPlay call, no sensitive output, and package registration.
+- `smoke:oro-6y` registration.
