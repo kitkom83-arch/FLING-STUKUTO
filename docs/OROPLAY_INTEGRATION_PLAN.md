@@ -1307,3 +1307,16 @@ not activate actual execution, enable runtime execution, enable actual
 execution, authorize execution, perform execution, or open wallet, ledger,
 Prisma, DB transaction, migration, deploy, external network, or live OroPlay
 calls.
+
+## ORO-6V Current
+
+ORO-6V records activation final readiness gate evidence only after ORO-6U
+issued the activation-readiness-only decision. The gate status is
+ready_for_separate_actual_external_call_execution_live_execution_request.
+This is an activation final readiness gate only.
+It still requires a separate actual external call execution live execution
+request and separate live execution decision before any live external call
+execution can occur. It does not submit that request, approve live execution,
+activate actual execution, enable runtime execution, enable actual execution,
+authorize execution, perform execution, or open wallet, ledger, Prisma, DB
+transaction, migration, deploy, external network, or live OroPlay calls.

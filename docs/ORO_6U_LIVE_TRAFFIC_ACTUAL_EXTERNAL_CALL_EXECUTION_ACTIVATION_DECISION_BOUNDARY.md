@@ -115,6 +115,10 @@ final readiness gate before any live execution request can occur. ORO-6U still
 does not activate actual execution, does not enable runtime execution, and does
 not perform actual execution.
 
+ORO-6V activation final readiness gate is required next and must report
+ready_for_separate_actual_external_call_execution_live_execution_request before
+any later live execution request phase. ORO-6V still does not submit live execution request. ORO-6V does not approve live execution, does not activate actual execution, and does not call live OroPlay.
+
 ## Sensitive output rules
 
 ORO-6U records only static and mock evidence. Outputs must stay sanitized and

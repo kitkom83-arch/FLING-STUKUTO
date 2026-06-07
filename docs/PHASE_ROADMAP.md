@@ -2908,3 +2908,39 @@ Target criteria:
   remains disabled, no wallet/ledger/DB mutation, no external or live OroPlay
   call, no sensitive output, and package registration.
 - `smoke:oro-6u` registration.
+
+## ORO-6V current/live traffic actual external call execution activation final readiness gate
+
+ORO-6V records the actual external call execution activation final readiness
+gate after ORO-6U issued the activation-readiness-only decision. The gate
+status is
+`ready_for_separate_actual_external_call_execution_live_execution_request`.
+
+ORO-6V still does not submit live execution request, approve live execution,
+activate actual execution, enable runtime execution, enable actual execution,
+authorize execution, perform execution, open external network, call live
+OroPlay, mutate wallet or ledger, write Prisma, open DB transactions, migrate,
+or deploy.
+
+The next phase blocked until separate live execution request remains a
+required boundary before any live execution decision or actual execution.
+
+Target criteria:
+
+- ORO-6V activation final readiness doc exists and states final-readiness-only
+  scope.
+- ORO-6V helper exports status, boundary builder, validator, activation final
+  readiness summary builder, and still-no-external-call assertion.
+- ORO-6V fixtures cover happy path, missing ORO-6U decision, unissued ORO-6U
+  decision, wrong ORO-6U decision status, wrong ORO-6U decision scope, live
+  execution request submission, live execution decision issuance, activation,
+  runtime enablement, execution enablement, execution authorization, actual
+  execution performed, external network, live OroPlay call, wallet mutation,
+  ledger mutation, data write, and sensitive-output evidence.
+- ORO-6V smoke confirms activation final readiness output, gate status
+  `ready_for_separate_actual_external_call_execution_live_execution_request`,
+  live execution request remains not submitted, live execution decision remains
+  not issued, actual execution remains unactivated, runtime remains disabled,
+  no wallet/ledger/DB mutation, no external or live OroPlay call, no sensitive
+  output, and package registration.
+- `smoke:oro-6v` registration.
