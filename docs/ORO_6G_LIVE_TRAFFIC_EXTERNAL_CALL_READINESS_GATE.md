@@ -109,6 +109,14 @@ The execution authorization decision must remain a separate later decision.
 ORO-6G does not submit execution authorization request and does not issue the
 execution authorization decision.
 
+## ORO-6H execution authorization request boundary linkage
+
+ORO-6H execution authorization request boundary is required next. ORO-6H records
+the execution authorization request as submitted_pending_execution_decision
+after ORO-6G, while the execution decision remains separate and pending.
+ORO-6H does not issue execution authorization decision and does not authorize
+external call execution.
+
 ## Secret redaction rules
 
 ORO-6G records only static and mock evidence. Outputs must stay sanitized and

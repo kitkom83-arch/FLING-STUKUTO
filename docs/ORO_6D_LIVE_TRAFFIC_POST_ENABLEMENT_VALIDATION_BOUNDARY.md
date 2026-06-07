@@ -165,3 +165,11 @@ ORO-6G still requires ORO-6D validation to remain passed. ORO-6G keeps live
 traffic mode as `fail_closed_no_mutation` and still blocks external network,
 live OroPlay calls, execution authorization, wallet mutation, ledger mutation,
 Prisma writes, DB transactions, migrations, deploy, and real money.
+
+## ORO-6H execution request validation dependency
+
+ORO-6H still requires ORO-6D validation to remain passed. ORO-6H keeps live
+traffic mode as `fail_closed_no_mutation` and still blocks external network,
+live OroPlay calls, execution authorization decision, execution, wallet
+mutation, ledger mutation, Prisma writes, DB transactions, migrations, deploy,
+and real money.

@@ -151,3 +151,9 @@ authorization decision.
 ORO-6G remains downstream of ORO-6C live traffic enablement because ORO-6D must
 keep post-enablement validation passed before the external/live call readiness
 gate can pass.
+
+## ORO-6H downstream execution request linkage
+
+ORO-6H remains downstream of ORO-6C live traffic enablement because ORO-6D must
+keep post-enablement validation passed before the execution authorization
+request can be submitted.

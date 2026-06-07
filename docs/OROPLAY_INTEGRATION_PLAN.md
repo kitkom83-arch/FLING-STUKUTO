@@ -1135,3 +1135,17 @@ unauthorized and prepares the next phase to request separate external call
 execution authorization request while wallet, ledger, Prisma, DB transaction,
 migration, external network, and live OroPlay calls stay blocked.
 Marker: separate external call execution authorization request remains next.
+
+## ORO-6G Closed
+
+ORO-6G is closed. The external/live OroPlay call readiness gate is recorded as
+ready_for_separate_execution_authorization_request while execution request,
+execution decision, external network, and live OroPlay calls remain blocked.
+
+## ORO-6H Current
+
+ORO-6H records the external/live OroPlay call execution authorization request as
+submitted_pending_execution_decision after ORO-6G. It requires the next phase to
+issue a separate external call execution authorization decision while execution,
+wallet, ledger, Prisma, DB transaction, migration, external network, and live
+OroPlay calls stay blocked.

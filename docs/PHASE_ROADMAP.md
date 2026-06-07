@@ -747,6 +747,58 @@ ORO-6G target criteria:
   authorization, no external or live OroPlay call, no mutation, no sensitive
   output, and `smoke:oro-6g` registration.
 
+## ORO-6H current/live traffic external call execution authorization request boundary
+
+ORO-6H current/live traffic external call execution authorization request
+boundary depends on the ORO-6G readiness gate, the ORO-6F readiness-only
+decision, the ORO-6E submitted request, and the ORO-6D post-enablement
+validation pass. The request status is `submitted_pending_execution_decision`.
+
+Marker: next phase blocked until separate external call execution authorization decision.
+Marker: execution authorization decision remains pending.
+
+ORO-6H confirms:
+
+- ORO-6G external call readiness gate dependency is present.
+- ORO-6G readiness gate status is
+  `ready_for_separate_execution_authorization_request`.
+- ORO-6G did not submit an execution authorization request.
+- ORO-6G did not issue an execution authorization decision.
+- ORO-6G did not authorize external call execution.
+- ORO-6F decision status is `approved_for_readiness_only`.
+- ORO-6E request remains prepared and submitted.
+- ORO-6E request status is `submitted_pending_decision`.
+- ORO-6D validation passed is true.
+- Live traffic allowed and enabled from ORO-6D are true.
+- Live traffic mode remains `fail_closed_no_mutation`.
+- Execution authorization request is submitted as
+  `submitted_pending_execution_decision`.
+- Execution authorization decision remains `pending`.
+- External call execution remains unauthorized.
+- External network and live OroPlay calls remain absent.
+- Wallet/ledger/Prisma/DB/migration work remains blocked.
+- `smoke:oro-6h` registration.
+
+ORO-6H target criteria:
+
+- ORO-6H live traffic external call execution authorization request doc exists
+  and states request-submission-only scope.
+- ORO-6H helper exports phase, request status, request record builder, boundary
+  evaluator, and harness runner.
+- ORO-6H fixtures cover happy path, missing ORO-6G readiness gate, ORO-6G gate
+  not passed, wrong ORO-6G readiness status, ORO-6G already submitted request,
+  ORO-6G already issued execution decision, ORO-6G already authorized
+  execution, missing ORO-6G next-phase request requirement, missing separate
+  decision requirement, missing ORO-6F decision, wrong ORO-6F decision status,
+  missing ORO-6E request, ORO-6E request not submitted, failed ORO-6D
+  validation, wrong live traffic mode, execution already authorized, execution
+  decision already issued, external network allowance, live OroPlay API
+  allowance, mutation attempt, and sensitive-output evidence.
+- ORO-6H smoke confirms output, docs, script registration, protected runtime
+  file boundary, request submitted, decision pending, no execution
+  authorization, no external or live OroPlay call, no mutation, no sensitive
+  output, and `smoke:oro-6h` registration.
+
 ## ORO-4A current/runtime implementation skeleton
 
 ORO-4A current/runtime implementation skeleton. This phase adds only disabled-by-default runtime skeleton docs, a staging-disabled gate, intent-only mock functions, and local smoke coverage.

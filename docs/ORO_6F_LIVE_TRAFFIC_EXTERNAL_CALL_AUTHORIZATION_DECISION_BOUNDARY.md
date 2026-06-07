@@ -94,6 +94,11 @@ ready_for_separate_execution_authorization_request. ORO-6G does not submit execu
 ORO-6G does not issue execution authorization decision and does not authorize
 execution.
 
+## ORO-6H downstream execution request linkage
+
+ORO-6H remains downstream of ORO-6F approved_for_readiness_only decision and
+must keep execution authorization decision separate from request submission.
+
 ## Secret redaction rules
 
 ORO-6F records only static and mock evidence. Outputs must stay sanitized and

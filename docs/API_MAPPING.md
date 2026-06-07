@@ -1083,3 +1083,33 @@ unauthorized.
 - dbTransactionPerformed=false
 - migrationPerformed=false
 - smoke:oro-6g
+
+## ORO-6H Live Traffic External Call Execution Authorization Request Mapping
+
+ORO-6H records external/live call execution authorization request only after
+ORO-6G records the readiness gate. The request status is
+submitted_pending_execution_decision and the execution decision remains pending.
+
+- ORO-6H records external/live call execution authorization request only
+- submitted_pending_execution_decision
+- externalCallReadinessGateStatusFromOro6g=ready_for_separate_execution_authorization_request
+- externalCallExecutionAuthorizationRequestSubmittedFromOro6g=false
+- externalCallExecutionAuthorizationDecisionIssuedFromOro6g=false
+- externalCallExecutionAuthorizedFromOro6g=false
+- externalCallAuthorizationDecisionStatusFromOro6f=approved_for_readiness_only
+- externalCallExecutionAuthorizationRequestSubmitted=true
+- externalCallExecutionAuthorizationDecisionStatus=pending
+- externalCallExecutionAuthorizationDecisionIssued=false
+- externalCallExecutionAuthorized=false
+- no outgoing live OroPlay API call yet
+- no wallet/ledger mutation
+- externalNetworkAllowed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCallAllowed=false
+- liveOroPlayApiCalled=false
+- walletMutationPerformed=false
+- ledgerMutationPerformed=false
+- prismaWritePerformed=false
+- dbTransactionPerformed=false
+- migrationPerformed=false
+- smoke:oro-6h

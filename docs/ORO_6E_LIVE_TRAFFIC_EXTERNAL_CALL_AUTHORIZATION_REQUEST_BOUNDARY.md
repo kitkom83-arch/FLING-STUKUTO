@@ -143,3 +143,9 @@ ORO-6E does not authorize execution, external network, or live OroPlay calls.
 ORO-6G readiness gate still depends on the ORO-6E submitted request. ORO-6G
 must keep the ORO-6E request status as `submitted_pending_decision` while the
 later execution request and decision remain separate.
+
+## ORO-6H downstream execution request linkage
+
+ORO-6H execution request still depends on the ORO-6E submitted request. ORO-6H
+must keep the original request status as `submitted_pending_decision` while it
+submits only the later execution authorization request.
