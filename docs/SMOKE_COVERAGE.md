@@ -3107,6 +3107,53 @@ Boundary:
 - No live OroPlay API call.
 - No real money.
 
+## 139. ORO-6Z Live Traffic Actual External Call Execution Final Execution Request Boundary Coverage
+
+ORO-6Z Live Traffic Actual External Call Execution Final Execution Request
+Boundary coverage validates the final execution request boundary after ORO-6Y
+passed the live execution final readiness gate. It is static/mock evidence
+only and keeps live execution decision issuance, execution approval,
+activation, runtime enablement, external call execution, network, live OroPlay,
+wallet, ledger, data write, DB transaction, migration, and deploy paths closed.
+
+Covered assets:
+
+- ORO-6Z boundary doc: live traffic actual external call execution final
+  execution request boundary.
+- ORO-6Z mock helper: final execution request status, input builder, evaluator,
+  summary builder, and contract validator.
+- ORO-6Z fixtures: happy path, missing ORO-6Y final readiness gate, failed
+  ORO-6Y final readiness gate, non-ready ORO-6Y status, missing human approval
+  requirement, accidental final decision, accidental live execution approval,
+  external network, live OroPlay call, wallet mutation, ledger mutation, data
+  write, DB transaction, migration, and deploy failures.
+- ORO-6Z smoke:
+  `src/local-smoke-tests/oro6zLiveTrafficActualExternalCallExecutionFinalExecutionRequestBoundarySmoke.js`.
+- ORO-6Z smoke wrapper: `src/local-smoke-tests/oro6zSmoke.js`.
+
+Registered commands:
+
+- ORO-6Z boundary-specific package smoke alias
+- `smoke:oro-6z`
+
+Assertions:
+
+- Confirms ORO-6Z emits `phase=ORO-6Z`, final execution request status
+  `submitted_pending_actual_external_call_execution_decision`, and request
+  scope `final_execution_request_only`.
+- Confirms ORO-6Z depends on ORO-6Y status
+  `ready_for_separate_actual_external_call_execution_final_execution_request`
+  and scope `final_readiness_only`.
+- Confirms ORO-6Z submits only the final execution request.
+- Confirms ORO-6Z does not issue a final execution decision.
+- Confirms ORO-6Z does not approve live execution, activate actual execution,
+  enable runtime execution, authorize execution, perform external call
+  execution, open external network, or call live OroPlay.
+- Confirms ORO-6Z does not allow wallet mutation, ledger mutation, data write,
+  DB transaction, migration, deploy, or sensitive-shaped output.
+- Confirms ORO-6Z blocks unsafe final execution request inputs and
+  sensitive-shaped output.
+
 ## 137. ORO-6X Live Traffic Actual External Call Execution Live Execution Decision Boundary Coverage
 
 ORO-6X Live Traffic Actual External Call Execution Live Execution Decision

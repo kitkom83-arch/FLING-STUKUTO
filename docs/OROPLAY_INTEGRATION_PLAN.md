@@ -1362,3 +1362,17 @@ that request, approve live execution, activate actual execution, enable runtime
 execution, enable actual execution, authorize execution, perform execution, or
 open wallet, ledger, Prisma, DB transaction, migration, deploy, external
 network, or live OroPlay calls.
+
+## ORO-6Z Current
+
+ORO-6Z records the actual external call execution final execution request only
+after ORO-6Y passed the final-readiness-only gate. The request status is
+submitted_pending_actual_external_call_execution_decision and the scope is
+final_execution_request_only.
+This is a final execution request only.
+It still requires a separate actual external call execution decision before
+any live external call execution can occur. It does not issue that decision,
+approve live execution, activate actual execution, enable runtime execution,
+enable actual execution, authorize execution, perform execution, or open
+wallet, ledger, Prisma, DB transaction, migration, deploy, external network,
+or live OroPlay calls.

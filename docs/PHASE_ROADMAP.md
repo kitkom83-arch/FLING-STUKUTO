@@ -3045,3 +3045,39 @@ Target criteria:
   runtime remains disabled, no wallet/ledger/DB mutation, no external or live
   OroPlay call, no sensitive output, and package registration.
 - `smoke:oro-6y` registration.
+
+## ORO-6Z current/live traffic actual external call execution final execution request boundary
+
+ORO-6Z records the actual external call execution final execution request after
+ORO-6Y passed the final-readiness-only gate. The request status is
+`submitted_pending_actual_external_call_execution_decision` and the scope is
+`final_execution_request_only`.
+ORO-6Z is final execution request only.
+
+ORO-6Z still does not issue the final execution decision, approve live
+execution, activate actual execution, enable runtime execution, enable actual
+execution, authorize execution, perform execution, open external network, call
+live OroPlay, mutate wallet or ledger, write Prisma, open DB transactions,
+run migrations, or deploy.
+
+The next phase blocked until separate actual external call execution decision
+remains a required boundary before any live external call execution can occur.
+
+Acceptance:
+
+- ORO-6Z final execution request doc exists and states final execution request
+  only scope.
+- ORO-6Z helper exports status, input builder, evaluator, summary builder, and
+  contract validator.
+- ORO-6Z fixtures cover happy path, missing ORO-6Y final readiness gate,
+  failed ORO-6Y final readiness gate, non-ready ORO-6Y status, missing human
+  approval requirement, accidental final decision, accidental live execution
+  approval, external network, live OroPlay call, wallet, ledger, data write, DB
+  transaction, migration, and deploy failures.
+- ORO-6Z smoke confirms final execution request output, final execution request
+  status `submitted_pending_actual_external_call_execution_decision`, request
+  scope `final_execution_request_only`, no final decision, no live execution
+  approval, no activation, no runtime enablement, no external call execution,
+  no external network, no live OroPlay call, no wallet/ledger/data mutation, no
+  migration/deploy, and sanitized output.
+- `smoke:oro-6z` registration.

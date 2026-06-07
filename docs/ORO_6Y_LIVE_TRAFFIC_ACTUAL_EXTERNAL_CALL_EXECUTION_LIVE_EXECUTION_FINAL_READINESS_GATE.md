@@ -102,6 +102,12 @@ occur. ORO-6Y still does not approve live execution, does not activate actual
 execution, does not enable runtime execution, and does not perform actual
 execution.
 
+ORO-6Z final execution request boundary is required next. The next phase may
+record `submitted_pending_actual_external_call_execution_decision` with
+`final_execution_request_only` scope, but it still must not issue the decision,
+approve live execution, activate actual execution, enable runtime execution, or
+perform any external call execution.
+
 ## Sensitive output rules
 
 ORO-6Y records only static and mock evidence. Outputs must stay sanitized and
