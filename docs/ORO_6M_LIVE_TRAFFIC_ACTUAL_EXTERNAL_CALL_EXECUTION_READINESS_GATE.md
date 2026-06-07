@@ -105,6 +105,11 @@ request and a separate enablement decision before execution can be enabled.
 ORO-6M still does not submit enablement request, does not enable actual
 execution, and does not perform actual execution.
 
+ORO-6N actual external call execution enablement request boundary is required next.
+ORO-6N may submit a request with status
+`submitted_pending_enablement_decision`, but ORO-6N still does not issue enablement decision,
+enable actual execution, authorize execution, or perform external execution.
+
 ## Sensitive output rules
 
 ORO-6M records only static and mock evidence. Outputs must stay sanitized and

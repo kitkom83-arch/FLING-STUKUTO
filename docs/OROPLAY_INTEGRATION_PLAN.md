@@ -1205,3 +1205,14 @@ separate enablement decision before any live external call execution can
 occur. It does not submit enablement request, enable actual execution,
 authorize execution, perform execution, or open wallet, ledger, Prisma, DB
 transaction, migration, deploy, external network, or live OroPlay calls.
+
+## ORO-6N Current
+
+ORO-6N records the actual execution enablement request only after ORO-6M
+passed the live execution readiness gate. The request status is
+submitted_pending_enablement_decision. It still requires a separate actual
+external call execution enablement decision before any live external call
+execution can occur. It does not issue enablement decision, enable actual
+execution, authorize execution, perform execution, or open wallet, ledger,
+Prisma, DB transaction, migration, deploy, external network, or live OroPlay
+calls.
