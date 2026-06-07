@@ -1194,3 +1194,14 @@ readiness gate and separate actual execution enablement before any live
 external call execution can occur. It does not authorize actual execution,
 perform execution, or open wallet, ledger, Prisma, DB transaction, migration,
 deploy, external network, or live OroPlay calls.
+
+## ORO-6M Current
+
+ORO-6M records the live execution readiness gate only after ORO-6L issued the
+readiness-only decision. The gate status is
+ready_for_separate_actual_external_call_execution_enablement_request. It still
+requires a separate actual external call execution enablement request and
+separate enablement decision before any live external call execution can
+occur. It does not submit enablement request, enable actual execution,
+authorize execution, perform execution, or open wallet, ledger, Prisma, DB
+transaction, migration, deploy, external network, or live OroPlay calls.

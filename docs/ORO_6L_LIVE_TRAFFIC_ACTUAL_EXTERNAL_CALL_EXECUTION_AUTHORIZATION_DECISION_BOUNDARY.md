@@ -99,6 +99,11 @@ blocked:
 The next phase must add a separate live execution readiness gate before any
 actual external call execution enablement. ORO-6L still does not authorize
 actual execution and still does not perform actual execution.
+ORO-6M live traffic actual external call execution readiness gate is required next.
+That ORO-6M readiness gate may be
+`ready_for_separate_actual_external_call_execution_enablement_request`, but
+ORO-6M still does not submit enablement request, enable actual execution, or
+perform actual execution.
 
 ## Sensitive output rules
 
