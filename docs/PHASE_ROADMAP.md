@@ -2944,3 +2944,37 @@ Target criteria:
   no wallet/ledger/DB mutation, no external or live OroPlay call, no sensitive
   output, and package registration.
 - `smoke:oro-6v` registration.
+
+## ORO-6W current/live traffic actual external call execution live execution request boundary
+
+ORO-6W records the actual external call execution live execution request after
+ORO-6V passed the activation final readiness gate. The request status is
+`submitted_pending_live_execution_decision`.
+
+ORO-6W still does not issue live execution decision, approve live execution,
+activate actual execution, enable runtime execution, enable actual execution,
+authorize execution, perform execution, open external network, call live
+OroPlay, mutate wallet or ledger, write Prisma, open DB transactions, migrate,
+or deploy.
+
+The next phase blocked until separate live execution decision remains a
+required boundary before any live execution approval or actual execution.
+
+Target criteria:
+
+- ORO-6W live execution request doc exists and states request-only scope.
+- ORO-6W helper exports status, boundary builder, validator, live execution
+  request summary builder, and still-no-external-call assertion.
+- ORO-6W fixtures cover happy path, missing ORO-6V readiness, failed ORO-6V
+  readiness, wrong ORO-6V status, prior live execution request, live execution
+  decision issuance, live execution approval, activation, runtime enablement,
+  execution enablement, execution authorization, actual execution performed,
+  external network, live OroPlay call, wallet mutation, ledger mutation, data
+  write, and sensitive-output evidence.
+- ORO-6W smoke confirms live execution request output, request status
+  `submitted_pending_live_execution_decision`, live execution decision remains
+  not issued, live execution approved remains false, actual execution remains
+  unactivated, runtime remains disabled, no wallet/ledger/DB mutation, no
+  external or live OroPlay call, no sensitive output, and package
+  registration.
+- `smoke:oro-6w` registration.

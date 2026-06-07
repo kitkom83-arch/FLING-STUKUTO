@@ -1768,3 +1768,59 @@ access, or call live OroPlay.
 - migrationPerformed=false
 - deployPerformed=false
 - smoke:oro-6v
+
+## ORO-6W Live Traffic Actual External Call Execution Live Execution Request Boundary Mapping
+
+ORO-6W records actual external call execution live execution request only after
+ORO-6V passed the activation final readiness gate. The request status is
+submitted_pending_live_execution_decision. It does not issue a live execution
+decision, approve live execution, activate actual execution, enable runtime
+execution, perform execution, open network access, or call live OroPlay.
+
+- ORO-6W records actual external call execution live execution request only
+- oro6vLiveTrafficActualExternalCallExecutionActivationFinalReadinessGatePassed=true
+- activationFinalReadinessGatePreparedFromOro6v=true
+- activationFinalReadinessGateEvaluatedFromOro6v=true
+- activationFinalReadinessGatePassedFromOro6v=true
+- activationFinalReadinessGateStatusFromOro6v=ready_for_separate_actual_external_call_execution_live_execution_request
+- actualExternalCallExecutionLiveExecutionRequestPreparedFromOro6v=false
+- actualExternalCallExecutionLiveExecutionRequestSubmittedFromOro6v=false
+- actualExternalCallExecutionLiveExecutionDecisionIssuedFromOro6v=false
+- actualExternalCallExecutionLiveExecutionDecisionStatusFromOro6v=not_requested
+- actualExternalCallExecutionLiveExecutionApprovedFromOro6v=false
+- actualExternalCallExecutionActivatedFromOro6v=false
+- actualExternalCallExecutionRuntimeEnabledFromOro6v=false
+- actualExternalCallExecutionEnabledFromOro6v=false
+- actualExternalCallExecutionAuthorizedFromOro6v=false
+- externalCallExecutionAuthorizedFromOro6v=false
+- externalCallExecutionPerformedFromOro6v=false
+- externalNetworkAllowedFromOro6v=false
+- liveOroPlayApiCallAllowedFromOro6v=false
+- oro6uLiveTrafficActualExternalCallExecutionActivationDecisionPassed=true
+- actualExternalCallExecutionActivationDecisionStatusFromOro6u=approved_for_activation_readiness_only
+- actualExternalCallExecutionActivationDecisionScopeFromOro6u=activation_readiness_only
+- actualExternalCallExecutionLiveExecutionRequestPrepared=true
+- actualExternalCallExecutionLiveExecutionRequestSubmitted=true
+- actualExternalCallExecutionLiveExecutionRequestStatus=submitted_pending_live_execution_decision
+- actualExternalCallExecutionLiveExecutionDecisionIssued=false
+- actualExternalCallExecutionLiveExecutionDecisionStatus=pending
+- actualExternalCallExecutionLiveExecutionApproved=false
+- actualExternalCallExecutionActivated=false
+- actualExternalCallExecutionRuntimeEnabled=false
+- actualExternalCallExecutionEnabled=false
+- actualExternalCallExecutionAuthorized=false
+- externalCallExecutionAuthorized=false
+- externalCallExecutionPerformed=false
+- no outgoing live OroPlay API call yet
+- no wallet/ledger mutation
+- externalNetworkAllowed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCallAllowed=false
+- liveOroPlayApiCalled=false
+- walletMutationPerformed=false
+- ledgerMutationPerformed=false
+- prismaWritePerformed=false
+- dbTransactionPerformed=false
+- migrationPerformed=false
+- deployPerformed=false
+- smoke:oro-6w

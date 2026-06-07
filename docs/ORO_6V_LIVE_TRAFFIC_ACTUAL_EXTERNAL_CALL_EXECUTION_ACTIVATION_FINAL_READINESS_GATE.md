@@ -123,6 +123,11 @@ execution request. ORO-6V still does not submit live execution request, does
 not approve live execution, does not activate actual execution, does not enable
 runtime execution, and does not perform actual execution.
 
+ORO-6W live execution request boundary is required next and must submit only
+submitted_pending_live_execution_decision before any later live execution
+decision phase. ORO-6W still does not approve live execution, does not activate
+actual execution, and does not call live OroPlay.
+
 ## Sensitive output rules
 
 ORO-6V records only static and mock evidence. Outputs must stay sanitized and
