@@ -158,3 +158,10 @@ ORO-6D does not allow external network or live OroPlay API calls.
 ORO-6F still requires ORO-6D validation to remain passed. ORO-6F does not allow
 external network or live OroPlay API calls and does not authorize execution.
 Marker: ORO-6F does not allow external network or live OroPlay API calls.
+
+## ORO-6G readiness gate validation dependency
+
+ORO-6G still requires ORO-6D validation to remain passed. ORO-6G keeps live
+traffic mode as `fail_closed_no_mutation` and still blocks external network,
+live OroPlay calls, execution authorization, wallet mutation, ledger mutation,
+Prisma writes, DB transactions, migrations, deploy, and real money.

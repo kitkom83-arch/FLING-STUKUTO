@@ -1120,3 +1120,18 @@ ORO-6F records the external/live OroPlay call authorization decision as
 approved_for_readiness_only. It is not approved_to_call_now and keeps
 external/live OroPlay call execution still blocked until a later readiness gate
 and separate execution authorization decision.
+
+## ORO-6F Closed
+
+ORO-6F is closed. The external/live OroPlay call authorization decision is
+recorded as approved_for_readiness_only while execution, external network, and
+live OroPlay calls remain blocked.
+
+## ORO-6G Current
+
+ORO-6G records the external/live OroPlay call readiness gate as
+ready_for_separate_execution_authorization_request. It keeps execution
+unauthorized and prepares the next phase to request separate external call
+execution authorization request while wallet, ledger, Prisma, DB transaction,
+migration, external network, and live OroPlay calls stay blocked.
+Marker: separate external call execution authorization request remains next.

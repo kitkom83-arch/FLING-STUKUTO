@@ -137,3 +137,9 @@ only submits the request and keeps outgoing live OroPlay blocked.
 ORO-6F is required for external/live OroPlay call authorization decision.
 ORO-6F must record `approved_for_readiness_only`, not `approved_to_call_now`.
 ORO-6E does not authorize execution, external network, or live OroPlay calls.
+
+## ORO-6G external/live OroPlay call readiness gate linkage
+
+ORO-6G readiness gate still depends on the ORO-6E submitted request. ORO-6G
+must keep the ORO-6E request status as `submitted_pending_decision` while the
+later execution request and decision remain separate.

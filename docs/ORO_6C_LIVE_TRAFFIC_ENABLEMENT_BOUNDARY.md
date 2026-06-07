@@ -145,3 +145,9 @@ It still does not allow external network, live OroPlay API call, wallet
 mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, or
 real money. Any future external/live call requires a separate human
 authorization decision.
+
+## ORO-6G downstream readiness linkage
+
+ORO-6G remains downstream of ORO-6C live traffic enablement because ORO-6D must
+keep post-enablement validation passed before the external/live call readiness
+gate can pass.

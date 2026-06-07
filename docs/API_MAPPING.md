@@ -1055,3 +1055,31 @@ approved_for_readiness_only, not approved_to_call_now.
 - dbTransactionPerformed=false
 - migrationPerformed=false
 - smoke:oro-6f
+
+## ORO-6G Live Traffic External Call Readiness Gate Mapping
+
+ORO-6G records external/live call readiness gate only after ORO-6F records the
+readiness-only decision. The readiness gate status is
+ready_for_separate_execution_authorization_request and execution remains
+unauthorized.
+
+- ORO-6G records external/live call readiness gate only
+- ready_for_separate_execution_authorization_request
+- externalCallAuthorizationDecisionStatusFromOro6f=approved_for_readiness_only
+- externalCallExecutionAuthorizedFromOro6f=false
+- externalCallReadinessGateAllowedFromOro6f=true
+- externalCallExecutionAuthorizationRequestSubmitted=false
+- externalCallExecutionAuthorizationDecisionIssued=false
+- externalCallExecutionAuthorized=false
+- no outgoing live OroPlay API call yet
+- no wallet/ledger mutation
+- externalNetworkAllowed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCallAllowed=false
+- liveOroPlayApiCalled=false
+- walletMutationPerformed=false
+- ledgerMutationPerformed=false
+- prismaWritePerformed=false
+- dbTransactionPerformed=false
+- migrationPerformed=false
+- smoke:oro-6g

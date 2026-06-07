@@ -128,6 +128,8 @@
     "smoke:oro-6e": "node src/local-smoke-tests/oro6eSmoke.js",
     "smoke:oro-6f-live-traffic-external-call-authorization-decision-boundary": "node src/local-smoke-tests/oro6fLiveTrafficExternalCallAuthorizationDecisionBoundarySmoke.js",
     "smoke:oro-6f": "node src/local-smoke-tests/oro6fSmoke.js",
+    "smoke:oro-6g-live-traffic-external-call-readiness-gate": "node src/local-smoke-tests/oro6gLiveTrafficExternalCallReadinessGateSmoke.js",
+    "smoke:oro-6g": "node src/local-smoke-tests/oro6gSmoke.js",
     "smoke:member-qr-deposit-ux": "node src/local-smoke-tests/memberQrDepositUxSmoke.js",
     "smoke:deposit-verification-source": "node src/local-smoke-tests/depositVerificationSourceSmoke.js",
     "smoke:deposit-ledger-reconciliation-guard": "node src/local-smoke-tests/depositLedgerReconciliationGuardSmoke.js",

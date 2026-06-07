@@ -89,6 +89,10 @@ real-money behavior remain blocked:
 
 The next phase must be readiness gate before any execution. Execution
 authorization must be separate decision after the readiness gate passes.
+ORO-6G readiness gate is required next and must record
+ready_for_separate_execution_authorization_request. ORO-6G does not submit execution authorization request.
+ORO-6G does not issue execution authorization decision and does not authorize
+execution.
 
 ## Secret redaction rules
 

@@ -3116,6 +3116,52 @@ Assertions:
 - Confirms external and live OroPlay calls remain absent.
 - Confirms no sensitive-shaped output.
 
+## 125. ORO-6G Live Traffic External Call Readiness Gate Coverage
+
+ORO-6G Live Traffic External Call Readiness Gate Coverage. The phase records a
+readiness gate after ORO-6F and confirms the next phase may request separate
+external call execution authorization while real money, wallet mutation, ledger
+mutation, Prisma writes, DB transactions, migrations, deploy, external network,
+live OroPlay calls, and execution remain blocked.
+
+Coverage:
+
+- ORO-6G boundary doc: live traffic external call readiness gate.
+- ORO-6G mock helper: phase constant, readiness gate status, readiness record
+  builder, boundary evaluator, and harness runner.
+- ORO-6G fixtures: happy path, missing ORO-6F decision, ORO-6F decision not
+  readiness-only, ORO-6F execution already authorized, ORO-6F readiness gate not
+  allowed, missing separate execution decision requirement, missing ORO-6E
+  request, request not submitted, failed ORO-6D validation, wrong live traffic
+  mode, execution request submission attempt, execution authorization attempt,
+  external network allowance, live OroPlay API allowance, mutation attempt, and
+  sensitive-output evidence.
+- ORO-6G smoke wrapper: `src/local-smoke-tests/oro6gSmoke.js`.
+
+Registered smokes:
+
+- `smoke:oro-6g-live-traffic-external-call-readiness-gate`
+- `smoke:oro-6g`
+
+Assertions:
+
+- Confirms ORO-6G emits `liveTrafficExternalCallReadinessGateResult=PASS`.
+- Confirms ORO-6F decision evidence is present and passed.
+- Confirms ORO-6F decision status is `approved_for_readiness_only`.
+- Confirms ORO-6F has not authorized external call execution.
+- Confirms ORO-6E request evidence is present and submitted.
+- Confirms ORO-6E request status is `submitted_pending_decision`.
+- Confirms ORO-6D validation passed is true.
+- Confirms live traffic mode remains `fail_closed_no_mutation`.
+- Confirms readiness gate status is
+  `ready_for_separate_execution_authorization_request`.
+- Confirms execution authorization request is not submitted.
+- Confirms execution authorization decision is not issued.
+- Confirms external call execution remains unauthorized.
+- Confirms wallet/ledger/Prisma/DB/migration flags remain false.
+- Confirms external and live OroPlay calls remain absent.
+- Confirms no sensitive-shaped output.
+
 ## 124. ORO-6F Live Traffic External Call Authorization Decision Boundary Coverage
 
 ORO-6F Live Traffic External Call Authorization Decision Boundary Coverage. The
