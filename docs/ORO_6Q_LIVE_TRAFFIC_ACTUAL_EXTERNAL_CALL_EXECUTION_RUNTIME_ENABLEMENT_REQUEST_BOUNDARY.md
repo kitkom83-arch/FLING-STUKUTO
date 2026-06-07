@@ -125,6 +125,13 @@ enablement decision before any runtime execution can be enabled. ORO-6Q still
 does not issue that decision, does not enable actual execution, does not
 authorize actual execution, and does not perform actual execution.
 
+ORO-6R actual external call execution runtime enablement decision boundary is required next.
+ORO-6R may record
+`approved_for_runtime_execution_readiness_only`, but ORO-6R still does not
+enable runtime execution, does not perform actual execution, and does not open
+external network or live OroPlay calls.
+ORO-6R still does not enable runtime execution.
+
 ## Sensitive output rules
 
 ORO-6Q records only static and mock evidence. Outputs must stay sanitized and

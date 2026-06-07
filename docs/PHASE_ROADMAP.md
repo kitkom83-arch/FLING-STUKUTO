@@ -2783,3 +2783,32 @@ ORO-3F status marker:
 - no Prisma write.
 - no migration.
 - no deploy.
+
+## ORO-6R current/live traffic actual external call execution runtime enablement decision boundary
+
+ORO-6R records the runtime enablement decision after ORO-6Q request submission.
+The decision status is `approved_for_runtime_execution_readiness_only` with
+scope `runtime_execution_readiness_only`.
+
+ORO-6R still does not enable runtime execution, actual execution,
+authorization, external call execution, external network, live OroPlay calls,
+wallet mutation, ledger mutation, Prisma write, DB transaction, migration, or
+deploy.
+
+The next phase blocked until separate runtime final readiness gate remains a
+required boundary before any activation request.
+
+Target criteria:
+
+- ORO-6R decision doc exists and states runtime-readiness-only scope.
+- ORO-6R helper exports status, boundary builder, validator, decision summary
+  builder, and still-no-external-call assertion.
+- ORO-6R fixtures cover happy path, missing ORO-6Q request, unsubmitted ORO-6Q
+  request, wrong ORO-6Q status, prior runtime decision, runtime enablement,
+  execution enablement, execution authorization, actual execution performed,
+  external network, live OroPlay call, wallet mutation, ledger mutation, data
+  write, and sensitive-output evidence.
+- ORO-6R smoke confirms decision output, runtime-readiness-only scope, no
+  runtime execution, no actual execution, no wallet/ledger/DB mutation, no
+  external or live OroPlay call, no sensitive output, and package registration.
+- `smoke:oro-6r` registration.
