@@ -121,6 +121,9 @@ enablement request, followed by a separate runtime enablement decision, before
 any runtime execution can be enabled. ORO-6P still does not submit runtime
 enablement request, does not enable actual execution, and does not perform
 actual execution.
+ORO-6Q actual external call execution runtime enablement request boundary is required next.
+That request must be submitted as
+`submitted_pending_runtime_enablement_decision`. ORO-6Q still does not issue runtime enablement decision.
 
 ## Sensitive output rules
 

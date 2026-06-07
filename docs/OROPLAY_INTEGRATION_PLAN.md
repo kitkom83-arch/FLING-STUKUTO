@@ -1241,3 +1241,15 @@ execution can occur. It does not prepare or submit that runtime enablement
 request, enable actual execution, authorize execution, perform execution, or
 open wallet, ledger, Prisma, DB transaction, migration, deploy, external
 network, or live OroPlay calls.
+
+## ORO-6Q Current
+
+ORO-6Q records the actual external call execution runtime enablement request
+only after ORO-6P passed the final live execution readiness gate. The request
+status is submitted_pending_runtime_enablement_decision.
+This is a runtime enablement request only.
+It still requires a separate actual external call execution runtime enablement
+decision before any live external call execution can occur. It does not issue
+that decision, enable runtime execution, enable actual execution, authorize
+execution, perform execution, or open wallet, ledger, Prisma, DB transaction,
+migration, deploy, external network, or live OroPlay calls.
