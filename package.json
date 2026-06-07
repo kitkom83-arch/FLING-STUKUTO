@@ -144,6 +144,7 @@
     "smoke:oro-6p": "node src/local-smoke-tests/oro6pSmoke.js",
     "smoke:oro-6q": "node src/local-smoke-tests/oro6qSmoke.js",
     "smoke:oro-6r": "node src/local-smoke-tests/oro6rSmoke.js",
+    "smoke:oro-6s": "node src/local-smoke-tests/oro6sSmoke.js",
     "smoke:member-qr-deposit-ux": "node src/local-smoke-tests/memberQrDepositUxSmoke.js",
     "smoke:deposit-verification-source": "node src/local-smoke-tests/depositVerificationSourceSmoke.js",
     "smoke:deposit-ledger-reconciliation-guard": "node src/local-smoke-tests/depositLedgerReconciliationGuardSmoke.js",

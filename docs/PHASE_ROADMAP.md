@@ -2812,3 +2812,34 @@ Target criteria:
   runtime execution, no actual execution, no wallet/ledger/DB mutation, no
   external or live OroPlay call, no sensitive output, and package registration.
 - `smoke:oro-6r` registration.
+
+## ORO-6S current/live traffic actual external call execution runtime final readiness gate
+
+ORO-6S records the runtime final readiness gate after ORO-6R issued the
+runtime-readiness-only decision. The gate status is
+`ready_for_separate_actual_external_call_execution_activation_request`.
+
+ORO-6S still does not submit activation request, activate actual execution,
+enable runtime execution, authorize execution, perform execution, open external
+network, call live OroPlay, mutate wallet or ledger, write Prisma, open DB
+transactions, migrate, or deploy.
+
+The next phase blocked until separate activation request remains a required
+boundary before any activation decision or actual execution.
+
+Target criteria:
+
+- ORO-6S readiness doc exists and states runtime-final-readiness-only scope.
+- ORO-6S helper exports status, boundary builder, validator, readiness summary
+  builder, and still-no-external-call assertion.
+- ORO-6S fixtures cover happy path, missing ORO-6R decision, unissued ORO-6R
+  decision, wrong ORO-6R status, wrong ORO-6R scope, activation request
+  submission, actual activation, runtime enablement, execution enablement,
+  execution authorization, actual execution performed, external network, live
+  OroPlay call, wallet mutation, ledger mutation, data write, and
+  sensitive-output evidence.
+- ORO-6S smoke confirms readiness output, activation request remains not
+  submitted, actual execution remains unactivated, runtime remains disabled, no
+  wallet/ledger/DB mutation, no external or live OroPlay call, no sensitive
+  output, and package registration.
+- `smoke:oro-6s` registration.

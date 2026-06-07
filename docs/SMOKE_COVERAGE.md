@@ -3352,6 +3352,54 @@ Assertions:
 - Confirms external and live OroPlay calls remain absent.
 - Confirms no sensitive-shaped output.
 
+## 132. ORO-6S Live Traffic Actual External Call Execution Runtime Final Readiness Gate Coverage
+
+ORO-6S Live Traffic Actual External Call Execution Runtime Final Readiness
+Gate Coverage. The phase records a static/mock runtime final readiness gate
+after ORO-6R while activation request submission, actual activation, runtime
+execution, actual execution, real money, wallet mutation, ledger mutation,
+Prisma writes, DB transactions, migrations, deploy, external network, and live
+OroPlay calls remain blocked.
+
+Coverage:
+
+- ORO-6S boundary doc: live traffic actual external call execution runtime
+  final readiness gate.
+- ORO-6S mock helper: phase constant, runtime final readiness status, boundary
+  builder, validator, readiness summary builder, and still-no-external-call
+  assertion.
+- ORO-6S fixtures: happy path, missing ORO-6R decision, ORO-6R decision not
+  issued, wrong ORO-6R status, wrong ORO-6R scope, activation request
+  submission, actual activation, runtime enablement, execution enablement,
+  execution authorization, actual execution performed, external network
+  allowance, live OroPlay API allowance, wallet mutation allowance, ledger
+  mutation allowance, data write allowance, and sensitive-output evidence.
+- ORO-6S smoke wrapper: `src/local-smoke-tests/oro6sSmoke.js`.
+
+Registered smokes:
+
+- ORO-6S boundary-specific package smoke alias
+- `smoke:oro-6s`
+
+Assertions:
+
+- Confirms ORO-6S emits
+  `liveTrafficActualExternalCallExecutionRuntimeFinalReadinessGateResult=PASS`.
+- Confirms ORO-6R runtime enablement decision evidence is present and passed.
+- Confirms ORO-6R decision status is
+  `approved_for_runtime_execution_readiness_only`.
+- Confirms ORO-6R decision scope is `runtime_execution_readiness_only`.
+- Confirms runtime final readiness status is
+  `ready_for_separate_actual_external_call_execution_activation_request`.
+- Confirms activation request remains not submitted.
+- Confirms actual external call execution remains not activated.
+- Confirms actual external call execution runtime remains disabled.
+- Confirms actual external call execution remains disabled and unauthorized.
+- Confirms external call execution is not performed.
+- Confirms wallet/ledger/Prisma/DB/migration/deploy flags remain false.
+- Confirms external and live OroPlay calls remain absent.
+- Confirms no sensitive-shaped output.
+
 ## 131. ORO-6R Live Traffic Actual External Call Execution Runtime Enablement Decision Boundary Coverage
 
 ORO-6R Live Traffic Actual External Call Execution Runtime Enablement Decision

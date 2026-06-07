@@ -115,6 +115,13 @@ readiness gate before any runtime activation request can be submitted. ORO-6R
 still does not enable runtime execution, does not enable actual execution, does
 not authorize actual execution, and does not perform actual execution.
 
+ORO-6S actual external call execution runtime final readiness gate is required next.
+ORO-6S may record
+`ready_for_separate_actual_external_call_execution_activation_request`, but
+ORO-6S still does not submit activation request, does not activate actual
+execution, and does not open external network or live OroPlay calls.
+ORO-6S still does not submit activation request.
+
 ## Sensitive output rules
 
 ORO-6R records only static and mock evidence. Outputs must stay sanitized and

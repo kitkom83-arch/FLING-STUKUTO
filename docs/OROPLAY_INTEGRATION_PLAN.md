@@ -1267,3 +1267,16 @@ execution can occur. It does not enable runtime execution, enable actual
 execution, authorize execution, perform execution, or open wallet, ledger,
 Prisma, DB transaction, migration, deploy, external network, or live OroPlay
 calls.
+
+## ORO-6S Current
+
+ORO-6S records the actual external call execution runtime final readiness gate
+only after ORO-6R issued the runtime-readiness-only decision. The gate status
+is ready_for_separate_actual_external_call_execution_activation_request.
+This is a runtime final readiness gate only.
+It still requires a separate actual external call execution activation request
+and separate activation decision before any live external call execution can
+occur. It does not submit activation request, activate actual execution, enable
+runtime execution, authorize execution, perform execution, or open wallet,
+ledger, Prisma, DB transaction, migration, deploy, external network, or live
+OroPlay calls.
