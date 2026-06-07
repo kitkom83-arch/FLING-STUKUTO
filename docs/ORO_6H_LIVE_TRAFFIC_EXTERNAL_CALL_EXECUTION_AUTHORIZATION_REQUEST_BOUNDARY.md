@@ -116,6 +116,13 @@ The next phase must issue a separate external call execution authorization
 decision. ORO-6H does not issue that decision and does not authorize execution.
 The execution decision must remain a human/separate decision.
 
+## ORO-6I execution authorization decision boundary linkage
+
+ORO-6I execution authorization decision boundary is required next. ORO-6I
+records the decision as approved_for_pre_execution_readiness_only after ORO-6H
+submits the request. ORO-6I does not authorize actual external call execution,
+does not allow external network, and does not call live OroPlay.
+
 ## Secret redaction rules
 
 ORO-6H records only static and mock evidence. Outputs must stay sanitized and

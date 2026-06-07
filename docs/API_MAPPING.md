@@ -1113,3 +1113,36 @@ submitted_pending_execution_decision and the execution decision remains pending.
 - dbTransactionPerformed=false
 - migrationPerformed=false
 - smoke:oro-6h
+
+## ORO-6I Live Traffic External Call Execution Authorization Decision Mapping
+
+ORO-6I records external/live call execution authorization decision only after
+ORO-6H submits the execution authorization request. The decision is approved for
+pre-execution readiness only and does not authorize actual execution.
+
+- ORO-6I records external/live call execution authorization decision only
+- approved_for_pre_execution_readiness_only
+- pre_execution_readiness_only
+- externalCallExecutionAuthorizationRequestSubmittedFromOro6h=true
+- externalCallExecutionAuthorizationRequestStatusFromOro6h=submitted_pending_execution_decision
+- externalCallExecutionAuthorizationDecisionIssuedFromOro6h=false
+- externalCallExecutionAuthorizationDecisionStatusFromOro6h=pending
+- externalCallExecutionAuthorizedFromOro6h=false
+- externalCallReadinessGateStatusFromOro6g=ready_for_separate_execution_authorization_request
+- externalCallExecutionAuthorizationDecisionIssued=true
+- externalCallExecutionAuthorizationDecisionStatus=approved_for_pre_execution_readiness_only
+- actualExternalCallExecutionAuthorized=false
+- externalCallExecutionPerformed=false
+- no outgoing live OroPlay API call yet
+- no wallet/ledger mutation
+- externalNetworkAllowed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCallAllowed=false
+- liveOroPlayApiCalled=false
+- walletMutationPerformed=false
+- ledgerMutationPerformed=false
+- prismaWritePerformed=false
+- dbTransactionPerformed=false
+- migrationPerformed=false
+- deployPerformed=false
+- smoke:oro-6i

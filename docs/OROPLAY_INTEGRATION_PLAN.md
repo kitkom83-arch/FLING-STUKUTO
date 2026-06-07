@@ -1149,3 +1149,19 @@ submitted_pending_execution_decision after ORO-6G. It requires the next phase to
 issue a separate external call execution authorization decision while execution,
 wallet, ledger, Prisma, DB transaction, migration, external network, and live
 OroPlay calls stay blocked.
+
+## ORO-6H Closed
+
+ORO-6H is closed. The external/live OroPlay call execution authorization
+request was submitted as submitted_pending_execution_decision while execution
+decision, actual execution, external network, and live OroPlay calls remained
+blocked.
+
+## ORO-6I Current
+
+ORO-6I records the external/live OroPlay call execution authorization decision
+as approved_for_pre_execution_readiness_only after ORO-6H. It is a decision
+record for pre-execution readiness only, and the next phase still requires a
+separate actual external call execution authorization while wallet, ledger,
+Prisma, DB transaction, migration, deploy, external network, and live OroPlay
+calls stay blocked.
