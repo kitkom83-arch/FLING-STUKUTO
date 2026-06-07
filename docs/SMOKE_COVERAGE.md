@@ -3079,6 +3079,44 @@ Coverage assertions:
   call, no real money, no secret-shaped output, and empty blockers only in the
   happy path.
 
+## 134. ORO-6U Live Traffic Actual External Call Execution Activation Decision Boundary Coverage
+
+ORO-6U Live Traffic Actual External Call Execution Activation Decision Boundary
+coverage. The phase is activation decision record only after ORO-6T activation
+request submission. It validates the ORO-6T dependency, activation-readiness
+decision status, activation-readiness decision scope, and still-no-external-call
+safety while keeping activation, runtime enablement, actual execution, wallet
+mutation, ledger mutation, Prisma write, DB transaction, migration, deploy,
+external network, live OroPlay API calls, and real money blocked.
+
+Covered files:
+
+- ORO-6U boundary doc: live traffic actual external call execution activation
+  decision boundary.
+- ORO-6U mock helper: phase constant, activation decision status, boundary
+  builder, validator, activation decision summary builder, and still-no-external
+  call assertion.
+- ORO-6U fixtures: happy path, missing ORO-6T request, unsubmitted ORO-6T
+  request, wrong ORO-6T request status, prior activation decision, activation,
+  runtime enablement, execution enablement, execution authorization, actual
+  execution performed, external network, live OroPlay call, wallet mutation,
+  ledger mutation, data write, and sensitive-output evidence.
+- ORO-6U smoke wrapper: `src/local-smoke-tests/oro6uSmoke.js`.
+
+Package script:
+
+- ORO-6U boundary-specific package smoke alias
+- `smoke:oro-6u`
+
+Coverage assertions:
+
+- Confirms ORO-6U emits `phase=ORO-6U`, decision status
+  `approved_for_activation_readiness_only`, decision scope
+  `activation_readiness_only`, actual execution not activated, runtime not
+  enabled, external execution not performed, no wallet/ledger/DB mutation, no
+  external network, no live OroPlay call, no real money, no secret-shaped
+  output, and empty blockers only in the happy path.
+
 ## 114. ORO-5U Runtime Traffic Authorization Request Readiness Boundary Coverage
 
 ORO-5U Runtime Traffic Authorization Request Readiness Boundary Coverage. The

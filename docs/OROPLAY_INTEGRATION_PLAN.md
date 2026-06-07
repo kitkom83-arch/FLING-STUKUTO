@@ -1293,3 +1293,17 @@ that decision, activate actual execution, enable runtime execution, enable
 actual execution, authorize execution, perform execution, or open wallet,
 ledger, Prisma, DB transaction, migration, deploy, external network, or live
 OroPlay calls.
+
+## ORO-6U Current
+
+ORO-6U records the actual external call execution activation decision only
+after ORO-6T submitted the activation request. The decision status is
+approved_for_activation_readiness_only and the scope is
+activation_readiness_only.
+This is an activation decision record only.
+It still requires a separate activation final readiness gate and separate live
+execution request before any live external call execution can occur. It does
+not activate actual execution, enable runtime execution, enable actual
+execution, authorize execution, perform execution, or open wallet, ledger,
+Prisma, DB transaction, migration, deploy, external network, or live OroPlay
+calls.

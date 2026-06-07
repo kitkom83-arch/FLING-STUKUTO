@@ -119,6 +119,10 @@ decision before any activation can occur. ORO-6T still does not issue that
 decision, does not activate actual execution, does not enable runtime
 execution, and does not perform actual execution.
 
+ORO-6U actual external call execution activation decision boundary is required next.
+ORO-6U may issue `approved_for_activation_readiness_only` with
+`activation_readiness_only` scope only. ORO-6U still does not activate actual execution, enable runtime execution, perform execution, open external network, or call live OroPlay.
+
 ## Sensitive output rules
 
 ORO-6T records only static and mock evidence. Outputs must stay sanitized and
