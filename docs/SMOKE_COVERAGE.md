@@ -3041,6 +3041,72 @@ Boundary:
 - No live OroPlay API call.
 - No real money.
 
+## 137. ORO-6X Live Traffic Actual External Call Execution Live Execution Decision Boundary Coverage
+
+ORO-6X Live Traffic Actual External Call Execution Live Execution Decision
+Boundary coverage validates the live execution decision record after ORO-6W
+submitted the live execution request. It confirms the decision is live
+execution readiness only while keeping live execution approval, actual
+activation, runtime enablement, execution, external network, live OroPlay
+calls, wallet mutation, ledger mutation, Prisma writes, DB transactions,
+migration, deploy, and real money blocked.
+
+Covered files:
+
+- ORO-6X boundary doc: live traffic actual external call execution live
+  execution decision boundary.
+- ORO-6X mock helper: phase constant, live execution decision status, boundary
+  builder, validator, summary builder, and still-no-external-call assertion.
+- ORO-6X fixtures: happy path, missing ORO-6W request, unsubmitted ORO-6W
+  request, wrong ORO-6W request status, live execution decision issuance from
+  ORO-6W, live execution approval, activation, runtime enablement, execution
+  enablement, execution authorization, actual execution performed, external
+  network, live OroPlay call, wallet mutation, ledger mutation, data write, and
+  sensitive-output evidence.
+- ORO-6X smoke wrapper: `src/local-smoke-tests/oro6xSmoke.js`.
+
+Package script:
+
+- ORO-6X boundary-specific package smoke alias
+- `smoke:oro-6x`
+
+Coverage assertions:
+
+- Confirms ORO-6X emits `phase=ORO-6X`, decision status
+  `approved_for_live_execution_readiness_only`, decision scope
+  `live_execution_readiness_only`, live execution not approved, actual
+  execution not activated, runtime not enabled, external call execution not
+  performed, no wallet/ledger/DB mutation, no external or live OroPlay call, no
+  sensitive output, and package registration.
+- Confirms missing or unsafe ORO-6W live execution request evidence fails
+  closed.
+- Confirms ORO-6W request status must be
+  `submitted_pending_live_execution_decision`.
+- Confirms ORO-6X decision is issued only as live execution readiness.
+- Confirms live execution approval, actual activation, runtime enablement,
+  execution enablement, authorization, execution, external network, live
+  OroPlay, wallet, ledger, Prisma, DB transaction, migration, deploy, and
+  sensitive-output fixtures all fail closed.
+
+Boundary:
+
+- Live execution decision boundary only.
+- Live execution readiness only.
+- Still no live execution approval.
+- Still no actual execution activation.
+- Still no runtime enablement.
+- Still no external call execution.
+- No runtime mutation.
+- No `src/app.js` change.
+- No route/controller/service change.
+- No wallet mutation.
+- No ledger mutation.
+- No Prisma write.
+- No DB transaction.
+- No external network.
+- No live OroPlay API call.
+- No real money.
+
 ## 136. ORO-6W Live Traffic Actual External Call Execution Live Execution Request Boundary Coverage
 
 ORO-6W Live Traffic Actual External Call Execution Live Execution Request

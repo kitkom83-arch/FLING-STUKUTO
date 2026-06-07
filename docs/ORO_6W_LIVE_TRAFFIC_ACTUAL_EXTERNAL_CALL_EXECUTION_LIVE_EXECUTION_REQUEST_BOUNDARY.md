@@ -128,6 +128,14 @@ execution decision. ORO-6W still does not approve live execution, does not
 activate actual execution, does not enable runtime execution, and does not
 perform actual execution.
 
+ORO-6X live execution decision boundary is required next and must issue only
+approved_for_live_execution_readiness_only with live_execution_readiness_only
+scope before any later final readiness or execution request phase. ORO-6X still
+does not approve live execution, does not activate actual execution, and does
+not call live OroPlay.
+
+ORO-6X still does not approve live execution.
+
 ## Sensitive output rules
 
 ORO-6W records only static and mock evidence. Outputs must stay sanitized and

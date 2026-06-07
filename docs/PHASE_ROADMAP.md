@@ -2978,3 +2978,36 @@ Target criteria:
   external or live OroPlay call, no sensitive output, and package
   registration.
 - `smoke:oro-6w` registration.
+
+## ORO-6X current/live traffic actual external call execution live execution decision boundary
+
+ORO-6X records the actual external call execution live execution decision after
+ORO-6W submitted the live execution request. The decision status is
+`approved_for_live_execution_readiness_only` and the decision scope is
+`live_execution_readiness_only`.
+
+ORO-6X still does not approve live execution, activate actual execution, enable
+runtime execution, enable actual execution, authorize execution, perform
+execution, open external network, call live OroPlay, mutate wallet or ledger,
+write Prisma, open DB transactions, migrate, or deploy.
+
+The next phase blocked until separate live execution final readiness remains a
+required boundary before any final execution request or actual execution.
+
+Target criteria:
+
+- ORO-6X live execution decision doc exists and states live execution readiness only.
+- ORO-6X helper exports status, boundary builder, validator, live execution
+  decision summary builder, and still-no-external-call assertion.
+- ORO-6X fixtures cover happy path, missing ORO-6W request, unsubmitted ORO-6W
+  request, wrong ORO-6W request status, prior live execution decision, live
+  execution approval, activation, runtime enablement, execution enablement,
+  execution authorization, actual execution performed, external network, live
+  OroPlay call, wallet mutation, ledger mutation, data write, and
+  sensitive-output evidence.
+- ORO-6X smoke confirms live execution decision output, live execution
+  readiness only, live execution approved remains false, actual execution
+  remains unactivated, runtime remains disabled, no wallet/ledger/DB mutation,
+  no external or live OroPlay call, no sensitive output, and package
+  registration.
+- `smoke:oro-6x` registration.

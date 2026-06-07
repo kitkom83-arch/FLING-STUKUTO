@@ -1333,3 +1333,17 @@ that decision, approve live execution, activate actual execution, enable
 runtime execution, enable actual execution, authorize execution, perform
 execution, or open wallet, ledger, Prisma, DB transaction, migration, deploy,
 external network, or live OroPlay calls.
+
+## ORO-6X Current
+
+ORO-6X records the actual external call execution live execution decision
+record only after ORO-6W submitted the live execution request. The decision
+status is approved_for_live_execution_readiness_only and the decision scope is
+live_execution_readiness_only.
+This is a live execution decision record only.
+It still requires a separate actual external call execution live execution
+final readiness gate and a separate final execution request before any live
+external call execution can occur. It does not approve live execution, activate
+actual execution, enable runtime execution, enable actual execution, authorize
+execution, perform execution, or open wallet, ledger, Prisma, DB transaction,
+migration, deploy, external network, or live OroPlay calls.
