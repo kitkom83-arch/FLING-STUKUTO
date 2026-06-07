@@ -1216,3 +1216,16 @@ execution can occur. It does not issue enablement decision, enable actual
 execution, authorize execution, perform execution, or open wallet, ledger,
 Prisma, DB transaction, migration, deploy, external network, or live OroPlay
 calls.
+
+## ORO-6O Current
+
+ORO-6O records the actual execution enablement decision only after ORO-6N
+submitted the enablement request. The decision status is
+approved_for_final_live_execution_readiness_only and the scope is
+final_live_execution_readiness_only.
+This is a final readiness-only decision record.
+It still requires a separate final live execution readiness gate and separate
+runtime enablement before any live external call execution can occur. It does
+not enable actual execution, authorize execution, perform execution, or open
+wallet, ledger, Prisma, DB transaction, migration, deploy, external network,
+or live OroPlay calls.

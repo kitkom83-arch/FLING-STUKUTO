@@ -99,9 +99,13 @@ blocked:
 ## Next phase expectations
 
 The next phase must add a separate actual external call execution enablement
-decision before execution can be enabled. ORO-6N still does not issue
-enablement decision, does not enable actual execution, and does not perform
-actual execution.
+decision before execution can be enabled.
+ORO-6O actual external call execution enablement decision boundary is required next.
+That ORO-6O decision must remain readiness-only as
+`approved_for_final_live_execution_readiness_only`.
+ORO-6O still does not enable actual execution.
+ORO-6N still does not issue enablement decision, does not enable actual
+execution, and does not perform actual execution.
 
 ## Sensitive output rules
 
