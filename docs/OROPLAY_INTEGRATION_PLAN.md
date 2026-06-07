@@ -1183,3 +1183,14 @@ static/mock request only and still requires a separate actual external call exec
 It does not issue that decision, authorize actual execution, perform execution,
 or open wallet, ledger, Prisma, DB transaction, migration, deploy, external
 network, or live OroPlay calls.
+
+## ORO-6L Current
+
+ORO-6L records the actual external call execution authorization decision as
+approved_for_live_execution_readiness_only with scope
+live_execution_readiness_only after ORO-6K submitted the request. This is a
+readiness-only decision record. It still requires a separate live execution
+readiness gate and separate actual execution enablement before any live
+external call execution can occur. It does not authorize actual execution,
+perform execution, or open wallet, ledger, Prisma, DB transaction, migration,
+deploy, external network, or live OroPlay calls.

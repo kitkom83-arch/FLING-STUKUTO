@@ -1232,3 +1232,44 @@ perform execution, open network access, or call live OroPlay.
 - migrationPerformed=false
 - deployPerformed=false
 - smoke:oro-6k
+
+## ORO-6L Live Traffic Actual External Call Execution Authorization Decision Mapping
+
+ORO-6L records actual external call execution authorization decision only after
+ORO-6K submits the actual execution request. The decision status is readiness
+only and does not authorize execution, perform execution, open network access,
+or call live OroPlay.
+
+- ORO-6L records actual external call execution authorization decision only
+- oro6kLiveTrafficActualExternalCallExecutionAuthorizationRequestPassed=true
+- actualExternalCallExecutionAuthorizationRequestPreparedFromOro6k=true
+- actualExternalCallExecutionAuthorizationRequestSubmittedFromOro6k=true
+- actualExternalCallExecutionAuthorizationRequestStatusFromOro6k=submitted_pending_actual_execution_decision
+- actualExternalCallExecutionAuthorizationDecisionIssuedFromOro6k=false
+- actualExternalCallExecutionAuthorizationDecisionStatusFromOro6k=pending
+- actualExternalCallExecutionAuthorizedFromOro6k=false
+- externalCallExecutionAuthorizedFromOro6k=false
+- externalCallExecutionPerformedFromOro6k=false
+- externalNetworkAllowedFromOro6k=false
+- liveOroPlayApiCallAllowedFromOro6k=false
+- preExecutionReadinessGateStatusFromOro6j=ready_for_separate_actual_external_call_execution_authorization_request
+- actualExternalCallExecutionAuthorizationDecisionPrepared=true
+- actualExternalCallExecutionAuthorizationDecisionIssued=true
+- actualExternalCallExecutionAuthorizationDecisionStatus=approved_for_live_execution_readiness_only
+- actualExternalCallExecutionAuthorizationDecisionScope=live_execution_readiness_only
+- actualExternalCallExecutionAuthorized=false
+- externalCallExecutionAuthorized=false
+- externalCallExecutionPerformed=false
+- no outgoing live OroPlay API call yet
+- no wallet/ledger mutation
+- externalNetworkAllowed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCallAllowed=false
+- liveOroPlayApiCalled=false
+- walletMutationPerformed=false
+- ledgerMutationPerformed=false
+- prismaWritePerformed=false
+- dbTransactionPerformed=false
+- migrationPerformed=false
+- deployPerformed=false
+- smoke:oro-6l

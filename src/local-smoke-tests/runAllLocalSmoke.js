@@ -340,6 +340,17 @@ const RELATED_FILES = [
     "docs/ORO_6K_LIVE_TRAFFIC_ACTUAL_EXTERNAL_CALL",
     "EXECUTION_AUTHORIZATION_REQUEST_BOUNDARY.md",
   ].join("_"),
+  "src/game-provider-mock/oro6lLiveTrafficActualExternalCallExecutionAuthorizationDecisionBoundary.js",
+  [
+    "src/game-provider-mock/oro6lLiveTrafficActualExternalCallExecution",
+    "AuthorizationDecisionBoundaryFixtures.js",
+  ].join(""),
+  "src/local-smoke-tests/oro6lLiveTrafficActualExternalCallExecutionAuthorizationDecisionBoundarySmoke.js",
+  "src/local-smoke-tests/oro6lSmoke.js",
+  [
+    "docs/ORO_6L_LIVE_TRAFFIC_ACTUAL_EXTERNAL_CALL",
+    "EXECUTION_AUTHORIZATION_DECISION_BOUNDARY.md",
+  ].join("_"),
   "src/payment-provider-mock/memberQrDepositUxContract.js",
   "src/payment-provider-mock/memberQrDepositMockHarness.js",
   "src/local-smoke-tests/memberQrDepositUxSmoke.js",
@@ -623,6 +634,7 @@ const summary = [
   { key: "oro6i", label: "oro-6i", status: "PENDING" },
   { key: "oro6j", label: "oro-6j", status: "PENDING" },
   { key: "oro6k", label: "oro-6k", status: "PENDING" },
+  { key: "oro6l", label: "oro-6l", status: "PENDING" },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
   { key: "depositVerificationSource", label: "deposit-verification-source", status: "PENDING" },
   {
@@ -1541,6 +1553,12 @@ const steps = [
     summaryKey: "syntax",
   },
   {
+    name: "node --check oro6lSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oro6lSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
     name: "node --check memberQrDepositUxContract",
     command: nodeCommand,
     args: ["--check", "src/payment-provider-mock/memberQrDepositUxContract.js"],
@@ -2354,6 +2372,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oro-6k"]),
     summaryKey: "oro6k",
+  },
+  {
+    name: "npm run smoke:oro-6l",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oro-6l"]),
+    summaryKey: "oro6l",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

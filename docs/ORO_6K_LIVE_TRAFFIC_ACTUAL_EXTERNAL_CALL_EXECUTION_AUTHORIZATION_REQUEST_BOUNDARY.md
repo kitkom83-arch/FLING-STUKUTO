@@ -102,6 +102,9 @@ blocked:
 The next phase must add a separate actual external call execution
 authorization decision. ORO-6K does not issue the actual execution decision,
 does not authorize actual execution, and does not perform actual execution.
+ORO-6L actual external call execution authorization decision boundary is required next.
+That ORO-6L decision may be
+`approved_for_live_execution_readiness_only`, but ORO-6L still does not authorize actual execution or perform actual execution.
 
 ## Secret redaction rules
 
