@@ -1280,3 +1280,16 @@ occur. It does not submit activation request, activate actual execution, enable
 runtime execution, authorize execution, perform execution, or open wallet,
 ledger, Prisma, DB transaction, migration, deploy, external network, or live
 OroPlay calls.
+
+## ORO-6T Current
+
+ORO-6T records the actual external call execution activation request only after
+ORO-6S passed the runtime final readiness gate. The request status is
+submitted_pending_activation_decision.
+This is an activation request only.
+It still requires a separate actual external call execution activation
+decision before any live external call execution can occur. It does not issue
+that decision, activate actual execution, enable runtime execution, enable
+actual execution, authorize execution, perform execution, or open wallet,
+ledger, Prisma, DB transaction, migration, deploy, external network, or live
+OroPlay calls.

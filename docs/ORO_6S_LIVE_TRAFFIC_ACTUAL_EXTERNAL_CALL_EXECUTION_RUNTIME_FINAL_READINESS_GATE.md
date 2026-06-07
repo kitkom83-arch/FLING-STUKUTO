@@ -118,6 +118,9 @@ request before any activation decision can be issued. ORO-6S still does not
 submit that request, does not activate actual execution, does not enable
 runtime execution, and does not perform actual execution.
 
+ORO-6T actual external call execution activation request boundary is required next.
+ORO-6T may submit `submitted_pending_activation_decision` only. ORO-6T still does not issue activation decision, activate actual execution, enable runtime execution, perform execution, open external network, or call live OroPlay.
+
 ## Sensitive output rules
 
 ORO-6S records only static and mock evidence. Outputs must stay sanitized and

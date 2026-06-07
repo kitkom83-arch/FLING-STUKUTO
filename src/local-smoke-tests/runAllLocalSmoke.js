@@ -470,6 +470,23 @@ const RELATED_FILES = [
     "docs/ORO_6S_LIVE_TRAFFIC_ACTUAL_EXTERNAL_CALL",
     "EXECUTION_RUNTIME_FINAL_READINESS_GATE.md",
   ].join("_"),
+  [
+    "src/game-provider-mock/oro6tLiveTrafficActualExternalCall",
+    "ExecutionActivationRequestBoundary.js",
+  ].join(""),
+  [
+    "src/game-provider-mock/oro6tLiveTrafficActualExternalCall",
+    "ExecutionActivationRequestBoundaryFixtures.js",
+  ].join(""),
+  [
+    "src/local-smoke-tests/oro6tLiveTrafficActualExternalCall",
+    "ExecutionActivationRequestBoundarySmoke.js",
+  ].join(""),
+  "src/local-smoke-tests/oro6tSmoke.js",
+  [
+    "docs/ORO_6T_LIVE_TRAFFIC_ACTUAL_EXTERNAL_CALL",
+    "EXECUTION_ACTIVATION_REQUEST_BOUNDARY.md",
+  ].join("_"),
   "src/payment-provider-mock/memberQrDepositUxContract.js",
   "src/payment-provider-mock/memberQrDepositMockHarness.js",
   "src/local-smoke-tests/memberQrDepositUxSmoke.js",
@@ -761,6 +778,7 @@ const summary = [
   { key: "oro6q", label: "oro-6q", status: "PENDING" },
   { key: "oro6r", label: "oro-6r", status: "PENDING" },
   { key: "oro6s", label: "oro-6s", status: "PENDING" },
+  { key: "oro6t", label: "oro-6t", status: "PENDING" },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
   { key: "depositVerificationSource", label: "deposit-verification-source", status: "PENDING" },
   {
@@ -1727,6 +1745,12 @@ const steps = [
     summaryKey: "syntax",
   },
   {
+    name: "node --check oro6tSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oro6tSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
     name: "node --check memberQrDepositUxContract",
     command: nodeCommand,
     args: ["--check", "src/payment-provider-mock/memberQrDepositUxContract.js"],
@@ -2588,6 +2612,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oro-6s"]),
     summaryKey: "oro6s",
+  },
+  {
+    name: "npm run smoke:oro-6t",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oro-6t"]),
+    summaryKey: "oro6t",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

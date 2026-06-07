@@ -2843,3 +2843,35 @@ Target criteria:
   wallet/ledger/DB mutation, no external or live OroPlay call, no sensitive
   output, and package registration.
 - `smoke:oro-6s` registration.
+
+## ORO-6T current/live traffic actual external call execution activation request boundary
+
+ORO-6T records the actual external call execution activation request after
+ORO-6S passed the runtime final readiness gate. The request status is
+`submitted_pending_activation_decision`.
+
+ORO-6T still does not issue activation decision, activate actual execution,
+enable runtime execution, enable actual execution, authorize execution, perform
+execution, open external network, call live OroPlay, mutate wallet or ledger,
+write Prisma, open DB transactions, migrate, or deploy.
+
+The next phase blocked until separate activation decision remains a required
+boundary before any activation or actual execution.
+
+Target criteria:
+
+- ORO-6T activation request doc exists and states activation-request-only scope.
+- ORO-6T helper exports status, boundary builder, validator, activation request
+  summary builder, and still-no-external-call assertion.
+- ORO-6T fixtures cover happy path, missing ORO-6S gate, failed ORO-6S gate,
+  wrong ORO-6S status, prior activation request, activation decision,
+  activation, runtime enablement, execution enablement, execution
+  authorization, actual execution performed, external network, live OroPlay
+  call, wallet mutation, ledger mutation, data write, and sensitive-output
+  evidence.
+- ORO-6T smoke confirms activation request output, request status
+  `submitted_pending_activation_decision`, activation decision remains not
+  issued, actual execution remains unactivated, runtime remains disabled, no
+  wallet/ledger/DB mutation, no external or live OroPlay call, no sensitive
+  output, and package registration.
+- `smoke:oro-6t` registration.

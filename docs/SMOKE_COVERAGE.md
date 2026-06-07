@@ -3041,6 +3041,44 @@ Boundary:
 - No live OroPlay API call.
 - No real money.
 
+## 133. ORO-6T Live Traffic Actual External Call Execution Activation Request Boundary Coverage
+
+ORO-6T Live Traffic Actual External Call Execution Activation Request Boundary
+coverage. The phase is activation request only after ORO-6S runtime final
+readiness. It validates the ORO-6S dependency, request submission status,
+pending activation decision boundary, and still-no-external-call safety while
+keeping activation, runtime enablement, actual execution, wallet mutation,
+ledger mutation, Prisma write, DB transaction, migration, deploy, external
+network, live OroPlay API calls, and real money blocked.
+
+Covered files:
+
+- ORO-6T boundary doc: live traffic actual external call execution activation
+  request boundary.
+- ORO-6T mock helper: phase constant, activation request status, boundary
+  builder, validator, activation request summary builder, and still-no-external
+  call assertion.
+- ORO-6T fixtures: happy path, missing ORO-6S gate, failed ORO-6S gate, wrong
+  ORO-6S status, prior activation request, activation decision, activation,
+  runtime enablement, execution enablement, execution authorization, actual
+  execution performed, external network, live OroPlay call, wallet mutation,
+  ledger mutation, data write, and sensitive-output evidence.
+- ORO-6T smoke wrapper: `src/local-smoke-tests/oro6tSmoke.js`.
+
+Package script:
+
+- ORO-6T boundary-specific package smoke alias
+- `smoke:oro-6t`
+
+Coverage assertions:
+
+- Confirms ORO-6T emits `phase=ORO-6T`, request status
+  `submitted_pending_activation_decision`, activation decision not issued,
+  actual execution not activated, runtime not enabled, external execution not
+  performed, no wallet/ledger/DB mutation, no external network, no live OroPlay
+  call, no real money, no secret-shaped output, and empty blockers only in the
+  happy path.
+
 ## 114. ORO-5U Runtime Traffic Authorization Request Readiness Boundary Coverage
 
 ORO-5U Runtime Traffic Authorization Request Readiness Boundary Coverage. The
