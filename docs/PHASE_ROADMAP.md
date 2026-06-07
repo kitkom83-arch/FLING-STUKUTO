@@ -1120,6 +1120,54 @@ ORO-6O target criteria:
   disabled and unauthorized, no external or live OroPlay call, no mutation, no
   sensitive output, and `smoke:oro-6o` registration.
 
+## ORO-6P current/live traffic actual external call execution final readiness gate
+
+ORO-6P current/live traffic actual external call execution final readiness gate
+depends on the ORO-6O final-readiness-only enablement decision. The ORO-6P
+final readiness gate status is
+`ready_for_separate_actual_external_call_execution_runtime_enablement_request`.
+
+Marker: next phase blocked until separate actual external call execution runtime enablement request.
+Marker: final readiness gate does not submit runtime enablement request.
+
+ORO-6P confirms:
+
+- ORO-6O enablement decision evidence is present and passed.
+- ORO-6O decision status is
+  `approved_for_final_live_execution_readiness_only`.
+- ORO-6O decision scope is `final_live_execution_readiness_only`.
+- ORO-6N enablement request evidence is present and passed.
+- Final live execution readiness gate is prepared, evaluated, and passed.
+- ORO-6P final readiness status is
+  `ready_for_separate_actual_external_call_execution_runtime_enablement_request`.
+- Runtime enablement request remains not prepared and not submitted.
+- Runtime enablement decision remains not issued.
+- Actual external call execution runtime remains disabled.
+- Actual external call execution remains disabled and unauthorized.
+- External call execution is not performed.
+- External network and live OroPlay calls remain absent.
+- Wallet/ledger/Prisma/DB/migration/deploy work remains blocked.
+- `smoke:oro-6p` registration.
+
+ORO-6P target criteria:
+
+- ORO-6P live traffic actual external call execution final readiness gate doc
+  exists and states final readiness-only scope.
+- ORO-6P helper exports phase, final readiness status, boundary builder,
+  validator, readiness summary builder, and still-no-external-call assertion.
+- ORO-6P fixtures cover happy path, missing ORO-6O decision, ORO-6O decision
+  not issued, wrong ORO-6O decision status, wrong ORO-6O decision scope,
+  upstream execution enablement, runtime enablement, execution authorization,
+  actual execution performed, runtime enablement request submission, external
+  network allowance, live OroPlay API allowance, wallet mutation allowance,
+  ledger mutation allowance, data write allowance, and sensitive-output
+  evidence.
+- ORO-6P smoke confirms output, docs, script registration, protected runtime
+  file boundary, final readiness status, runtime enablement request still not
+  submitted, actual execution disabled and unauthorized, no external or live
+  OroPlay call, no mutation, no sensitive output, and `smoke:oro-6p`
+  registration.
+
 ## ORO-4A current/runtime implementation skeleton
 
 ORO-4A current/runtime implementation skeleton. This phase adds only disabled-by-default runtime skeleton docs, a staging-disabled gate, intent-only mock functions, and local smoke coverage.

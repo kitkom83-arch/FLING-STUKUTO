@@ -113,6 +113,9 @@ separate actual external call execution runtime enablement boundary before any
 runtime execution can be enabled. ORO-6O still does not enable actual
 execution, does not authorize actual execution, and does not perform actual
 execution.
+ORO-6P actual external call execution final readiness gate is required next.
+That gate must produce `ready_for_separate_actual_external_call_execution_runtime_enablement_request`.
+ORO-6P still does not submit runtime enablement request.
 
 ## Sensitive output rules
 

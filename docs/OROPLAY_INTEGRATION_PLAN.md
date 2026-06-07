@@ -1229,3 +1229,15 @@ runtime enablement before any live external call execution can occur. It does
 not enable actual execution, authorize execution, perform execution, or open
 wallet, ledger, Prisma, DB transaction, migration, deploy, external network,
 or live OroPlay calls.
+
+## ORO-6P Current
+
+ORO-6P records the final live execution readiness gate only after ORO-6O
+issued the final-readiness-only enablement decision. The gate status is
+ready_for_separate_actual_external_call_execution_runtime_enablement_request.
+It still requires a separate actual external call execution runtime enablement
+request and separate runtime enablement decision before any live external call
+execution can occur. It does not prepare or submit that runtime enablement
+request, enable actual execution, authorize execution, perform execution, or
+open wallet, ledger, Prisma, DB transaction, migration, deploy, external
+network, or live OroPlay calls.
