@@ -1191,3 +1191,44 @@ call live OroPlay.
 - migrationPerformed=false
 - deployPerformed=false
 - smoke:oro-6j
+
+## ORO-6K Live Traffic Actual External Call Execution Authorization Request Mapping
+
+ORO-6K records actual external call execution authorization request only after
+ORO-6J passes the pre-execution readiness gate. The request is submitted as
+pending a separate actual execution decision and does not authorize execution,
+perform execution, open network access, or call live OroPlay.
+
+- ORO-6K records actual external call execution authorization request only
+- preExecutionReadinessGatePassedFromOro6j=true
+- preExecutionReadinessGateStatusFromOro6j=ready_for_separate_actual_external_call_execution_authorization_request
+- actualExternalCallExecutionAuthorizationRequestSubmittedFromOro6j=false
+- actualExternalCallExecutionAuthorizationDecisionIssuedFromOro6j=false
+- actualExternalCallExecutionAuthorizedFromOro6j=false
+- externalCallExecutionAuthorizedFromOro6j=false
+- externalCallExecutionPerformedFromOro6j=false
+- externalNetworkAllowedFromOro6j=false
+- liveOroPlayApiCallAllowedFromOro6j=false
+- externalCallExecutionAuthorizationDecisionStatusFromOro6i=approved_for_pre_execution_readiness_only
+- externalCallExecutionAuthorizationDecisionScopeFromOro6i=pre_execution_readiness_only
+- actualExternalCallExecutionAuthorizationRequestPrepared=true
+- actualExternalCallExecutionAuthorizationRequestSubmitted=true
+- actualExternalCallExecutionAuthorizationRequestStatus=submitted_pending_actual_execution_decision
+- actualExternalCallExecutionAuthorizationDecisionIssued=false
+- actualExternalCallExecutionAuthorizationDecisionStatus=pending
+- actualExternalCallExecutionAuthorized=false
+- externalCallExecutionAuthorized=false
+- externalCallExecutionPerformed=false
+- no outgoing live OroPlay API call yet
+- no wallet/ledger mutation
+- externalNetworkAllowed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCallAllowed=false
+- liveOroPlayApiCalled=false
+- walletMutationPerformed=false
+- ledgerMutationPerformed=false
+- prismaWritePerformed=false
+- dbTransactionPerformed=false
+- migrationPerformed=false
+- deployPerformed=false
+- smoke:oro-6k

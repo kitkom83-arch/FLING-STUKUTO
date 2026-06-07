@@ -332,6 +332,14 @@ const RELATED_FILES = [
   "src/local-smoke-tests/oro6jLiveTrafficExternalCallPreExecutionReadinessGateSmoke.js",
   "src/local-smoke-tests/oro6jSmoke.js",
   "docs/ORO_6J_LIVE_TRAFFIC_EXTERNAL_CALL_PRE_EXECUTION_READINESS_GATE.md",
+  "src/game-provider-mock/oro6kLiveTrafficActualExternalCallExecutionAuthorizationRequestBoundary.js",
+  "src/game-provider-mock/oro6kLiveTrafficActualExternalCallExecutionAuthorizationRequestBoundaryFixtures.js",
+  "src/local-smoke-tests/oro6kLiveTrafficActualExternalCallExecutionAuthorizationRequestBoundarySmoke.js",
+  "src/local-smoke-tests/oro6kSmoke.js",
+  [
+    "docs/ORO_6K_LIVE_TRAFFIC_ACTUAL_EXTERNAL_CALL",
+    "EXECUTION_AUTHORIZATION_REQUEST_BOUNDARY.md",
+  ].join("_"),
   "src/payment-provider-mock/memberQrDepositUxContract.js",
   "src/payment-provider-mock/memberQrDepositMockHarness.js",
   "src/local-smoke-tests/memberQrDepositUxSmoke.js",
@@ -614,6 +622,7 @@ const summary = [
   { key: "oro6h", label: "oro-6h", status: "PENDING" },
   { key: "oro6i", label: "oro-6i", status: "PENDING" },
   { key: "oro6j", label: "oro-6j", status: "PENDING" },
+  { key: "oro6k", label: "oro-6k", status: "PENDING" },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
   { key: "depositVerificationSource", label: "deposit-verification-source", status: "PENDING" },
   {
@@ -1526,6 +1535,12 @@ const steps = [
     summaryKey: "syntax",
   },
   {
+    name: "node --check oro6kSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oro6kSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
     name: "node --check memberQrDepositUxContract",
     command: nodeCommand,
     args: ["--check", "src/payment-provider-mock/memberQrDepositUxContract.js"],
@@ -2333,6 +2348,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oro-6j"]),
     summaryKey: "oro6j",
+  },
+  {
+    name: "npm run smoke:oro-6k",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oro-6k"]),
+    summaryKey: "oro6k",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

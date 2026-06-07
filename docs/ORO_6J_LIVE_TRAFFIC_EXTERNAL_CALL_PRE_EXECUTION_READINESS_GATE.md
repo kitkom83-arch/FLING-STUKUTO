@@ -111,6 +111,10 @@ request and a separate actual execution decision. ORO-6J does not submit actual
 execution authorization, does not authorize actual execution, and does not
 perform actual execution.
 
+ORO-6K actual external call execution authorization request boundary is required next.
+ORO-6K does not issue the actual execution decision and may only submit the
+static/mock request as `submitted_pending_actual_execution_decision`.
+
 ## Secret redaction rules
 
 ORO-6J records only static and mock evidence. Outputs must stay sanitized and

@@ -1174,3 +1174,12 @@ ORO-6I. It proves the static/mock state is ready for a separate actual external 
 It does not submit that request, does not authorize actual execution, does not
 perform execution, and keeps wallet, ledger, Prisma, DB transaction, migration,
 deploy, external network, and live OroPlay calls blocked.
+
+## ORO-6K Current
+
+ORO-6K records the actual external call execution authorization request as
+submitted_pending_actual_execution_decision after ORO-6J. It submits the
+static/mock request only and still requires a separate actual external call execution authorization decision.
+It does not issue that decision, authorize actual execution, perform execution,
+or open wallet, ledger, Prisma, DB transaction, migration, deploy, external
+network, or live OroPlay calls.
