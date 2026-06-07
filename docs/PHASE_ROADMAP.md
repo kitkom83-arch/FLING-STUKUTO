@@ -843,6 +843,54 @@ ORO-6I target criteria:
   live OroPlay call, no mutation, no sensitive output, and `smoke:oro-6i`
   registration.
 
+## ORO-6J current/live traffic external call pre-execution readiness gate
+
+ORO-6J current/live traffic external call pre-execution readiness gate depends
+on the ORO-6I readiness-only execution authorization decision, the ORO-6H
+submitted execution authorization request, and the ORO-6G external call
+readiness gate. The ORO-6J readiness status is
+`ready_for_separate_actual_external_call_execution_authorization_request`.
+
+Marker: next phase blocked until separate actual external call execution authorization request.
+Marker: actual external call execution authorization remains separate.
+
+ORO-6J confirms:
+
+- ORO-6I execution authorization decision evidence is present and passed.
+- ORO-6I decision is issued as
+  `approved_for_pre_execution_readiness_only`.
+- ORO-6I decision scope remains `pre_execution_readiness_only`.
+- ORO-6I has not authorized or performed actual execution.
+- ORO-6I has not allowed external network or live OroPlay calls.
+- ORO-6H request status is `submitted_pending_execution_decision`.
+- ORO-6G readiness gate status is
+  `ready_for_separate_execution_authorization_request`.
+- ORO-6J pre-execution readiness gate passes as
+  `ready_for_separate_actual_external_call_execution_authorization_request`.
+- Actual external call execution authorization request remains not submitted.
+- Actual external call execution authorization decision remains not issued.
+- Actual external call execution remains unauthorized.
+- External call execution is not performed.
+- External network and live OroPlay calls remain absent.
+- Wallet/ledger/Prisma/DB/migration/deploy work remains blocked.
+- `smoke:oro-6j` registration.
+
+ORO-6J target criteria:
+
+- ORO-6J live traffic external call pre-execution readiness gate doc exists and
+  states readiness-gate-only scope.
+- ORO-6J helper exports phase, readiness status, boundary builder, validator,
+  readiness summary builder, and still-no-external-call assertion.
+- ORO-6J fixtures cover happy path, missing ORO-6I decision, ORO-6I decision
+  not issued, wrong ORO-6I decision status, actual execution authorization,
+  actual execution request submission, external network allowance, live
+  OroPlay API allowance, wallet mutation allowance, ledger mutation allowance,
+  data write allowance, and sensitive-output evidence.
+- ORO-6J smoke confirms output, docs, script registration, protected runtime
+  file boundary, readiness gate passed, actual execution request not submitted,
+  actual execution unauthorized, no external or live OroPlay call, no mutation,
+  no sensitive output, and `smoke:oro-6j` registration.
+
 ## ORO-4A current/runtime implementation skeleton
 
 ORO-4A current/runtime implementation skeleton. This phase adds only disabled-by-default runtime skeleton docs, a staging-disabled gate, intent-only mock functions, and local smoke coverage.

@@ -1165,3 +1165,12 @@ record for pre-execution readiness only, and the next phase still requires a
 separate actual external call execution authorization while wallet, ledger,
 Prisma, DB transaction, migration, deploy, external network, and live OroPlay
 calls stay blocked.
+
+## ORO-6J Current
+
+ORO-6J records the external/live OroPlay call pre-execution readiness gate as
+ready_for_separate_actual_external_call_execution_authorization_request after
+ORO-6I. It proves the static/mock state is ready for a separate actual external call execution authorization request.
+It does not submit that request, does not authorize actual execution, does not
+perform execution, and keeps wallet, ledger, Prisma, DB transaction, migration,
+deploy, external network, and live OroPlay calls blocked.

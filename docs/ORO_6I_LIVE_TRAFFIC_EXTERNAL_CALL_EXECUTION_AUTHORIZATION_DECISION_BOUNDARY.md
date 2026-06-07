@@ -85,6 +85,10 @@ The next phase must add a separate pre-execution readiness gate and a separate
 actual external call execution authorization. ORO-6I does not authorize or
 perform actual execution.
 
+ORO-6J pre-execution readiness gate is required next. ORO-6J does not submit actual execution authorization.
+ORO-6J must only advance the static/mock state to
+`ready_for_separate_actual_external_call_execution_authorization_request`.
+
 ## Secret redaction rules
 
 ORO-6I records only static and mock evidence. Outputs must stay sanitized and
