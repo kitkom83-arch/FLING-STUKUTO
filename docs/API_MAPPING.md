@@ -1008,3 +1008,24 @@ ORO-6D validation markers:
 - externalNetworkCalled=false
 - liveOroPlayApiCalled=false
 - smoke:oro-6d
+
+## ORO-6E Live Traffic External Call Authorization Request Mapping
+
+ORO-6E submits the external/live call authorization request only after ORO-6D
+passes. /api/balance and /api/transaction live traffic remains fail_closed_no_mutation.
+
+- ORO-6E submits external/live call authorization request only
+- no outgoing live OroPlay API call yet
+- no wallet/ledger mutation
+- externalCallAuthorizationRequestPrepared=true
+- externalCallAuthorizationRequestSubmitted=true
+- externalCallAuthorizationDecisionIssued=false
+- externalNetworkAllowed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCallAllowed=false
+- liveOroPlayApiCalled=false
+- walletMutationPerformed=false
+- ledgerMutationPerformed=false
+- prismaWritePerformed=false
+- dbTransactionPerformed=false
+- smoke:oro-6e

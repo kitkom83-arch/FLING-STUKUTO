@@ -1087,9 +1087,23 @@ migration, external network, and live OroPlay calls stayed blocked.
 
 ## ORO-6D Current
 
+Marker retained for the ORO-6D smoke. ORO-6D is closed below and ORO-6E is the
+current phase.
+
+## ORO-6D Closed
+
 ORO-6D validates post-enable live traffic behavior after ORO-6C. It confirms
 `/api/balance` and `/api/transaction` live traffic remain
 fail_closed_no_mutation while wallet, ledger, Prisma, DB transaction,
 migration, external network, and live OroPlay calls stay blocked.
 
 ORO-6D external/live OroPlay call authorization still pending future boundary.
+
+## ORO-6E Current
+
+ORO-6E creates the external/live OroPlay call authorization request record after
+ORO-6D. It requires human approval and a separate external call decision while
+wallet, ledger, Prisma, DB transaction, migration, external network, and live
+OroPlay calls stay blocked.
+
+ORO-6E keeps external/live OroPlay call decision still pending.

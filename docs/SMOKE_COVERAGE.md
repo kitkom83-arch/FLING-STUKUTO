@@ -3116,6 +3116,48 @@ Assertions:
 - Confirms external and live OroPlay calls remain absent.
 - Confirms no sensitive-shaped output.
 
+## 123. ORO-6E Live Traffic External Call Authorization Request Boundary Coverage
+
+ORO-6E Live Traffic External Call Authorization Request Boundary Coverage. The
+phase submits only the external/live call authorization request after ORO-6D
+while live traffic remains fail_closed_no_mutation and real money, wallet
+mutation, ledger mutation, Prisma writes, DB transactions, external network,
+and live OroPlay calls remain blocked.
+
+Coverage:
+
+- ORO-6E boundary doc: live traffic external call authorization request
+  boundary.
+- ORO-6E mock helper: ORO-6D record validation, request builder, request
+  boundary validation, no-external-network validation, no-live-OroPlay-call
+  validation, no-mutation validation, and summary builder.
+- ORO-6E fixtures: happy path, missing ORO-6D validation record, ORO-6D not
+  passed, wrong live traffic mode, external network allowed, external network
+  called, live OroPlay API allowed, live OroPlay API called, wallet mutation
+  attempt, ledger mutation attempt, Prisma write attempt, DB transaction
+  attempt, missing human approval requirement, and sanitized response evidence.
+- ORO-6E smoke wrapper: `src/local-smoke-tests/oro6eSmoke.js`.
+
+Registered smokes:
+
+- `smoke:oro-6e-live-traffic-external-call-authorization-request-boundary`
+- `smoke:oro-6e`
+
+Assertions:
+
+- Confirms ORO-6E emits
+  `liveTrafficExternalCallAuthorizationRequestBoundaryResult=PASS`.
+- Confirms ORO-6D live traffic post-enablement validation record is present.
+- Confirms ORO-6D validation passed is true.
+- Confirms live traffic allowed and enabled from ORO-6D are true.
+- Confirms live traffic mode remains `fail_closed_no_mutation`.
+- Confirms the external call authorization request is prepared and submitted.
+- Confirms the external call authorization decision remains pending.
+- Confirms human approval and separate external call decision are required.
+- Confirms wallet/ledger/Prisma/DB/migration flags remain false.
+- Confirms external and live OroPlay calls remain absent.
+- Confirms no sensitive-shaped output.
+
 ## 122. ORO-6C Live Traffic Enablement Boundary Coverage
 
 ORO-6C Live Traffic Enablement Boundary Coverage. The phase enables liveTraffic

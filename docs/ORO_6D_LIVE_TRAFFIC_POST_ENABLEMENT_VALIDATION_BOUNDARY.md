@@ -147,3 +147,8 @@ runtime protected files are touched, or sensitive-shaped output is detected.
 The next phase requires separate external/live OroPlay call authorization
 request. ORO-6D validates post-enable live traffic only and keeps outgoing live
 OroPlay blocked.
+
+## ORO-6E external/live OroPlay call request requirement
+
+ORO-6E is required for external/live OroPlay call authorization request.
+ORO-6D does not allow external network or live OroPlay API calls.

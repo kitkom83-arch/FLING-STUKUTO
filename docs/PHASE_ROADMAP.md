@@ -620,6 +620,43 @@ ORO-6D target criteria:
   file boundary, no mutation, no external or live OroPlay call, no sensitive
   output, and `smoke:oro-6d` registration.
 
+## ORO-6E current/live traffic external call authorization request boundary
+
+ORO-6D closed live traffic post-enablement validation boundary. ORO-6E
+current/live traffic external call authorization request boundary. ORO-6E is
+blocked until ORO-6D has passed and the external/live OroPlay call request can
+be submitted without issuing a decision.
+
+Marker: next phase blocked until external call authorization decision.
+
+ORO-6E confirms:
+
+- ORO-6D live traffic post-enablement validation dependency is present.
+- ORO-6D validation passed is true.
+- Live traffic allowed and enabled from ORO-6D are true.
+- Live traffic mode remains `fail_closed_no_mutation`.
+- The external call authorization request is prepared and submitted.
+- Human approval and separate external call decision are required.
+- The external call authorization decision remains pending.
+- External network and live OroPlay calls remain absent.
+- Wallet/ledger/Prisma/DB/migration work remains blocked.
+- `smoke:oro-6e` registration.
+
+ORO-6E target criteria:
+
+- ORO-6E live traffic external call authorization request doc exists and states
+  no-external-network, no-live-OroPlay-call, and no-mutation scope.
+- ORO-6E helper exports status, ORO-6D record validation, request builder,
+  request boundary validation, no-external-network validation,
+  no-live-OroPlay-call validation, no-mutation validation, and summary builder.
+- ORO-6E fixtures cover happy path, missing ORO-6D validation, ORO-6D not
+  passed, wrong live traffic mode, external network allowed or called, live
+  OroPlay API allowed or called, mutation attempts, missing human approval
+  requirement, and sanitized response evidence.
+- ORO-6E smoke confirms output, docs, script registration, protected runtime
+  file boundary, no mutation, no external or live OroPlay call, no sensitive
+  output, and `smoke:oro-6e` registration.
+
 ## ORO-4A current/runtime implementation skeleton
 
 ORO-4A current/runtime implementation skeleton. This phase adds only disabled-by-default runtime skeleton docs, a staging-disabled gate, intent-only mock functions, and local smoke coverage.

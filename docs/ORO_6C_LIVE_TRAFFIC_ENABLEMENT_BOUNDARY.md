@@ -135,3 +135,13 @@ records fail-closed no-mutation live traffic enablement.
 ## ORO-6D post-enable validation requirement
 
 ORO-6D is required after enablement. ORO-6D must confirm live traffic remains fail_closed_no_mutation and external/live OroPlay call still blocked.
+
+## ORO-6E external/live call request linkage
+
+ORO-6C live traffic enablement remains a prerequisite boundary for later
+external/live call work, but ORO-6D post-enablement validation must pass first.
+ORO-6E only prepares and submits the external call authorization request record.
+It still does not allow external network, live OroPlay API call, wallet
+mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, or
+real money. Any future external/live call requires a separate human
+authorization decision.
