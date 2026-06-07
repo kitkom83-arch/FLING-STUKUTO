@@ -1029,3 +1029,29 @@ passes. /api/balance and /api/transaction live traffic remains fail_closed_no_mu
 - prismaWritePerformed=false
 - dbTransactionPerformed=false
 - smoke:oro-6e
+
+## ORO-6F Live Traffic External Call Authorization Decision Mapping
+
+ORO-6F records external/live call authorization decision only after ORO-6E
+submits the request and ORO-6D validation remains passed. The decision is
+approved_for_readiness_only, not approved_to_call_now.
+
+- ORO-6F records external/live call authorization decision only
+- approved_for_readiness_only
+- not approved_to_call_now
+- externalCallExecutionAuthorized=false
+- externalCallReadinessGateAllowedNext=true
+- nextPhaseRequiresExternalCallReadinessGate=true
+- nextPhaseRequiresSeparateExternalCallExecutionAuthorization=true
+- no outgoing live OroPlay API call yet
+- no wallet/ledger mutation
+- externalNetworkAllowed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCallAllowed=false
+- liveOroPlayApiCalled=false
+- walletMutationPerformed=false
+- ledgerMutationPerformed=false
+- prismaWritePerformed=false
+- dbTransactionPerformed=false
+- migrationPerformed=false
+- smoke:oro-6f

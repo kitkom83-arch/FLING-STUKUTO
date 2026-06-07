@@ -152,3 +152,9 @@ OroPlay blocked.
 
 ORO-6E is required for external/live OroPlay call authorization request.
 ORO-6D does not allow external network or live OroPlay API calls.
+
+## ORO-6F readiness-only decision dependency
+
+ORO-6F still requires ORO-6D validation to remain passed. ORO-6F does not allow
+external network or live OroPlay API calls and does not authorize execution.
+Marker: ORO-6F does not allow external network or live OroPlay API calls.

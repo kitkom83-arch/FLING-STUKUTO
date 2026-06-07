@@ -1107,3 +1107,16 @@ wallet, ledger, Prisma, DB transaction, migration, external network, and live
 OroPlay calls stay blocked.
 
 ORO-6E keeps external/live OroPlay call decision still pending.
+
+## ORO-6E Closed
+
+ORO-6E is closed. The external/live OroPlay call authorization request was
+submitted while execution, external network, and live OroPlay calls remained
+blocked.
+
+## ORO-6F Current
+
+ORO-6F records the external/live OroPlay call authorization decision as
+approved_for_readiness_only. It is not approved_to_call_now and keeps
+external/live OroPlay call execution still blocked until a later readiness gate
+and separate execution authorization decision.

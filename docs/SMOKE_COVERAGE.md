@@ -3116,6 +3116,48 @@ Assertions:
 - Confirms external and live OroPlay calls remain absent.
 - Confirms no sensitive-shaped output.
 
+## 124. ORO-6F Live Traffic External Call Authorization Decision Boundary Coverage
+
+ORO-6F Live Traffic External Call Authorization Decision Boundary Coverage. The
+phase records a readiness-only external/live call authorization decision after
+ORO-6E while real money, wallet mutation, ledger mutation, Prisma writes, DB
+transactions, migrations, deploy, external network, and live OroPlay calls
+remain blocked.
+
+Coverage:
+
+- ORO-6F boundary doc: live traffic external call authorization decision
+  boundary.
+- ORO-6F mock helper: phase constant, decision status, decision record builder,
+  boundary evaluator, and harness runner.
+- ORO-6F fixtures: happy path, missing ORO-6E request, request not submitted,
+  wrong request status, failed ORO-6D validation, wrong live traffic mode,
+  execution-now decision attempt, external network allowance, live OroPlay API
+  allowance, mutation attempt, and sensitive-output evidence.
+- ORO-6F smoke wrapper: `src/local-smoke-tests/oro6fSmoke.js`.
+
+Registered smokes:
+
+- `smoke:oro-6f-live-traffic-external-call-authorization-decision-boundary`
+- `smoke:oro-6f`
+
+Assertions:
+
+- Confirms ORO-6F emits
+  `liveTrafficExternalCallAuthorizationDecisionBoundaryResult=PASS`.
+- Confirms ORO-6E request evidence is present and submitted.
+- Confirms ORO-6E request status is `submitted_pending_decision`.
+- Confirms ORO-6D validation passed is true.
+- Confirms live traffic mode remains `fail_closed_no_mutation`.
+- Confirms decision status is `approved_for_readiness_only`.
+- Confirms decision is not `approved_to_call_now`.
+- Confirms external call execution remains unauthorized.
+- Confirms next phase requires readiness gate and separate execution
+  authorization.
+- Confirms wallet/ledger/Prisma/DB/migration flags remain false.
+- Confirms external and live OroPlay calls remain absent.
+- Confirms no sensitive-shaped output.
+
 ## 123. ORO-6E Live Traffic External Call Authorization Request Boundary Coverage
 
 ORO-6E Live Traffic External Call Authorization Request Boundary Coverage. The

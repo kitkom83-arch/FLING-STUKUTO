@@ -131,3 +131,9 @@ sensitive-shaped output is detected.
 
 The next phase requires separate external call authorization decision. ORO-6E
 only submits the request and keeps outgoing live OroPlay blocked.
+
+## ORO-6F external/live OroPlay call decision requirement
+
+ORO-6F is required for external/live OroPlay call authorization decision.
+ORO-6F must record `approved_for_readiness_only`, not `approved_to_call_now`.
+ORO-6E does not authorize execution, external network, or live OroPlay calls.
