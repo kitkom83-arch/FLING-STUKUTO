@@ -128,6 +128,9 @@ approval boundary before any runtime activation, runtime enablement, live
 execution approval, external network call, or live OroPlay API call can be
 considered.
 
+ORO-7O runtime activation execution approval request boundary is required next.
+The ORO-7O request scope is `runtime_activation_execution_approval_request_only`.
+
 ## Safety confirmation
 
 ORO-7N is docs, contract, static/mock harness, and local smoke only. It does

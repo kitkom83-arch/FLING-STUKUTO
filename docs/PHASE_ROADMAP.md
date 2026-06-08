@@ -3541,3 +3541,33 @@ Validation coverage:
   runtime/live/mutation/route flags, empty happy-path blockers, and fail-closed
   blocker cases.
 - `smoke:oro-7n` registration.
+
+## ORO-7O current/live traffic actual external call execution runtime activation execution approval request boundary
+
+ORO-7O records the actual external call execution runtime activation execution
+approval request boundary after ORO-7N final readiness. ORO-7O is runtime activation execution approval request only.
+
+The ORO-7O request scope is `runtime_activation_execution_approval_request_only`.
+The ORO-7O request status is
+`submitted_pending_actual_external_call_execution_runtime_activation_execution_approval_decision`.
+ORO-7O depends on ORO-7N final readiness scope
+`runtime_activation_final_readiness_only`.
+
+ORO-7O still does not activate runtime execution, enable runtime execution,
+approve live execution, execute live traffic, call live OroPlay, mutate wallet
+or ledger, write data, run migrations, deploy, mount routes, or expose public
+aliases.
+
+Validation:
+
+- ORO-7O runtime activation execution approval request boundary doc exists and
+  states request-only scope.
+- ORO-7O helper exports phase, scope, boundary builder, validator, and summary.
+- ORO-7O fixtures cover happy path, missing ORO-7N final readiness, ORO-7N
+  scope mismatch, attempted runtime activation, runtime enablement, live
+  execution, network/API calls, mutation, migration/deploy, route/alias
+  exposure, and sensitive output blockers.
+- ORO-7O smoke confirms request output, ORO-7N dependency, closed
+  runtime/live/mutation/route flags, empty happy-path blockers, and fail-closed
+  blocker cases.
+- `smoke:oro-7o` registration.

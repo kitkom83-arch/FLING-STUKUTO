@@ -3787,6 +3787,51 @@ Coverage assertions:
   OroPlay, mutation, migration/deploy, route/alias, and sensitive output
   attempts.
 
+## ORO-7O Live Traffic Actual External Call Execution Runtime Activation Execution Approval Request Boundary Coverage
+
+ORO-7O Live Traffic Actual External Call Execution Runtime Activation Execution
+Approval Request Boundary Coverage is static/mock only. It validates that
+ORO-7O depends on ORO-7N final readiness and records only a submitted runtime
+activation execution approval request.
+
+Covered surfaces:
+
+- ORO-7O boundary doc: live traffic actual external call execution runtime
+  activation execution approval request boundary.
+- ORO-7O mock helper: request scope, request status, boundary builder,
+  validator, and summary exports.
+- ORO-7O fixtures: happy path, missing ORO-7N final readiness, ORO-7N scope
+  mismatch, attempted runtime activation, runtime enablement, live execution,
+  network/API calls, mutation, migration/deploy, route/alias exposure, and
+  sensitive output blockers.
+- ORO-7O smoke: runtime activation execution approval request boundary smoke
+  file.
+- ORO-7O smoke wrapper: `src/local-smoke-tests/oro7oSmoke.js`.
+
+Package scripts:
+
+- ORO-7O boundary-specific package smoke alias
+- `smoke:oro-7o`
+- `smoke:oro-7o-runtime-activation-execution-approval-request`
+
+Assertions:
+
+- Confirms ORO-7O emits `phase=ORO-7O`, request scope
+  `runtime_activation_execution_approval_request_only`, and request status
+  `submitted_pending_actual_external_call_execution_runtime_activation_execution_approval_decision`.
+- Confirms ORO-7O depends on ORO-7N final readiness scope
+  `runtime_activation_final_readiness_only`.
+- Confirms ORO-7O does not activate runtime execution, enable runtime
+  execution, approve live execution, or execute live traffic.
+- Confirms ORO-7O does not open external network access or call live OroPlay.
+- Confirms ORO-7O does not allow wallet mutation, ledger mutation, data write,
+  DB transaction, migration, or deploy.
+- Confirms ORO-7O does not mount routes, expose public aliases, or allow the
+  balance/transaction/OroPlay route aliases.
+- Confirms ORO-7O blockers are empty on the happy path and fail closed for
+  dependency, readiness scope, runtime, live execution, network, live OroPlay,
+  mutation, migration/deploy, route/alias, and sensitive output attempts.
+
 ## 137. ORO-6X Live Traffic Actual External Call Execution Live Execution Decision Boundary Coverage
 
 ORO-6X Live Traffic Actual External Call Execution Live Execution Decision
