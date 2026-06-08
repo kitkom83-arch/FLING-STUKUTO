@@ -2163,3 +2163,49 @@ later separate runtime enablement decision and keeps actual execution closed.
 - migrationAllowed=false
 - deployAllowed=false
 - smoke:oro-7f
+
+## ORO-7G Live Traffic Actual External Call Execution Runtime Enablement Decision Boundary Mapping
+
+ORO-7G records actual external call execution runtime enablement decision only
+after ORO-7F submitted the runtime enablement request. It issues static/mock
+decision evidence for a later separate final readiness review only.
+
+Mapping contract:
+
+- ORO-7G records actual external call execution runtime enablement decision only
+- depends on ORO-7F request status:
+  `submitted_pending_actual_external_call_execution_runtime_enablement_decision`
+- depends on ORO-7F request scope: `runtime_enablement_request_only`
+- decision status:
+  `approved_for_separate_actual_external_call_execution_runtime_enablement_final_readiness_only`
+- decision scope: `runtime_enablement_decision_only`
+- actualExternalCallExecutionRuntimeEnabled=false
+- actualExternalCallExecutionActivated=false
+- actualExternalCallExecutionEnabled=false
+- actualExternalCallExecutionAuthorized=false
+- actualExternalCallExecutionLiveExecutionApproved=false
+- actualExternalCallExecutionLiveExecuted=false
+- externalNetworkAllowed=false
+- liveOroPlayApiCallAllowed=false
+- walletMutationAllowed=false
+- ledgerMutationAllowed=false
+- prismaWriteAllowed=false
+- dbTransactionAllowed=false
+- routeEnablementAllowed=false
+- expressMountAllowed=false
+- publicAliasAllowed=false
+- apiBalanceAliasAllowed=false
+- apiTransactionAliasAllowed=false
+- apiOroplayBalanceRouteAllowed=false
+- apiOroplayTransactionRouteAllowed=false
+- nextPhaseRequiresSeparateActualExternalCallExecutionRuntimeEnablementFinalReadiness=true
+
+ORO-7G is runtime enablement decision boundary only. ORO-7G does not enable
+runtime execution, does not activate external calls, does not permit live
+OroPlay API calls, does not mutate wallet or ledger, does not mount any route,
+and does not expose public aliases.
+
+Validation:
+
+- smoke:oro-7g
+- smoke:oro-7g-runtime-enable-decision

@@ -3426,6 +3426,48 @@ Smoke assertions:
 - Confirms ORO-7F blocks unsafe runtime enablement request inputs and
   sensitive-shaped output.
 
+## 146. ORO-7G Live Traffic Actual External Call Execution Runtime Enablement Decision Boundary Coverage
+
+ORO-7G Live Traffic Actual External Call Execution Runtime Enablement Decision
+
+Files covered:
+
+- ORO-7G boundary doc: live traffic actual external call execution runtime
+  enablement decision boundary.
+- ORO-7G mock helper: runtime enablement decision status, boundary builder,
+  evaluator, summary builder, and validator.
+- ORO-7G fixtures: happy path, missing ORO-7F request, request not submitted,
+  decision not issued, runtime enablement, activation, enablement,
+  authorization, live execution, external network, live OroPlay, wallet
+  mutation, ledger mutation, Prisma write, DB transaction, migration, deploy,
+  route enablement, Express mount, public alias, and API alias attempts.
+- ORO-7G smoke: runtime enablement decision boundary smoke file.
+- ORO-7G smoke wrapper: `src/local-smoke-tests/oro7gSmoke.js`.
+
+Commands:
+
+- ORO-7G boundary-specific package smoke alias
+- `smoke:oro-7g`
+- `smoke:oro-7g-runtime-enable-decision`
+
+Coverage assertions:
+
+- Confirms ORO-7G emits `phase=ORO-7G`, the final-readiness-only runtime
+  enablement decision status, and `runtime_enablement_decision_only`.
+- Confirms ORO-7G depends on the ORO-7F request status
+  `submitted_pending_actual_external_call_execution_runtime_enablement_decision`
+  and scope `runtime_enablement_request_only`.
+- Confirms ORO-7G issues only the runtime enablement decision.
+- Confirms ORO-7G does not enable runtime execution, activate external calls,
+  approve live execution, or perform live execution.
+- Confirms ORO-7G does not open external network access or call live OroPlay.
+- Confirms ORO-7G does not allow wallet mutation, ledger mutation, data write,
+  DB transaction, migration, or deploy.
+- Confirms ORO-7G does not mount routes, expose public aliases, or allow the
+  balance, transaction, OroPlay balance, or OroPlay transaction API aliases.
+- Confirms ORO-7G blocks unsafe runtime enablement decision inputs and
+  sensitive-shaped output.
+
 ## 137. ORO-6X Live Traffic Actual External Call Execution Live Execution Decision Boundary Coverage
 
 ORO-6X Live Traffic Actual External Call Execution Live Execution Decision

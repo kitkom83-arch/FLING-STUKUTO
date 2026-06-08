@@ -105,11 +105,12 @@ enablement request evidence that can be checked by the local smoke harness.
 
 ## Next phase expectations
 
-The next phase must issue a separate actual external call execution runtime
-enablement decision before any live execution approval, runtime activation, or
-actual execution can occur. ORO-7F still does not issue that decision, approve
-actual execution, enable runtime execution, authorize execution, or perform
-actual execution.
+ORO-7G runtime enablement decision boundary is required next. That decision
+must stay `runtime_enablement_decision_only` and may approve only the separate
+final readiness review status
+`approved_for_separate_actual_external_call_execution_runtime_enablement_final_readiness_only`.
+ORO-7F still does not issue that decision, approve actual execution, enable
+runtime execution, authorize execution, or perform actual execution.
 
 ## Sensitive output rules
 

@@ -3296,3 +3296,34 @@ Verification scope:
   transaction, no migration, no deploy, no sensitive-shaped output, and
   protected runtime paths untouched.
 - `smoke:oro-7f` registration.
+
+## ORO-7G current/live traffic actual external call execution runtime enablement decision boundary
+
+ORO-7G records the actual external call execution runtime enablement decision
+after ORO-7F submitted the runtime enablement request. This phase is runtime
+enablement decision boundary only. It issues static/mock decision evidence that
+approves only a later separate runtime enablement final readiness review.
+
+ORO-7G is runtime enablement decision boundary only.
+
+ORO-7G still does not enable runtime execution, activate external calls, approve
+live execution, perform live execution, open external network access, call live
+OroPlay, mount routes, expose public aliases, mutate wallet or ledger, write via
+Prisma, run DB transactions, migrate, or deploy.
+
+Scope:
+
+- ORO-7G runtime enablement decision doc exists and states decision-only scope.
+- ORO-7G helper exports status, boundary builder, evaluator, summary builder,
+  and validator.
+- ORO-7G fixtures cover happy path, missing ORO-7F request, request not
+  submitted, decision not issued, runtime enablement attempts, live execution
+  attempts, external network/live OroPlay attempts, wallet/ledger/data mutation
+  attempts, migration/deploy attempts, route mount, Express mount, public alias,
+  and API alias attempts.
+- ORO-7G smoke confirms runtime enablement decision output, final readiness only
+  status, no runtime enablement, no activation, no live execution, no route
+  enablement, no public alias, no network access, no live OroPlay call, no
+  wallet/ledger/data mutation, no migration, no deploy, and fail-closed blocker
+  cases.
+- `smoke:oro-7g` registration.

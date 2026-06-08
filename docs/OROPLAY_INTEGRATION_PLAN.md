@@ -1450,6 +1450,24 @@ execution, activate actual execution, enable runtime execution, authorize
 execution, perform external call execution, open external network access, call
 live OroPlay, mutate wallet or ledger state, write Prisma data, run DB
 transactions, run migrations, deploy, mount routes, or expose public aliases.
+
+## ORO-7G Current
+
+ORO-7G records the actual external call execution runtime enablement decision
+only after ORO-7F submitted the runtime enablement request. It is runtime
+enablement decision boundary only, and its approval is limited to a separate
+runtime enablement final readiness review.
+
+ORO-7G is runtime enablement decision boundary only.
+ORO-7G is approved for final readiness only.
+
+ORO-7G decision status is
+`approved_for_separate_actual_external_call_execution_runtime_enablement_final_readiness_only`
+with scope `runtime_enablement_decision_only`.
+
+ORO-7G does not enable runtime execution, activate external calls, permit live
+OroPlay API calls, mutate wallet or ledger, mount any route, expose public
+aliases, perform external network access, write data, run migrations, or deploy.
 and the scope is final_execution_decision_only.
 This is a final execution decision only.
 It still requires a separate actual external call execution authorization
