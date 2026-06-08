@@ -2909,3 +2909,58 @@ Validation:
 
 - smoke:oro-7s
 - smoke:oro-7s-runtime-activation-execution-decision
+
+## ORO-7T Live Traffic Actual External Call Execution Runtime Activation Execution Post-Decision Readiness Gate Mapping
+
+ORO-7T records actual external call execution runtime activation execution post-decision readiness only
+after ORO-7S issued the runtime activation execution decision.
+
+ORO-7T remains docs/contract/static/mock/local-smoke only and does not activate
+runtime execution, enable runtime execution, approve live execution, execute
+live traffic, call live OroPlay, mutate wallet or ledger, write data, run
+migrations, deploy, mount routes, or expose public aliases.
+
+- ORO-7T records actual external call execution runtime activation execution post-decision readiness only
+- ORO-7S decision scope: runtime_activation_execution_decision_only
+- ORO-7S decision status: approved_for_separate_actual_external_call_execution_runtime_activation_execution_post_decision_readiness_only
+- ORO-7T post-decision readiness scope: runtime_activation_execution_post_decision_readiness_only
+- actualExternalCallExecutionRuntimeActivationExecutionDecisionIssuedFromOro7s=true
+- actualExternalCallExecutionRuntimeActivationExecutionPostDecisionReadinessPrepared=true
+- actualExternalCallExecutionRuntimeActivationExecutionPostDecisionReadinessPassed=true
+- actualExternalCallExecutionRuntimeEnabled=false
+- actualExternalCallExecutionActivated=false
+- actualExternalCallExecutionEnabled=false
+- actualExternalCallExecutionAuthorized=false
+- actualExternalCallExecutionLiveExecutionApproved=false
+- actualExternalCallExecutionLiveExecuted=false
+- externalNetworkAllowed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCallAllowed=false
+- liveOroPlayApiCalled=false
+- walletMutationAllowed=false
+- walletMutationPerformed=false
+- ledgerMutationAllowed=false
+- ledgerMutationPerformed=false
+- prismaWriteAllowed=false
+- prismaWritePerformed=false
+- dbTransactionAllowed=false
+- dbTransactionPerformed=false
+- migrationAllowed=false
+- migrationPerformed=false
+- deployAllowed=false
+- deployPerformed=false
+- routeEnablementAllowed=false
+- expressMountAllowed=false
+- publicAliasAllowed=false
+- apiBalanceAliasAllowed=false
+- apiTransactionAliasAllowed=false
+- apiOroplayBalanceRouteAllowed=false
+- apiOroplayTransactionRouteAllowed=false
+- nextPhaseRequiresSeparateActualExternalCallExecutionRuntimeActivationExecutionFinalAuthorizationRequest=true
+- humanApprovalRequiredForActualExecution=true
+- separateActualExecutionApprovalRequired=true
+
+Validation:
+
+- smoke:oro-7t
+- smoke:oro-7t-runtime-activation-execution-post-decision-readiness

@@ -125,6 +125,11 @@ activation execution post-decision readiness boundary before any runtime
 activation, runtime enablement, live execution approval, external network call,
 or live OroPlay API call can be considered.
 
+ORO-7T is the separate runtime activation execution post-decision readiness gate after ORO-7S.
+It must consume ORO-7S scope `runtime_activation_execution_decision_only` and
+status
+`approved_for_separate_actual_external_call_execution_runtime_activation_execution_post_decision_readiness_only`.
+
 ## Safety confirmation
 
 ORO-7S is docs, contract, static/mock harness, and local smoke only. It does

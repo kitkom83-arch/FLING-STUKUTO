@@ -1,0 +1,131 @@
+# ORO-7T Live Traffic Actual External Call Execution Runtime Activation Execution Post-Decision Readiness Gate
+
+## Phase summary
+
+ORO-7T records the live traffic actual external call execution runtime
+activation execution post-decision readiness gate after ORO-7S issued the
+runtime activation execution decision. ORO-7T is runtime activation execution
+post-decision readiness only.
+
+ORO-7T creates static/mock readiness evidence only. It does not activate
+runtime execution, enable runtime execution, approve live execution, execute
+live traffic, call live OroPlay, mutate wallet or ledger, write data, run
+migrations, deploy, mount routes, or expose public aliases.
+
+## Depends on ORO-7S
+
+ORO-7T depends on the ORO-7S runtime activation execution decision boundary
+and consumes only the following ORO-7S evidence:
+
+- dependsOnOro7sLiveTrafficActualExternalCallExecutionRuntimeActivationExecutionDecisionBoundary = true
+- oro7sLiveTrafficActualExternalCallExecutionRuntimeActivationExecutionDecisionBoundaryPassed = true
+- actualExternalCallExecutionRuntimeActivationExecutionDecisionIssuedFromOro7s = true
+- actualExternalCallExecutionRuntimeActivationExecutionDecisionStatusFromOro7s = approved_for_separate_actual_external_call_execution_runtime_activation_execution_post_decision_readiness_only
+- actualExternalCallExecutionRuntimeActivationExecutionDecisionScopeFromOro7s = runtime_activation_execution_decision_only
+
+## Runtime activation execution post-decision readiness record
+
+ORO-7T may prepare and pass only the post-decision readiness record:
+
+- actualExternalCallExecutionRuntimeActivationExecutionPostDecisionReadinessPrepared = true
+- actualExternalCallExecutionRuntimeActivationExecutionPostDecisionReadinessPassed = true
+- actualExternalCallExecutionRuntimeActivationExecutionPostDecisionReadinessScope = runtime_activation_execution_post_decision_readiness_only
+
+This readiness record is not runtime activation, runtime enablement, live
+execution approval, live execution, external call, route mount, public alias,
+wallet mutation, ledger mutation, data write, DB transaction, migration, or
+deploy.
+
+## Post-decision-readiness-only boundary
+
+ORO-7T is runtime activation execution post-decision readiness only.
+ORO-7T does not activate runtime execution.
+ORO-7T does not enable runtime execution.
+ORO-7T does not approve live execution.
+ORO-7T does not execute live traffic.
+ORO-7T does not permit live OroPlay API calls.
+ORO-7T does not mutate wallet or ledger.
+ORO-7T does not mount any route.
+ORO-7T does not expose public aliases.
+
+## Explicit non-activation rules
+
+ORO-7T keeps runtime and live execution flags closed:
+
+- actualExternalCallExecutionRuntimeEnabled = false
+- actualExternalCallExecutionActivated = false
+- actualExternalCallExecutionEnabled = false
+- actualExternalCallExecutionAuthorized = false
+- actualExternalCallExecutionLiveExecutionApproved = false
+- actualExternalCallExecutionLiveExecuted = false
+
+## Forbidden runtime/live actions
+
+ORO-7T keeps external-call surfaces closed:
+
+- externalNetworkAllowed = false
+- externalNetworkCalled = false
+- liveOroPlayApiCallAllowed = false
+- liveOroPlayApiCalled = false
+
+## Route/API alias prohibition
+
+ORO-7T does not open, mount, expose, or enable any route:
+
+- routeEnablementAllowed = false
+- expressMountAllowed = false
+- publicAliasAllowed = false
+- apiBalanceAliasAllowed = false
+- apiTransactionAliasAllowed = false
+- apiOroplayBalanceRouteAllowed = false
+- apiOroplayTransactionRouteAllowed = false
+- `/api/balance` remains closed.
+- `/api/transaction` remains closed.
+- `/api/oroplay/balance` remains closed.
+- `/api/oroplay/transaction` remains closed.
+
+## Wallet/Ledger/Prisma/DB mutation prohibition
+
+ORO-7T keeps all mutation and persistence paths closed:
+
+- walletMutationAllowed = false
+- walletMutationPerformed = false
+- ledgerMutationAllowed = false
+- ledgerMutationPerformed = false
+- prismaWriteAllowed = false
+- prismaWritePerformed = false
+- dbTransactionAllowed = false
+- dbTransactionPerformed = false
+- migrationAllowed = false
+- migrationPerformed = false
+- deployAllowed = false
+- deployPerformed = false
+
+## Validation checklist
+
+- ORO-7S runtime activation execution decision dependency is present and passed.
+- ORO-7S decision status is approved for separate post-decision readiness only.
+- ORO-7S decision scope is runtime activation execution decision only.
+- ORO-7T post-decision readiness scope is runtime activation execution post-decision readiness only.
+- Runtime activation, runtime enablement, live execution, network, route,
+  alias, mutation, migration, and deploy flags remain closed.
+- Output is static/mock evidence and contains `blockers: []` on the happy path.
+
+## Next phase requirement
+
+- nextPhaseRequiresSeparateActualExternalCallExecutionRuntimeActivationExecutionFinalAuthorizationRequest = true
+- humanApprovalRequiredForActualExecution = true
+- separateActualExecutionApprovalRequired = true
+
+The next phase must be a separate actual external call execution runtime
+activation execution final authorization request before any runtime activation,
+runtime enablement, live execution approval, external network call, or live
+OroPlay API call can be considered.
+
+## Safety confirmation
+
+ORO-7T is docs, contract, static/mock harness, and local smoke only. It does
+not access production DBs, real-money flows, live execution, runtime
+enablement, runtime activation, external networks, live OroPlay, wallet
+mutation, ledger mutation, data writes, DB transactions, migrations, deploys,
+Express mounts, public aliases, or runtime route enablement.

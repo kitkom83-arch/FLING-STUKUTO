@@ -3697,3 +3697,36 @@ Validation:
 - ORO-7S smoke confirms decision output, ORO-7R dependency, closed
   runtime/live/network/route/mutation flags, and fail-closed blockers.
 - `smoke:oro-7s` registration.
+
+## ORO-7T current/live traffic actual external call execution runtime activation execution post-decision readiness gate
+
+ORO-7T records the actual external call execution runtime activation execution
+post-decision readiness gate after ORO-7S issued the runtime activation
+execution decision. ORO-7T is runtime activation execution post-decision
+readiness only.
+ORO-7T is runtime activation execution post-decision readiness only.
+
+The ORO-7T post-decision readiness scope is
+`runtime_activation_execution_post_decision_readiness_only`.
+ORO-7T depends on ORO-7S decision scope
+`runtime_activation_execution_decision_only` and decision status
+`approved_for_separate_actual_external_call_execution_runtime_activation_execution_post_decision_readiness_only`.
+
+ORO-7T still does not activate runtime execution, enable runtime execution,
+approve live execution, execute live traffic, open external networks, call live
+OroPlay, mutate wallet or ledger, write data, run migrations, deploy, mount
+routes, or expose public aliases.
+
+Validation:
+
+- ORO-7T runtime activation execution post-decision readiness gate doc exists
+  and states post-decision-readiness-only semantics.
+- ORO-7T helper exports phase, scope, gate builder, validator, and summary.
+- ORO-7T fixtures cover happy path, missing ORO-7S decision, ORO-7S decision
+  status/scope mismatch, runtime activation, runtime enablement, live
+  execution, external network, live OroPlay, wallet, ledger, Prisma write, DB
+  transaction, migration, deploy, route enablement, Express mount, public alias,
+  API alias, OroPlay route, and sensitive-output blockers.
+- ORO-7T smoke confirms post-decision readiness output, ORO-7S dependency,
+  closed runtime/live/network/route/mutation flags, and fail-closed blockers.
+- `smoke:oro-7t` registration.

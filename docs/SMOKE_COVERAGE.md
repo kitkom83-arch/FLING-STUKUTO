@@ -3090,6 +3090,54 @@ Assertions:
   request/dependency, runtime, live, network, route, alias, mutation,
   migration, deploy, and sensitive-output blockers.
 
+## ORO-7T Live Traffic Actual External Call Execution Runtime Activation Execution Post-Decision Readiness Gate Coverage
+
+ORO-7T Live Traffic Actual External Call Execution Runtime Activation Execution
+Post-Decision Readiness Gate coverage proves that ORO-7T records only
+post-decision readiness after ORO-7S issued the runtime activation execution
+decision.
+
+Covered files:
+
+- ORO-7T readiness doc: live traffic actual external call execution runtime
+  activation execution post-decision readiness gate.
+- ORO-7T mock helper: post-decision readiness scope, ORO-7S dependency, gate
+  builder, validator, and summary.
+- ORO-7T fixtures: happy path, missing ORO-7S decision, ORO-7S decision
+  status/scope mismatch, runtime activation, runtime enablement, live
+  execution, external network, live OroPlay, wallet, ledger, Prisma write, DB
+  transaction, migration, deploy, route enablement, Express mount, public alias,
+  API alias, OroPlay route, and sensitive-output blockers.
+- ORO-7T smoke: runtime activation execution post-decision readiness gate smoke.
+- ORO-7T smoke wrapper: `src/local-smoke-tests/oro7tSmoke.js`.
+
+Registered scripts:
+
+- ORO-7T post-decision-readiness-specific package smoke alias
+- `smoke:oro-7t`
+- `smoke:oro-7t-runtime-activation-execution-post-decision-readiness`
+
+Assertions:
+
+- Confirms ORO-7T emits `phase=ORO-7T` and post-decision readiness scope
+  `runtime_activation_execution_post_decision_readiness_only`.
+- Confirms ORO-7T depends on ORO-7S decision scope
+  `runtime_activation_execution_decision_only` and decision status
+  `approved_for_separate_actual_external_call_execution_runtime_activation_execution_post_decision_readiness_only`.
+- Confirms ORO-7T prepares and passes only the post-decision readiness record.
+- Confirms ORO-7T does not activate runtime execution, enable runtime
+  execution, approve live execution, or execute live traffic.
+- Confirms ORO-7T does not open external network access or call live OroPlay.
+- Confirms ORO-7T does not allow wallet mutation, ledger mutation, data write,
+  DB transaction, migration, deploy, Express mount, public alias, or route
+  enablement.
+- Confirms ORO-7T does not mount routes, expose public aliases, or allow the
+  `/api/balance`, `/api/transaction`, `/api/oroplay/balance`, or
+  `/api/oroplay/transaction` routes.
+- Confirms ORO-7T blockers are empty on the happy path and fail closed for
+  decision/dependency, runtime, live, network, route, alias, mutation,
+  migration, deploy, and sensitive-output blockers.
+
 ## ORO-7R Live Traffic Actual External Call Execution Runtime Activation Execution Request Boundary Coverage
 
 ORO-7R Live Traffic Actual External Call Execution Runtime Activation Execution
