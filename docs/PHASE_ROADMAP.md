@@ -3730,3 +3730,32 @@ Validation:
 - ORO-7T smoke confirms post-decision readiness output, ORO-7S dependency,
   closed runtime/live/network/route/mutation flags, and fail-closed blockers.
 - `smoke:oro-7t` registration.
+
+## ORO-7U current/live traffic actual external call execution runtime activation execution final authorization request boundary
+
+ORO-7U records the actual external call execution runtime activation execution
+final authorization request after ORO-7T passes the post-decision readiness
+gate. ORO-7U is runtime activation execution final authorization request only.
+
+The ORO-7U request scope is
+`runtime_activation_execution_final_authorization_request_only`.
+ORO-7U depends on ORO-7T post-decision readiness scope
+`runtime_activation_execution_post_decision_readiness_only`.
+
+ORO-7U still does not activate runtime execution, enable runtime execution,
+approve live execution, execute live traffic, call live OroPlay, mutate wallet
+or ledger, write data, run migrations, deploy, mount routes, or expose public
+aliases.
+
+Validation:
+
+- ORO-7U final authorization request boundary doc exists.
+- ORO-7U helper exports phase, scope, boundary builder, validator, and summary.
+- ORO-7U fixtures cover happy path, missing ORO-7T readiness, ORO-7T readiness
+  scope mismatch, runtime activation, runtime enablement, live execution,
+  network, live OroPlay, wallet, ledger, Prisma, DB, migration, deploy, route,
+  Express mount, public alias, public API aliases, OroPlay API routes, and
+  sensitive output blockers.
+- ORO-7U smoke confirms request output, ORO-7T dependency, closed
+  runtime/live/network/route/mutation flags, and fail-closed blockers.
+- `smoke:oro-7u` registration.

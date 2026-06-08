@@ -1226,6 +1226,23 @@ approve live execution, execute live traffic, call live OroPlay, mutate wallet
 or ledger, write data, run migrations, deploy, mount routes, or expose public
 aliases.
 
+## ORO-7U Current
+
+ORO-7U records the actual external call execution runtime activation execution
+final authorization request after ORO-7T passes the post-decision readiness
+gate. ORO-7U is runtime activation execution final authorization request only.
+
+The ORO-7U request scope is
+`runtime_activation_execution_final_authorization_request_only`.
+ORO-7U depends on ORO-7T post-decision readiness scope
+`runtime_activation_execution_post_decision_readiness_only`.
+
+ORO-7U prepares and submits only the final authorization request record; final authorization decision stays separate.
+ORO-7U still does not activate runtime execution, enable runtime execution,
+approve live execution, execute live traffic, call live OroPlay, mutate wallet
+or ledger, write data, run migrations, deploy, mount routes, or expose public
+aliases.
+
 ## ORO-7S Current
 
 ORO-7S records the actual external call execution runtime activation execution

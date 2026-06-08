@@ -3138,6 +3138,50 @@ Assertions:
   decision/dependency, runtime, live, network, route, alias, mutation,
   migration, deploy, and sensitive-output blockers.
 
+## ORO-7U Live Traffic Actual External Call Execution Runtime Activation Execution Final Authorization Request Boundary Coverage
+
+ORO-7U Live Traffic Actual External Call Execution Runtime Activation Execution
+Final Authorization Request Boundary coverage proves that ORO-7U records only
+the final authorization request after ORO-7T passes post-decision readiness.
+
+Covered files:
+
+- ORO-7U request doc: live traffic actual external call execution runtime
+  activation execution final authorization request boundary.
+- ORO-7U mock helper: final authorization request scope, ORO-7T dependency,
+  boundary builder, validator, and summary output.
+- ORO-7U fixtures: happy path, missing ORO-7T readiness, ORO-7T readiness scope
+  mismatch, runtime activation, runtime enablement, live execution, external
+  network, live OroPlay API, wallet, ledger, Prisma, DB, migration, deploy,
+  route, Express mount, public alias, `/api/balance`, `/api/transaction`,
+  `/api/oroplay/balance`, `/api/oroplay/transaction`, and sensitive output
+  blockers.
+- ORO-7U smoke: runtime activation execution final authorization request boundary smoke.
+- ORO-7U smoke wrapper: `src/local-smoke-tests/oro7uSmoke.js`.
+
+Package scripts:
+
+- ORO-7U final-authorization-request-specific package smoke alias
+- `smoke:oro-7u`
+- `smoke:oro-7u-runtime-activation-execution-final-authorization-request`
+
+Assertions:
+
+- Confirms ORO-7U emits `phase=ORO-7U` and request scope
+  `runtime_activation_execution_final_authorization_request_only`.
+- Confirms ORO-7U depends on ORO-7T post-decision readiness scope
+  `runtime_activation_execution_post_decision_readiness_only`.
+- Confirms ORO-7U prepares and submits only the final authorization request record.
+- Confirms ORO-7U does not activate runtime execution, enable runtime
+  execution, approve live execution, or execute live traffic.
+- Confirms ORO-7U does not open external network access or call live OroPlay.
+- Confirms ORO-7U does not allow wallet mutation, ledger mutation, data write,
+  DB transaction, migration, or deploy.
+- Confirms ORO-7U does not mount routes, expose public aliases, or allow the
+  public balance/transaction or OroPlay balance/transaction API routes.
+- Confirms ORO-7U blockers are empty on the happy path and fail closed for
+  required blocker fixtures.
+
 ## ORO-7R Live Traffic Actual External Call Execution Runtime Activation Execution Request Boundary Coverage
 
 ORO-7R Live Traffic Actual External Call Execution Runtime Activation Execution

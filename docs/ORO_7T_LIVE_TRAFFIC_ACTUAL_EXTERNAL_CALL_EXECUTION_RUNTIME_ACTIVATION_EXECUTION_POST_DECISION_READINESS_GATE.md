@@ -122,6 +122,10 @@ activation execution final authorization request before any runtime activation,
 runtime enablement, live execution approval, external network call, or live
 OroPlay API call can be considered.
 
+ORO-7U is the separate runtime activation execution final authorization request after ORO-7T.
+ORO-7U must remain request-only until a separate final authorization decision
+exists.
+
 ## Safety confirmation
 
 ORO-7T is docs, contract, static/mock harness, and local smoke only. It does

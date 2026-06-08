@@ -2964,3 +2964,32 @@ Validation:
 
 - smoke:oro-7t
 - smoke:oro-7t-runtime-activation-execution-post-decision-readiness
+
+## ORO-7U Live Traffic Actual External Call Execution Runtime Activation Execution Final Authorization Request Boundary Mapping
+
+ORO-7U records actual external call execution runtime activation execution final authorization request only
+after ORO-7T passes runtime activation execution post-decision readiness.
+
+ORO-7U remains docs/contract/static/mock/local-smoke only and does not activate
+runtime execution, enable runtime execution, approve live execution, execute
+live traffic, call live OroPlay, mutate wallet or ledger, write data, run
+migrations, deploy, mount routes, or expose public aliases.
+
+- ORO-7U records actual external call execution runtime activation execution final authorization request only
+- ORO-7T dependency scope: runtime_activation_execution_post_decision_readiness_only
+- ORO-7U request scope: runtime_activation_execution_final_authorization_request_only
+- ORO-7U request status: submitted_pending_actual_external_call_execution_runtime_activation_execution_final_authorization_decision
+- actualExternalCallExecutionRuntimeActivationExecutionFinalAuthorizationRequestPrepared=true
+- actualExternalCallExecutionRuntimeActivationExecutionFinalAuthorizationRequestSubmitted=true
+- actualExternalCallExecutionRuntimeEnabled=false
+- actualExternalCallExecutionActivated=false
+- liveOroPlayApiCallAllowed=false
+- routeEnablementAllowed=false
+- walletMutationAllowed=false
+- ledgerMutationAllowed=false
+- prismaWriteAllowed=false
+- dbTransactionAllowed=false
+- migrationAllowed=false
+- deployAllowed=false
+- smoke:oro-7u
+- smoke:oro-7u-runtime-activation-execution-final-authorization-request
