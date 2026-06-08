@@ -1206,6 +1206,25 @@ occur. It does not submit enablement request, enable actual execution,
 authorize execution, perform execution, or open wallet, ledger, Prisma, DB
 transaction, migration, deploy, external network, or live OroPlay calls.
 
+## ORO-7S Current
+
+ORO-7S records the actual external call execution runtime activation execution
+decision after ORO-7R submitted the runtime activation execution request.
+ORO-7S is runtime activation execution decision only.
+
+The ORO-7S decision scope is `runtime_activation_execution_decision_only`.
+The ORO-7S decision status is
+`approved_for_separate_actual_external_call_execution_runtime_activation_execution_post_decision_readiness_only`.
+ORO-7S depends on ORO-7R request scope `runtime_activation_execution_request_only`
+and request status
+`submitted_pending_actual_external_call_execution_runtime_activation_execution_decision`.
+
+ORO-7S prepares and issues only the decision record; post-decision readiness stays separate.
+ORO-7S still does not activate runtime execution, enable runtime execution,
+approve live execution, execute live traffic, call live OroPlay, mutate wallet
+or ledger, write data, run migrations, deploy, mount routes, or expose public
+aliases.
+
 ## ORO-7R Current
 
 ORO-7R records the actual external call execution runtime activation execution

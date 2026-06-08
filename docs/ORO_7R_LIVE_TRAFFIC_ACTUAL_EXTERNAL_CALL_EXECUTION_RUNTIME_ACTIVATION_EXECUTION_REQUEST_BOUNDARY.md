@@ -123,6 +123,8 @@ activation execution decision boundary before any runtime activation, runtime
 enablement, live execution approval, external network call, or live OroPlay API
 call can be considered.
 
+ORO-7S is the separate runtime activation execution decision boundary after ORO-7R.
+
 ## Safety confirmation
 
 ORO-7R is docs, contract, static/mock harness, and local smoke only. It does

@@ -3665,3 +3665,35 @@ Validation:
   runtime/live/mutation/route flags, empty happy-path blockers, and fail-closed
   blocker cases.
 - `smoke:oro-7r` registration.
+
+## ORO-7S current/live traffic actual external call execution runtime activation execution decision boundary
+
+ORO-7S records the actual external call execution runtime activation execution
+decision after ORO-7R submitted the runtime activation execution request.
+ORO-7S is runtime activation execution decision only.
+
+The ORO-7S decision scope is `runtime_activation_execution_decision_only`.
+The ORO-7S decision status is
+`approved_for_separate_actual_external_call_execution_runtime_activation_execution_post_decision_readiness_only`.
+ORO-7S depends on ORO-7R request scope `runtime_activation_execution_request_only`
+and request status
+`submitted_pending_actual_external_call_execution_runtime_activation_execution_decision`.
+
+ORO-7S still does not activate runtime execution, enable runtime execution,
+approve live execution, execute live traffic, open external networks, call live
+OroPlay, mutate wallet or ledger, write data, run migrations, deploy, mount
+routes, or expose public aliases.
+
+Validation:
+
+- ORO-7S runtime activation execution decision boundary doc exists and states
+  decision-only semantics.
+- ORO-7S helper exports phase, scope, boundary builder, validator, and summary.
+- ORO-7S fixtures cover happy path, missing ORO-7R request, ORO-7R request
+  status/scope mismatch, runtime activation, runtime enablement, live
+  execution, external network, live OroPlay, wallet, ledger, Prisma write, DB
+  transaction, migration, deploy, route enablement, Express mount, public alias,
+  API alias, OroPlay route, and sensitive-output blockers.
+- ORO-7S smoke confirms decision output, ORO-7R dependency, closed
+  runtime/live/network/route/mutation flags, and fail-closed blockers.
+- `smoke:oro-7s` registration.

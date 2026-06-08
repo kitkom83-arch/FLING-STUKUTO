@@ -2852,3 +2852,60 @@ Registered validation:
 
 - smoke:oro-7r
 - smoke:oro-7r-runtime-activation-execution-request
+
+## ORO-7S Live Traffic Actual External Call Execution Runtime Activation Execution Decision Boundary Mapping
+
+ORO-7S records actual external call execution runtime activation execution decision only
+after ORO-7R submitted the runtime activation execution request.
+
+ORO-7S remains docs/contract/static/mock/local-smoke only and does not activate
+runtime execution, enable runtime execution, approve live execution, execute
+live traffic, call live OroPlay, mutate wallet or ledger, write data, run
+migrations, deploy, mount routes, or expose public aliases.
+
+- ORO-7S records actual external call execution runtime activation execution decision only
+- ORO-7R request scope: runtime_activation_execution_request_only
+- ORO-7R request status: submitted_pending_actual_external_call_execution_runtime_activation_execution_decision
+- ORO-7S decision scope: runtime_activation_execution_decision_only
+- ORO-7S decision status: approved_for_separate_actual_external_call_execution_runtime_activation_execution_post_decision_readiness_only
+- actualExternalCallExecutionRuntimeActivationExecutionRequestPreparedFromOro7r=true
+- actualExternalCallExecutionRuntimeActivationExecutionRequestSubmittedFromOro7r=true
+- actualExternalCallExecutionRuntimeActivationExecutionDecisionPrepared=true
+- actualExternalCallExecutionRuntimeActivationExecutionDecisionIssued=true
+- actualExternalCallExecutionRuntimeEnabled=false
+- actualExternalCallExecutionActivated=false
+- actualExternalCallExecutionEnabled=false
+- actualExternalCallExecutionAuthorized=false
+- actualExternalCallExecutionLiveExecutionApproved=false
+- actualExternalCallExecutionLiveExecuted=false
+- externalNetworkAllowed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCallAllowed=false
+- liveOroPlayApiCalled=false
+- walletMutationAllowed=false
+- walletMutationPerformed=false
+- ledgerMutationAllowed=false
+- ledgerMutationPerformed=false
+- prismaWriteAllowed=false
+- prismaWritePerformed=false
+- dbTransactionAllowed=false
+- dbTransactionPerformed=false
+- migrationAllowed=false
+- migrationPerformed=false
+- deployAllowed=false
+- deployPerformed=false
+- routeEnablementAllowed=false
+- expressMountAllowed=false
+- publicAliasAllowed=false
+- apiBalanceAliasAllowed=false
+- apiTransactionAliasAllowed=false
+- apiOroplayBalanceRouteAllowed=false
+- apiOroplayTransactionRouteAllowed=false
+- nextPhaseRequiresSeparateActualExternalCallExecutionRuntimeActivationExecutionPostDecisionReadiness=true
+- humanApprovalRequiredForActualExecution=true
+- separateActualExecutionApprovalRequired=true
+
+Validation:
+
+- smoke:oro-7s
+- smoke:oro-7s-runtime-activation-execution-decision
