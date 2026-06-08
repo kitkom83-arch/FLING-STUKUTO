@@ -103,6 +103,12 @@ can occur. ORO-7B still does not approve actual execution, activate actual
 execution, enable runtime execution, authorize execution, or perform actual
 execution.
 
+ORO-7C authorization decision boundary is required next. That next phase may
+issue a decision with
+`approved_for_separate_actual_external_call_execution_activation_request_only`
+and `authorization_decision_only`, but it still must not submit an activation
+request or perform actual external call execution.
+
 ## Sensitive output rules
 
 ORO-7B records only static and mock evidence. Outputs must stay sanitized and

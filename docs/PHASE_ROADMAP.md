@@ -3156,3 +3156,39 @@ Verification scope:
   mutation, no data write, no DB transaction, no migration, no deploy, no
   sensitive-shaped output, and protected runtime paths untouched.
 - `smoke:oro-7b` registration.
+
+## ORO-7C current/live traffic actual external call execution authorization decision boundary
+
+ORO-7C records the actual external call execution authorization decision after
+ORO-7B submitted the authorization request. This phase is authorization
+decision only. ORO-7C is authorization decision only. It issues static
+decision evidence with status
+`approved_for_separate_actual_external_call_execution_activation_request_only`
+and scope `authorization_decision_only`.
+
+ORO-7C still does not submit the activation request, issue an activation
+decision, approve live execution, activate actual execution, enable runtime
+execution, authorize execution, perform external call execution, open external
+network access, call live OroPlay, mutate wallet or ledger state, write Prisma
+data, run DB transactions, run migrations, or deploy.
+
+Verification scope:
+
+- ORO-7C authorization decision doc exists and states authorization decision
+  only.
+- ORO-7C helper exports status, input builder, evaluator, summary builder, and
+  contract validator.
+- ORO-7C fixtures cover happy path, missing ORO-7B authorization request,
+  ORO-7B request not submitted, wrong ORO-7B request status, decision not
+  issued, wrong decision status, decision approving actual execution,
+  same-phase activation request, actual execution approval, external
+  network/live OroPlay allowance, mutation allowance, data write allowance, DB
+  transaction allowance, migration allowance, and deploy allowance.
+- ORO-7C smoke confirms authorization decision output, decision status
+  `approved_for_separate_actual_external_call_execution_activation_request_only`,
+  decision scope `authorization_decision_only`, no activation request, no
+  activation decision, no execution approval, no external call, no live
+  OroPlay call, no wallet/ledger mutation, no data write, no DB transaction,
+  no migration, no deploy, no sensitive-shaped output, and protected runtime
+  paths untouched.
+- `smoke:oro-7c` registration.
