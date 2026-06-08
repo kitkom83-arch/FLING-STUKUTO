@@ -3337,6 +3337,52 @@ Smoke assertions:
 - Confirms ORO-7D blocks unsafe activation request inputs and
   sensitive-shaped output.
 
+## 144. ORO-7E Live Traffic Actual External Call Execution Activation Decision Boundary Coverage
+
+ORO-7E Live Traffic Actual External Call Execution Activation Decision
+Boundary Coverage validates that the phase records only the decision for a
+later separate runtime enablement request.
+
+Coverage includes:
+
+- ORO-7E boundary doc: live traffic actual external call execution activation
+  decision boundary.
+- ORO-7E mock helper: activation decision status, input builder, evaluator,
+  summary builder, and contract validator.
+- ORO-7E fixtures: happy path, missing ORO-7D activation request, ORO-7D
+  request not submitted, wrong ORO-7D request status, decision not issued,
+  wrong decision status, decision approving actual execution, same-phase
+  runtime enablement request, actual execution approval, actual execution
+  activation, runtime enablement, external network/live OroPlay allowance,
+  mutation allowance, data write allowance, DB transaction allowance,
+  migration allowance, and deploy allowance.
+- ORO-7E smoke:
+  `src/local-smoke-tests/oro7eLiveTrafficActualExternalCallExecutionActivationDecisionBoundarySmoke.js`.
+- ORO-7E smoke wrapper: `src/local-smoke-tests/oro7eSmoke.js`.
+
+Package scripts:
+
+- ORO-7E boundary-specific package smoke alias
+- `smoke:oro-7e`
+
+Smoke assertions:
+
+- Confirms ORO-7E emits `phase=ORO-7E`, the runtime enablement
+  request-only activation decision status, and activation decision scope
+  `activation_decision_only`.
+- Confirms ORO-7E depends on ORO-7D request status
+  `submitted_pending_actual_external_call_execution_activation_decision`.
+- Confirms ORO-7E issues only the activation decision.
+- Confirms ORO-7E does not submit a runtime enablement request, issue a
+  runtime enablement decision, approve live execution, activate actual
+  execution, enable runtime execution, authorize execution, or perform
+  external call execution.
+- Confirms ORO-7E does not open external network access or call live OroPlay.
+- Confirms ORO-7E does not allow wallet mutation, ledger mutation, data write,
+  DB transaction, migration, deploy, or sensitive-shaped output.
+- Confirms ORO-7E blocks unsafe activation decision inputs and
+  sensitive-shaped output.
+
 ## 137. ORO-6X Live Traffic Actual External Call Execution Live Execution Decision Boundary Coverage
 
 ORO-6X Live Traffic Actual External Call Execution Live Execution Decision

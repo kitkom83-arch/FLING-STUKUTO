@@ -1424,6 +1424,19 @@ activate actual execution, enable runtime execution, authorize execution,
 perform external call execution, open external network access, call live
 OroPlay, mutate wallet or ledger state, write Prisma data, run DB
 transactions, run migrations, or deploy.
+
+## ORO-7E Current
+
+ORO-7E records the actual external call execution activation decision only
+after the ORO-7D activation request. It issues static decision evidence with
+runtime enablement request-only approval status and scope
+`activation_decision_only`.
+
+ORO-7E still does not submit the runtime enablement request, issue a runtime
+enablement decision, approve live execution, activate actual execution, enable
+runtime execution, authorize execution, perform external call execution, open
+external network access, call live OroPlay, mutate wallet or ledger state,
+write Prisma data, run DB transactions, run migrations, or deploy.
 and the scope is final_execution_decision_only.
 This is a final execution decision only.
 It still requires a separate actual external call execution authorization

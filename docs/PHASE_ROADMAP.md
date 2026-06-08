@@ -3227,3 +3227,38 @@ Verification scope:
   mutation, no data write, no DB transaction, no migration, no deploy, no
   sensitive-shaped output, and protected runtime paths untouched.
 - `smoke:oro-7d` registration.
+
+## ORO-7E current/live traffic actual external call execution activation decision boundary
+
+ORO-7E records the actual external call execution activation decision after
+ORO-7D submitted the activation request. This phase is activation decision
+only. ORO-7E is activation decision only. It issues static decision evidence
+with runtime enablement request-only approval status and scope
+`activation_decision_only`.
+
+ORO-7E still does not submit the runtime enablement request, issue a runtime
+enablement decision, approve live execution, activate actual execution, enable
+runtime execution, authorize execution, perform external call execution, open
+external network access, call live OroPlay, mutate wallet or ledger state,
+write Prisma data, run DB transactions, run migrations, or deploy.
+
+Verification scope:
+
+- ORO-7E activation decision doc exists and states activation decision only.
+- ORO-7E helper exports status, input builder, evaluator, summary builder, and
+  contract validator.
+- ORO-7E fixtures cover happy path, missing ORO-7D activation request, ORO-7D
+  request not submitted, wrong ORO-7D request status, decision not issued,
+  wrong decision status, decision approving actual execution, same-phase
+  runtime enablement request, actual execution approval, actual execution
+  activation, runtime enablement, external network/live OroPlay allowance,
+  mutation allowance, data write allowance, DB transaction allowance,
+  migration allowance, and deploy allowance.
+- ORO-7E smoke confirms activation decision output, runtime enablement
+  request-only decision status, decision scope `activation_decision_only`, no
+  runtime enablement request, no
+  runtime enablement decision, no execution approval, no external call, no live
+  OroPlay call, no wallet/ledger mutation, no data write, no DB transaction,
+  no migration, no deploy, no sensitive-shaped output, and protected runtime
+  paths untouched.
+- `smoke:oro-7e` registration.

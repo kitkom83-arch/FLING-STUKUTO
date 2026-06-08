@@ -103,6 +103,12 @@ or actual execution can occur. ORO-7D still does not approve actual execution,
 activate actual execution, enable runtime execution, authorize execution, or
 perform actual execution.
 
+ORO-7E activation decision boundary is required next. That next phase may
+issue a decision with
+`approved_for_separate_actual_external_call_execution_runtime_enablement_request_only`
+and `activation_decision_only`, but it still must not submit a runtime
+enablement request or perform actual external call execution.
+
 ## Sensitive output rules
 
 ORO-7D records only static and mock evidence. Outputs must stay sanitized and
