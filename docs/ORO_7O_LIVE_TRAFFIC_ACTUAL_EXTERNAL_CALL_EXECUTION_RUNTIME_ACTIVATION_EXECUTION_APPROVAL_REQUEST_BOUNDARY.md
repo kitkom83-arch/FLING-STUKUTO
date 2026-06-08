@@ -124,6 +124,9 @@ activation execution approval decision before any runtime activation, runtime
 enablement, live execution approval, external network call, or live OroPlay API
 call can be considered.
 
+ORO-7P runtime activation execution approval decision boundary is required next.
+The ORO-7P decision scope is `runtime_activation_execution_approval_decision_only`.
+
 ## Safety confirmation
 
 ORO-7O is docs, contract, static/mock harness, and local smoke only. It does

@@ -3571,3 +3571,35 @@ Validation:
   runtime/live/mutation/route flags, empty happy-path blockers, and fail-closed
   blocker cases.
 - `smoke:oro-7o` registration.
+
+## ORO-7P current/live traffic actual external call execution runtime activation execution approval decision boundary
+
+ORO-7P records the actual external call execution runtime activation execution
+approval decision boundary after ORO-7O submitted the runtime activation
+execution approval request. ORO-7P is runtime activation execution approval decision only.
+
+The ORO-7P decision scope is `runtime_activation_execution_approval_decision_only`.
+The ORO-7P decision status is
+`approved_for_separate_actual_external_call_execution_runtime_activation_execution_final_readiness_only`.
+ORO-7P depends on ORO-7O request scope
+`runtime_activation_execution_approval_request_only` and request status
+`submitted_pending_actual_external_call_execution_runtime_activation_execution_approval_decision`.
+
+ORO-7P still does not activate runtime execution, enable runtime execution,
+approve live execution, execute live traffic, call live OroPlay, mutate wallet
+or ledger, write data, run migrations, deploy, mount routes, or expose public
+aliases.
+
+Validation:
+
+- ORO-7P runtime activation execution approval decision boundary doc exists and
+  states decision-only scope.
+- ORO-7P helper exports phase, scope, boundary builder, validator, and summary.
+- ORO-7P fixtures cover happy path, missing ORO-7O request, ORO-7O request
+  status mismatch, ORO-7O request scope mismatch, attempted runtime activation,
+  runtime enablement, live execution, network/API calls, mutation,
+  migration/deploy, route/alias exposure, and sensitive output blockers.
+- ORO-7P smoke confirms decision output, ORO-7O dependency, closed
+  runtime/live/mutation/route flags, empty happy-path blockers, and fail-closed
+  blocker cases.
+- `smoke:oro-7p` registration.
