@@ -3390,3 +3390,31 @@ Validation coverage:
   status, request-only scope, all runtime/live/mutation/route flags false, and
   blockers empty on the happy path.
 - `smoke:oro-7i` registration.
+
+## ORO-7J current/live traffic actual external call execution runtime enablement activation decision boundary
+
+ORO-7J records the actual external call execution runtime enablement activation
+decision boundary after ORO-7I submitted the runtime enablement activation
+request. ORO-7J is runtime enablement activation decision boundary only.
+
+The ORO-7J decision status is
+`approved_for_separate_actual_external_call_execution_runtime_enablement_final_activation_readiness_only`.
+The ORO-7J decision scope is `runtime_enablement_activation_decision_only`.
+
+ORO-7J still does not activate runtime execution, enable runtime execution,
+approve live execution, call live OroPlay, mutate wallet or ledger, mount
+routes, expose public aliases, write data, migrate, or deploy.
+
+Validation coverage:
+
+- ORO-7J activation decision boundary doc exists and states decision-only scope.
+- ORO-7J helper exports status, boundary builder, evaluator, validator, and
+  summary builder.
+- ORO-7J fixtures cover happy path, missing ORO-7I activation request, invalid
+  ORO-7I request status, runtime activation attempts, runtime enablement
+  attempts, live execution attempts, external network attempts, mutation
+  attempts, and route/public alias attempts.
+- ORO-7J smoke confirms activation decision output, final activation readiness
+  only status, decision-only scope, all runtime/live/mutation/route flags false,
+  and blockers empty on the happy path.
+- `smoke:oro-7j` registration.

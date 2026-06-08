@@ -3556,6 +3556,50 @@ Coverage assertions:
   runtime enablement, live execution, route, alias, mutation, migration, deploy,
   network, and live OroPlay attempts.
 
+## 149. ORO-7J Live Traffic Actual External Call Execution Runtime Enablement Activation Decision Boundary Coverage
+
+ORO-7J Live Traffic Actual External Call Execution Runtime Enablement
+Activation Decision Boundary Coverage validates the activation-decision-only
+handoff after the ORO-7I activation request boundary.
+
+Files covered:
+
+- ORO-7J boundary doc: live traffic actual external call execution runtime
+  enablement activation decision boundary.
+- ORO-7J mock helper: activation decision status, boundary builder, evaluator,
+  validator, and summary builder.
+- ORO-7J fixtures: happy path, missing ORO-7I activation request, invalid ORO-7I
+  request status, activation decision not issued, runtime activation attempts,
+  runtime enablement attempts, live execution attempts, external network
+  attempts, wallet/ledger/data mutation attempts, migration/deploy attempts,
+  and route/public alias attempts.
+- ORO-7J smoke: runtime enablement activation decision boundary smoke file.
+- ORO-7J smoke wrapper: `src/local-smoke-tests/oro7jSmoke.js`.
+
+Registered package scripts:
+
+- ORO-7J boundary-specific package smoke alias
+- `smoke:oro-7j`
+- `smoke:oro-7j-runtime-enable-activation-decision`
+
+Coverage assertions:
+
+- Confirms ORO-7J emits `phase=ORO-7J`, the final activation readiness only
+  decision status, decision-only scope, and blockers empty on the happy path.
+- Confirms ORO-7J depends on the ORO-7I activation request status
+  `submitted_pending_actual_external_call_execution_runtime_enablement_activation_decision`.
+- Confirms ORO-7J records only the activation decision boundary.
+- Confirms ORO-7J does not activate runtime execution, enable runtime execution,
+  approve live execution, or perform live execution.
+- Confirms ORO-7J does not open external network access or call live OroPlay.
+- Confirms ORO-7J does not allow wallet mutation, ledger mutation, data write,
+  DB transaction, migration, or deploy.
+- Confirms ORO-7J does not mount routes, expose public aliases, or allow the
+  balance/transaction aliases or OroPlay routes.
+- Confirms ORO-7J blocks unsafe activation decision inputs and all activation,
+  runtime enablement, live execution, route, alias, mutation, migration, deploy,
+  network, and live OroPlay attempts.
+
 ## 137. ORO-6X Live Traffic Actual External Call Execution Live Execution Decision Boundary Coverage
 
 ORO-6X Live Traffic Actual External Call Execution Live Execution Decision

@@ -2337,3 +2337,61 @@ Validation:
 
 - smoke:oro-7i
 - smoke:oro-7i-runtime-enable-activation-request
+
+## ORO-7J Live Traffic Actual External Call Execution Runtime Enablement Activation Decision Boundary Mapping
+
+ORO-7J records actual external call execution runtime enablement activation decision only
+after ORO-7I submitted the runtime enablement activation request. It issues
+static/mock decision evidence for a later separate final activation readiness
+gate only.
+
+Mapping contract:
+
+- ORO-7J records actual external call execution runtime enablement activation decision only
+- depends on ORO-7I request status:
+  `submitted_pending_actual_external_call_execution_runtime_enablement_activation_decision`
+- depends on ORO-7I request scope: `runtime_enablement_activation_request_only`
+- decision status:
+  `approved_for_separate_actual_external_call_execution_runtime_enablement_final_activation_readiness_only`
+- decision scope: `runtime_enablement_activation_decision_only`
+- actualExternalCallExecutionRuntimeEnabled=false
+- actualExternalCallExecutionActivated=false
+- actualExternalCallExecutionEnabled=false
+- actualExternalCallExecutionAuthorized=false
+- actualExternalCallExecutionLiveExecutionApproved=false
+- actualExternalCallExecutionLiveExecuted=false
+- externalNetworkAllowed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCallAllowed=false
+- liveOroPlayApiCalled=false
+- walletMutationAllowed=false
+- walletMutationPerformed=false
+- ledgerMutationAllowed=false
+- ledgerMutationPerformed=false
+- prismaWriteAllowed=false
+- prismaWritePerformed=false
+- dbTransactionAllowed=false
+- dbTransactionPerformed=false
+- migrationAllowed=false
+- migrationPerformed=false
+- deployAllowed=false
+- deployPerformed=false
+- routeEnablementAllowed=false
+- expressMountAllowed=false
+- publicAliasAllowed=false
+- apiBalanceAliasAllowed=false
+- apiTransactionAliasAllowed=false
+- apiOroplayBalanceRouteAllowed=false
+- apiOroplayTransactionRouteAllowed=false
+- nextPhaseRequiresSeparateActualExternalCallExecutionRuntimeEnablementFinalActivationReadiness=true
+
+ORO-7J is runtime enablement activation decision boundary only. ORO-7J does
+not activate runtime execution, does not enable runtime execution, does not
+permit live OroPlay API calls, does not mutate wallet or ledger, does not mount
+any route, does not expose public aliases, and only prepares the next separate
+runtime enablement final activation readiness gate.
+
+Validation:
+
+- smoke:oro-7j
+- smoke:oro-7j-runtime-enable-activation-decision

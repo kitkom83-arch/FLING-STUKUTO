@@ -128,6 +128,13 @@ The next phase must be a separate runtime enablement activation decision
 boundary before any runtime enablement, runtime activation, live execution
 approval, external network call, or live OroPlay API call can be considered.
 
+ORO-7J runtime enablement activation decision boundary is required next. Its
+decision status must be
+`approved_for_separate_actual_external_call_execution_runtime_enablement_final_activation_readiness_only`
+with scope `runtime_enablement_activation_decision_only`, and it still must not
+activate runtime execution, enable runtime execution, permit live OroPlay API
+calls, mutate wallet or ledger, mount routes, or expose public aliases.
+
 ## Safety confirmation
 
 ORO-7I is docs, contract, static/mock harness, and local smoke only. It does
