@@ -3041,6 +3041,55 @@ Boundary:
 - No live OroPlay API call.
 - No real money.
 
+## ORO-7Q Live Traffic Actual External Call Execution Runtime Activation Execution Final Readiness Gate Coverage
+
+ORO-7Q Live Traffic Actual External Call Execution Runtime Activation Execution
+Final Readiness Gate coverage.
+
+ORO-7Q depends on ORO-7P approval decision evidence and records only a runtime
+activation execution final readiness gate. It remains docs, contract,
+static/mock harness, and local smoke only.
+
+Covered files:
+
+- ORO-7Q gate doc: live traffic actual external call execution runtime
+  activation execution final readiness gate.
+- ORO-7Q mock helper: final readiness scope, ORO-7P dependency, gate builder,
+  validator, and summary.
+- ORO-7Q fixtures: happy path, missing ORO-7P decision, decision status
+  mismatch, decision scope mismatch, runtime activation attempts, runtime
+  enablement attempts, live execution attempts, network/live OroPlay attempts,
+  mutation attempts, migration/deploy attempts, route/alias attempts, and
+  sensitive output attempts.
+- ORO-7Q smoke: runtime activation execution final readiness gate smoke.
+- ORO-7Q smoke wrapper: `src/local-smoke-tests/oro7qSmoke.js`.
+
+Package scripts:
+
+- ORO-7Q gate-specific package smoke alias
+- `smoke:oro-7q`
+- `smoke:oro-7q-runtime-activation-execution-final-readiness`
+
+Coverage assertions:
+
+- Confirms ORO-7Q emits `phase=ORO-7Q`, final readiness scope
+  `runtime_activation_execution_final_readiness_only`, and
+  `liveTrafficActualExternalCallExecutionRuntimeActivationExecutionFinalReadinessGateResult=PASS`.
+- Confirms ORO-7Q depends on ORO-7P decision scope
+  `runtime_activation_execution_approval_decision_only` and decision status
+  `approved_for_separate_actual_external_call_execution_runtime_activation_execution_final_readiness_only`.
+- Confirms ORO-7Q prepares and passes only the final readiness record.
+- Confirms ORO-7Q does not activate runtime execution, enable runtime
+  execution, authorize execution, approve live execution, or execute live
+  traffic.
+- Confirms ORO-7Q does not open external network access or call live OroPlay.
+- Confirms ORO-7Q does not allow wallet mutation, ledger mutation, data write,
+  DB transaction, migration, or deploy.
+- Confirms ORO-7Q does not mount routes, expose public aliases, or allow the
+  balance/transaction aliases or OroPlay balance/transaction routes.
+- Confirms ORO-7Q blockers are empty on the happy path and fail closed for
+  each blocker fixture.
+
 ## 138. ORO-6Y Live Traffic Actual External Call Execution Live Execution Final Readiness Gate Coverage
 
 ORO-6Y Live Traffic Actual External Call Execution Live Execution Final

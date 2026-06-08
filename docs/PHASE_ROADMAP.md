@@ -3603,3 +3603,33 @@ Validation:
   runtime/live/mutation/route flags, empty happy-path blockers, and fail-closed
   blocker cases.
 - `smoke:oro-7p` registration.
+
+## ORO-7Q current/live traffic actual external call execution runtime activation execution final readiness gate
+
+ORO-7Q records the actual external call execution runtime activation execution
+final readiness gate after ORO-7P issued the runtime activation execution
+approval decision. ORO-7Q is runtime activation execution final readiness only.
+
+The ORO-7Q final readiness scope is `runtime_activation_execution_final_readiness_only`.
+ORO-7Q depends on ORO-7P decision scope
+`runtime_activation_execution_approval_decision_only` and decision status
+`approved_for_separate_actual_external_call_execution_runtime_activation_execution_final_readiness_only`.
+
+ORO-7Q still does not activate runtime execution, enable runtime execution,
+approve live execution, execute live traffic, call live OroPlay, mutate wallet
+or ledger, write data, run migrations, deploy, mount routes, or expose public
+aliases.
+
+Validation:
+
+- ORO-7Q runtime activation execution final readiness gate doc exists and
+  states final-readiness-only scope.
+- ORO-7Q helper exports phase, scope, gate builder, validator, and summary.
+- ORO-7Q fixtures cover happy path, missing ORO-7P decision, ORO-7P decision
+  status mismatch, ORO-7P decision scope mismatch, attempted runtime
+  activation, runtime enablement, live execution, network/API calls, mutation,
+  migration/deploy, route/alias exposure, and sensitive output blockers.
+- ORO-7Q smoke confirms final readiness output, ORO-7P dependency, closed
+  runtime/live/mutation/route flags, empty happy-path blockers, and fail-closed
+  blocker cases.
+- `smoke:oro-7q` registration.

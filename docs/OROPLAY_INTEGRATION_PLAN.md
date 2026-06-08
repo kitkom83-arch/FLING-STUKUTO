@@ -1439,6 +1439,24 @@ activate actual execution, enable runtime execution, enable actual execution,
 authorize execution, perform execution, or open wallet, ledger, Prisma, DB
 transaction, migration, deploy, external network, or live OroPlay calls.
 
+## ORO-7Q Current
+
+ORO-7Q records the actual external call execution runtime activation execution
+final readiness gate only after the ORO-7P runtime activation execution
+approval decision. ORO-7Q is runtime activation execution final readiness only;
+runtime activation and live execution stay separate.
+
+The ORO-7Q final readiness scope is `runtime_activation_execution_final_readiness_only`.
+ORO-7Q depends on the ORO-7P decision scope
+`runtime_activation_execution_approval_decision_only` and decision status
+`approved_for_separate_actual_external_call_execution_runtime_activation_execution_final_readiness_only`.
+
+ORO-7Q still does not activate runtime execution, enable runtime execution,
+approve live execution, execute live traffic, call live OroPlay, mutate wallet
+or ledger, write data, run migrations, deploy, mount routes, or expose public
+aliases. ORO-7Q only prepares the next separate runtime activation execution
+request boundary.
+
 ## ORO-6W Current
 
 ORO-6W records the actual external call execution live execution request only

@@ -128,6 +128,12 @@ activation execution final readiness boundary before any runtime activation,
 runtime enablement, live execution approval, external network call, or live
 OroPlay API call can be considered.
 
+ORO-7Q is the separate runtime activation execution final readiness gate that
+depends on this ORO-7P approval decision. ORO-7Q remains final-readiness-only
+and still does not activate runtime execution, enable runtime execution, approve
+live execution, call live OroPlay, mutate wallet or ledger, mount routes, or
+expose public aliases.
+
 ## Safety confirmation
 
 ORO-7P is docs, contract, static/mock harness, and local smoke only. It does
