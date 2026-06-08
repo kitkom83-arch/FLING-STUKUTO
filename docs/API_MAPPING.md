@@ -2003,3 +2003,34 @@ OroPlay.
 - migrationPerformed=false
 - deployPerformed=false
 - smoke:oro-7a
+
+## ORO-7B Live Traffic Actual External Call Execution Authorization Request Boundary Mapping
+
+ORO-7B records actual external call execution authorization request only
+after ORO-7A issued the final execution decision. It submits the request for a
+later separate authorization decision and keeps actual execution closed.
+
+- ORO-7B records actual external call execution authorization request only
+- depends on ORO-7A final execution decision status:
+  `approved_for_separate_actual_external_call_execution_authorization_request_only`
+- actualExternalCallExecutionAuthorizationRequestStatus=submitted_pending_actual_external_call_execution_authorization_decision
+- actualExternalCallExecutionAuthorizationRequestScope=authorization_request_only
+- actualExternalCallExecutionAuthorizationDecisionIssued=false
+- actualExternalCallExecutionLiveExecutionApproved=false
+- actualExternalCallExecutionActivated=false
+- actualExternalCallExecutionRuntimeEnabled=false
+- actualExternalCallExecutionEnabled=false
+- actualExternalCallExecutionAuthorized=false
+- externalCallExecutionAuthorized=false
+- externalCallExecutionPerformed=false
+- externalNetworkAllowed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCallAllowed=false
+- liveOroPlayApiCalled=false
+- walletMutationAllowed=false
+- ledgerMutationAllowed=false
+- prismaWriteAllowed=false
+- dbTransactionAllowed=false
+- migrationAllowed=false
+- deployAllowed=false
+- smoke:oro-7b

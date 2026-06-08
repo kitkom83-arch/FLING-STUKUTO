@@ -3121,3 +3121,38 @@ Acceptance:
   OroPlay call, no wallet/ledger/data mutation, no migration/deploy, and
   sanitized output.
 - `smoke:oro-7a` registration.
+
+## ORO-7B current/live traffic actual external call execution authorization request boundary
+
+ORO-7B records the actual external call execution authorization request after
+ORO-7A issued the final execution decision. This phase is authorization
+request only. ORO-7B is authorization request only. It submits static request
+evidence with status
+`submitted_pending_actual_external_call_execution_authorization_decision` and
+scope `authorization_request_only`.
+
+ORO-7B still does not issue the authorization decision, approve live
+execution, activate actual execution, enable runtime execution, authorize
+execution, perform external call execution, open external network access, call
+live OroPlay, mutate wallet or ledger state, write Prisma data, run DB
+transactions, run migrations, or deploy.
+
+Verification scope:
+
+- ORO-7B authorization request doc exists and states authorization request
+  only.
+- ORO-7B helper exports status, input builder, evaluator, summary builder, and
+  contract validator.
+- ORO-7B fixtures cover happy path, missing ORO-7A final execution decision,
+  ORO-7A decision not issued, wrong ORO-7A decision status, request not
+  submitted, missing human approval requirement, same-phase decision issuance,
+  actual execution approval, external network/live OroPlay allowance, mutation
+  allowance, data write allowance, DB transaction allowance, migration
+  allowance, and deploy allowance.
+- ORO-7B smoke confirms authorization request output, request status
+  `submitted_pending_actual_external_call_execution_authorization_decision`,
+  request scope `authorization_request_only`, no authorization decision, no
+  execution approval, no external call, no live OroPlay call, no wallet/ledger
+  mutation, no data write, no DB transaction, no migration, no deploy, no
+  sensitive-shaped output, and protected runtime paths untouched.
+- `smoke:oro-7b` registration.

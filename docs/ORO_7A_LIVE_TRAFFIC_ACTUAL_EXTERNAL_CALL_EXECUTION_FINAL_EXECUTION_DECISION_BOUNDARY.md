@@ -105,6 +105,12 @@ can occur. ORO-7A still does not approve actual execution, activate actual
 execution, enable runtime execution, authorize execution, or perform actual
 execution.
 
+ORO-7B authorization request boundary is required next. That next phase may
+submit a request with
+`submitted_pending_actual_external_call_execution_authorization_decision` and
+`authorization_request_only`, but it still must not issue the authorization
+decision or perform actual external call execution.
+
 ## Sensitive output rules
 
 ORO-7A records only static and mock evidence. Outputs must stay sanitized and

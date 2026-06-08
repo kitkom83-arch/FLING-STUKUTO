@@ -1382,6 +1382,20 @@ or live OroPlay calls.
 ORO-7A records the actual external call execution final execution decision only
 after ORO-6Z submitted the final execution request. The decision status is
 approved_for_separate_actual_external_call_execution_authorization_request_only
+
+## ORO-7B Current
+
+ORO-7B records the actual external call execution authorization request only
+after the ORO-7A final execution decision. It submits static request evidence
+with status
+`submitted_pending_actual_external_call_execution_authorization_decision` and
+scope `authorization_request_only`.
+
+ORO-7B still does not issue the authorization decision, approve live
+execution, activate actual execution, enable runtime execution, authorize
+execution, perform external call execution, open external network access, call
+live OroPlay, mutate wallet or ledger state, write Prisma data, run DB
+transactions, run migrations, or deploy.
 and the scope is final_execution_decision_only.
 This is a final execution decision only.
 It still requires a separate actual external call execution authorization

@@ -3204,6 +3204,50 @@ Assertions:
 - Confirms ORO-7A blocks unsafe final execution decision inputs and
   sensitive-shaped output.
 
+## 141. ORO-7B Live Traffic Actual External Call Execution Authorization Request Boundary Coverage
+
+ORO-7B Live Traffic Actual External Call Execution Authorization Request
+Boundary Coverage validates that the phase records only the request for a
+later separate authorization decision.
+
+Coverage includes:
+
+- ORO-7B boundary doc: live traffic actual external call execution
+  authorization request boundary.
+- ORO-7B mock helper: authorization request status, input builder, evaluator,
+  summary builder, and contract validator.
+- ORO-7B fixtures: happy path, missing ORO-7A final execution decision, ORO-7A
+  decision not issued, wrong ORO-7A decision status, request not submitted,
+  missing human approval requirement, same-phase authorization decision,
+  actual execution approval, external network/live OroPlay allowance, mutation
+  allowance, data write allowance, DB transaction allowance, migration
+  allowance, and deploy allowance.
+- ORO-7B smoke:
+  `src/local-smoke-tests/oro7bLiveTrafficActualExternalCallExecutionAuthorizationRequestBoundarySmoke.js`.
+- ORO-7B smoke wrapper: `src/local-smoke-tests/oro7bSmoke.js`.
+
+Package scripts:
+
+- ORO-7B boundary-specific package smoke alias
+- `smoke:oro-7b`
+
+Smoke assertions:
+
+- Confirms ORO-7B emits `phase=ORO-7B`, authorization request status
+  `submitted_pending_actual_external_call_execution_authorization_decision`,
+  and authorization request scope `authorization_request_only`.
+- Confirms ORO-7B depends on ORO-7A decision status
+  `approved_for_separate_actual_external_call_execution_authorization_request_only`.
+- Confirms ORO-7B submits only the authorization request.
+- Confirms ORO-7B does not issue an authorization decision, approve live
+  execution, activate actual execution, enable runtime execution, authorize
+  execution, or perform external call execution.
+- Confirms ORO-7B does not open external network access or call live OroPlay.
+- Confirms ORO-7B does not allow wallet mutation, ledger mutation, data write,
+  DB transaction, migration, deploy, or sensitive-shaped output.
+- Confirms ORO-7B blocks unsafe authorization request inputs and
+  sensitive-shaped output.
+
 ## 137. ORO-6X Live Traffic Actual External Call Execution Live Execution Decision Boundary Coverage
 
 ORO-6X Live Traffic Actual External Call Execution Live Execution Decision
