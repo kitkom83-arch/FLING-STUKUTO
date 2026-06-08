@@ -2066,3 +2066,35 @@ later separate activation request and keeps actual execution closed.
 - migrationAllowed=false
 - deployAllowed=false
 - smoke:oro-7c
+
+## ORO-7D Live Traffic Actual External Call Execution Activation Request Boundary Mapping
+
+ORO-7D records actual external call execution activation request only after
+ORO-7C issued the authorization decision. It submits the request for a later
+separate activation decision and keeps actual execution closed.
+
+- ORO-7D records actual external call execution activation request only
+- depends on ORO-7C authorization decision status:
+  `approved_for_separate_actual_external_call_execution_activation_request_only`
+- depends on ORO-7C authorization decision scope: `authorization_decision_only`
+- actualExternalCallExecutionActivationRequestStatus=submitted_pending_actual_external_call_execution_activation_decision
+- actualExternalCallExecutionActivationRequestScope=activation_request_only
+- actualExternalCallExecutionActivationDecisionIssued=false
+- actualExternalCallExecutionLiveExecutionApproved=false
+- actualExternalCallExecutionActivated=false
+- actualExternalCallExecutionRuntimeEnabled=false
+- actualExternalCallExecutionEnabled=false
+- actualExternalCallExecutionAuthorized=false
+- externalCallExecutionAuthorized=false
+- externalCallExecutionPerformed=false
+- externalNetworkAllowed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCallAllowed=false
+- liveOroPlayApiCalled=false
+- walletMutationAllowed=false
+- ledgerMutationAllowed=false
+- prismaWriteAllowed=false
+- dbTransactionAllowed=false
+- migrationAllowed=false
+- deployAllowed=false
+- smoke:oro-7d

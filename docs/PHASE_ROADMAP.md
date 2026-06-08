@@ -3192,3 +3192,38 @@ Verification scope:
   no migration, no deploy, no sensitive-shaped output, and protected runtime
   paths untouched.
 - `smoke:oro-7c` registration.
+
+## ORO-7D current/live traffic actual external call execution activation request boundary
+
+ORO-7D records the actual external call execution activation request after
+ORO-7C issued the authorization decision. This phase is activation request
+only. ORO-7D is activation request only. It submits static request evidence
+with status
+`submitted_pending_actual_external_call_execution_activation_decision` and
+scope `activation_request_only`.
+
+ORO-7D still does not issue the activation decision, approve live execution,
+activate actual execution, enable runtime execution, authorize execution,
+perform external call execution, open external network access, call live
+OroPlay, mutate wallet or ledger state, write Prisma data, run DB
+transactions, run migrations, or deploy.
+
+Verification scope:
+
+- ORO-7D activation request doc exists and states activation request only.
+- ORO-7D helper exports status, input builder, evaluator, summary builder, and
+  contract validator.
+- ORO-7D fixtures cover happy path, missing ORO-7C authorization decision,
+  ORO-7C decision not issued, wrong ORO-7C decision status, activation
+  request not submitted, missing human approval requirement, same-phase
+  activation decision, actual execution approval, actual execution activation,
+  runtime enablement, external network/live OroPlay allowance, mutation
+  allowance, data write allowance, DB transaction allowance, migration
+  allowance, and deploy allowance.
+- ORO-7D smoke confirms activation request output, request status
+  `submitted_pending_actual_external_call_execution_activation_decision`,
+  request scope `activation_request_only`, no activation decision, no
+  execution approval, no external call, no live OroPlay call, no wallet/ledger
+  mutation, no data write, no DB transaction, no migration, no deploy, no
+  sensitive-shaped output, and protected runtime paths untouched.
+- `smoke:oro-7d` registration.

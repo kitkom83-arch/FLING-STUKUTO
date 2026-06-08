@@ -3292,6 +3292,51 @@ Smoke assertions:
 - Confirms ORO-7C blocks unsafe authorization decision inputs and
   sensitive-shaped output.
 
+## 143. ORO-7D Live Traffic Actual External Call Execution Activation Request Boundary Coverage
+
+ORO-7D Live Traffic Actual External Call Execution Activation Request Boundary
+Coverage validates that the phase records only the request for a later
+separate activation decision.
+
+Coverage includes:
+
+- ORO-7D boundary doc: live traffic actual external call execution activation
+  request boundary.
+- ORO-7D mock helper: activation request status, input builder, evaluator,
+  summary builder, and contract validator.
+- ORO-7D fixtures: happy path, missing ORO-7C authorization decision, ORO-7C
+  decision not issued, wrong ORO-7C decision status, activation request not
+  submitted, missing human approval requirement, same-phase activation
+  decision, actual execution approval, actual execution activation, runtime
+  enablement, external network/live OroPlay allowance, mutation allowance,
+  data write allowance, DB transaction allowance, migration allowance, and
+  deploy allowance.
+- ORO-7D smoke:
+  `src/local-smoke-tests/oro7dLiveTrafficActualExternalCallExecutionActivationRequestBoundarySmoke.js`.
+- ORO-7D smoke wrapper: `src/local-smoke-tests/oro7dSmoke.js`.
+
+Package scripts:
+
+- ORO-7D boundary-specific package smoke alias
+- `smoke:oro-7d`
+
+Smoke assertions:
+
+- Confirms ORO-7D emits `phase=ORO-7D`, activation request status
+  `submitted_pending_actual_external_call_execution_activation_decision`, and
+  activation request scope `activation_request_only`.
+- Confirms ORO-7D depends on ORO-7C authorization decision status
+  `approved_for_separate_actual_external_call_execution_activation_request_only`.
+- Confirms ORO-7D submits only the activation request.
+- Confirms ORO-7D does not issue an activation decision, approve live
+  execution, activate actual execution, enable runtime execution, authorize
+  execution, or perform external call execution.
+- Confirms ORO-7D does not open external network access or call live OroPlay.
+- Confirms ORO-7D does not allow wallet mutation, ledger mutation, data write,
+  DB transaction, migration, deploy, or sensitive-shaped output.
+- Confirms ORO-7D blocks unsafe activation request inputs and
+  sensitive-shaped output.
+
 ## 137. ORO-6X Live Traffic Actual External Call Execution Live Execution Decision Boundary Coverage
 
 ORO-6X Live Traffic Actual External Call Execution Live Execution Decision
