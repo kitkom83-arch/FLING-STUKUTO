@@ -136,6 +136,14 @@ runtime activation decision, runtime activation, runtime enablement, live
 execution approval, external network call, or live OroPlay API call can be
 considered.
 
+ORO-7L runtime activation request boundary is required next. Its request status
+must be
+`submitted_pending_actual_external_call_execution_runtime_activation_decision`
+with scope `runtime_activation_request_only`, and it still must not issue a
+runtime activation decision, activate runtime execution, enable runtime
+execution, permit live OroPlay API calls, mutate wallet or ledger, mount
+routes, or expose public aliases.
+
 ## Safety confirmation
 
 ORO-7K is docs, contract, static/mock harness, and local smoke only. It does
