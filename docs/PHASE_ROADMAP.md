@@ -3792,3 +3792,36 @@ Validation:
 - ORO-7V smoke confirms decision output, ORO-7U dependency, closed
   runtime/live/network/route/mutation flags, and fail-closed blockers.
 - `smoke:oro-7v` registration.
+
+## ORO-7W current/live traffic actual external call execution runtime activation execution authorized execution readiness gate
+
+ORO-7W records the actual external call execution runtime activation execution
+authorized execution readiness after ORO-7V issued the final authorization
+decision. ORO-7W is runtime activation execution authorized execution readiness only.
+
+ORO-7W is runtime activation execution authorized execution readiness only.
+
+The ORO-7W readiness scope is
+`runtime_activation_execution_authorized_execution_readiness_only`.
+ORO-7W depends on ORO-7V decision scope
+`runtime_activation_execution_final_authorization_decision_only` and decision
+status
+`approved_for_separate_actual_external_call_execution_runtime_activation_execution_authorized_execution_readiness_only`.
+
+ORO-7W still does not activate runtime execution, enable runtime execution,
+authorize actual execution, approve live execution, execute live traffic, call
+live OroPlay, mutate wallet or ledger, write data, run migrations, deploy,
+mount routes, or expose public aliases.
+
+Validation:
+
+- ORO-7W authorized execution readiness gate doc exists.
+- ORO-7W helper exports phase, scope, boundary builder, validator, and summary.
+- ORO-7W fixtures cover happy path, missing ORO-7V decision, ORO-7V decision
+  status/scope mismatch, runtime activation, runtime enablement, live
+  execution, network, live OroPlay, wallet, ledger, Prisma, DB, migration,
+  deploy, route, Express mount, public alias, public API aliases, OroPlay API
+  routes, and sensitive output blockers.
+- ORO-7W smoke confirms readiness output, ORO-7V dependency, closed
+  runtime/live/network/route/mutation flags, and fail-closed blockers.
+- `smoke:oro-7w` registration.

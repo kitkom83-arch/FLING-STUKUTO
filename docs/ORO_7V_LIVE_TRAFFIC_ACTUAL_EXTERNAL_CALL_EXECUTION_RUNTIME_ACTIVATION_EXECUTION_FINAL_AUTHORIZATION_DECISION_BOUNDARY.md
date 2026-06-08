@@ -127,6 +127,13 @@ activation execution authorized execution readiness boundary before any runtime
 activation, runtime enablement, actual execution authorization, live execution
 approval, external network call, or live OroPlay API call can be considered.
 
+ORO-7W is the separate runtime activation execution authorized execution
+readiness boundary after ORO-7V. ORO-7V does not approve runtime activation,
+runtime enablement, actual execution authorization, live execution approval, or
+live execution.
+
+ORO-7W is the separate runtime activation execution authorized execution readiness boundary after ORO-7V.
+
 ## Safety confirmation
 
 ORO-7V is docs, contract, static/mock harness, and local smoke only. It does

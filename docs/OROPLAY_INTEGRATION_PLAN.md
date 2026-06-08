@@ -1222,6 +1222,30 @@ execution, perform live execution, open external network access, call live
 OroPlay, mutate wallet or ledger state, write Prisma data, run DB
 transactions, run migrations, deploy, mount routes, or expose public aliases.
 
+## ORO-7W Current
+
+ORO-7W records the actual external call execution runtime activation execution
+authorized execution readiness only after ORO-7V issued the final authorization
+decision.
+
+ORO-7W is runtime activation execution authorized execution readiness only.
+
+The ORO-7W readiness scope is
+`runtime_activation_execution_authorized_execution_readiness_only`.
+
+ORO-7W depends on ORO-7V decision scope
+`runtime_activation_execution_final_authorization_decision_only` and decision
+status
+`approved_for_separate_actual_external_call_execution_runtime_activation_execution_authorized_execution_readiness_only`.
+
+ORO-7W prepares and passes only the authorized execution readiness record;
+runtime activation execution live readiness request stays separate.
+
+ORO-7W still does not activate runtime execution, enable runtime execution,
+authorize actual execution, approve live execution, execute live traffic, call
+live OroPlay, mutate wallet or ledger, write data, run migrations, deploy,
+mount routes, or expose public aliases.
+
 ## ORO-7T Current
 
 ORO-7T records the actual external call execution runtime activation execution
