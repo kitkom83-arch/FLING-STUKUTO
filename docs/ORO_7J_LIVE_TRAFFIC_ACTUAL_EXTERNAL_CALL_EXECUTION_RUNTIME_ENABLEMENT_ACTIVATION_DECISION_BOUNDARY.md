@@ -16,6 +16,7 @@ ORO-7J does not mutate wallet or ledger.
 ORO-7J does not mount any route.
 ORO-7J does not expose public aliases.
 ORO-7J only prepares the next separate runtime enablement final activation readiness gate.
+ORO-7K runtime enablement final activation readiness gate is required next.
 
 ## Depends on ORO-7I
 
@@ -122,6 +123,8 @@ ORO-7J keeps all mutation and persistence paths closed:
 - nextPhaseRequiresSeparateActualExternalCallExecutionRuntimeEnablementFinalActivationReadiness = true
 - humanApprovalRequiredForActualExecution = true
 - separateActualExecutionApprovalRequired = true
+- ORO-7K next readiness status = ready_for_separate_actual_external_call_execution_runtime_activation_request_only
+- ORO-7K next readiness scope = runtime_enablement_final_activation_readiness_only
 
 The next phase must be a separate runtime enablement final activation readiness
 gate before any runtime activation, runtime enablement, live execution approval,

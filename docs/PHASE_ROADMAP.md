@@ -3418,3 +3418,35 @@ Validation coverage:
   only status, decision-only scope, all runtime/live/mutation/route flags false,
   and blockers empty on the happy path.
 - `smoke:oro-7j` registration.
+
+## ORO-7K current/live traffic actual external call execution runtime enablement final activation readiness gate
+
+ORO-7K records the actual external call execution runtime enablement final
+activation readiness gate after ORO-7J issued the runtime enablement activation
+decision. ORO-7K is runtime enablement final activation readiness gate only.
+
+The ORO-7K readiness status is
+`ready_for_separate_actual_external_call_execution_runtime_activation_request_only`.
+The ORO-7K readiness scope is
+`runtime_enablement_final_activation_readiness_only`.
+
+ORO-7K still does not submit runtime activation request, issue runtime
+activation decision, activate runtime execution, enable runtime execution,
+approve live execution, call live OroPlay, mutate wallet or ledger, mount
+routes, expose public aliases, write data, migrate, or deploy.
+
+Validation coverage:
+
+- ORO-7K final activation readiness gate doc exists and states readiness-only
+  scope.
+- ORO-7K helper exports status, gate builder, evaluator, validator, and
+  summary builder.
+- ORO-7K fixtures cover happy path, missing ORO-7J activation decision, invalid
+  ORO-7J decision status, runtime activation request attempts, runtime
+  activation decision attempts, runtime activation attempts, runtime enablement
+  attempts, live execution attempts, external network attempts, mutation
+  attempts, and route/public alias attempts.
+- ORO-7K smoke confirms final activation readiness output, runtime activation
+  request only status, readiness-only scope, all runtime/live/mutation/route
+  flags false, and blockers empty on the happy path.
+- `smoke:oro-7k` registration.

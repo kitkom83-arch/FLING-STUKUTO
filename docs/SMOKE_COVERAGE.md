@@ -3600,6 +3600,54 @@ Coverage assertions:
   runtime enablement, live execution, route, alias, mutation, migration, deploy,
   network, and live OroPlay attempts.
 
+## ORO-7K Live Traffic Actual External Call Execution Runtime Enablement Final Activation Readiness Gate Coverage
+
+ORO-7K Live Traffic Actual External Call Execution Runtime Enablement Final
+Activation Readiness Gate Coverage is static/mock only. It validates that
+ORO-7K depends on the ORO-7J activation decision, records final activation
+readiness only, and prepares a later separate runtime activation request
+boundary without enabling runtime execution or live traffic.
+
+Covered files:
+
+- ORO-7K boundary doc: live traffic actual external call execution runtime
+  enablement final activation readiness gate.
+- ORO-7K mock helper: readiness status, gate builder, evaluator, summary
+  builder, and validator.
+- ORO-7K fixtures: happy path, missing ORO-7J activation decision, invalid
+  ORO-7J decision status, runtime activation request attempts, runtime
+  activation decision attempts, runtime activation attempts, runtime enablement
+  attempts, live execution attempts, external network/live OroPlay attempts,
+  wallet/ledger/data mutation attempts, migration/deploy attempts, route mount,
+  Express mount, public alias, and API alias attempts.
+- ORO-7K smoke: runtime enablement final activation readiness gate smoke file.
+- ORO-7K smoke wrapper: `src/local-smoke-tests/oro7kSmoke.js`.
+
+Package scripts:
+
+- ORO-7K boundary-specific package smoke alias
+- `smoke:oro-7k`
+- `smoke:oro-7k-runtime-enable-final-activation-readiness`
+
+Coverage assertions:
+
+- Confirms ORO-7K emits `phase=ORO-7K`, the runtime activation request only
+  readiness status, and `runtime_enablement_final_activation_readiness_only`.
+- Confirms ORO-7K depends on the ORO-7J activation decision status
+  `approved_for_separate_actual_external_call_execution_runtime_enablement_final_activation_readiness_only`.
+- Confirms ORO-7K records only the final activation readiness gate.
+- Confirms ORO-7K does not submit runtime activation request, issue runtime
+  activation decision, activate runtime execution, enable runtime execution, or
+  approve live execution.
+- Confirms ORO-7K does not open external network access or call live OroPlay.
+- Confirms ORO-7K does not allow wallet mutation, ledger mutation, data write,
+  DB transaction, migration, or deploy.
+- Confirms ORO-7K does not mount routes, expose public aliases, or allow the
+  balance/transaction API aliases.
+- Confirms ORO-7K blockers are empty on the happy path and fail closed for
+  unsafe activation, enablement, live execution, external network, mutation,
+  and route/alias attempts.
+
 ## 137. ORO-6X Live Traffic Actual External Call Execution Live Execution Decision Boundary Coverage
 
 ORO-6X Live Traffic Actual External Call Execution Live Execution Decision

@@ -1223,6 +1223,22 @@ wallet or ledger, write data, open DB transactions, migrate, deploy, mount
 routes, or expose public aliases. ORO-7J only prepares the next separate
 runtime enablement final activation readiness gate.
 
+## ORO-7K Current
+
+ORO-7K records the actual external call execution runtime enablement final
+activation readiness gate only after ORO-7J issued the runtime enablement
+activation decision. ORO-7K is runtime enablement final activation readiness gate only,
+and its readiness status prepares only the next separate runtime activation request boundary.
+
+ORO-7K readiness status is
+`ready_for_separate_actual_external_call_execution_runtime_activation_request_only`
+with scope `runtime_enablement_final_activation_readiness_only`.
+
+ORO-7K does not submit runtime activation request, issue runtime activation
+decision, activate runtime execution, enable runtime execution, permit live
+OroPlay API calls, mutate wallet or ledger, mount any route, expose public
+aliases, perform external network access, write data, run migrations, or deploy.
+
 ## ORO-6N Current
 
 ORO-6N records the actual execution enablement request only after ORO-6M
