@@ -2580,3 +2580,49 @@ Validation:
 
 - smoke:oro-7m
 - smoke:oro-7m-runtime-activation-decision
+
+## ORO-7N Live Traffic Actual External Call Execution Runtime Activation Final Readiness Gate Mapping
+
+ORO-7N records actual external call execution runtime activation final readiness gate only
+after ORO-7M issues the runtime activation decision boundary.
+
+- ORO-7N records actual external call execution runtime activation final readiness gate only
+- runtime activation final readiness scope: `runtime_activation_final_readiness_only`
+- ORO-7M decision status:
+  `approved_for_separate_actual_external_call_execution_runtime_activation_final_readiness_only`
+- actualExternalCallExecutionRuntimeActivationFinalReadinessPrepared=true
+- actualExternalCallExecutionRuntimeActivationFinalReadinessPassed=true
+- actualExternalCallExecutionRuntimeEnabled=false
+- actualExternalCallExecutionActivated=false
+- actualExternalCallExecutionEnabled=false
+- actualExternalCallExecutionAuthorized=false
+- actualExternalCallExecutionLiveExecutionApproved=false
+- actualExternalCallExecutionLiveExecuted=false
+- externalNetworkAllowed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCallAllowed=false
+- liveOroPlayApiCalled=false
+- walletMutationAllowed=false
+- walletMutationPerformed=false
+- ledgerMutationAllowed=false
+- ledgerMutationPerformed=false
+- prismaWriteAllowed=false
+- prismaWritePerformed=false
+- dbTransactionAllowed=false
+- dbTransactionPerformed=false
+- migrationAllowed=false
+- migrationPerformed=false
+- deployAllowed=false
+- deployPerformed=false
+- routeEnablementAllowed=false
+- expressMountAllowed=false
+- publicAliasAllowed=false
+- apiBalanceAliasAllowed=false
+- apiTransactionAliasAllowed=false
+- apiOroplayBalanceRouteAllowed=false
+- apiOroplayTransactionRouteAllowed=false
+- nextPhaseRequiresSeparateActualExternalCallExecutionRuntimeActivationRequestOrExecutionApproval=true
+- humanApprovalRequiredForActualExecution=true
+- separateActualExecutionApprovalRequired=true
+- smoke:oro-7n
+- smoke:oro-7n-runtime-activation-final-readiness

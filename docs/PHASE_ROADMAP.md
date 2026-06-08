@@ -3512,3 +3512,32 @@ Validation coverage:
   decision status, decision-only scope, all runtime/live/mutation/route flags
   false, and blockers empty on the happy path.
 - `smoke:oro-7m` registration.
+
+## ORO-7N current/live traffic actual external call execution runtime activation final readiness gate
+
+ORO-7N records the actual external call execution runtime activation final
+readiness gate after ORO-7M issued the runtime activation decision boundary.
+ORO-7N is runtime activation final readiness gate only.
+
+The ORO-7N readiness scope is `runtime_activation_final_readiness_only`.
+Runtime activation stays separate and still requires a later request or
+execution approval boundary.
+
+ORO-7N still does not activate runtime execution, enable runtime execution,
+approve live execution, call live OroPlay, mutate wallet or ledger, mount
+routes, expose public aliases, write data, migrate, or deploy.
+
+Validation coverage:
+
+- ORO-7N runtime activation final readiness gate doc exists and states
+  final-readiness-only scope.
+- ORO-7N helper exports phase, scope, boundary builder, validator, and summary.
+- ORO-7N fixtures cover happy path, missing ORO-7M runtime activation decision,
+  decision status mismatch, runtime activation attempts, runtime enablement
+  attempts, live execution attempts, network/live OroPlay attempts, mutation
+  attempts, migration/deploy attempts, route/alias attempts, and sensitive
+  output attempts.
+- ORO-7N smoke confirms final readiness output, ORO-7M dependency, closed
+  runtime/live/mutation/route flags, empty happy-path blockers, and fail-closed
+  blocker cases.
+- `smoke:oro-7n` registration.

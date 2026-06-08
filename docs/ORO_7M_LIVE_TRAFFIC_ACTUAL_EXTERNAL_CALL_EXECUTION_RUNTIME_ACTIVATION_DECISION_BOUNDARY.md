@@ -119,6 +119,9 @@ ORO-7M does not mutate wallet or ledger.
 
 ORO-7M only prepares the next separate runtime activation final readiness gate.
 
+ORO-7N runtime activation final readiness gate is required next with scope
+`runtime_activation_final_readiness_only`.
+
 ## Safety confirmation
 
 ORO-7M is docs, contract, static/mock harness, and local smoke only. It does

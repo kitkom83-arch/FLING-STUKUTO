@@ -1272,6 +1272,20 @@ ORO-7M does not activate runtime execution, enable runtime execution, permit
 live OroPlay API calls, mutate wallet or ledger, mount any route, expose public
 aliases, perform external network access, write data, run migrations, or deploy.
 
+## ORO-7N Current
+
+ORO-7N records the actual external call execution runtime activation final
+readiness gate after ORO-7M issued the runtime activation decision boundary.
+ORO-7N is runtime activation final readiness gate only; runtime activation stays separate.
+
+The ORO-7N readiness scope is `runtime_activation_final_readiness_only`.
+ORO-7N depends on ORO-7M status
+`approved_for_separate_actual_external_call_execution_runtime_activation_final_readiness_only`.
+
+ORO-7N does not activate runtime execution, enable runtime execution, approve
+live execution, permit live OroPlay API calls, mutate wallet or ledger, mount
+routes, expose public aliases, write data, run migrations, or deploy.
+
 ## ORO-6N Current
 
 ORO-6N records the actual execution enablement request only after ORO-6M
