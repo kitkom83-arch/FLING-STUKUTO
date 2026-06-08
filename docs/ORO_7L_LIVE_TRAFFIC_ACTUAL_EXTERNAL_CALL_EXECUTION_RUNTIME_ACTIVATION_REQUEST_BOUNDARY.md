@@ -130,6 +130,11 @@ The next phase must be a separate runtime activation decision boundary before
 any runtime activation, runtime enablement, live execution approval, external
 network call, or live OroPlay API call can be considered.
 
+ORO-7M runtime activation decision boundary is required next. Its decision
+status must be
+`approved_for_separate_actual_external_call_execution_runtime_activation_final_readiness_only`
+and its scope must be `runtime_activation_decision_only`.
+
 ## Safety confirmation
 
 ORO-7L is docs, contract, static/mock harness, and local smoke only. It does

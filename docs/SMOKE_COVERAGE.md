@@ -3695,6 +3695,53 @@ Coverage assertions:
   unsafe activation decision, activation, enablement, live execution, external
   network, mutation, and route/alias attempts.
 
+## ORO-7M Live Traffic Actual External Call Execution Runtime Activation Decision Boundary Coverage
+
+ORO-7M Live Traffic Actual External Call Execution Runtime Activation Decision
+Boundary Coverage is static/mock only. It validates that ORO-7M depends on the
+ORO-7L runtime activation request boundary, records a runtime activation
+decision only, and prepares the next separate runtime activation final
+readiness gate without activating runtime execution or live traffic.
+
+Covered files:
+
+- ORO-7M boundary doc: live traffic actual external call execution runtime
+  activation decision boundary.
+- ORO-7M mock helper: decision status, boundary builder, evaluator, summary
+  builder, and validator.
+- ORO-7M fixtures: happy path, missing ORO-7L runtime activation request,
+  invalid ORO-7L request status, runtime activation decision not issued,
+  missing final readiness requirement, runtime activation attempts, runtime
+  enablement attempts, live execution attempts, external network/live OroPlay
+  attempts, wallet/ledger/data mutation attempts, migration/deploy attempts,
+  route mount, Express mount, public alias, and API alias attempts.
+- ORO-7M smoke: runtime activation decision boundary smoke file.
+- ORO-7M smoke wrapper: `src/local-smoke-tests/oro7mSmoke.js`.
+
+Package scripts:
+
+- ORO-7M boundary-specific package smoke alias
+- `smoke:oro-7m`
+- `smoke:oro-7m-runtime-activation-decision`
+
+Coverage assertions:
+
+- Confirms ORO-7M emits `phase=ORO-7M`, the final readiness decision status,
+  and `runtime_activation_decision_only`.
+- Confirms ORO-7M depends on the ORO-7L request status
+  `submitted_pending_actual_external_call_execution_runtime_activation_decision`.
+- Confirms ORO-7M records only the runtime activation decision.
+- Confirms ORO-7M does not activate runtime execution, enable runtime
+  execution, or approve live execution.
+- Confirms ORO-7M does not open external network access or call live OroPlay.
+- Confirms ORO-7M does not allow wallet mutation, ledger mutation, data write,
+  DB transaction, migration, or deploy.
+- Confirms ORO-7M does not mount routes, expose public aliases, or allow the
+  balance/transaction API aliases.
+- Confirms ORO-7M blockers are empty on the happy path and fail closed for
+  unsafe activation, enablement, live execution, external network, mutation,
+  and route/alias attempts.
+
 ## 137. ORO-6X Live Traffic Actual External Call Execution Live Execution Decision Boundary Coverage
 
 ORO-6X Live Traffic Actual External Call Execution Live Execution Decision

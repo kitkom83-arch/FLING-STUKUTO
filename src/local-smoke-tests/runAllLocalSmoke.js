@@ -793,6 +793,23 @@ const RELATED_FILES = [
     "docs/ORO_7L_LIVE_TRAFFIC_ACTUAL_EXTERNAL_CALL",
     "EXECUTION_RUNTIME_ACTIVATION_REQUEST_BOUNDARY.md",
   ].join("_"),
+  [
+    "src/game-provider-mock/oro7mLiveTrafficActualExternalCall",
+    "ExecutionRuntimeActivationDecisionBoundary.js",
+  ].join(""),
+  [
+    "src/game-provider-mock/oro7mLiveTrafficActualExternalCall",
+    "ExecutionRuntimeActivationDecisionBoundaryFixtures.js",
+  ].join(""),
+  [
+    "src/local-smoke-tests/oro7mLiveTrafficActualExternalCall",
+    "ExecutionRuntimeActivationDecisionBoundarySmoke.js",
+  ].join(""),
+  "src/local-smoke-tests/oro7mSmoke.js",
+  [
+    "docs/ORO_7M_LIVE_TRAFFIC_ACTUAL_EXTERNAL_CALL",
+    "EXECUTION_RUNTIME_ACTIVATION_DECISION_BOUNDARY.md",
+  ].join("_"),
   "src/payment-provider-mock/memberQrDepositUxContract.js",
   "src/payment-provider-mock/memberQrDepositMockHarness.js",
   "src/local-smoke-tests/memberQrDepositUxSmoke.js",
@@ -1103,6 +1120,7 @@ const summary = [
   { key: "oro7j", label: "oro-7j", status: "PENDING" },
   { key: "oro7k", label: "oro-7k", status: "PENDING" },
   { key: "oro7l", label: "oro-7l", status: "PENDING" },
+  { key: "oro7m", label: "oro-7m", status: "PENDING" },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
   { key: "depositVerificationSource", label: "deposit-verification-source", status: "PENDING" },
   {
@@ -2183,6 +2201,12 @@ const steps = [
     summaryKey: "syntax",
   },
   {
+    name: "node --check oro7mSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oro7mSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
     name: "node --check memberQrDepositUxContract",
     command: nodeCommand,
     args: ["--check", "src/payment-provider-mock/memberQrDepositUxContract.js"],
@@ -3158,6 +3182,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oro-7l"]),
     summaryKey: "oro7l",
+  },
+  {
+    name: "npm run smoke:oro-7m",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oro-7m"]),
+    summaryKey: "oro7m",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

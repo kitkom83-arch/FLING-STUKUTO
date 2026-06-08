@@ -2518,3 +2518,65 @@ Validation:
 
 - smoke:oro-7l
 - smoke:oro-7l-runtime-activation-request
+
+## ORO-7M Live Traffic Actual External Call Execution Runtime Activation Decision Boundary Mapping
+
+ORO-7M records actual external call execution runtime activation decision boundary only
+after ORO-7L submitted the runtime activation request boundary. It prepares
+static/mock decision evidence for a later separate runtime activation final
+readiness gate only.
+
+Mapping contract:
+
+- ORO-7M records actual external call execution runtime activation decision boundary only
+- depends on ORO-7L request status:
+  `submitted_pending_actual_external_call_execution_runtime_activation_decision`
+- depends on ORO-7L request scope: `runtime_activation_request_only`
+- runtime activation decision status:
+  `approved_for_separate_actual_external_call_execution_runtime_activation_final_readiness_only`
+- runtime activation decision scope: `runtime_activation_decision_only`
+- actualExternalCallExecutionRuntimeActivationDecisionPrepared=true
+- actualExternalCallExecutionRuntimeActivationDecisionIssued=true
+- actualExternalCallExecutionRuntimeActivationDecisionStatus=approved_for_separate_actual_external_call_execution_runtime_activation_final_readiness_only
+- actualExternalCallExecutionRuntimeActivationDecisionScope=runtime_activation_decision_only
+- actualExternalCallExecutionRuntimeEnabled=false
+- actualExternalCallExecutionActivated=false
+- actualExternalCallExecutionEnabled=false
+- actualExternalCallExecutionAuthorized=false
+- actualExternalCallExecutionLiveExecutionApproved=false
+- actualExternalCallExecutionLiveExecuted=false
+- externalNetworkAllowed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCallAllowed=false
+- liveOroPlayApiCalled=false
+- walletMutationAllowed=false
+- walletMutationPerformed=false
+- ledgerMutationAllowed=false
+- ledgerMutationPerformed=false
+- prismaWriteAllowed=false
+- prismaWritePerformed=false
+- dbTransactionAllowed=false
+- dbTransactionPerformed=false
+- migrationAllowed=false
+- migrationPerformed=false
+- deployAllowed=false
+- deployPerformed=false
+- routeEnablementAllowed=false
+- expressMountAllowed=false
+- publicAliasAllowed=false
+- apiBalanceAliasAllowed=false
+- apiTransactionAliasAllowed=false
+- apiOroplayBalanceRouteAllowed=false
+- apiOroplayTransactionRouteAllowed=false
+- nextPhaseRequiresSeparateActualExternalCallExecutionRuntimeActivationFinalReadiness=true
+
+ORO-7M is runtime activation decision boundary only. ORO-7M does not activate
+runtime execution, does not enable runtime execution, does not permit live
+OroPlay API calls, does not mutate wallet or ledger, does not mount any route,
+does not expose public aliases, and only prepares the next separate runtime
+activation final readiness gate.
+
+Validation:
+
+- smoke:oro-7m
+- smoke:oro-7m-runtime-activation-decision
