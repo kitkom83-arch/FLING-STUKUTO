@@ -3081,3 +3081,43 @@ Acceptance:
   no external network, no live OroPlay call, no wallet/ledger/data mutation, no
   migration/deploy, and sanitized output.
 - `smoke:oro-6z` registration.
+
+## ORO-7A current/live traffic actual external call execution final execution decision boundary
+
+ORO-7A records the actual external call execution final execution decision
+after ORO-6Z submitted the final-execution-request-only boundary. The decision
+status is
+`approved_for_separate_actual_external_call_execution_authorization_request_only`
+and the scope is `final_execution_decision_only`.
+ORO-7A is final execution decision only.
+
+ORO-7A still does not submit the separate authorization request, issue an
+authorization decision, approve live execution, activate actual execution,
+enable runtime execution, enable actual execution, authorize execution, perform
+execution, open external network, call live OroPlay, mutate wallet or ledger,
+write Prisma, open DB transactions, run migrations, or deploy.
+
+The next phase blocked until separate actual external call execution
+authorization request remains a required boundary before any live external
+call execution can occur.
+
+Acceptance:
+
+- ORO-7A final execution decision doc exists and states final execution
+  decision only scope.
+- ORO-7A helper exports status, input builder, evaluator, summary builder, and
+  contract validator.
+- ORO-7A fixtures cover happy path, missing ORO-6Z final execution request,
+  unsubmitted ORO-6Z request, non-pending ORO-6Z request status, missing final
+  decision, accidental actual execution approval decision, same-phase
+  authorization request, accidental live execution approval, external network,
+  live OroPlay call, wallet, ledger, data write, DB transaction, migration, and
+  deploy failures.
+- ORO-7A smoke confirms final execution decision output, decision status
+  `approved_for_separate_actual_external_call_execution_authorization_request_only`,
+  decision scope `final_execution_decision_only`, no authorization request,
+  no authorization decision, no live execution approval, no activation, no
+  runtime enablement, no external call execution, no external network, no live
+  OroPlay call, no wallet/ledger/data mutation, no migration/deploy, and
+  sanitized output.
+- `smoke:oro-7a` registration.

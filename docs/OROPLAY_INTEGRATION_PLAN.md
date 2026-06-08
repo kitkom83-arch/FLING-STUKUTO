@@ -1376,3 +1376,17 @@ approve live execution, activate actual execution, enable runtime execution,
 enable actual execution, authorize execution, perform execution, or open
 wallet, ledger, Prisma, DB transaction, migration, deploy, external network,
 or live OroPlay calls.
+
+## ORO-7A Current
+
+ORO-7A records the actual external call execution final execution decision only
+after ORO-6Z submitted the final execution request. The decision status is
+approved_for_separate_actual_external_call_execution_authorization_request_only
+and the scope is final_execution_decision_only.
+This is a final execution decision only.
+It still requires a separate actual external call execution authorization
+request before any live external call execution can occur. It does not submit
+that request, issue an authorization decision, approve live execution,
+activate actual execution, enable runtime execution, enable actual execution,
+authorize execution, perform execution, or open wallet, ledger, Prisma, DB
+transaction, migration, deploy, external network, or live OroPlay calls.

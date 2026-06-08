@@ -101,6 +101,13 @@ decision before any live execution approval or actual execution can occur.
 ORO-6Z still does not approve live execution, activate actual execution, enable
 runtime execution, authorize execution, or perform actual execution.
 
+ORO-7A final execution decision boundary is required next. The next phase may
+record
+`approved_for_separate_actual_external_call_execution_authorization_request_only`
+with `final_execution_decision_only` scope, but it still must not submit the
+authorization request, approve live execution, activate actual execution,
+enable runtime execution, or perform any external call execution.
+
 ## Sensitive output rules
 
 ORO-6Z records only static and mock evidence. Outputs must stay sanitized and

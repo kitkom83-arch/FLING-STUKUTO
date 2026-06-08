@@ -3154,6 +3154,56 @@ Assertions:
 - Confirms ORO-6Z blocks unsafe final execution request inputs and
   sensitive-shaped output.
 
+## 140. ORO-7A Live Traffic Actual External Call Execution Final Execution Decision Boundary Coverage
+
+ORO-7A Live Traffic Actual External Call Execution Final Execution Decision
+Boundary coverage validates the final execution decision boundary after ORO-6Z
+submitted the final execution request. It is static/mock evidence only and
+keeps authorization request submission, authorization decision issuance,
+execution approval, activation, runtime enablement, external call execution,
+network, live OroPlay, wallet, ledger, data write, DB transaction, migration,
+and deploy paths closed.
+
+Covered assets:
+
+- ORO-7A boundary doc: live traffic actual external call execution final
+  execution decision boundary.
+- ORO-7A mock helper: final execution decision status, input builder,
+  evaluator, summary builder, and contract validator.
+- ORO-7A fixtures: happy path, missing ORO-6Z final execution request,
+  unsubmitted ORO-6Z request, non-pending ORO-6Z request status, missing final
+  decision, accidental actual execution approval decision, same-phase
+  authorization request, accidental live execution approval, external network,
+  live OroPlay call, wallet mutation, ledger mutation, data write, DB
+  transaction, migration, and deploy failures.
+- ORO-7A smoke:
+  `src/local-smoke-tests/oro7aLiveTrafficActualExternalCallExecutionFinalExecutionDecisionBoundarySmoke.js`.
+- ORO-7A smoke wrapper: `src/local-smoke-tests/oro7aSmoke.js`.
+
+Registered commands:
+
+- ORO-7A boundary-specific package smoke alias
+- `smoke:oro-7a`
+
+Assertions:
+
+- Confirms ORO-7A emits `phase=ORO-7A`, final execution decision status
+  `approved_for_separate_actual_external_call_execution_authorization_request_only`,
+  and decision scope `final_execution_decision_only`.
+- Confirms ORO-7A depends on ORO-6Z request status
+  `submitted_pending_actual_external_call_execution_decision` and scope
+  `final_execution_request_only`.
+- Confirms ORO-7A issues only the final execution decision.
+- Confirms ORO-7A does not submit an authorization request or issue an
+  authorization decision.
+- Confirms ORO-7A does not approve live execution, activate actual execution,
+  enable runtime execution, authorize execution, perform external call
+  execution, open external network, or call live OroPlay.
+- Confirms ORO-7A does not allow wallet mutation, ledger mutation, data write,
+  DB transaction, migration, deploy, or sensitive-shaped output.
+- Confirms ORO-7A blocks unsafe final execution decision inputs and
+  sensitive-shaped output.
+
 ## 137. ORO-6X Live Traffic Actual External Call Execution Live Execution Decision Boundary Coverage
 
 ORO-6X Live Traffic Actual External Call Execution Live Execution Decision

@@ -1960,3 +1960,46 @@ perform execution, open network access, or call live OroPlay.
 - migrationPerformed=false
 - deployPerformed=false
 - smoke:oro-6z
+
+## ORO-7A Live Traffic Actual External Call Execution Final Execution Decision Boundary Mapping
+
+ORO-7A records actual external call execution final execution decision only
+after ORO-6Z submitted the final execution request. The decision status is
+approved_for_separate_actual_external_call_execution_authorization_request_only
+and the decision scope is final_execution_decision_only. It does not submit
+the authorization request, approve live execution, activate actual execution,
+enable runtime execution, perform execution, open network access, or call live
+OroPlay.
+
+- ORO-7A records actual external call execution final execution decision only
+- ORO-6Z final execution request boundary passed=true
+- ORO-6Z final execution request prepared evidence=true
+- ORO-6Z final execution request submitted evidence=true
+- ORO-6Z final execution request status=submitted_pending_actual_external_call_execution_decision
+- ORO-6Z final execution request scope=final_execution_request_only
+- actualExternalCallExecutionFinalExecutionDecisionPrepared=true
+- actualExternalCallExecutionFinalExecutionDecisionIssued=true
+- actualExternalCallExecutionFinalExecutionDecisionStatus=approved_for_separate_actual_external_call_execution_authorization_request_only
+- actualExternalCallExecutionFinalExecutionDecisionScope=final_execution_decision_only
+- actualExternalCallExecutionAuthorizationRequestSubmitted=false
+- actualExternalCallExecutionAuthorizationDecisionIssued=false
+- actualExternalCallExecutionLiveExecutionApproved=false
+- actualExternalCallExecutionActivated=false
+- actualExternalCallExecutionRuntimeEnabled=false
+- actualExternalCallExecutionEnabled=false
+- actualExternalCallExecutionAuthorized=false
+- externalCallExecutionAuthorized=false
+- externalCallExecutionPerformed=false
+- no outgoing live OroPlay API call yet
+- no wallet/ledger mutation
+- externalNetworkAllowed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCallAllowed=false
+- liveOroPlayApiCalled=false
+- walletMutationPerformed=false
+- ledgerMutationPerformed=false
+- prismaWritePerformed=false
+- dbTransactionPerformed=false
+- migrationPerformed=false
+- deployPerformed=false
+- smoke:oro-7a
