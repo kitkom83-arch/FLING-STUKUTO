@@ -123,6 +123,8 @@ activation execution final authorization decision before any runtime
 activation, runtime enablement, live execution approval, external network call,
 or live OroPlay API call can be considered.
 
+ORO-7V is the separate runtime activation execution final authorization decision after ORO-7U.
+
 ## Safety confirmation
 
 ORO-7U is docs, contract, static/mock harness, and local smoke only. It does

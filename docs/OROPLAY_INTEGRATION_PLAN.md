@@ -1206,6 +1206,22 @@ occur. It does not submit enablement request, enable actual execution,
 authorize execution, perform execution, or open wallet, ledger, Prisma, DB
 transaction, migration, deploy, external network, or live OroPlay calls.
 
+## ORO-7V Current
+
+ORO-7V records the actual external call execution runtime activation execution
+final authorization decision only after ORO-7U submitted the final
+authorization request. The decision status is
+`approved_for_separate_actual_external_call_execution_runtime_activation_execution_authorized_execution_readiness_only`
+and the decision scope is
+`runtime_activation_execution_final_authorization_decision_only`.
+
+ORO-7V is runtime activation execution final authorization decision only, and
+authorized execution readiness stays separate. It does not activate runtime
+execution, enable runtime execution, authorize actual execution, approve live
+execution, perform live execution, open external network access, call live
+OroPlay, mutate wallet or ledger state, write Prisma data, run DB
+transactions, run migrations, deploy, mount routes, or expose public aliases.
+
 ## ORO-7T Current
 
 ORO-7T records the actual external call execution runtime activation execution

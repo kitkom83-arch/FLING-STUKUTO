@@ -2993,3 +2993,36 @@ migrations, deploy, mount routes, or expose public aliases.
 - deployAllowed=false
 - smoke:oro-7u
 - smoke:oro-7u-runtime-activation-execution-final-authorization-request
+
+## ORO-7V Live Traffic Actual External Call Execution Runtime Activation Execution Final Authorization Decision Boundary Mapping
+
+ORO-7V records actual external call execution runtime activation execution final authorization decision only
+after ORO-7U submitted the runtime activation execution final authorization request.
+
+ORO-7V remains docs/contract/static/mock/local-smoke only and does not activate
+runtime execution, enable runtime execution, authorize actual execution, approve
+live execution, execute live traffic, call live OroPlay, mutate wallet or
+ledger, write data, run migrations, deploy, mount routes, or expose public
+aliases.
+
+- ORO-7V records actual external call execution runtime activation execution final authorization decision only
+- ORO-7U request scope: runtime_activation_execution_final_authorization_request_only
+- ORO-7U request status: submitted_pending_actual_external_call_execution_runtime_activation_execution_final_authorization_decision
+- ORO-7V decision scope: runtime_activation_execution_final_authorization_decision_only
+- ORO-7V decision status: approved_for_separate_actual_external_call_execution_runtime_activation_execution_authorized_execution_readiness_only
+- actualExternalCallExecutionRuntimeActivationExecutionFinalAuthorizationRequestPreparedFromOro7u=true
+- actualExternalCallExecutionRuntimeActivationExecutionFinalAuthorizationRequestSubmittedFromOro7u=true
+- actualExternalCallExecutionRuntimeActivationExecutionFinalAuthorizationDecisionPrepared=true
+- actualExternalCallExecutionRuntimeActivationExecutionFinalAuthorizationDecisionIssued=true
+- actualExternalCallExecutionRuntimeEnabled=false
+- actualExternalCallExecutionActivated=false
+- liveOroPlayApiCallAllowed=false
+- routeEnablementAllowed=false
+- walletMutationAllowed=false
+- ledgerMutationAllowed=false
+- prismaWriteAllowed=false
+- dbTransactionAllowed=false
+- migrationAllowed=false
+- deployAllowed=false
+- smoke:oro-7v
+- smoke:oro-7v-runtime-activation-execution-final-authorization-decision

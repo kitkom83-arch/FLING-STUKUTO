@@ -3759,3 +3759,36 @@ Validation:
 - ORO-7U smoke confirms request output, ORO-7T dependency, closed
   runtime/live/network/route/mutation flags, and fail-closed blockers.
 - `smoke:oro-7u` registration.
+
+## ORO-7V current/live traffic actual external call execution runtime activation execution final authorization decision boundary
+
+ORO-7V records the actual external call execution runtime activation execution
+final authorization decision after ORO-7U submitted the final authorization
+request. ORO-7V is runtime activation execution final authorization decision only.
+
+The ORO-7V decision scope is
+`runtime_activation_execution_final_authorization_decision_only`.
+The ORO-7V decision status is
+`approved_for_separate_actual_external_call_execution_runtime_activation_execution_authorized_execution_readiness_only`.
+ORO-7V depends on ORO-7U request scope
+`runtime_activation_execution_final_authorization_request_only` and request
+status
+`submitted_pending_actual_external_call_execution_runtime_activation_execution_final_authorization_decision`.
+
+ORO-7V still does not activate runtime execution, enable runtime execution,
+authorize actual execution, approve live execution, execute live traffic, call
+live OroPlay, mutate wallet or ledger, write data, run migrations, deploy,
+mount routes, or expose public aliases.
+
+Validation:
+
+- ORO-7V final authorization decision boundary doc exists.
+- ORO-7V helper exports phase, scope, boundary builder, validator, and summary.
+- ORO-7V fixtures cover happy path, missing ORO-7U request, ORO-7U request
+  status/scope mismatch, runtime activation, runtime enablement, live
+  execution, network, live OroPlay, wallet, ledger, Prisma, DB, migration,
+  deploy, route, Express mount, public alias, public API aliases, OroPlay API
+  routes, and sensitive output blockers.
+- ORO-7V smoke confirms decision output, ORO-7U dependency, closed
+  runtime/live/network/route/mutation flags, and fail-closed blockers.
+- `smoke:oro-7v` registration.
