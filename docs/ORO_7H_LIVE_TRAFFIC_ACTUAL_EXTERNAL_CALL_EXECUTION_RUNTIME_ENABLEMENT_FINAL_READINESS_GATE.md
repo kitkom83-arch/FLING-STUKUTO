@@ -119,6 +119,10 @@ ORO-7H keeps all mutation and persistence paths closed:
 - humanApprovalRequiredForActualExecution = true
 - separateActualExecutionApprovalRequired = true
 
+ORO-7I runtime enablement activation request boundary is required next. That
+boundary must stay `runtime_enablement_activation_request_only` and may submit
+only the separate activation decision status
+`submitted_pending_actual_external_call_execution_runtime_enablement_activation_decision`.
 The next phase must be a separate runtime enablement activation request
 boundary before any runtime enablement, runtime activation, live execution
 approval, external network call, or live OroPlay API call can be considered.

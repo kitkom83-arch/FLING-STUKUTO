@@ -2257,3 +2257,83 @@ Validation:
 
 - smoke:oro-7h
 - smoke:oro-7h-runtime-enable-final-readiness
+
+## ORO-7I Live Traffic Actual External Call Execution Runtime Enablement Activation Request Boundary Mapping
+
+ORO-7I records actual external call execution runtime enablement activation
+request boundary only after ORO-7H passed the runtime enablement final readiness
+gate.
+
+- ORO-7I records actual external call execution runtime enablement activation request boundary only
+- ORO-7I is runtime enablement activation request boundary only.
+- ORO-7I does not issue activation decision.
+- ORO-7I does not enable runtime execution.
+- ORO-7I does not activate external calls.
+- ORO-7I does not permit live OroPlay API calls.
+- ORO-7I does not mutate wallet or ledger.
+- ORO-7I does not mount any route.
+- ORO-7I does not expose public aliases.
+- ORO-7I only prepares the next separate runtime enablement activation decision boundary.
+
+Runtime enablement final readiness intake from ORO-7H:
+
+- dependsOnOro7hLiveTrafficActualExternalCallExecutionRuntimeEnablementFinalReadinessGate=true
+- oro7hLiveTrafficActualExternalCallExecutionRuntimeEnablementFinalReadinessGatePassed=true
+- actualExternalCallExecutionRuntimeEnablementFinalReadinessPreparedFromOro7h=true
+- actualExternalCallExecutionRuntimeEnablementFinalReadinessCheckedFromOro7h=true
+- actualExternalCallExecutionRuntimeEnablementFinalReadinessPassedFromOro7h=true
+- actualExternalCallExecutionRuntimeEnablementFinalReadinessStatusFromOro7h=ready_for_separate_actual_external_call_execution_runtime_enablement_activation_request_only
+- actualExternalCallExecutionRuntimeEnablementFinalReadinessScopeFromOro7h=runtime_enablement_final_readiness_only
+
+Activation request record:
+
+- actualExternalCallExecutionRuntimeEnablementActivationRequestPrepared=true
+- actualExternalCallExecutionRuntimeEnablementActivationRequestSubmitted=true
+- actualExternalCallExecutionRuntimeEnablementActivationRequestStatus=submitted_pending_actual_external_call_execution_runtime_enablement_activation_decision
+- actualExternalCallExecutionRuntimeEnablementActivationRequestScope=runtime_enablement_activation_request_only
+- runtime_enablement_activation_request_only
+- submitted_pending_actual_external_call_execution_runtime_enablement_activation_decision
+
+Closed runtime and safety flags:
+
+- actualExternalCallExecutionRuntimeEnablementActivationDecisionIssued=false
+- actualExternalCallExecutionRuntimeEnabled=false
+- actualExternalCallExecutionActivated=false
+- actualExternalCallExecutionEnabled=false
+- actualExternalCallExecutionAuthorized=false
+- actualExternalCallExecutionLiveExecutionApproved=false
+- actualExternalCallExecutionLiveExecuted=false
+- externalNetworkAllowed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCallAllowed=false
+- liveOroPlayApiCalled=false
+- walletMutationAllowed=false
+- walletMutationPerformed=false
+- ledgerMutationAllowed=false
+- ledgerMutationPerformed=false
+- prismaWriteAllowed=false
+- prismaWritePerformed=false
+- dbTransactionAllowed=false
+- dbTransactionPerformed=false
+- migrationAllowed=false
+- migrationPerformed=false
+- deployAllowed=false
+- deployPerformed=false
+- routeEnablementAllowed=false
+- expressMountAllowed=false
+- publicAliasAllowed=false
+- apiBalanceAliasAllowed=false
+- apiTransactionAliasAllowed=false
+- apiOroplayBalanceRouteAllowed=false
+- apiOroplayTransactionRouteAllowed=false
+
+Next phase requirement:
+
+- nextPhaseRequiresSeparateActualExternalCallExecutionRuntimeEnablementActivationDecision=true
+- humanApprovalRequiredForActualExecution=true
+- separateActualExecutionApprovalRequired=true
+
+Validation:
+
+- smoke:oro-7i
+- smoke:oro-7i-runtime-enable-activation-request

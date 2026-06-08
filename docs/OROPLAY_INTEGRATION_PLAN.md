@@ -1486,6 +1486,22 @@ ORO-7H prepares the next separate runtime enablement activation request boundary
 ORO-7H does not enable runtime execution, activate external calls, permit live
 OroPlay API calls, mutate wallet or ledger, mount any route, expose public
 aliases, perform external network access, write data, run migrations, or deploy.
+
+## ORO-7I Current
+
+ORO-7I records the actual external call execution runtime enablement activation
+request boundary after ORO-7H final readiness passed.
+
+ORO-7I is runtime enablement activation request boundary only, and its request
+status remains a pending runtime enablement activation decision status:
+`submitted_pending_actual_external_call_execution_runtime_enablement_activation_decision`.
+
+ORO-7I request scope is `runtime_enablement_activation_request_only`.
+
+ORO-7I does not issue activation decision, enable runtime execution, activate
+external calls, permit live OroPlay API calls, mutate wallet or ledger, mount
+routes, or expose public aliases. ORO-7I only prepares the next separate
+runtime enablement activation decision boundary.
 and the scope is final_execution_decision_only.
 This is a final execution decision only.
 It still requires a separate actual external call execution authorization
