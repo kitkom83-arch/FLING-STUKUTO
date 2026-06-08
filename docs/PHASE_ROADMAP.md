@@ -3262,3 +3262,37 @@ Verification scope:
   no migration, no deploy, no sensitive-shaped output, and protected runtime
   paths untouched.
 - `smoke:oro-7e` registration.
+
+## ORO-7F current/live traffic actual external call execution runtime enablement request boundary
+
+ORO-7F records the actual external call execution runtime enablement request
+after ORO-7E issued the activation decision. This phase is runtime enablement
+request only. ORO-7F is runtime enablement request only. It submits static
+request evidence with pending runtime enablement decision status and scope
+`runtime_enablement_request_only`.
+
+ORO-7F still does not issue the runtime enablement decision, approve live
+execution, activate actual execution, enable runtime execution, authorize
+execution, perform external call execution, open external network access, call
+live OroPlay, mutate wallet or ledger state, write Prisma data, run DB
+transactions, run migrations, deploy, mount routes, or expose public aliases.
+
+Verification scope:
+
+- ORO-7F runtime enablement request doc exists and states request-only scope.
+- ORO-7F helper exports status, input builder, evaluator, summary builder, and
+  contract validator.
+- ORO-7F fixtures cover happy path, missing ORO-7E activation decision,
+  activation decision not issued, wrong ORO-7E decision status, runtime
+  enablement request not submitted, missing human approval requirement,
+  same-phase runtime enablement decision, actual execution approval, actual
+  execution activation, runtime enablement, route enablement, external
+  network/live OroPlay allowance, mutation allowance, data write allowance, DB
+  transaction allowance, migration allowance, and deploy allowance.
+- ORO-7F smoke confirms runtime enablement request output, pending runtime
+  enablement decision status, request scope `runtime_enablement_request_only`,
+  no runtime enablement decision, no execution approval, no external call, no
+  live OroPlay call, no wallet/ledger mutation, no data write, no DB
+  transaction, no migration, no deploy, no sensitive-shaped output, and
+  protected runtime paths untouched.
+- `smoke:oro-7f` registration.

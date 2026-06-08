@@ -106,6 +106,12 @@ does not submit that request, activate runtime execution, approve actual
 execution, enable runtime execution, authorize execution, or perform actual
 execution.
 
+ORO-7F runtime enablement request boundary is required next. That request must
+use status
+`submitted_pending_actual_external_call_execution_runtime_enablement_decision`
+and scope `runtime_enablement_request_only`, while any later runtime
+enablement decision remains separate.
+
 ## Sensitive output rules
 
 ORO-7E records only static and mock evidence. Outputs must stay sanitized and

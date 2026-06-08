@@ -3383,6 +3383,49 @@ Smoke assertions:
 - Confirms ORO-7E blocks unsafe activation decision inputs and
   sensitive-shaped output.
 
+## 145. ORO-7F Live Traffic Actual External Call Execution Runtime Enablement Request Boundary Coverage
+
+ORO-7F Live Traffic Actual External Call Execution Runtime Enablement Request
+Boundary Coverage validates that the phase records only the request for a
+later separate runtime enablement decision.
+
+Coverage includes:
+
+- ORO-7F boundary doc: live traffic actual external call execution runtime
+  enablement request boundary.
+- ORO-7F mock helper: runtime enablement request status, input builder,
+  evaluator, summary builder, and contract validator.
+- ORO-7F fixtures: happy path, missing ORO-7E activation decision, activation
+  decision not issued, wrong ORO-7E decision status, runtime enablement request
+  not submitted, missing human approval requirement, same-phase runtime
+  enablement decision, actual execution approval, actual execution activation,
+  runtime enablement, route enablement, external network/live OroPlay
+  allowance, mutation allowance, data write allowance, DB transaction
+  allowance, migration allowance, and deploy allowance.
+- ORO-7F smoke: runtime enablement request boundary smoke file.
+- ORO-7F smoke wrapper: `src/local-smoke-tests/oro7fSmoke.js`.
+
+Package scripts:
+
+- ORO-7F boundary-specific package smoke alias
+- `smoke:oro-7f`
+
+Smoke assertions:
+
+- Confirms ORO-7F emits `phase=ORO-7F`, the pending runtime enablement
+  decision status, and request scope `runtime_enablement_request_only`.
+- Confirms ORO-7F depends on the ORO-7E request-only activation decision
+  status.
+- Confirms ORO-7F submits only the runtime enablement request.
+- Confirms ORO-7F does not issue a runtime enablement decision, approve live
+  execution, activate actual execution, enable runtime execution, authorize
+  execution, mount routes, or perform external call execution.
+- Confirms ORO-7F does not open external network access or call live OroPlay.
+- Confirms ORO-7F does not allow wallet mutation, ledger mutation, data write,
+  DB transaction, migration, deploy, or sensitive-shaped output.
+- Confirms ORO-7F blocks unsafe runtime enablement request inputs and
+  sensitive-shaped output.
+
 ## 137. ORO-6X Live Traffic Actual External Call Execution Live Execution Decision Boundary Coverage
 
 ORO-6X Live Traffic Actual External Call Execution Live Execution Decision

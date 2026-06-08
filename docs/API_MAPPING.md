@@ -2131,3 +2131,35 @@ separate runtime enablement request and keeps actual execution closed.
 - migrationAllowed=false
 - deployAllowed=false
 - smoke:oro-7e
+
+## ORO-7F Live Traffic Actual External Call Execution Runtime Enablement Request Boundary Mapping
+
+ORO-7F records actual external call execution runtime enablement request only
+after ORO-7E issued the activation decision. It submits the request for a
+later separate runtime enablement decision and keeps actual execution closed.
+
+- ORO-7F records actual external call execution runtime enablement request only
+- depends on ORO-7E activation decision status:
+  request-only approval for a separate runtime enablement request
+- depends on ORO-7E activation decision scope: `activation_decision_only`
+- actualExternalCallExecutionRuntimeEnablementRequestStatus uses pending runtime enablement decision status
+- actualExternalCallExecutionRuntimeEnablementRequestScope=runtime_enablement_request_only
+- actualExternalCallExecutionRuntimeEnablementDecisionIssued=false
+- actualExternalCallExecutionLiveExecutionApproved=false
+- actualExternalCallExecutionActivated=false
+- actualExternalCallExecutionRuntimeEnabled=false
+- actualExternalCallExecutionEnabled=false
+- actualExternalCallExecutionAuthorized=false
+- externalCallExecutionAuthorized=false
+- externalCallExecutionPerformed=false
+- externalNetworkAllowed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCallAllowed=false
+- liveOroPlayApiCalled=false
+- walletMutationAllowed=false
+- ledgerMutationAllowed=false
+- prismaWriteAllowed=false
+- dbTransactionAllowed=false
+- migrationAllowed=false
+- deployAllowed=false
+- smoke:oro-7f
