@@ -1206,6 +1206,24 @@ occur. It does not submit enablement request, enable actual execution,
 authorize execution, perform execution, or open wallet, ledger, Prisma, DB
 transaction, migration, deploy, external network, or live OroPlay calls.
 
+## ORO-7R Current
+
+ORO-7R records the actual external call execution runtime activation execution
+request boundary after ORO-7Q passed the runtime activation execution final
+readiness gate. ORO-7R is runtime activation execution request only.
+
+The ORO-7R request scope is `runtime_activation_execution_request_only`.
+The ORO-7R request status is
+`submitted_pending_actual_external_call_execution_runtime_activation_execution_decision`.
+ORO-7R depends on ORO-7Q final readiness scope
+`runtime_activation_execution_final_readiness_only`.
+
+ORO-7R prepares and submits only the next runtime activation execution request;
+runtime activation execution decision stays separate. ORO-7R still does not
+activate runtime execution, enable runtime execution, approve live execution,
+execute live traffic, call live OroPlay, mutate wallet or ledger, write data,
+run migrations, deploy, mount routes, or expose public aliases.
+
 ## ORO-7J Current
 
 ORO-7J records the actual external call execution runtime enablement activation

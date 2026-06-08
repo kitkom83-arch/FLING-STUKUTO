@@ -132,3 +132,11 @@ not access production DBs, real-money flows, live execution, runtime
 enablement, runtime activation, external networks, live OroPlay, wallet
 mutation, ledger mutation, data writes, DB transactions, migrations, deploys,
 Express mounts, public aliases, or runtime route enablement.
+
+## ORO-7R follow-up boundary
+
+ORO-7R is the separate runtime activation execution request boundary after ORO-7Q.
+ORO-7R must depend on the ORO-7Q scope
+`runtime_activation_execution_final_readiness_only`, and ORO-7R must remain
+runtime activation execution request only until a later separate runtime
+activation execution decision boundary exists.

@@ -3041,6 +3041,52 @@ Boundary:
 - No live OroPlay API call.
 - No real money.
 
+## ORO-7R Live Traffic Actual External Call Execution Runtime Activation Execution Request Boundary Coverage
+
+ORO-7R Live Traffic Actual External Call Execution Runtime Activation Execution
+Request Boundary coverage proves that ORO-7R records only a runtime activation
+execution request after ORO-7Q final readiness passed.
+
+Covered files:
+
+- ORO-7R request doc: live traffic actual external call execution runtime
+  activation execution request boundary.
+- ORO-7R mock helper: request scope, ORO-7Q dependency, boundary builder,
+  validator, and summary.
+- ORO-7R fixtures: happy path, missing ORO-7Q final readiness, ORO-7Q final
+  readiness scope mismatch, request submission/status/scope mismatch, attempted
+  runtime activation, runtime enablement, live execution, network/API calls,
+  mutation, migration/deploy, route/alias exposure, and sensitive output
+  blockers.
+- ORO-7R smoke: runtime activation execution request boundary smoke.
+- ORO-7R smoke wrapper: `src/local-smoke-tests/oro7rSmoke.js`.
+
+Package script:
+
+- ORO-7R request-specific package smoke alias
+- `smoke:oro-7r`
+- `smoke:oro-7r-runtime-activation-execution-request`
+
+Coverage assertions:
+
+- Confirms ORO-7R emits `phase=ORO-7R`, request scope
+  `runtime_activation_execution_request_only`, and request status
+  `submitted_pending_actual_external_call_execution_runtime_activation_execution_decision`.
+- Confirms ORO-7R depends on ORO-7Q final readiness scope
+  `runtime_activation_execution_final_readiness_only`.
+- Confirms ORO-7R prepares and submits only the request record.
+- Confirms ORO-7R does not activate runtime execution, enable runtime
+  execution, approve live execution, or execute live traffic.
+- Confirms ORO-7R does not open external network access or call live OroPlay.
+- Confirms ORO-7R does not allow wallet mutation, ledger mutation, data write,
+  DB transaction, migration, or deploy.
+- Confirms ORO-7R does not mount routes, expose public aliases, or allow the
+  `/api/balance`, `/api/transaction`, `/api/oroplay/balance`, or
+  `/api/oroplay/transaction` route surfaces.
+- Confirms ORO-7R blockers are empty on the happy path and fail closed for
+  dependency, request, runtime, live, network, mutation, route, alias, and
+  sensitive output cases.
+
 ## ORO-7Q Live Traffic Actual External Call Execution Runtime Activation Execution Final Readiness Gate Coverage
 
 ORO-7Q Live Traffic Actual External Call Execution Runtime Activation Execution
