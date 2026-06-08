@@ -3327,3 +3327,34 @@ Scope:
   wallet/ledger/data mutation, no migration, no deploy, and fail-closed blocker
   cases.
 - `smoke:oro-7g` registration.
+
+## ORO-7H current/live traffic actual external call execution runtime enablement final readiness gate
+
+ORO-7H records the actual external call execution runtime enablement final
+readiness gate after ORO-7G issued the runtime enablement decision. This phase
+is runtime enablement final readiness gate only. It creates static/mock
+readiness evidence that prepares only a later separate runtime enablement
+activation request boundary.
+
+ORO-7H still does not enable runtime execution, activate external calls, approve
+live execution, perform live execution, open external network access, call live
+OroPlay, mount routes, expose public aliases, mutate wallet or ledger, write via
+Prisma, run DB transactions, migrate, or deploy.
+
+Scope:
+
+- ORO-7H runtime enablement final readiness doc exists and states readiness-only
+  scope.
+- ORO-7H helper exports status, gate builder, evaluator, summary builder, and
+  validator.
+- ORO-7H fixtures cover happy path, missing ORO-7G decision, invalid ORO-7G
+  decision status, readiness not passed, runtime enablement attempts, runtime
+  activation attempts, live execution attempts, external network/live OroPlay
+  attempts, wallet/ledger/data mutation attempts, migration/deploy attempts,
+  route mount, Express mount, public alias, and API alias attempts.
+- ORO-7H smoke confirms final readiness output, activation-request-only status,
+  no runtime enablement, no runtime activation, no live execution, no route
+  enablement, no public alias, no network access, no live OroPlay call, no
+  wallet/ledger/data mutation, no migration, no deploy, and fail-closed blocker
+  cases.
+- `smoke:oro-7h` registration.

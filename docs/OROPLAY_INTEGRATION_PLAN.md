@@ -1468,6 +1468,24 @@ with scope `runtime_enablement_decision_only`.
 ORO-7G does not enable runtime execution, activate external calls, permit live
 OroPlay API calls, mutate wallet or ledger, mount any route, expose public
 aliases, perform external network access, write data, run migrations, or deploy.
+
+## ORO-7H Current
+
+ORO-7H records the actual external call execution runtime enablement final
+readiness gate only after ORO-7G issued the runtime enablement decision.
+ORO-7H is runtime enablement final readiness gate only, and its readiness
+status prepares only the next separate runtime enablement activation request
+boundary.
+
+ORO-7H readiness status is
+`ready_for_separate_actual_external_call_execution_runtime_enablement_activation_request_only`
+with scope `runtime_enablement_final_readiness_only`.
+
+ORO-7H prepares the next separate runtime enablement activation request boundary.
+
+ORO-7H does not enable runtime execution, activate external calls, permit live
+OroPlay API calls, mutate wallet or ledger, mount any route, expose public
+aliases, perform external network access, write data, run migrations, or deploy.
 and the scope is final_execution_decision_only.
 This is a final execution decision only.
 It still requires a separate actual external call execution authorization

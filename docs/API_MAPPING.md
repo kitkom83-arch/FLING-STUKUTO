@@ -2209,3 +2209,51 @@ Validation:
 
 - smoke:oro-7g
 - smoke:oro-7g-runtime-enable-decision
+
+## ORO-7H Live Traffic Actual External Call Execution Runtime Enablement Final Readiness Gate Mapping
+
+ORO-7H records actual external call execution runtime enablement final
+readiness gate only after ORO-7G issued the runtime enablement decision. It
+creates static/mock readiness evidence for a later separate activation request
+boundary only.
+
+Mapping contract:
+
+- ORO-7H records actual external call execution runtime enablement final readiness gate only
+- depends on ORO-7G decision status:
+  `approved_for_separate_actual_external_call_execution_runtime_enablement_final_readiness_only`
+- depends on ORO-7G decision scope: `runtime_enablement_decision_only`
+- final readiness status:
+  `ready_for_separate_actual_external_call_execution_runtime_enablement_activation_request_only`
+- final readiness scope: `runtime_enablement_final_readiness_only`
+- actualExternalCallExecutionRuntimeEnabled=false
+- actualExternalCallExecutionActivated=false
+- actualExternalCallExecutionEnabled=false
+- actualExternalCallExecutionAuthorized=false
+- actualExternalCallExecutionLiveExecutionApproved=false
+- actualExternalCallExecutionLiveExecuted=false
+- externalNetworkAllowed=false
+- liveOroPlayApiCallAllowed=false
+- walletMutationAllowed=false
+- ledgerMutationAllowed=false
+- prismaWriteAllowed=false
+- dbTransactionAllowed=false
+- routeEnablementAllowed=false
+- expressMountAllowed=false
+- publicAliasAllowed=false
+- apiBalanceAliasAllowed=false
+- apiTransactionAliasAllowed=false
+- apiOroplayBalanceRouteAllowed=false
+- apiOroplayTransactionRouteAllowed=false
+- nextPhaseRequiresSeparateActualExternalCallExecutionRuntimeEnablementActivationRequest=true
+
+ORO-7H is runtime enablement final readiness gate only. ORO-7H does not enable
+runtime execution, does not activate external calls, does not permit live
+OroPlay API calls, does not mutate wallet or ledger, does not mount any route,
+does not expose public aliases, and only prepares the next separate runtime
+enablement activation request boundary.
+
+Validation:
+
+- smoke:oro-7h
+- smoke:oro-7h-runtime-enable-final-readiness

@@ -116,9 +116,14 @@ ORO-7G keeps all mutation and persistence paths closed:
 - humanApprovalRequiredForActualExecution = true
 - separateActualExecutionApprovalRequired = true
 
-The next phase must be a separate runtime enablement final readiness or
-activation boundary before any runtime enablement, activation, live execution
-approval, external network call, or live OroPlay API call can be considered.
+ORO-7H runtime enablement final readiness gate is required next. That gate must
+stay `runtime_enablement_final_readiness_only` and may prepare only the
+separate activation request status
+`ready_for_separate_actual_external_call_execution_runtime_enablement_activation_request_only`.
+ORO-7G still does not enable runtime execution, activate actual execution,
+approve live execution, open external network access, call live OroPlay, mount
+routes, expose public aliases, mutate wallet or ledger, write data, migrate, or
+deploy.
 
 ## Safety confirmation
 

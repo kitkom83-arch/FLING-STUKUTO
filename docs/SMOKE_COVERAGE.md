@@ -3468,6 +3468,50 @@ Coverage assertions:
 - Confirms ORO-7G blocks unsafe runtime enablement decision inputs and
   sensitive-shaped output.
 
+## 147. ORO-7H Live Traffic Actual External Call Execution Runtime Enablement Final Readiness Gate Coverage
+
+ORO-7H Live Traffic Actual External Call Execution Runtime Enablement Final
+Readiness Gate
+
+Files covered:
+
+- ORO-7H boundary doc: live traffic actual external call execution runtime
+  enablement final readiness gate.
+- ORO-7H mock helper: final readiness gate status, gate builder, evaluator,
+  summary builder, and validator.
+- ORO-7H fixtures: happy path, missing ORO-7G decision, decision not issued,
+  invalid ORO-7G decision status, readiness not passed, runtime enablement,
+  runtime activation, execution enablement, authorization, live execution,
+  external network, live OroPlay, wallet mutation, ledger mutation, Prisma
+  write, DB transaction, migration, deploy, route enablement, Express mount,
+  public alias, and API alias attempts.
+- ORO-7H smoke: runtime enablement final readiness gate smoke file.
+- ORO-7H smoke wrapper: `src/local-smoke-tests/oro7hSmoke.js`.
+
+Commands:
+
+- ORO-7H boundary-specific package smoke alias
+- `smoke:oro-7h`
+- `smoke:oro-7h-runtime-enable-final-readiness`
+
+Coverage assertions:
+
+- Confirms ORO-7H emits `phase=ORO-7H`, the activation-request-only final
+  readiness status, and `runtime_enablement_final_readiness_only`.
+- Confirms ORO-7H depends on the ORO-7G decision status
+  `approved_for_separate_actual_external_call_execution_runtime_enablement_final_readiness_only`
+  and scope `runtime_enablement_decision_only`.
+- Confirms ORO-7H records only the final readiness gate.
+- Confirms ORO-7H does not enable runtime execution, activate external calls,
+  approve live execution, or perform live execution.
+- Confirms ORO-7H does not open external network access or call live OroPlay.
+- Confirms ORO-7H does not allow wallet mutation, ledger mutation, data write,
+  DB transaction, migration, or deploy.
+- Confirms ORO-7H does not mount routes, expose public aliases, or allow the
+  balance, transaction, OroPlay balance, or OroPlay transaction API aliases.
+- Confirms ORO-7H blocks unsafe runtime enablement final readiness inputs and
+  sensitive-shaped output.
+
 ## 137. ORO-6X Live Traffic Actual External Call Execution Live Execution Decision Boundary Coverage
 
 ORO-6X Live Traffic Actual External Call Execution Live Execution Decision
