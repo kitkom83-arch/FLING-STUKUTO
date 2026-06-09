@@ -3890,3 +3890,35 @@ Validation:
 - ORO-7Y smoke confirms decision output, ORO-7X dependency, closed
   runtime/live/network/route/mutation flags, and fail-closed blockers.
 - `smoke:oro-7y` registration.
+
+## ORO-7Z current/live traffic actual external call execution runtime activation execution final pre-live execution gate
+
+ORO-7Z records the actual external call execution runtime activation execution
+final pre-live execution gate after ORO-7Y issued the live readiness decision.
+ORO-7Z is runtime activation execution final pre-live execution gate only.
+
+The ORO-7Z final pre-live execution gate scope is
+`runtime_activation_execution_final_pre_live_execution_gate_only`.
+ORO-7Z depends on ORO-7Y decision scope
+`runtime_activation_execution_live_readiness_decision_only` and decision status
+`approved_for_separate_runtime_activation_execution_final_pre_live_execution_gate_only`.
+
+ORO-7Z still does not activate runtime execution, enable runtime execution,
+authorize actual execution, approve live execution, execute live traffic, call
+live OroPlay, mutate wallet or ledger, write data, run migrations, deploy,
+mount routes, or expose public aliases.
+
+Validation:
+
+- ORO-7Z final pre-live execution gate doc exists.
+- ORO-7Z helper exports phase, status, gate builder, validator, runner, and summary.
+- ORO-7Z fixtures cover happy path, missing ORO-7Y decision, ORO-7Y decision
+  not passed/issued, ORO-7Y decision status/scope mismatch, gate
+  prepared/passed/status/scope mismatch, runtime activation, runtime
+  enablement, actual execution authorization, live execution approval, live
+  execution, network, live OroPlay, wallet, ledger, Prisma, DB, migration,
+  deploy, route, Express mount, public alias, public API aliases, OroPlay API
+  routes, missing next authorization request, and sensitive output blockers.
+- ORO-7Z smoke confirms gate output, ORO-7Y dependency, closed
+  runtime/live/network/route/mutation flags, and fail-closed blockers.
+- `smoke:oro-7z` registration.

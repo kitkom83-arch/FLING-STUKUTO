@@ -124,6 +124,13 @@ runtime activation, runtime enablement, actual execution authorization, live
 execution approval, external network call, or live OroPlay API call can be
 considered. ORO-7Y must not be treated as actual execution approval.
 
+ORO-7Z is the separate runtime activation execution final pre-live execution gate after ORO-7Y.
+ORO-7Z must remain `runtime_activation_execution_final_pre_live_execution_gate_only`.
+ORO-7Z does not open live execution, external network, live OroPlay API calls,
+wallet or ledger mutation, routes, aliases, deploys, migrations, DB
+transactions, or Prisma writes.
+ORO-7Z must not be treated as approval to execute actual live traffic.
+
 ## Safety confirmation
 
 ORO-7Y is docs, contract, static/mock harness, and local smoke only. It does

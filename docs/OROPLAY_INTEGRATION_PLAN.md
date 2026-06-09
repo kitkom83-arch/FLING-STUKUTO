@@ -1288,6 +1288,27 @@ authorize actual execution, approve live execution, execute live traffic, call
 live OroPlay, mutate wallet or ledger, write data, run migrations, deploy,
 mount routes, or expose public aliases.
 
+## ORO-7Z Current
+
+ORO-7Z records the actual external call execution runtime activation execution
+final pre-live execution gate after ORO-7Y issued the live readiness decision.
+
+ORO-7Z is runtime activation execution final pre-live execution gate only.
+
+The ORO-7Z final pre-live execution gate scope is
+`runtime_activation_execution_final_pre_live_execution_gate_only`.
+
+ORO-7Z depends on ORO-7Y decision scope
+`runtime_activation_execution_live_readiness_decision_only` and decision status
+`approved_for_separate_runtime_activation_execution_final_pre_live_execution_gate_only`.
+
+ORO-7Z prepares and passes only the final pre-live execution gate record; actual live execution authorization request stays separate.
+
+ORO-7Z still does not activate runtime execution, enable runtime execution,
+authorize actual execution, approve live execution, execute live traffic, call
+live OroPlay, mutate wallet or ledger, write data, run migrations, deploy,
+mount routes, or expose public aliases.
+
 ## ORO-7T Current
 
 ORO-7T records the actual external call execution runtime activation execution

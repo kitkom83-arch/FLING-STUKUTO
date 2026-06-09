@@ -3179,3 +3179,57 @@ aliases.
 - separateActualExecutionApprovalRequired=true
 - smoke:oro-7y
 - smoke:oro-7y-runtime-activation-execution-live-readiness-decision
+
+## ORO-7Z Live Traffic Actual External Call Execution Runtime Activation Execution Final Pre-Live Execution Gate Mapping
+
+ORO-7Z records actual external call execution runtime activation execution final pre-live execution gate only
+after ORO-7Y issued the runtime activation execution live readiness decision.
+
+ORO-7Z remains docs/contract/static/mock/local-smoke only and does not activate
+runtime execution, enable runtime execution, authorize actual execution, approve
+live execution, execute live traffic, call live OroPlay, mutate wallet or
+ledger, write data, run migrations, deploy, mount routes, or expose public
+aliases.
+
+- ORO-7Z records actual external call execution runtime activation execution final pre-live execution gate only
+- ORO-7Y decision scope: runtime_activation_execution_live_readiness_decision_only
+- ORO-7Y decision status: approved_for_separate_runtime_activation_execution_final_pre_live_execution_gate_only
+- ORO-7Z final pre-live execution gate scope: runtime_activation_execution_final_pre_live_execution_gate_only
+- ORO-7Z final pre-live execution gate status: passed_for_separate_actual_live_execution_authorization_request_only
+- actualExternalCallExecutionRuntimeActivationExecutionFinalPreLiveExecutionGatePrepared=true
+- actualExternalCallExecutionRuntimeActivationExecutionFinalPreLiveExecutionGatePassed=true
+- actualExternalCallExecutionRuntimeActivationExecutionFinalPreLiveExecutionGateScope=runtime_activation_execution_final_pre_live_execution_gate_only
+- actualExternalCallExecutionRuntimeEnabled=false
+- actualExternalCallExecutionActivated=false
+- actualExternalCallExecutionEnabled=false
+- actualExternalCallExecutionAuthorized=false
+- actualExternalCallExecutionLiveExecutionApproved=false
+- actualExternalCallExecutionLiveExecuted=false
+- externalNetworkAllowed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCallAllowed=false
+- liveOroPlayApiCalled=false
+- walletMutationAllowed=false
+- walletMutationPerformed=false
+- ledgerMutationAllowed=false
+- ledgerMutationPerformed=false
+- prismaWriteAllowed=false
+- prismaWritePerformed=false
+- dbTransactionAllowed=false
+- dbTransactionPerformed=false
+- migrationAllowed=false
+- migrationPerformed=false
+- deployAllowed=false
+- deployPerformed=false
+- routeEnablementAllowed=false
+- expressMountAllowed=false
+- publicAliasAllowed=false
+- apiBalanceAliasAllowed=false
+- apiTransactionAliasAllowed=false
+- apiOroplayBalanceRouteAllowed=false
+- apiOroplayTransactionRouteAllowed=false
+- nextPhaseRequiresSeparateActualLiveExecutionAuthorizationRequest=true
+- humanApprovalRequiredForActualExecution=true
+- separateActualExecutionApprovalRequired=true
+- smoke:oro-7z
+- smoke:oro-7z-runtime-activation-execution-final-pre-live-execution-gate

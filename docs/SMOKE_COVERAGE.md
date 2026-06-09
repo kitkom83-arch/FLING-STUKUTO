@@ -3369,6 +3369,55 @@ Smoke assertions:
   dependency, status, scope, runtime/live, network, mutation, route, alias, and
   sensitive-output scenarios.
 
+## ORO-7Z Live Traffic Actual External Call Execution Runtime Activation Execution Final Pre-Live Execution Gate Coverage
+
+ORO-7Z Live Traffic Actual External Call Execution Runtime Activation Execution
+Final Pre-Live Execution Gate Coverage proves that ORO-7Z records only the
+final pre-live execution gate after ORO-7Y issued the live readiness decision.
+
+Covered artifacts:
+
+- ORO-7Z final pre-live execution gate doc: live traffic actual external call
+  execution runtime activation execution final pre-live execution gate.
+- ORO-7Z mock helper: final pre-live execution gate scope, ORO-7Y dependency,
+  closed runtime/live/mutation/route flags, validator, runner, and summary builder.
+- ORO-7Z fixtures: happy path, missing ORO-7Y decision, ORO-7Y decision not
+  passed/issued, ORO-7Y decision status/scope mismatch, final pre-live
+  execution gate prepared/passed/status/scope mismatch, attempted runtime
+  activation, attempted runtime enablement, attempted actual execution
+  authorization, attempted live execution approval, attempted live execution,
+  external network, live OroPlay API, wallet, ledger, Prisma, DB transaction,
+  migration, deploy, route enablement, Express mount, public alias, route
+  alias, missing next authorization request, and sensitive-output blockers.
+- ORO-7Z smoke: runtime activation execution final pre-live execution gate smoke.
+- ORO-7Z smoke wrapper: `src/local-smoke-tests/oro7zSmoke.js`.
+
+Package scripts:
+
+- ORO-7Z final-pre-live-execution-gate-specific package smoke alias
+- `smoke:oro-7z`
+- `smoke:oro-7z-runtime-activation-execution-final-pre-live-execution-gate`
+
+Smoke assertions:
+
+- Confirms ORO-7Z emits `phase=ORO-7Z`, `result=PASS`, and final pre-live
+  execution gate scope `runtime_activation_execution_final_pre_live_execution_gate_only`.
+- Confirms ORO-7Z depends on ORO-7Y decision scope
+  `runtime_activation_execution_live_readiness_decision_only` and status
+  `approved_for_separate_runtime_activation_execution_final_pre_live_execution_gate_only`.
+- Confirms ORO-7Z issues only the final pre-live execution gate record.
+- Confirms ORO-7Z does not activate runtime execution, enable runtime
+  execution, authorize actual execution, approve live execution, or execute live
+  traffic.
+- Confirms ORO-7Z does not open external network access or call live OroPlay.
+- Confirms ORO-7Z does not allow wallet mutation, ledger mutation, data write,
+  DB transaction, migration, or deploy.
+- Confirms ORO-7Z does not mount routes, expose public aliases, or allow the
+  public balance/transaction routes.
+- Confirms ORO-7Z blockers are empty on the happy path and fail closed for
+  dependency, status, scope, runtime/live, network, mutation, route, alias, and
+  sensitive-output scenarios.
+
 ## ORO-7R Live Traffic Actual External Call Execution Runtime Activation Execution Request Boundary Coverage
 
 ORO-7R Live Traffic Actual External Call Execution Runtime Activation Execution
