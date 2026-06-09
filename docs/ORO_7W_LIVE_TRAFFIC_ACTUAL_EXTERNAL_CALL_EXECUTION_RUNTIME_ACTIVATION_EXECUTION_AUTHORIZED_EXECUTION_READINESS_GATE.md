@@ -124,6 +124,11 @@ activation execution live readiness request before any runtime activation,
 runtime enablement, actual execution authorization, live execution approval,
 external network call, or live OroPlay API call can be considered.
 
+ORO-7X is the separate runtime activation execution live readiness request boundary after ORO-7W.
+ORO-7X must remain request-only and must not activate runtime execution, open
+external network access, call live OroPlay, mutate wallet or ledger state,
+mount routes, or expose public aliases.
+
 ## Safety confirmation
 
 ORO-7W is docs, contract, static/mock harness, and local smoke only. It does

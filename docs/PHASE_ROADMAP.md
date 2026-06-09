@@ -3825,3 +3825,35 @@ Validation:
 - ORO-7W smoke confirms readiness output, ORO-7V dependency, closed
   runtime/live/network/route/mutation flags, and fail-closed blockers.
 - `smoke:oro-7w` registration.
+
+## ORO-7X current/live traffic actual external call execution runtime activation execution live readiness request boundary
+
+ORO-7X records the actual external call execution runtime activation execution
+live readiness request after ORO-7W passed the authorized execution readiness
+gate. ORO-7X is runtime activation execution live readiness request only.
+
+ORO-7X is runtime activation execution live readiness request only.
+
+The ORO-7X live readiness request scope is
+`runtime_activation_execution_live_readiness_request_only`.
+ORO-7X depends on ORO-7W readiness scope
+`runtime_activation_execution_authorized_execution_readiness_only`.
+
+ORO-7X still does not activate runtime execution, enable runtime execution,
+authorize actual execution, approve live execution, execute live traffic, call
+live OroPlay, mutate wallet or ledger, write data, run migrations, deploy,
+mount routes, or expose public aliases.
+
+Validation:
+
+- ORO-7X live readiness request boundary doc exists.
+- ORO-7X helper exports phase, status, boundary builder, validator, runner, and summary.
+- ORO-7X fixtures cover happy path, missing ORO-7W readiness, ORO-7W readiness
+  scope mismatch, request submission/scope mismatch, runtime activation,
+  runtime enablement, actual execution authorization, live execution, network,
+  live OroPlay, wallet, ledger, Prisma, DB, migration, deploy, route, Express
+  mount, public alias, public API aliases, OroPlay API routes, and sensitive
+  output blockers.
+- ORO-7X smoke confirms request output, ORO-7W dependency, closed
+  runtime/live/network/route/mutation flags, and fail-closed blockers.
+- `smoke:oro-7x` registration.
