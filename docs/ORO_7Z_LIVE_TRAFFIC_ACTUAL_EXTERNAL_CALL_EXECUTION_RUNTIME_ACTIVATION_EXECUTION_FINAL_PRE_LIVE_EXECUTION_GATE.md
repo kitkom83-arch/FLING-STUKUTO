@@ -126,6 +126,11 @@ before any runtime activation, runtime enablement, actual execution
 authorization, live execution approval, external network call, or live OroPlay
 API call can be considered. ORO-7Z must not be treated as approval to execute.
 
+ORO-8A is the separate actual live execution authorization request boundary after ORO-7Z.
+ORO-8A request scope is `actual_live_execution_authorization_request_only`.
+ORO-8A request status is
+`submitted_pending_separate_actual_live_execution_authorization_decision`.
+
 ## Safety confirmation
 
 ORO-7Z is docs, contract, static/mock harness, and local smoke only. It does

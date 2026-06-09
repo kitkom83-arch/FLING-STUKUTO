@@ -3922,3 +3922,35 @@ Validation:
 - ORO-7Z smoke confirms gate output, ORO-7Y dependency, closed
   runtime/live/network/route/mutation flags, and fail-closed blockers.
 - `smoke:oro-7z` registration.
+
+## ORO-8A current/live traffic actual external call execution actual live execution authorization request boundary
+
+ORO-8A records the actual live execution authorization request after ORO-7Z
+passed the final pre-live execution gate.
+ORO-8A is actual live execution authorization request boundary only.
+
+The ORO-8A authorization request scope is
+`actual_live_execution_authorization_request_only`.
+ORO-8A depends on ORO-7Z final pre-live execution gate scope
+`runtime_activation_execution_final_pre_live_execution_gate_only` and gate
+status `passed_for_separate_actual_live_execution_authorization_request_only`.
+
+ORO-8A still does not activate runtime execution, enable runtime execution,
+authorize actual execution, approve live execution, execute live traffic, call
+live OroPlay, mutate wallet or ledger, write data, run migrations, deploy,
+mount routes, or expose public aliases.
+
+Validation:
+
+- ORO-8A actual live execution authorization request doc exists.
+- ORO-8A helper exports phase, status, request builder, validator, runner, and summary.
+- ORO-8A fixtures cover happy path, missing ORO-7Z gate, ORO-7Z gate not
+  passed, ORO-7Z gate status/scope mismatch, request
+  prepared/submitted/status/scope mismatch, runtime activation, runtime
+  enablement, actual execution authorization, live execution approval, live
+  execution, network, live OroPlay, wallet, ledger, Prisma, DB, migration,
+  deploy, route, Express mount, public alias, public API aliases, OroPlay API
+  routes, missing next authorization decision, and sensitive output blockers.
+- ORO-8A smoke confirms request output, ORO-7Z dependency, closed
+  runtime/live/network/route/mutation flags, and fail-closed blockers.
+- `smoke:oro-8a` registration.
