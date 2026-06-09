@@ -117,6 +117,12 @@ ORO-7X keeps all mutation and persistence paths closed:
 - humanApprovalRequiredForActualExecution = true
 - separateActualExecutionApprovalRequired = true
 
+ORO-7Y is the separate runtime activation execution live readiness decision boundary after ORO-7X.
+ORO-7Y must remain `runtime_activation_execution_live_readiness_decision_only`
+and must not skip ahead to runtime activation, live execution, external network
+calls, live OroPlay calls, wallet/ledger mutation, route enablement, or public
+aliases.
+
 The next phase must be a separate live readiness decision or review gate before
 any runtime activation, runtime enablement, actual execution authorization,
 live execution approval, external network call, or live OroPlay API call can be

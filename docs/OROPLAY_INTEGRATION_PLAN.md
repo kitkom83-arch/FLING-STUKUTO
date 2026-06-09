@@ -1267,6 +1267,27 @@ authorize actual execution, approve live execution, execute live traffic, call
 live OroPlay, mutate wallet or ledger, write data, run migrations, deploy,
 mount routes, or expose public aliases.
 
+## ORO-7Y Current
+
+ORO-7Y records the actual external call execution runtime activation execution
+live readiness decision after ORO-7X submitted the live readiness request.
+
+ORO-7Y is runtime activation execution live readiness decision only.
+
+The ORO-7Y live readiness decision scope is
+`runtime_activation_execution_live_readiness_decision_only`.
+
+ORO-7Y depends on ORO-7X request scope
+`runtime_activation_execution_live_readiness_request_only` and request status
+`submitted_pending_separate_live_readiness_decision`.
+
+ORO-7Y issues only the live readiness decision record; final pre-live execution gate stays separate.
+
+ORO-7Y still does not activate runtime execution, enable runtime execution,
+authorize actual execution, approve live execution, execute live traffic, call
+live OroPlay, mutate wallet or ledger, write data, run migrations, deploy,
+mount routes, or expose public aliases.
+
 ## ORO-7T Current
 
 ORO-7T records the actual external call execution runtime activation execution

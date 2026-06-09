@@ -997,6 +997,23 @@ const RELATED_FILES = [
     "docs/ORO_7X_LIVE_TRAFFIC_ACTUAL_EXTERNAL_CALL",
     "EXECUTION_RUNTIME_ACTIVATION_EXECUTION_LIVE_READINESS_REQUEST_BOUNDARY.md",
   ].join("_"),
+  [
+    "src/game-provider-mock/oro7yLiveTrafficActualExternalCall",
+    "ExecutionRuntimeActivationExecutionLiveReadinessDecisionBoundary.js",
+  ].join(""),
+  [
+    "src/game-provider-mock/oro7yLiveTrafficActualExternalCall",
+    "ExecutionRuntimeActivationExecutionLiveReadinessDecisionBoundaryFixtures.js",
+  ].join(""),
+  [
+    "src/local-smoke-tests/oro7yLiveTrafficActualExternalCall",
+    "ExecutionRuntimeActivationExecutionLiveReadinessDecisionBoundarySmoke.js",
+  ].join(""),
+  "src/local-smoke-tests/oro7ySmoke.js",
+  [
+    "docs/ORO_7Y_LIVE_TRAFFIC_ACTUAL_EXTERNAL_CALL",
+    "EXECUTION_RUNTIME_ACTIVATION_EXECUTION_LIVE_READINESS_DECISION_BOUNDARY.md",
+  ].join("_"),
   "src/payment-provider-mock/memberQrDepositUxContract.js",
   "src/payment-provider-mock/memberQrDepositMockHarness.js",
   "src/local-smoke-tests/memberQrDepositUxSmoke.js",
@@ -1319,6 +1336,7 @@ const summary = [
   { key: "oro7v", label: "oro-7v", status: "PENDING" },
   { key: "oro7w", label: "oro-7w", status: "PENDING" },
   { key: "oro7x", label: "oro-7x", status: "PENDING" },
+  { key: "oro7y", label: "oro-7y", status: "PENDING" },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
   { key: "depositVerificationSource", label: "deposit-verification-source", status: "PENDING" },
   {
@@ -2471,6 +2489,12 @@ const steps = [
     summaryKey: "syntax",
   },
   {
+    name: "node --check oro7ySmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oro7ySmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
     name: "node --check memberQrDepositUxContract",
     command: nodeCommand,
     args: ["--check", "src/payment-provider-mock/memberQrDepositUxContract.js"],
@@ -3518,6 +3542,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oro-7x"]),
     summaryKey: "oro7x",
+  },
+  {
+    name: "npm run smoke:oro-7y",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oro-7y"]),
+    summaryKey: "oro7y",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

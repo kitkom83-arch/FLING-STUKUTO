@@ -3857,3 +3857,36 @@ Validation:
 - ORO-7X smoke confirms request output, ORO-7W dependency, closed
   runtime/live/network/route/mutation flags, and fail-closed blockers.
 - `smoke:oro-7x` registration.
+
+## ORO-7Y current/live traffic actual external call execution runtime activation execution live readiness decision boundary
+
+ORO-7Y records the actual external call execution runtime activation execution
+live readiness decision after ORO-7X submitted the live readiness request.
+ORO-7Y is runtime activation execution live readiness decision only.
+
+ORO-7Y is runtime activation execution live readiness decision only.
+
+The ORO-7Y live readiness decision scope is
+`runtime_activation_execution_live_readiness_decision_only`.
+ORO-7Y depends on ORO-7X request scope
+`runtime_activation_execution_live_readiness_request_only` and request status
+`submitted_pending_separate_live_readiness_decision`.
+
+ORO-7Y still does not activate runtime execution, enable runtime execution,
+authorize actual execution, approve live execution, execute live traffic, call
+live OroPlay, mutate wallet or ledger, write data, run migrations, deploy,
+mount routes, or expose public aliases.
+
+Validation:
+
+- ORO-7Y live readiness decision boundary doc exists.
+- ORO-7Y helper exports phase, status, boundary builder, validator, runner, and summary.
+- ORO-7Y fixtures cover happy path, missing ORO-7X request, ORO-7X request
+  not passed/submitted, ORO-7X request status/scope mismatch, decision
+  issued/status/scope mismatch, runtime activation, runtime enablement, actual
+  execution authorization, live execution, network, live OroPlay, wallet,
+  ledger, Prisma, DB, migration, deploy, route, Express mount, public alias,
+  public API aliases, OroPlay API routes, and sensitive output blockers.
+- ORO-7Y smoke confirms decision output, ORO-7X dependency, closed
+  runtime/live/network/route/mutation flags, and fail-closed blockers.
+- `smoke:oro-7y` registration.
