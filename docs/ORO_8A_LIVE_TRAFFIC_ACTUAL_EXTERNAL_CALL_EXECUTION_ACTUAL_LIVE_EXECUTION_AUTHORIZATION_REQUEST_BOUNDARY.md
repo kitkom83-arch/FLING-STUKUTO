@@ -127,6 +127,13 @@ before any runtime activation, runtime enablement, actual execution
 authorization, live execution approval, external network call, or live OroPlay
 API call can be considered. ORO-8A must not be treated as approval to execute.
 
+ORO-8B follows ORO-8A as the separate actual live execution authorization decision boundary.
+The ORO-8B decision status is
+`approved_for_separate_actual_live_execution_final_execution_gate_only`, and
+the ORO-8B decision scope is
+`actual_live_execution_authorization_decision_only`. ORO-8B still must not be
+treated as approval to execute immediately.
+
 ## Safety confirmation
 
 ORO-8A is docs, contract, static/mock harness, and local smoke only. It does

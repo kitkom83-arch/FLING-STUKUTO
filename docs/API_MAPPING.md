@@ -3289,3 +3289,62 @@ aliases.
 - secretsLeaked=false
 - smoke:oro-8a
 - smoke:oro-8a-actual-live-execution-authorization-request
+
+## ORO-8B Live Traffic Actual External Call Execution Actual Live Execution Authorization Decision Boundary Mapping
+
+ORO-8B records actual live execution authorization decision only
+after ORO-8A submitted the actual live execution authorization request.
+
+ORO-8B remains docs/contract/static/mock/local-smoke only and does not activate
+runtime execution, enable runtime execution, authorize actual execution to
+proceed immediately, approve live execution, execute live traffic, call live
+OroPlay, mutate wallet or ledger, write data, run migrations, deploy, mount
+routes, or expose public aliases.
+
+- ORO-8B records actual live execution authorization decision only
+- ORO-8A actual live execution authorization request scope: actual_live_execution_authorization_request_only
+- ORO-8A actual live execution authorization request status: submitted_pending_separate_actual_live_execution_authorization_decision
+- ORO-8B actual live execution authorization decision scope: actual_live_execution_authorization_decision_only
+- ORO-8B actual live execution authorization decision status: approved_for_separate_actual_live_execution_final_execution_gate_only
+- actualLiveExecutionAuthorizationRequestSubmittedFromOro8a=true
+- actualLiveExecutionAuthorizationRequestStatusFromOro8a=submitted_pending_separate_actual_live_execution_authorization_decision
+- actualLiveExecutionAuthorizationRequestScopeFromOro8a=actual_live_execution_authorization_request_only
+- actualLiveExecutionAuthorizationDecisionPrepared=true
+- actualLiveExecutionAuthorizationDecisionIssued=true
+- actualLiveExecutionAuthorizationDecisionStatus=approved_for_separate_actual_live_execution_final_execution_gate_only
+- actualLiveExecutionAuthorizationDecisionScope=actual_live_execution_authorization_decision_only
+- actualExternalCallExecutionRuntimeEnabled=false
+- actualExternalCallExecutionActivated=false
+- actualExternalCallExecutionEnabled=false
+- actualExternalCallExecutionAuthorized=false
+- actualExternalCallExecutionLiveExecutionApproved=false
+- actualExternalCallExecutionLiveExecuted=false
+- externalNetworkAllowed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCallAllowed=false
+- liveOroPlayApiCalled=false
+- walletMutationAllowed=false
+- walletMutationPerformed=false
+- ledgerMutationAllowed=false
+- ledgerMutationPerformed=false
+- prismaWriteAllowed=false
+- prismaWritePerformed=false
+- dbTransactionAllowed=false
+- dbTransactionPerformed=false
+- migrationAllowed=false
+- migrationPerformed=false
+- deployAllowed=false
+- deployPerformed=false
+- routeEnablementAllowed=false
+- expressMountAllowed=false
+- publicAliasAllowed=false
+- apiBalanceAliasAllowed=false
+- apiTransactionAliasAllowed=false
+- apiOroplayBalanceRouteAllowed=false
+- apiOroplayTransactionRouteAllowed=false
+- nextPhaseRequiresSeparateActualLiveExecutionFinalExecutionGate=true
+- humanApprovalRequiredForActualExecution=true
+- separateActualExecutionApprovalRequired=true
+- secretsLeaked=false
+- smoke:oro-8b
+- smoke:oro-8b-actual-live-execution-authorization-decision

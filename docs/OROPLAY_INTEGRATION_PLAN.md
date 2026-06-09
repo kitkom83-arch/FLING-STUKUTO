@@ -1288,6 +1288,29 @@ authorize actual execution, approve live execution, execute live traffic, call
 live OroPlay, mutate wallet or ledger, write data, run migrations, deploy,
 mount routes, or expose public aliases.
 
+## ORO-8B Current
+
+ORO-8B records the actual live execution authorization decision after ORO-8A
+submitted the actual live execution authorization request.
+
+ORO-8B is actual live execution authorization decision boundary only.
+
+The ORO-8B authorization decision scope is
+`actual_live_execution_authorization_decision_only`.
+
+ORO-8B depends on ORO-8A request scope
+`actual_live_execution_authorization_request_only` and request status
+`submitted_pending_separate_actual_live_execution_authorization_decision`.
+
+ORO-8B issues only the actual live execution authorization decision status
+`approved_for_separate_actual_live_execution_final_execution_gate_only`;
+actual live execution final execution gate stays separate.
+
+ORO-8B still does not activate runtime execution, enable runtime execution,
+authorize actual execution to proceed immediately, approve live execution,
+execute live traffic, call live OroPlay, mutate wallet or ledger, write data,
+run migrations, deploy, mount routes, or expose public aliases.
+
 ## ORO-8A Current
 
 ORO-8A records the actual live execution authorization request after ORO-7Z

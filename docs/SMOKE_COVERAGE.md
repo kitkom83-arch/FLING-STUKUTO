@@ -3468,6 +3468,53 @@ Smoke assertions:
   dependency, status, scope, runtime/live, network, mutation, route, alias, and
   sensitive-output scenarios.
 
+## ORO-8B Live Traffic Actual External Call Execution Actual Live Execution Authorization Decision Boundary Coverage
+
+ORO-8B Live Traffic Actual External Call Execution Actual Live Execution
+Authorization Decision Boundary Coverage proves that ORO-8B records only the
+actual live execution authorization decision after ORO-8A submitted the actual
+live execution authorization request.
+
+Covered artifacts:
+
+- ORO-8B authorization decision doc: live traffic actual external call execution
+  actual live execution authorization decision boundary.
+- ORO-8B mock helper: authorization decision scope, ORO-8A dependency, closed
+  runtime/live/mutation/route flags, validator, runner, and summary builder.
+- ORO-8B fixtures: happy path, missing ORO-8A authorization request pass,
+  ORO-8A request not submitted, ORO-8A request status/scope mismatch,
+  decision issuance/status/scope mismatch, attempted route enablement,
+  attempted external network, attempted wallet mutation, attempted live
+  execution, missing next final execution gate, and sensitive-output blockers.
+- ORO-8B smoke: actual live execution authorization decision boundary smoke.
+- ORO-8B smoke wrapper: `src/local-smoke-tests/oro8bSmoke.js`.
+
+Package scripts:
+
+- ORO-8B actual-live-execution-authorization-decision-specific package smoke alias
+- `smoke:oro-8b`
+- `smoke:oro-8b-actual-live-execution-authorization-decision`
+
+Smoke assertions:
+
+- Confirms ORO-8B emits `phase=ORO-8B`, `result=PASS`, and authorization
+  decision scope `actual_live_execution_authorization_decision_only`.
+- Confirms ORO-8B depends on ORO-8A request scope
+  `actual_live_execution_authorization_request_only` and request status
+  `submitted_pending_separate_actual_live_execution_authorization_decision`.
+- Confirms ORO-8B issues only the actual live execution authorization decision record.
+- Confirms ORO-8B does not activate runtime execution, enable runtime
+  execution, authorize actual execution to proceed immediately, approve live
+  execution, or execute live traffic.
+- Confirms ORO-8B does not open external network access or call live OroPlay.
+- Confirms ORO-8B does not allow wallet mutation, ledger mutation, data write,
+  DB transaction, migration, or deploy.
+- Confirms ORO-8B does not mount routes, expose public aliases, or allow the
+  public balance/transaction routes.
+- Confirms ORO-8B blockers are empty on the happy path and fail closed for
+  dependency, status, scope, runtime/live, network, mutation, route, and
+  sensitive-output scenarios.
+
 ## ORO-7R Live Traffic Actual External Call Execution Runtime Activation Execution Request Boundary Coverage
 
 ORO-7R Live Traffic Actual External Call Execution Runtime Activation Execution
