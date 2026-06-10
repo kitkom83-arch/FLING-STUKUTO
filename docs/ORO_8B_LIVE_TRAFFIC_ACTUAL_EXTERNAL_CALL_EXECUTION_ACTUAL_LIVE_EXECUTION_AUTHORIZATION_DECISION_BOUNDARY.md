@@ -130,6 +130,11 @@ authorization, live execution approval, external network call, or live OroPlay
 API call can be considered. ORO-8B must not be treated as approval to execute
 immediately.
 
+ORO-8C follows ORO-8B as the separate actual live execution final execution gate boundary.
+The ORO-8C final execution gate status is
+`passed_for_separate_actual_live_execution_final_execution_request_only`, and the ORO-8C
+final execution gate scope is `actual_live_execution_final_execution_gate_only`.
+
 ## Safety confirmation
 
 ORO-8B is docs, contract, static/mock harness, and local smoke only. It does
