@@ -4058,3 +4058,39 @@ Validation:
 - ORO-8D smoke confirms final execution request output, ORO-8C dependency,
   closed decision/runtime/live/network/route/mutation flags, and fail-closed blockers.
 - `smoke:oro-8d` registration.
+
+## ORO-8E current/live traffic actual external call execution actual live execution final execution decision
+
+ORO-8E records the live traffic actual external call execution actual live
+execution final execution decision after ORO-8D.
+ORO-8E is actual live execution final execution decision only.
+
+The ORO-8E final execution decision scope is
+`actual_live_execution_final_execution_decision_boundary_only`.
+
+ORO-8E depends on ORO-8D request scope
+`actual_live_execution_final_execution_request_boundary_only` with request status
+`submitted_for_separate_actual_live_execution_final_execution_decision_only`.
+
+ORO-8E issues only the actual live execution final execution decision status
+`approved_for_separate_actual_live_execution_request_only`.
+
+ORO-8E still does not activate runtime execution, enable runtime execution,
+submit actual live execution request, perform actual live execution, call
+external networks, call live OroPlay, write data, mutate wallet or ledger
+state, run DB transactions, run migrations, deploy, mount routes, or expose
+public aliases.
+
+Validation:
+
+- ORO-8E actual live execution final execution decision doc exists.
+- ORO-8E helper exports phase, status, final execution decision builder, validator,
+  runner, and summary.
+- ORO-8E fixtures cover happy path, missing ORO-8D request pass, ORO-8D status
+  mismatch, ORO-8D scope mismatch, actual live execution request submitted,
+  actual live execution approved, actual live execution executed, external
+  network, live OroPlay API, wallet mutation, ledger mutation, Prisma write,
+  DB transaction, route enablement/Express mount/public alias, and secret leak blockers.
+- ORO-8E smoke confirms final execution decision output, ORO-8D dependency,
+  closed request/runtime/live/network/route/mutation flags, and fail-closed blockers.
+- `smoke:oro-8e` registration.

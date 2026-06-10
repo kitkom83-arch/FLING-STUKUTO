@@ -1355,6 +1355,29 @@ issue final execution decision, perform actual live execution, call external
 networks, call live OroPlay, mutate wallet or ledger state, write data, run DB
 transactions, run migrations, deploy, mount routes, or expose public aliases.
 
+## ORO-8E Current
+
+ORO-8E records the live traffic actual external call execution actual live execution
+final execution decision after ORO-8D issued the final execution request.
+
+ORO-8E is actual live execution final execution decision boundary only.
+
+The ORO-8E final execution decision scope is
+`actual_live_execution_final_execution_decision_boundary_only`.
+
+ORO-8E depends on ORO-8D request scope
+`actual_live_execution_final_execution_request_boundary_only` with request status
+`submitted_for_separate_actual_live_execution_final_execution_decision_only`.
+
+ORO-8E issues only the actual final execution decision status
+`approved_for_separate_actual_live_execution_request_only`.
+
+ORO-8E still does not activate runtime execution, enable runtime execution,
+submit actual live execution request, perform actual live execution, call
+external networks, call live OroPlay, mutate wallet or ledger state, write
+data, run DB transactions, run migrations, deploy, mount routes, or expose
+public aliases.
+
 ## ORO-8A Current
 
 ORO-8A records the actual live execution authorization request after ORO-7Z

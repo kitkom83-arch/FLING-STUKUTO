@@ -129,6 +129,11 @@ ORO-8D keeps all mutation and persistence paths closed:
 ORO-8D marks the final execution request as submitted and keeps separate human
 and approval requirements in place for the next final execution decision.
 
+ORO-8E follows ORO-8D as the separate actual live execution final execution decision boundary.
+ORO-8E records
+`approved_for_separate_actual_live_execution_request_only`
+under the scope `actual_live_execution_final_execution_decision_boundary_only`.
+
 ## Safety confirmation
 
 ORO-8D is docs, contract, static/mock harness, and local smoke only. It does
