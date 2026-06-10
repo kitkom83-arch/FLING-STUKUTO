@@ -4023,3 +4023,38 @@ Validation:
 - ORO-8C smoke confirms final execution gate output, ORO-8B dependency,
   closed runtime/live/network/route/mutation flags, and fail-closed blockers.
 - `smoke:oro-8c` registration.
+
+## ORO-8D current/live traffic actual external call execution actual live execution final execution request
+
+ORO-8D records the live traffic actual external call execution actual live
+execution final execution request after ORO-8C.
+ORO-8D is actual live execution final execution request only.
+
+The ORO-8D final execution request scope is
+`actual_live_execution_final_execution_request_boundary_only`.
+
+ORO-8D depends on ORO-8C gate scope
+`actual_live_execution_final_execution_gate_only` with gate status
+`passed_for_separate_actual_live_execution_final_execution_request_only`.
+
+ORO-8D issues only the actual live execution final execution request status
+`submitted_for_separate_actual_live_execution_final_execution_decision_only`.
+
+ORO-8D still does not activate runtime execution, enable runtime execution,
+issue final execution decision, perform actual live execution, call external
+networks, call live OroPlay, write data, mutate wallet or ledger state, run DB
+transactions, run migrations, deploy, mount routes, or expose public aliases.
+
+Validation:
+
+- ORO-8D actual live execution final execution request doc exists.
+- ORO-8D helper exports phase, status, final execution request builder, validator,
+  runner, and summary.
+- ORO-8D fixtures cover happy path, missing ORO-8C gate pass, ORO-8C status
+  mismatch, ORO-8C scope mismatch, final execution decision issued, live
+  execution approved, external network, live OroPlay API, wallet mutation,
+  ledger mutation, Prisma write, DB transaction, route enablement, Express
+  mount/public alias, and secret leak blockers.
+- ORO-8D smoke confirms final execution request output, ORO-8C dependency,
+  closed decision/runtime/live/network/route/mutation flags, and fail-closed blockers.
+- `smoke:oro-8d` registration.
