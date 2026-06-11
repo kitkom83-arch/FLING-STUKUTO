@@ -7624,3 +7624,41 @@ execution gate.
 - Confirms ORO-8I blockers are empty on the happy path and fail closed for
   dependency, status, scope, runtime, route, alias, mutation, approval,
   execution, and secret violations.
+
+## ORO-8J Live Traffic Actual External Call Execution Actual Live Execution Execution Approval Boundary Coverage
+
+ORO-8J Live Traffic Actual External Call Execution Actual Live Execution
+Execution Approval Boundary Coverage proves that ORO-8J records only the actual
+live execution execution approval boundary after ORO-8I submitted the actual
+live execution execution request.
+
+- ORO-8J execution approval boundary doc: live traffic actual external call
+  execution actual live execution execution approval boundary.
+- ORO-8J mock helper: execution approval scope, ORO-8I dependency, closed
+  runtime/external-call/approval surfaces, and fail-closed blocker generation.
+- ORO-8J fixtures: happy path, missing ORO-8I dependency, ORO-8I request not
+  submitted, ORO-8I request boundary not passed, approval boundary tries to
+  activate runtime, approval boundary tries to enable runtime, approval boundary
+  tries to authorize runtime external execution, approval boundary tries to
+  execute a live call, external network allowed, live OroPlay allowed, wallet
+  mutation allowed, ledger mutation allowed, Prisma write allowed, DB
+  transaction allowed, route enablement allowed, Express mount allowed, public
+  alias allowed, API balance alias allowed, API transaction alias allowed,
+  OroPlay balance route allowed, OroPlay transaction route allowed, and secret
+  leak.
+- ORO-8J smoke: actual live execution execution approval boundary smoke.
+- ORO-8J smoke wrapper: `src/local-smoke-tests/oro8jSmoke.js`.
+- ORO-8J actual live execution execution approval-boundary-only package smoke alias
+- `smoke:oro-8j`
+- `smoke:oro-8j-actual-live-execution-execution-approval-boundary`
+- Confirms ORO-8J emits `phase=ORO-8J`, `result=PASS`, execution approval
+  status, and execution approval scope.
+- Confirms ORO-8J depends on ORO-8I execution request scope and execution
+  request status.
+- Confirms ORO-8J issues only the actual live execution execution approval
+  boundary record.
+- Confirms ORO-8J does not approve actual execution, perform live execution,
+  open external networks, mount routes, write data, or leak secrets.
+- Confirms ORO-8J blockers are empty on the happy path and fail closed for
+  dependency, status, scope, runtime, route, alias, mutation, approval,
+  execution, and secret violations.

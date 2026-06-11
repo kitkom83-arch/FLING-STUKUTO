@@ -132,6 +132,8 @@ ORO-8I records the actual live execution execution request and keeps separate
 human and approval requirements in place for the next actual live execution
 execution approval boundary.
 
+ORO-8J follows ORO-8I as the separate actual live execution execution approval boundary.
+
 ## Safety confirmation
 
 ORO-8I is docs, contract, static/mock harness, and local smoke only. It does not

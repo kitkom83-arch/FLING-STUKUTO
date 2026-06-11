@@ -4215,3 +4215,33 @@ run migrations, deploy, mount routes, or expose public aliases.
 - ORO-8I smoke confirms request output, ORO-8H dependency, closed
   runtime/network/mutation/route/approval flags, and no actual live execution.
 - `smoke:oro-8i` registration.
+
+## ORO-8J current/live traffic actual external call execution actual live execution execution approval boundary
+
+ORO-8J records the live traffic actual external call execution actual live
+execution execution approval boundary after ORO-8I submitted the execution
+request. ORO-8J is actual live execution execution approval boundary only.
+The ORO-8J execution approval scope is
+`actual_live_execution_execution_approval_boundary_only`.
+ORO-8J depends on ORO-8I execution request scope
+`actual_live_execution_execution_request_boundary_only` and execution request
+status `submitted_for_separate_actual_live_execution_execution_approval_only`.
+ORO-8J issues only the actual live execution execution approval status
+`approved_for_separate_actual_live_execution_final_execution_gate_only`.
+ORO-8J still does not approve actual execution, execute an actual live call,
+authorize runtime execution, activate runtime execution, enable runtime
+execution, call external networks, call live OroPlay, mutate wallet or ledger,
+write data, run DB transactions, run migrations, deploy, mount routes, or expose
+public aliases.
+
+- ORO-8J actual live execution execution approval boundary doc exists.
+- ORO-8J helper exports phase, status, execution approval builder, validator,
+  runner, summary builder, and closed safety flags.
+- ORO-8J fixtures cover happy path, missing ORO-8I dependency, ORO-8I request
+  not submitted, ORO-8I request boundary not passed, runtime activation,
+  runtime enablement, runtime authorization, live execution attempt, network,
+  live OroPlay, wallet, ledger, Prisma, DB transaction, route, Express mount,
+  public alias, API alias, OroPlay route, and sensitive-output blockers.
+- ORO-8J smoke confirms approval output, ORO-8I dependency, closed
+  runtime/network/mutation/route/approval flags, and no actual live execution.
+- `smoke:oro-8j` registration.

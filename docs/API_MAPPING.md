@@ -3596,3 +3596,50 @@ DB transactions, run migrations, deploy, mount routes, or expose public aliases.
 - ORO-8I smoke aliases:
 - `smoke:oro-8i`
 - `smoke:oro-8i-actual-live-execution-execution-request-boundary`
+
+## ORO-8J Live Traffic Actual External Call Execution Actual Live Execution Execution Approval Boundary Mapping
+
+ORO-8J records actual live execution execution approval boundary only after
+ORO-8I submitted and passed the actual live execution execution request boundary.
+ORO-8J remains docs/contract/static/mock/local-smoke only and does not approve
+actual execution, perform actual live execution, authorize runtime execution,
+activate runtime, enable runtime, call external networks, call live OroPlay,
+mutate wallet or ledger, write data, run DB transactions, run migrations,
+deploy, mount routes, or expose public aliases.
+
+- ORO-8J records actual live execution execution approval boundary only
+- ORO-8J dependency: actualLiveExecutionExecutionRequestSubmittedFromOro8i=true
+- ORO-8J dependency status: submitted_for_separate_actual_live_execution_execution_approval_only
+- ORO-8J dependency scope: actual_live_execution_execution_request_boundary_only
+- ORO-8J actual live execution execution approval status: approved_for_separate_actual_live_execution_final_execution_gate_only
+- ORO-8J actual live execution execution approval scope: actual_live_execution_execution_approval_boundary_only
+- actualLiveExecutionExecutionApprovalPrepared=true
+- actualLiveExecutionExecutionApprovalIssued=true
+- actualLiveExecutionExecutionApprovalPassed=true
+- actualLiveExecutionExecutionApprovalRecorded=true
+- actualLiveExecutionExecutionApproved=false
+- actualLiveExecutionExecutionRequestApproved=false
+- actualLiveExecutionExecuted=false
+- actualExternalCallExecutionAuthorized=false
+- externalNetworkAllowed=false
+- liveOroPlayApiCallAllowed=false
+- walletMutationAllowed=false
+- ledgerMutationAllowed=false
+- prismaWriteAllowed=false
+- dbTransactionAllowed=false
+- routeEnablementAllowed=false
+- expressMountAllowed=false
+- publicAliasAllowed=false
+- apiBalanceAliasAllowed=false
+- apiTransactionAliasAllowed=false
+- apiOroplayBalanceRouteAllowed=false
+- apiOroplayTransactionRouteAllowed=false
+- nextPhaseRequiresSeparateActualLiveExecutionFinalExecutionGate=true
+- nextPhaseRequiresSeparateActualLiveExecutionExecutionRequest=true
+- humanApprovalRequiredForActualExecution=true
+- separateActualExecutionApprovalRequired=true
+- separateActualExecutionFinalGateRequired=true
+- ORO-8J smoke wrapper: `src/local-smoke-tests/oro8jSmoke.js`
+- ORO-8J smoke aliases:
+- `smoke:oro-8j`
+- `smoke:oro-8j-actual-live-execution-execution-approval-boundary`
