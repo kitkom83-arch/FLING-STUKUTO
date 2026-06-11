@@ -131,6 +131,8 @@ ORO-8E keeps all mutation and persistence paths closed:
 ORO-8E marks the final execution decision as approved and keeps separate human
 and approval requirements in place for the next actual live execution request.
 
+ORO-8F follows ORO-8E as the separate actual live execution request boundary.
+
 ## Safety confirmation
 
 ORO-8E is docs, contract, static/mock harness, and local smoke only. It does

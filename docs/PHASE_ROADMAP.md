@@ -4094,3 +4094,39 @@ Validation:
 - ORO-8E smoke confirms final execution decision output, ORO-8D dependency,
   closed request/runtime/live/network/route/mutation flags, and fail-closed blockers.
 - `smoke:oro-8e` registration.
+
+## ORO-8F current/live traffic actual external call execution actual live execution request
+
+ORO-8F records the live traffic actual external call execution actual live
+execution request after ORO-8E.
+ORO-8F is actual live execution request only.
+
+The ORO-8F request scope is `actual_live_execution_request_boundary_only`.
+
+ORO-8F depends on ORO-8E decision scope
+`actual_live_execution_final_execution_decision_boundary_only` with decision
+status `approved_for_separate_actual_live_execution_request_only`.
+
+ORO-8F issues only the actual live execution request status
+`submitted_for_separate_actual_live_execution_decision_only`.
+
+ORO-8F still does not activate runtime execution, enable runtime execution,
+issue actual live execution decision, perform actual live execution, call
+external networks, call live OroPlay, write data, mutate wallet or ledger
+state, run DB transactions, run migrations, deploy, mount routes, or expose
+public aliases.
+
+Validation:
+
+- ORO-8F actual live execution request doc exists.
+- ORO-8F helper exports phase, status, request boundary builder, validator,
+  runner, and summary.
+- ORO-8F fixtures cover happy path, missing ORO-8E decision pass, ORO-8E
+  decision status mismatch, ORO-8E decision scope mismatch, actual live
+  execution decision issued, actual live execution decision approved, actual
+  live execution executed, external network, live OroPlay API, wallet
+  mutation, ledger mutation, Prisma write, DB transaction, route enablement/
+  Express mount/public alias, and secret leak blockers.
+- ORO-8F smoke confirms request output, ORO-8E dependency, closed
+  request/runtime/live/network/route/mutation flags, and fail-closed blockers.
+- `smoke:oro-8f` registration.

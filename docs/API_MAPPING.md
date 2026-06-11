@@ -3475,3 +3475,34 @@ expose public aliases.
 - separateActualExecutionApprovalRequired=true
 - smoke:oro-8e
 - smoke:oro-8e-actual-live-execution-final-execution-decision-boundary
+
+## ORO-8F Live Traffic Actual External Call Execution Actual Live Execution Request Boundary Mapping
+
+ORO-8F records actual live execution request only after ORO-8E issued the final
+execution decision.
+
+ORO-8F remains docs/contract/static/mock/local-smoke only and does not activate
+runtime execution, enable runtime execution, issue actual live execution
+decision, approve live execution, execute live traffic, call live OroPlay,
+mutate wallet or ledger, write data, run migrations, deploy, mount routes, or
+expose public aliases.
+
+- ORO-8F records actual live execution request only
+- ORO-8E actual live execution final execution decision scope: actual_live_execution_final_execution_decision_boundary_only
+- ORO-8E actual live execution final execution decision status: approved_for_separate_actual_live_execution_request_only
+- ORO-8F actual live execution request scope: actual_live_execution_request_boundary_only
+- ORO-8F actual live execution request status: submitted_for_separate_actual_live_execution_decision_only
+- actualLiveExecutionFinalExecutionDecisionIssuedFromOro8e=true
+- actualLiveExecutionFinalExecutionDecisionStatusFromOro8e=approved_for_separate_actual_live_execution_request_only
+- actualLiveExecutionFinalExecutionDecisionScopeFromOro8e=actual_live_execution_final_execution_decision_boundary_only
+- actualLiveExecutionRequestPrepared=true
+- actualLiveExecutionRequestSubmitted=true
+- actualLiveExecutionRequestApproved=false
+- actualLiveExecutionDecisionIssued=false
+- actualLiveExecutionDecisionApproved=false
+- actualLiveExecutionExecuted=false
+- nextPhaseRequiresSeparateActualLiveExecutionDecision=true
+- humanApprovalRequiredForActualExecution=true
+- separateActualExecutionApprovalRequired=true
+- smoke:oro-8f
+- smoke:oro-8f-actual-live-execution-request-boundary
