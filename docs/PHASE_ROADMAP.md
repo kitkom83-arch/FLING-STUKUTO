@@ -4279,3 +4279,37 @@ migrations, deploy, mount routes, or expose public aliases.
   runtime/network/mutation/route/request/approval flags, and no actual live
   execution.
 - `smoke:oro-8k` registration.
+
+## ORO-8L current/live traffic actual external call execution actual live execution final execution request boundary
+
+ORO-8L records the live traffic actual external call execution actual live
+execution final execution request boundary after ORO-8K issued and recorded the
+final execution gate. ORO-8L is actual live execution final execution request boundary only.
+The ORO-8L final execution request scope is
+`actual_live_execution_final_execution_request_boundary_only`.
+ORO-8L depends on ORO-8K final execution gate scope
+`actual_live_execution_final_execution_gate_only` and final execution gate
+status `passed_for_separate_actual_live_execution_final_execution_request_only`.
+ORO-8L issues only the actual live execution final execution request status
+`submitted_for_separate_actual_live_execution_final_execution_approval_only`.
+ORO-8L still does not approve actual final execution, approve actual execution,
+execute an actual live call, authorize runtime execution, activate runtime
+execution, enable runtime execution, call external networks, call live OroPlay,
+mutate wallet or ledger, write data, run DB transactions, run migrations,
+deploy, mount routes, or expose public aliases.
+
+- ORO-8L actual live execution final execution request boundary doc exists.
+- ORO-8L helper exports phase, status, final execution request builder,
+  validator, runner, summary builder, and closed safety flags.
+- ORO-8L fixtures cover happy path, missing ORO-8K dependency, ORO-8K final
+  execution gate not passed/recorded/status/scope mismatch, final execution
+  request preparation/issuance/submission/pass/record/status/scope mismatch,
+  final execution approval, actual execution approval, runtime activation,
+  runtime enablement, runtime authorization, live execution attempt, network,
+  live OroPlay, wallet, ledger, Prisma, DB transaction, route, Express mount,
+  public alias, API alias, OroPlay route, human/separate approval/final
+  approval, and sensitive-output blockers.
+- ORO-8L smoke confirms final execution request output, ORO-8K dependency,
+  closed runtime/network/mutation/route/approval flags, and no actual live
+  execution.
+- `smoke:oro-8l` registration.

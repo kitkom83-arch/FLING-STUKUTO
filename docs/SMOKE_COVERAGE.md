@@ -7702,3 +7702,43 @@ execution execution approval boundary.
 - Confirms ORO-8K blockers are empty on the happy path and fail closed for
   dependency, status, scope, runtime, route, alias, mutation, request, approval,
   execution, and secret violations.
+
+## ORO-8L Live Traffic Actual External Call Execution Actual Live Execution Final Execution Request Boundary Coverage
+
+ORO-8L Live Traffic Actual External Call Execution Actual Live Execution Final
+Execution Request Boundary Coverage proves that ORO-8L records only the actual
+live execution final execution request boundary after ORO-8K issued and recorded
+the actual live execution final execution gate.
+
+- ORO-8L final execution request boundary doc: live traffic actual external call
+  execution actual live execution final execution request boundary.
+- ORO-8L mock helper: final execution request scope, ORO-8K dependency, closed
+  runtime/external-call/approval surfaces, and fail-closed blocker generation.
+- ORO-8L fixtures: happy path, missing ORO-8K dependency, ORO-8K final gate not
+  passed, ORO-8K final gate not recorded, ORO-8K status/scope mismatch, final
+  request preparation/issuance/submission/pass/record/status/scope mismatch,
+  final execution approval, actual execution approval, runtime activation,
+  runtime enablement, runtime authorization, live call execution, external
+  network allowed, live OroPlay allowed, wallet mutation allowed, ledger
+  mutation allowed, Prisma write allowed, DB transaction allowed, route
+  enablement allowed, Express mount allowed, public alias allowed, API balance
+  alias allowed, API transaction alias allowed, OroPlay balance route allowed,
+  OroPlay transaction route allowed, human/separate approval/final approval
+  missing, and secret leak.
+- ORO-8L smoke: actual live execution final execution request boundary smoke.
+- ORO-8L smoke wrapper: `src/local-smoke-tests/oro8lSmoke.js`.
+- ORO-8L actual live execution final execution request-boundary package smoke alias
+- `smoke:oro-8l`
+- `smoke:oro-8l-actual-live-execution-final-execution-request-boundary`
+- Confirms ORO-8L emits `phase=ORO-8L`, `result=PASS`, final execution request
+  status, and final execution request scope.
+- Confirms ORO-8L depends on ORO-8K final execution gate scope and final
+  execution gate status.
+- Confirms ORO-8L issues only the actual live execution final execution request
+  record.
+- Confirms ORO-8L does not approve actual final execution, approve actual
+  execution, perform live execution, open external networks, mount routes, write
+  data, or leak secrets.
+- Confirms ORO-8L blockers are empty on the happy path and fail closed for
+  dependency, status, scope, runtime, route, alias, mutation, approval,
+  execution, and secret violations.

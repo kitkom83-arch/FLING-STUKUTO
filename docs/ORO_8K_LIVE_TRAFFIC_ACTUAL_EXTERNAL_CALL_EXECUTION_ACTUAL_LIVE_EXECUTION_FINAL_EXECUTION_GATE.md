@@ -137,6 +137,14 @@ ORO-8K keeps all mutation and persistence paths closed:
 ORO-8K records the actual live execution final execution gate and keeps separate
 human, approval, and final request requirements in place for later phases.
 
+ORO-8L follows ORO-8K as the separate actual live execution final execution request boundary.
+ORO-8L may record only the final execution request status
+`submitted_for_separate_actual_live_execution_final_execution_approval_only`
+under scope `actual_live_execution_final_execution_request_boundary_only`.
+ORO-8L keeps the next phase separate:
+
+- nextPhaseRequiresSeparateActualLiveExecutionFinalExecutionApproval = true
+
 ## Safety confirmation
 
 ORO-8K is docs, contract, static/mock harness, and local smoke only. It does not
