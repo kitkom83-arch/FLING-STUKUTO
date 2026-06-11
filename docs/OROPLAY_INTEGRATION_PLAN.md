@@ -2010,3 +2010,12 @@ The ORO-8L final execution request scope is `actual_live_execution_final_executi
 ORO-8L depends on ORO-8K final execution gate scope `actual_live_execution_final_execution_gate_only` and final execution gate status `passed_for_separate_actual_live_execution_final_execution_request_only`.
 ORO-8L issues only the actual live execution final execution request status `submitted_for_separate_actual_live_execution_final_execution_approval_only`.
 ORO-8L still does not approve actual final execution, approve actual execution, execute an actual live call, authorize runtime execution, activate runtime execution, enable runtime execution, call external networks, call live OroPlay, mutate wallet or ledger, write data, run DB transactions, run migrations, deploy, mount routes, or expose public aliases.
+
+## ORO-8M Current
+
+ORO-8M records the live traffic actual external call execution actual live execution final execution approval boundary after ORO-8L submitted and recorded the final execution request.
+ORO-8M is actual live execution final execution approval boundary only.
+The ORO-8M final execution approval scope is `actual_live_execution_final_execution_approval_boundary_only`.
+ORO-8M depends on ORO-8L final execution request scope `actual_live_execution_final_execution_request_boundary_only` and final execution request status `submitted_for_separate_actual_live_execution_final_execution_approval_only`.
+ORO-8M issues only the actual live execution final execution approval status `approved_for_separate_actual_live_execution_final_execution_decision_boundary_only`.
+ORO-8M still does not approve actual final execution, approve actual execution, execute an actual live call, authorize runtime execution, activate runtime execution, enable runtime execution, call external networks, call live OroPlay, mutate wallet or ledger, write data, run DB transactions, run migrations, deploy, mount routes, or expose public aliases.
