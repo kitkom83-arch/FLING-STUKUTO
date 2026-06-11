@@ -1965,3 +1965,12 @@ The ORO-8G decision scope is `actual_live_execution_decision_boundary_only`.
 ORO-8G depends on ORO-8F request scope `actual_live_execution_request_boundary_only` and request status `submitted_for_separate_actual_live_execution_decision_only`.
 ORO-8G issues only the actual live execution decision status `approved_for_separate_actual_live_execution_execution_gate_only`.
 ORO-8G still does not activate runtime execution, enable runtime execution, call external networks, call live OroPlay, mutate wallet or ledger, write data, run DB transactions, run migrations, deploy, mount routes, or expose public aliases.
+
+## ORO-8H Current
+
+ORO-8H records the live traffic actual external call execution actual live execution execution gate after ORO-8G issued the decision.
+ORO-8H is actual live execution execution gate only.
+The ORO-8H execution gate scope is `actual_live_execution_execution_gate_only`.
+ORO-8H depends on ORO-8G decision scope `actual_live_execution_decision_boundary_only` and decision status `approved_for_separate_actual_live_execution_execution_gate_only`.
+ORO-8H issues only the actual live execution execution gate status `passed_for_separate_actual_live_execution_execution_request_only`.
+ORO-8H still does not activate runtime execution, enable runtime execution, call external networks, call live OroPlay, mutate wallet or ledger, write data, run DB transactions, run migrations, deploy, mount routes, or expose public aliases.

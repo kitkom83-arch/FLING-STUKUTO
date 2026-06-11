@@ -4157,3 +4157,33 @@ aliases.
 - ORO-8G smoke confirms decision output, ORO-8F dependency, closed
   runtime/mutation surfaces, and the next execution-gate requirement.
 - `smoke:oro-8g` registration.
+
+## ORO-8H current/live traffic actual external call execution actual live execution execution gate
+
+ORO-8H records the live traffic actual external call execution actual live
+execution execution gate after ORO-8G issued the actual live execution
+decision. ORO-8H is actual live execution execution gate only.
+The ORO-8H execution gate scope is `actual_live_execution_execution_gate_only`.
+ORO-8H depends on ORO-8G decision scope
+`actual_live_execution_decision_boundary_only` and decision status
+`approved_for_separate_actual_live_execution_execution_gate_only`.
+ORO-8H issues only the actual live execution execution gate status
+`passed_for_separate_actual_live_execution_execution_request_only`.
+ORO-8H still does not activate runtime execution, enable runtime execution,
+call external networks, call live OroPlay, mutate wallet or ledger, write
+data, run DB transactions, run migrations, deploy, mount routes, or expose
+public aliases.
+
+- ORO-8H actual live execution execution gate doc exists.
+- ORO-8H helper exports phase, status, execution gate builder, validator,
+  runner, summary, and closed-flag constants.
+- ORO-8H fixtures cover happy path, missing ORO-8G decision pass, ORO-8G
+  decision status mismatch, ORO-8G decision scope mismatch, actual live
+  execution already executed, execution request already submitted, execution
+  request already approved, external network allowed, live OroPlay allowed,
+  wallet mutation allowed, ledger mutation allowed, Prisma write allowed, DB
+  transaction allowed, route enablement/Express mount/public alias allowed,
+  and secret leak.
+- ORO-8H smoke confirms gate output, ORO-8G dependency, closed
+  runtime/external-call surfaces, and secret-safe output.
+- `smoke:oro-8h` registration.

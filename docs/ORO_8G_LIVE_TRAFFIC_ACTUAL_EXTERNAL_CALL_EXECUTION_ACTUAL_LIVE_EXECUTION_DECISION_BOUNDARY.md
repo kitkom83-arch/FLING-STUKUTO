@@ -133,6 +133,9 @@ human and approval requirements in place for the next actual live execution
 execution gate.
 
 ORO-8H follows ORO-8G as the separate actual live execution execution gate.
+ORO-8H depends on ORO-8G decision status
+`approved_for_separate_actual_live_execution_execution_gate_only` and decision
+scope `actual_live_execution_decision_boundary_only`.
 
 ## Safety confirmation
 

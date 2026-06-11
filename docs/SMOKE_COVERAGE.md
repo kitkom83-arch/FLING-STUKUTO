@@ -7553,4 +7553,38 @@ decision after ORO-8F submitted the request.
   actual live execution, open external network access, call live OroPlay, or
   allow wallet, ledger, Prisma, DB, route, or alias mutations.
 - Confirms ORO-8G blockers are empty on the happy path and fail closed for
+  dependency, status, scope, runtime, route, mutation, and secret violations.
+
+## ORO-8H Live Traffic Actual External Call Execution Actual Live Execution Execution Gate Coverage
+
+ORO-8H Live Traffic Actual External Call Execution Actual Live Execution
+Execution Gate Coverage proves that ORO-8H records only the actual live
+execution execution gate after ORO-8G issued the actual live execution
+decision.
+
+- ORO-8H execution gate doc: live traffic actual external call execution actual
+  live execution execution gate.
+- ORO-8H mock helper: execution gate scope, ORO-8G dependency, closed
+  runtime/external-call surfaces, and fail-closed blocker generation.
+- ORO-8H fixtures: happy path, missing ORO-8G decision pass, ORO-8G decision
+  status mismatch, ORO-8G decision scope mismatch, actual live execution
+  already executed, execution request already submitted, execution request
+  already approved, external network allowed, live OroPlay allowed, wallet
+  mutation allowed, ledger mutation allowed, Prisma write allowed, DB
+  transaction allowed, route/Express/public alias allowed, and secret leak.
+- ORO-8H smoke: actual live execution execution gate smoke.
+- ORO-8H smoke wrapper: `src/local-smoke-tests/oro8hSmoke.js`.
+- ORO-8H actual live execution execution gate-only package smoke alias
+- `smoke:oro-8h`
+- `smoke:oro-8h-actual-live-execution-execution-gate`
+- Confirms ORO-8H emits `phase=ORO-8H`, `result=PASS`, execution gate status,
+  and execution gate scope.
+- Confirms ORO-8H depends on ORO-8G decision scope and decision status.
+- Confirms ORO-8H issues only the actual live execution execution gate record.
+- Confirms ORO-8H does not submit or approve actual live execution execution
+  request, perform live execution, open external networks, mount routes, write
+  data, or leak secrets.
+- Confirms ORO-8H blockers are empty on the happy path and fail closed for
+  dependency, status, scope, runtime, route, mutation, and secret violations.
+- Confirms ORO-8G blockers are empty on the happy path and fail closed for
   blockers.
