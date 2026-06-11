@@ -4187,3 +4187,31 @@ public aliases.
 - ORO-8H smoke confirms gate output, ORO-8G dependency, closed
   runtime/external-call surfaces, and secret-safe output.
 - `smoke:oro-8h` registration.
+
+## ORO-8I current/live traffic actual external call execution actual live execution execution request boundary
+
+ORO-8I records the live traffic actual external call execution actual live
+execution execution request after ORO-8H issued the execution gate. ORO-8I is
+actual live execution execution request boundary only.
+The ORO-8I execution request scope is
+`actual_live_execution_execution_request_boundary_only`.
+ORO-8I depends on ORO-8H execution gate scope
+`actual_live_execution_execution_gate_only` and execution gate status
+`passed_for_separate_actual_live_execution_execution_request_only`.
+ORO-8I issues only the actual live execution execution request status
+`submitted_for_separate_actual_live_execution_execution_approval_only`.
+ORO-8I still does not approve actual execution, execute an actual live call,
+activate runtime execution, enable runtime execution, call external networks,
+call live OroPlay, mutate wallet or ledger, write data, run DB transactions,
+run migrations, deploy, mount routes, or expose public aliases.
+
+- ORO-8I actual live execution execution request boundary doc exists.
+- ORO-8I helper exports phase, status, execution request builder, validator,
+  runner, summary builder, and closed safety flags.
+- ORO-8I fixtures cover happy path, missing ORO-8H dependency, ORO-8H gate not
+  passed, execution approval attempt, live execution attempt, network, live
+  OroPlay, wallet, ledger, Prisma, DB transaction, route, Express mount, public
+  alias, API alias, OroPlay route, and sensitive-output blockers.
+- ORO-8I smoke confirms request output, ORO-8H dependency, closed
+  runtime/network/mutation/route/approval flags, and no actual live execution.
+- `smoke:oro-8i` registration.

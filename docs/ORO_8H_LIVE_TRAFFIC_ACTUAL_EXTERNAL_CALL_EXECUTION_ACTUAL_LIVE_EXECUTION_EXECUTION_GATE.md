@@ -133,6 +133,8 @@ ORO-8H marks the actual live execution execution gate as passed and keeps
 separate human and approval requirements in place for the next actual live
 execution execution request.
 
+ORO-8I follows ORO-8H as the separate actual live execution execution request boundary.
+
 ## Safety confirmation
 
 ORO-8H is docs, contract, static/mock harness, and local smoke only. It does

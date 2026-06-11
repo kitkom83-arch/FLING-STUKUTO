@@ -1144,9 +1144,26 @@ const RELATED_FILES = [
   ].join(""),
   "src/local-smoke-tests/oro8hSmoke.js",
   [
+    "src/game-provider-mock/oro8iLiveTrafficActualExternalCall",
+    "ExecutionActualLiveExecutionExecutionRequestBoundary.js",
+  ].join(""),
+  [
+    "src/game-provider-mock/oro8iLiveTrafficActualExternalCall",
+    "ExecutionActualLiveExecutionExecutionRequestBoundaryFixtures.js",
+  ].join(""),
+  [
+    "src/local-smoke-tests/oro8iLiveTrafficActualExternalCall",
+    "ExecutionActualLiveExecutionExecutionRequestBoundarySmoke.js",
+  ].join(""),
+  "src/local-smoke-tests/oro8iSmoke.js",
+  [
     "docs/ORO_8H_LIVE_TRAFFIC_ACTUAL_EXTERNAL_CALL",
     "EXECUTION_ACTUAL_LIVE_EXECUTION_EXECUTION_GATE.md",
   ].join(""),
+  [
+    "docs/ORO_8I_LIVE_TRAFFIC_ACTUAL_EXTERNAL_CALL",
+    "EXECUTION_ACTUAL_LIVE_EXECUTION_EXECUTION_REQUEST_BOUNDARY.md",
+  ].join("_"),
   [
     "docs/ORO_8E_LIVE_TRAFFIC_ACTUAL_EXTERNAL_CALL",
     "EXECUTION_ACTUAL_LIVE_EXECUTION_FINAL_EXECUTION_DECISION_BOUNDARY.md",
@@ -1499,6 +1516,7 @@ const summary = [
   { key: "oro8f", label: "oro-8f", status: "PENDING" },
   { key: "oro8g", label: "oro-8g", status: "PENDING" },
   { key: "oro8h", label: "oro-8h", status: "PENDING" },
+  { key: "oro8i", label: "oro-8i", status: "PENDING" },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
   { key: "depositVerificationSource", label: "deposit-verification-source", status: "PENDING" },
   {
@@ -2711,6 +2729,12 @@ const steps = [
     summaryKey: "syntax",
   },
   {
+    name: "node --check oro8iSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oro8iSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
     name: "node --check memberQrDepositUxContract",
     command: nodeCommand,
     args: ["--check", "src/payment-provider-mock/memberQrDepositUxContract.js"],
@@ -3830,6 +3854,18 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oro-8h-actual-live-execution-execution-gate"]),
     summaryKey: "oro8h",
+  },
+  {
+    name: "npm run smoke:oro-8i",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oro-8i"]),
+    summaryKey: "oro8i",
+  },
+  {
+    name: "npm run smoke:oro-8i-actual-live-execution-execution-request-boundary",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oro-8i-actual-live-execution-execution-request-boundary"]),
+    summaryKey: "oro8i",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

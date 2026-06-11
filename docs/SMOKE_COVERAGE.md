@@ -7588,3 +7588,39 @@ decision.
   dependency, status, scope, runtime, route, mutation, and secret violations.
 - Confirms ORO-8G blockers are empty on the happy path and fail closed for
   blockers.
+
+## ORO-8I Live Traffic Actual External Call Execution Actual Live Execution Execution Request Boundary Coverage
+
+ORO-8I Live Traffic Actual External Call Execution Actual Live Execution
+Execution Request Boundary Coverage proves that ORO-8I records only the actual
+live execution execution request after ORO-8H issued the actual live execution
+execution gate.
+
+- ORO-8I execution request boundary doc: live traffic actual external call
+  execution actual live execution execution request boundary.
+- ORO-8I mock helper: execution request scope, ORO-8H dependency, closed
+  runtime/external-call/approval surfaces, and fail-closed blocker generation.
+- ORO-8I fixtures: happy path, missing ORO-8H dependency, ORO-8H gate not
+  passed, execution request tries to approve execution, execution request tries
+  to execute a live call, external network allowed, live OroPlay allowed, wallet
+  mutation allowed, ledger mutation allowed, Prisma write allowed, DB
+  transaction allowed, route enablement allowed, Express mount allowed, public
+  alias allowed, API balance alias allowed, API transaction alias allowed,
+  OroPlay balance route allowed, OroPlay transaction route allowed, and secret
+  leak.
+- ORO-8I smoke: actual live execution execution request boundary smoke.
+- ORO-8I smoke wrapper: `src/local-smoke-tests/oro8iSmoke.js`.
+- ORO-8I actual live execution execution request-boundary-only package smoke alias
+- `smoke:oro-8i`
+- `smoke:oro-8i-actual-live-execution-execution-request-boundary`
+- Confirms ORO-8I emits `phase=ORO-8I`, `result=PASS`, execution request
+  status, and execution request scope.
+- Confirms ORO-8I depends on ORO-8H execution gate scope and execution gate
+  status.
+- Confirms ORO-8I issues only the actual live execution execution request
+  record.
+- Confirms ORO-8I does not approve actual execution, perform live execution,
+  open external networks, mount routes, write data, or leak secrets.
+- Confirms ORO-8I blockers are empty on the happy path and fail closed for
+  dependency, status, scope, runtime, route, alias, mutation, approval,
+  execution, and secret violations.
