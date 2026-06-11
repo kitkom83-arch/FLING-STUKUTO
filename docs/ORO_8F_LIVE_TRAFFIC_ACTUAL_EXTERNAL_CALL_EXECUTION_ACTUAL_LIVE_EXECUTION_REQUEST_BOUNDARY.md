@@ -133,6 +133,8 @@ ORO-8F marks the actual live execution request as submitted and keeps separate
 human and approval requirements in place for the next actual live execution
 decision.
 
+ORO-8G follows ORO-8F as the separate actual live execution decision boundary.
+
 ## Safety confirmation
 
 ORO-8F is docs, contract, static/mock harness, and local smoke only. It does

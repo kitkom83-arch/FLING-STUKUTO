@@ -7523,3 +7523,34 @@ Boundary:
 - No external network.
 - No live OroPlay API call.
 - No real money.
+## ORO-8G Live Traffic Actual External Call Execution Actual Live Execution Decision Coverage
+
+ORO-8G Live Traffic Actual External Call Execution Actual Live Execution
+Decision Coverage proves that ORO-8G records only the actual live execution
+decision after ORO-8F submitted the request.
+
+- ORO-8G decision doc: live traffic actual external call execution actual live
+  execution decision boundary.
+- ORO-8G mock helper: decision scope, ORO-8F dependency, closed
+  runtime/mutation surfaces, and the next execution-gate requirement.
+- ORO-8G fixtures: happy path, missing ORO-8F request pass, ORO-8F request
+  status mismatch, ORO-8F request scope mismatch, actual live execution already
+  executed, execution gate already issued, execution gate already passed,
+  external network allowed, live OroPlay API call allowed, wallet mutation
+  allowed, ledger mutation allowed, Prisma write allowed, DB transaction
+  allowed, route enablement/Express mount/public alias allowed, and secret leak.
+- ORO-8G smoke: actual live execution decision boundary smoke.
+- ORO-8G smoke wrapper: `src/local-smoke-tests/oro8gSmoke.js`.
+- ORO-8G actual live execution decision boundary-only package smoke alias
+- `smoke:oro-8g`
+- `smoke:oro-8g-actual-live-execution-decision-boundary`
+
+- Confirms ORO-8G emits `phase=ORO-8G`, `result=PASS`, decision status, and
+  decision scope.
+- Confirms ORO-8G depends on ORO-8F request scope and request status.
+- Confirms ORO-8G issues only the actual live execution decision record.
+- Confirms ORO-8G does not issue actual live execution execution gate, perform
+  actual live execution, open external network access, call live OroPlay, or
+  allow wallet, ledger, Prisma, DB, route, or alias mutations.
+- Confirms ORO-8G blockers are empty on the happy path and fail closed for
+  blockers.

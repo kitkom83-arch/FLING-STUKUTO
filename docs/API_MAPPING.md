@@ -3506,3 +3506,28 @@ expose public aliases.
 - separateActualExecutionApprovalRequired=true
 - smoke:oro-8f
 - smoke:oro-8f-actual-live-execution-request-boundary
+## ORO-8G Live Traffic Actual External Call Execution Actual Live Execution Decision Boundary Mapping
+
+ORO-8G records actual live execution decision only after ORO-8F submitted the actual live execution request.
+ORO-8G remains docs/contract/static/mock/local-smoke only and does not activate runtime, enable runtime, call external networks, call live OroPlay, mutate wallet or ledger, write data, run DB transactions, run migrations, deploy, mount routes, or expose public aliases.
+
+- ORO-8G records actual live execution decision only
+- ORO-8F actual live execution request scope: actual_live_execution_request_boundary_only
+- ORO-8F actual live execution request status: submitted_for_separate_actual_live_execution_decision_only
+- actualLiveExecutionRequestSubmittedFromOro8f=true
+- actualLiveExecutionDecisionPrepared=true
+- actualLiveExecutionDecisionIssued=true
+- actualLiveExecutionDecisionStatus=approved_for_separate_actual_live_execution_execution_gate_only
+- actualLiveExecutionDecisionScope=actual_live_execution_decision_boundary_only
+- actualLiveExecutionExecutionGateIssued=false
+- actualLiveExecutionExecutionGatePassed=false
+- ORO-8G actual live execution decision scope: actual_live_execution_decision_boundary_only
+- ORO-8G actual live execution decision status: approved_for_separate_actual_live_execution_execution_gate_only
+- ORO-8G actual live execution decision prepared = true
+- ORO-8G actual live execution decision issued = true
+- ORO-8G actual live execution execution gate issued = false
+- ORO-8G actual live execution execution gate passed = false
+- ORO-8G smoke wrapper: `src/local-smoke-tests/oro8gSmoke.js`
+- ORO-8G smoke aliases:
+- `smoke:oro-8g`
+- `smoke:oro-8g-actual-live-execution-decision-boundary`

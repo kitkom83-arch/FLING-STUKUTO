@@ -1957,3 +1957,11 @@ that request, issue an authorization decision, approve live execution,
 activate actual execution, enable runtime execution, enable actual execution,
 authorize execution, perform execution, or open wallet, ledger, Prisma, DB
 transaction, migration, deploy, external network, or live OroPlay calls.
+## ORO-8G Current
+
+ORO-8G records the live traffic actual external call execution actual live execution decision after ORO-8F submitted the request.
+ORO-8G is actual live execution decision boundary only.
+The ORO-8G decision scope is `actual_live_execution_decision_boundary_only`.
+ORO-8G depends on ORO-8F request scope `actual_live_execution_request_boundary_only` and request status `submitted_for_separate_actual_live_execution_decision_only`.
+ORO-8G issues only the actual live execution decision status `approved_for_separate_actual_live_execution_execution_gate_only`.
+ORO-8G still does not activate runtime execution, enable runtime execution, call external networks, call live OroPlay, mutate wallet or ledger, write data, run DB transactions, run migrations, deploy, mount routes, or expose public aliases.
