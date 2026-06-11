@@ -3643,3 +3643,53 @@ deploy, mount routes, or expose public aliases.
 - ORO-8J smoke aliases:
 - `smoke:oro-8j`
 - `smoke:oro-8j-actual-live-execution-execution-approval-boundary`
+
+## ORO-8K Live Traffic Actual External Call Execution Actual Live Execution Final Execution Gate Mapping
+
+ORO-8K records actual live execution final execution gate only after ORO-8J
+issued and recorded the actual live execution execution approval boundary.
+ORO-8K remains docs/contract/static/mock/local-smoke only and does not submit an
+actual final execution request, approve actual execution, perform actual live
+execution, authorize runtime execution, activate runtime, enable runtime, call
+external networks, call live OroPlay, mutate wallet or ledger, write data, run
+DB transactions, run migrations, deploy, mount routes, or expose public aliases.
+
+- ORO-8K records actual live execution final execution gate only
+- ORO-8J dependency: actualLiveExecutionExecutionApprovalIssuedFromOro8j=true
+- ORO-8J dependency: actualLiveExecutionExecutionApprovalRecordedFromOro8j=true
+- ORO-8J actual live execution execution approval status: approved_for_separate_actual_live_execution_final_execution_gate_only
+- ORO-8J actual live execution execution approval scope: actual_live_execution_execution_approval_boundary_only
+- ORO-8K actual live execution final execution gate status: passed_for_separate_actual_live_execution_final_execution_request_only
+- ORO-8K actual live execution final execution gate scope: actual_live_execution_final_execution_gate_only
+- actualLiveExecutionExecutionApprovalRecordedFromOro8j=true
+- actualLiveExecutionFinalExecutionGatePrepared=true
+- actualLiveExecutionFinalExecutionGateIssued=true
+- actualLiveExecutionFinalExecutionGatePassed=true
+- actualLiveExecutionFinalExecutionGateRecorded=true
+- actualLiveExecutionFinalExecutionRequestSubmitted=false
+- actualLiveExecutionFinalExecutionRequestApproved=false
+- actualExternalCallExecutionRuntimeEnabled=false
+- actualExternalCallExecutionAuthorized=false
+- actualExternalCallExecutionLiveExecuted=false
+- externalNetworkAllowed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCallAllowed=false
+- liveOroPlayApiCalled=false
+- walletMutationAllowed=false
+- ledgerMutationAllowed=false
+- prismaWriteAllowed=false
+- dbTransactionAllowed=false
+- routeEnablementAllowed=false
+- expressMountAllowed=false
+- publicAliasAllowed=false
+- apiBalanceAliasAllowed=false
+- apiTransactionAliasAllowed=false
+- apiOroplayBalanceRouteAllowed=false
+- apiOroplayTransactionRouteAllowed=false
+- nextPhaseRequiresSeparateActualLiveExecutionFinalExecutionRequest=true
+- humanApprovalRequiredForActualExecution=true
+- separateActualExecutionApprovalRequired=true
+- separateActualExecutionFinalRequestRequired=true
+- secretsLeaked=false
+- smoke:oro-8k
+- smoke:oro-8k-actual-live-execution-final-execution-gate

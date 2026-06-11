@@ -7662,3 +7662,43 @@ live execution execution request.
 - Confirms ORO-8J blockers are empty on the happy path and fail closed for
   dependency, status, scope, runtime, route, alias, mutation, approval,
   execution, and secret violations.
+
+## ORO-8K Live Traffic Actual External Call Execution Actual Live Execution Final Execution Gate Coverage
+
+ORO-8K Live Traffic Actual External Call Execution Actual Live Execution Final
+Execution Gate Coverage proves that ORO-8K records only the actual live
+execution final execution gate after ORO-8J issued and recorded the actual live
+execution execution approval boundary.
+
+- ORO-8K final execution gate doc: live traffic actual external call execution
+  actual live execution final execution gate.
+- ORO-8K mock helper: final execution gate scope, ORO-8J dependency, closed
+  runtime/external-call/request/approval surfaces, and fail-closed blocker generation.
+- ORO-8K fixtures: happy path, missing ORO-8J dependency, ORO-8J approval not
+  passed, ORO-8J approval not recorded, ORO-8J status/scope mismatch, final
+  gate preparation/issuance/pass/record/status/scope mismatch, final execution
+  request submission, actual execution approval, runtime activation, runtime
+  enablement, runtime authorization, live call execution, external network
+  allowed, live OroPlay allowed, wallet mutation allowed, ledger mutation
+  allowed, Prisma write allowed, DB transaction allowed, route enablement
+  allowed, Express mount allowed, public alias allowed, API balance alias
+  allowed, API transaction alias allowed, OroPlay balance route allowed,
+  OroPlay transaction route allowed, human/separate approval/final request
+  missing, and secret leak.
+- ORO-8K smoke: actual live execution final execution gate smoke.
+- ORO-8K smoke wrapper: `src/local-smoke-tests/oro8kSmoke.js`.
+- ORO-8K actual live execution final execution gate-only package smoke alias
+- `smoke:oro-8k`
+- `smoke:oro-8k-actual-live-execution-final-execution-gate`
+- Confirms ORO-8K emits `phase=ORO-8K`, `result=PASS`, final execution gate
+  status, and final execution gate scope.
+- Confirms ORO-8K depends on ORO-8J execution approval scope and execution
+  approval status.
+- Confirms ORO-8K issues only the actual live execution final execution gate
+  record.
+- Confirms ORO-8K does not submit actual final execution request evidence,
+  approve actual execution, perform live execution, open external networks,
+  mount routes, write data, or leak secrets.
+- Confirms ORO-8K blockers are empty on the happy path and fail closed for
+  dependency, status, scope, runtime, route, alias, mutation, request, approval,
+  execution, and secret violations.

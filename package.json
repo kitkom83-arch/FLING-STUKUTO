@@ -218,6 +218,8 @@
     "smoke:oro-8i": "node src/local-smoke-tests/oro8iSmoke.js",
     "smoke:oro-8j-actual-live-execution-execution-approval-boundary": "node src/local-smoke-tests/oro8jLiveTrafficActualExternalCallExecutionActualLiveExecutionExecutionApprovalBoundarySmoke.js",
     "smoke:oro-8j": "node src/local-smoke-tests/oro8jSmoke.js",
+    "smoke:oro-8k-actual-live-execution-final-execution-gate": "node src/local-smoke-tests/oro8kLiveTrafficActualExternalCallExecutionActualLiveExecutionFinalExecutionGateSmoke.js",
+    "smoke:oro-8k": "node src/local-smoke-tests/oro8kSmoke.js",
     "smoke:member-qr-deposit-ux": "node src/local-smoke-tests/memberQrDepositUxSmoke.js",
     "smoke:deposit-verification-source": "node src/local-smoke-tests/depositVerificationSourceSmoke.js",
     "smoke:deposit-ledger-reconciliation-guard": "node src/local-smoke-tests/depositLedgerReconciliationGuardSmoke.js",

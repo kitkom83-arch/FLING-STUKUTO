@@ -4245,3 +4245,37 @@ public aliases.
 - ORO-8J smoke confirms approval output, ORO-8I dependency, closed
   runtime/network/mutation/route/approval flags, and no actual live execution.
 - `smoke:oro-8j` registration.
+
+## ORO-8K current/live traffic actual external call execution actual live execution final execution gate
+
+ORO-8K records the live traffic actual external call execution actual live
+execution final execution gate after ORO-8J issued and recorded the execution
+approval boundary. ORO-8K is actual live execution final execution gate only.
+The ORO-8K final execution gate scope is
+`actual_live_execution_final_execution_gate_only`.
+ORO-8K depends on ORO-8J execution approval scope
+`actual_live_execution_execution_approval_boundary_only` and execution approval
+status `approved_for_separate_actual_live_execution_final_execution_gate_only`.
+ORO-8K issues only the actual live execution final execution gate status
+`passed_for_separate_actual_live_execution_final_execution_request_only`.
+ORO-8K still does not submit an actual final execution request, approve actual
+execution, execute an actual live call, authorize runtime execution, activate
+runtime execution, enable runtime execution, call external networks, call live
+OroPlay, mutate wallet or ledger, write data, run DB transactions, run
+migrations, deploy, mount routes, or expose public aliases.
+
+- ORO-8K actual live execution final execution gate doc exists.
+- ORO-8K helper exports phase, status, final execution gate builder,
+  validator, runner, summary builder, and closed safety flags.
+- ORO-8K fixtures cover happy path, missing ORO-8J dependency, ORO-8J approval
+  boundary not passed/recorded/status/scope mismatch, final execution gate
+  preparation/issuance/pass/record/status/scope mismatch, final request
+  submission, actual execution approval, runtime activation, runtime
+  enablement, runtime authorization, live execution attempt, network, live
+  OroPlay, wallet, ledger, Prisma, DB transaction, route, Express mount, public
+  alias, API alias, OroPlay route, human/separate approval/final request, and
+  sensitive-output blockers.
+- ORO-8K smoke confirms final execution gate output, ORO-8J dependency, closed
+  runtime/network/mutation/route/request/approval flags, and no actual live
+  execution.
+- `smoke:oro-8k` registration.

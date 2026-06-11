@@ -129,6 +129,11 @@ ORO-8J keeps all mutation and persistence paths closed:
 - separateActualExecutionApprovalRequired = true
 - separateActualExecutionFinalGateRequired = true
 
+ORO-8K follows ORO-8J as the separate actual live execution final execution gate.
+ORO-8K may record only the final execution gate status
+`passed_for_separate_actual_live_execution_final_execution_request_only` with
+scope `actual_live_execution_final_execution_gate_only`.
+
 ORO-8J records the actual live execution execution approval boundary and keeps
 separate human, final gate, and final request requirements in place for later
 phases.
