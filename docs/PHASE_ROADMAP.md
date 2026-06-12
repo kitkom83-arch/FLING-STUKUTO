@@ -4592,3 +4592,14 @@ final execution completion record review approval record boundary.
 `smoke:oro-8v-actual-live-execution-final-execution-completion-record-review-approval-boundary`
 registration cover the static helper, fixtures, docs, protected-path audit, and
 closed-flag checks.
+
+## ORO-8W current/live traffic actual external call execution actual live execution final execution completion record review approval record boundary
+
+ORO-8W is actual live execution final execution completion record review approval record boundary only.
+It depends on ORO-8V completion record review approval boundary evidence, records a mock/static
+completion record review approval record, keeps all runtime/live/network/mutation/route/alias
+surfaces closed, and requires a later separate finalization boundary before any runtime application.
+
+`smoke:oro-8w` registration and
+`smoke:oro-8w-actual-live-execution-final-execution-completion-record-review-approval-record-boundary`
+cover the boundary.

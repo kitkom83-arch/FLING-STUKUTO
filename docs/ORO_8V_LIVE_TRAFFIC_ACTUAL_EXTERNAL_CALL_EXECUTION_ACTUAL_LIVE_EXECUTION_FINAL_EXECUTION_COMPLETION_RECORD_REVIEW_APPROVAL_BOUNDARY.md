@@ -132,6 +132,8 @@ ORO-8V keeps all mutation and persistence paths closed:
 
 ## Next phase requirement
 
+ORO-8W follows ORO-8V as the separate actual live execution final execution completion record review approval record boundary.
+
 - nextPhaseRequiresSeparateActualLiveExecutionFinalExecutionCompletionRecordReviewApprovalRecordBoundary = true
 - humanApprovalRequiredForActualExecution = true
 - separateActualExecutionApprovalRequired = true
