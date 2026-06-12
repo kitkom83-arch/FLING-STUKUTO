@@ -4659,3 +4659,14 @@ It follows the `smoke:oro-9a` registration and keeps ORO-9A as the required depe
 
 `smoke:oro-9b-actual-live-execution-final-execution-completion-record-review-approval-record-finalization-review-approval-record-finalization-boundary`
 cover the boundary.
+
+## ORO-9C current/live traffic actual external call execution actual live execution final execution completion record review approval record finalization review approval record finalization review boundary
+
+ORO-9C is actual live execution final execution completion record review approval record finalization review approval record finalization review boundary only.
+
+It follows the `smoke:oro-9b` registration and keeps ORO-9B as the required dependency before recording the mock/static finalization review boundary.
+
+`smoke:oro-9c`
+
+`smoke:oro-9c-actual-live-execution-final-execution-completion-record-review-approval-record-finalization-review-approval-record-finalization-review-boundary`
+cover the boundary.
