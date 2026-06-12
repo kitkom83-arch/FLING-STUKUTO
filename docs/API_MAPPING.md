@@ -3996,3 +3996,81 @@ expose public aliases.
 - secretsLeaked=false
 - smoke:oro-8p
 - smoke:oro-8p-actual-live-execution-final-execution-post-execution-verification-boundary
+
+## ORO-8Q Live Traffic Actual External Call Execution Actual Live Execution Final Execution Closeout Boundary Mapping
+
+ORO-8Q records actual live execution final execution closeout only after ORO-8P
+prepared, issued, passed, and recorded the actual live execution final execution
+post-execution verification boundary. ORO-8Q remains
+docs/contract/static/mock/local-smoke only and does not perform actual final
+execution, close actual live execution, approve actual execution, perform actual
+live execution, authorize runtime execution, activate runtime, enable runtime,
+call external networks, call live OroPlay, mutate wallet or ledger, write data,
+run DB transactions, run migrations, deploy, mount routes, or expose public
+aliases.
+
+- ORO-8Q records actual live execution final execution closeout only
+- ORO-8P dependency: actualLiveExecutionFinalExecutionPostExecutionVerificationPreparedFromOro8p=true
+- ORO-8P dependency: actualLiveExecutionFinalExecutionPostExecutionVerificationIssuedFromOro8p=true
+- ORO-8P dependency: actualLiveExecutionFinalExecutionPostExecutionVerificationPassedFromOro8p=true
+- ORO-8P dependency: actualLiveExecutionFinalExecutionPostExecutionVerificationRecordedFromOro8p=true
+- ORO-8P actual live execution final execution post-execution verification status: verified_for_separate_actual_live_execution_final_execution_closeout_boundary_only
+- ORO-8P actual live execution final execution post-execution verification scope: actual_live_execution_final_execution_post_execution_verification_boundary_only
+- ORO-8Q actual live execution final execution closeout status: closed_for_separate_actual_live_execution_final_execution_archive_boundary_only
+- ORO-8Q actual live execution final execution closeout scope: actual_live_execution_final_execution_closeout_boundary_only
+- actualLiveExecutionFinalExecutionPostExecutionVerificationPreparedFromOro8p=true
+- actualLiveExecutionFinalExecutionPostExecutionVerificationIssuedFromOro8p=true
+- actualLiveExecutionFinalExecutionPostExecutionVerificationPassedFromOro8p=true
+- actualLiveExecutionFinalExecutionPostExecutionVerificationRecordedFromOro8p=true
+- actualLiveExecutionFinalExecutionCloseoutPrepared=true
+- actualLiveExecutionFinalExecutionCloseoutIssued=true
+- actualLiveExecutionFinalExecutionCloseoutPassed=true
+- actualLiveExecutionFinalExecutionCloseoutRecorded=true
+- verifiedOro8pWasPostExecutionVerificationBoundaryOnly=true
+- verifiedOro8pConfirmedOro8oWasMockExecutionBoundaryOnly=true
+- verifiedNoActualLiveExecutionOccurred=true
+- verifiedNoRuntimeActivationOccurred=true
+- verifiedNoRuntimeEnablementOccurred=true
+- verifiedNoRuntimeAuthorizationOccurred=true
+- verifiedNoExternalNetworkOccurred=true
+- verifiedNoLiveOroPlayApiCallOccurred=true
+- verifiedNoWalletMutationOccurred=true
+- verifiedNoLedgerMutationOccurred=true
+- verifiedNoPrismaWriteOccurred=true
+- verifiedNoDbTransactionOccurred=true
+- verifiedNoRouteEnablementOccurred=true
+- verifiedNoExpressMountOccurred=true
+- verifiedNoPublicAliasOccurred=true
+- actualExternalCallExecutionRuntimeEnabled=false
+- actualExternalCallExecutionActivated=false
+- actualExternalCallExecutionEnabled=false
+- actualExternalCallExecutionAuthorized=false
+- actualExternalCallExecutionLiveExecutionApproved=false
+- actualExternalCallExecutionLiveExecuted=false
+- actualLiveExecutionFinalExecutionRequestApproved=false
+- actualLiveExecutionFinalExecutionApproved=false
+- actualLiveExecutionFinalExecutionExecuted=false
+- actualLiveExecutionFinalExecutionClosed=false
+- actualLiveExecutionExecuted=false
+- externalNetworkAllowed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCallAllowed=false
+- liveOroPlayApiCalled=false
+- walletMutationAllowed=false
+- ledgerMutationAllowed=false
+- prismaWriteAllowed=false
+- dbTransactionAllowed=false
+- routeEnablementAllowed=false
+- expressMountAllowed=false
+- publicAliasAllowed=false
+- apiBalanceAliasAllowed=false
+- apiTransactionAliasAllowed=false
+- apiOroplayBalanceRouteAllowed=false
+- apiOroplayTransactionRouteAllowed=false
+- nextPhaseRequiresSeparateActualLiveExecutionFinalExecutionArchiveBoundary=true
+- humanApprovalRequiredForActualExecution=true
+- separateActualExecutionApprovalRequired=true
+- separateActualExecutionFinalExecutionArchiveRequired=true
+- secretsLeaked=false
+- smoke:oro-8q
+- smoke:oro-8q-actual-live-execution-final-execution-closeout-boundary

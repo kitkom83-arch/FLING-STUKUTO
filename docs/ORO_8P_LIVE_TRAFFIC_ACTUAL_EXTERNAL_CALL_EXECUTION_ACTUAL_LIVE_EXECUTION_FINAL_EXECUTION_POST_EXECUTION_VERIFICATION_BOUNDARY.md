@@ -163,6 +163,8 @@ ORO-8P keeps all mutation and persistence paths closed:
 ORO-8P records the mock post-execution verification result and keeps separate
 human, approval, and closeout requirements in place for later phases.
 
+ORO-8Q follows ORO-8P as the separate actual live execution final execution closeout boundary.
+
 ## Safety confirmation
 
 ORO-8P is docs, contract, static/mock harness, and local smoke only. It does not
