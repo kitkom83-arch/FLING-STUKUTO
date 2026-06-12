@@ -135,6 +135,7 @@ ORO-8W keeps all mutation and persistence paths closed:
 ## Next phase requirement
 
 ORO-8W records the mock completion record review approval record result and keeps separate human, approval, completion-record-review approval, and completion-record-review approval record finalization requirements in place for later phases.
+ORO-8X follows ORO-8W as the separate actual live execution final execution completion record review approval record finalization boundary.
 
 - nextPhaseRequiresSeparateActualLiveExecutionFinalExecutionCompletionRecordReviewApprovalRecordFinalizationBoundary = true
 - humanApprovalRequiredForActualExecution = true
