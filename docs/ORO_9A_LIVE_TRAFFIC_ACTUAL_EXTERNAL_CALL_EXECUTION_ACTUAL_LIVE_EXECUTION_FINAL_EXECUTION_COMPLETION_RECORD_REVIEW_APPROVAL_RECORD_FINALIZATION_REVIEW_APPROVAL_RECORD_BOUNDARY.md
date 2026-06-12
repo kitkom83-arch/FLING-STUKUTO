@@ -157,6 +157,8 @@ ORO-9A keeps all mutation and persistence paths closed:
 
 ORO-9A records the mock completion record review approval record finalization review approval record result and keeps separate human, approval, completion-record-review approval, completion-record-review approval record, completion-record-review approval record finalization, completion-record-review approval record finalization review, and completion-record-review approval record finalization review approval requirements in place for later phases.
 
+ORO-9B follows ORO-9A as the separate actual live execution final execution completion record review approval record finalization review approval record finalization boundary.
+
 - nextPhaseRequiresSeparateActualLiveExecutionFinalExecutionCompletionRecordReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationBoundary = true
 - humanApprovalRequiredForActualExecution = true
 - separateActualExecutionApprovalRequired = true

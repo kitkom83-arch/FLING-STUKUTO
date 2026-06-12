@@ -4648,4 +4648,14 @@ before any runtime application.
 
 `smoke:oro-8z` registration and
 `smoke:oro-9a-actual-live-execution-final-execution-completion-record-review-approval-record-finalization-review-approval-record-boundary`
+
+## ORO-9B current/live traffic actual external call execution actual live execution final execution completion record review approval record finalization review approval record finalization boundary
+
+ORO-9B is actual live execution final execution completion record review approval record finalization review approval record finalization boundary only.
+
+It follows the `smoke:oro-9a` registration and keeps ORO-9A as the required dependency before recording the mock/static finalization boundary.
+
+`smoke:oro-9b`
+
+`smoke:oro-9b-actual-live-execution-final-execution-completion-record-review-approval-record-finalization-review-approval-record-finalization-boundary`
 cover the boundary.
