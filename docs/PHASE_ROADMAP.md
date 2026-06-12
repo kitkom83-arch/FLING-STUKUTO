@@ -4625,3 +4625,15 @@ surfaces closed, and requires a later separate finalization review approval boun
 `smoke:oro-8y` registration and
 `smoke:oro-8y-actual-live-execution-final-execution-completion-record-review-approval-record-finalization-review-boundary`
 cover the boundary.
+
+## ORO-8Z current/live traffic actual external call execution actual live execution final execution completion record review approval record finalization review approval boundary
+
+ORO-8Z is actual live execution final execution completion record review approval record finalization review approval boundary only.
+It depends on ORO-8Y completion record review approval record finalization review boundary evidence, records a mock/static
+completion record review approval record finalization review approval, keeps all runtime/live/network/mutation/route/alias
+surfaces closed, keeps actual execution approval false, and requires a later separate finalization review approval record boundary
+before any runtime application.
+
+`smoke:oro-8z` registration and
+`smoke:oro-8z-actual-live-execution-final-execution-completion-record-review-approval-record-finalization-review-approval-boundary`
+cover the boundary.

@@ -149,6 +149,8 @@ ORO-8Y keeps all mutation and persistence paths closed:
 
 ORO-8Y records the mock completion record review approval record finalization review result and keeps separate human, approval, completion-record-review approval, completion-record-review approval record, completion-record-review approval record finalization, and completion-record-review approval record finalization review requirements in place for later phases.
 
+ORO-8Z follows ORO-8Y as the separate actual live execution final execution completion record review approval record finalization review approval boundary. ORO-8Z must remain a docs/mock/local-smoke approval boundary and must not apply finalization review approval to runtime or accept it for live execution.
+
 - nextPhaseRequiresSeparateActualLiveExecutionFinalExecutionCompletionRecordReviewApprovalRecordFinalizationReviewApprovalBoundary = true
 - humanApprovalRequiredForActualExecution = true
 - separateActualExecutionApprovalRequired = true

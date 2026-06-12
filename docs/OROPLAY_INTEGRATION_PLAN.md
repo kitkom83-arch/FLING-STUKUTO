@@ -2134,3 +2134,11 @@ It records static/mock completion record review approval record finalization rev
 completion_record_review_approval_record_finalization_reviewed_for_separate_actual_live_execution_final_execution_completion_record_review_approval_record_finalization_review_boundary_only.
 
 ORO-8Y does not perform actual live execution, actual final execution, actual external call execution, live OroPlay calls, runtime activation, runtime enablement, runtime authorization, wallet or ledger mutation, Prisma writes, DB transactions, route enablement, Express mounts, public aliases, completion record review approval record finalization review runtime application, or actual live completion record review approval record finalization review application.
+
+## ORO-8Z Current
+
+ORO-8Z is the current live traffic actual external call execution actual live execution final execution completion record review approval record finalization review approval boundary only.
+It records static/mock completion record review approval record finalization review approval evidence after ORO-8Y completion record review approval record finalization review evidence and emits
+completion_record_review_approval_record_finalization_review_approval_recorded_for_separate_actual_live_execution_final_execution_completion_record_review_approval_record_finalization_review_approval_boundary_only.
+
+ORO-8Z does not perform actual live execution, actual final execution, actual external call execution, live OroPlay calls, runtime activation, runtime enablement, runtime authorization, wallet or ledger mutation, Prisma writes, DB transactions, route enablement, Express mounts, public aliases, completion record review approval record finalization review approval runtime application, live-execution acceptance, or actual execution approval.
