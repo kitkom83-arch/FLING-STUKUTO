@@ -146,6 +146,8 @@ ORO-8U keeps all mutation and persistence paths closed:
 
 ORO-8U records the mock completion record review result and keeps separate human, approval, and completion-record-review approval requirements in place for later phases.
 
+ORO-8V follows ORO-8U as the separate actual live execution final execution completion record review approval boundary.
+
 ## Safety confirmation
 
 ORO-8U is docs, contract, static/mock harness, and local smoke only. It does not access production DBs, real-money flows, live execution, actual final execution, actual final execution closeout, actual final execution archive, actual final execution audit, actual final execution completion recording, actual final execution completion record review, actual external call execution, actual live execution approval, runtime authorization, runtime enablement, runtime activation, external networks, live OroPlay, wallet mutation, ledger mutation, data writes, DB transactions, migrations, deploys, route enablement, Express mounts, public aliases, or `/api/balance`, `/api/transaction`, `/api/oroplay/balance`, or `/api/oroplay/transaction`.

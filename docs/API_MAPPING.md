@@ -4370,3 +4370,77 @@ final execution completion record boundary. ORO-8U remains
 - secretsLeaked=false
 - smoke:oro-8u
 - smoke:oro-8u-actual-live-execution-final-execution-completion-record-review-boundary
+
+## ORO-8V Live Traffic Actual External Call Execution Actual Live Execution Final Execution Completion Record Review Approval Boundary Mapping
+
+ORO-8V approves review evidence only after ORO-8U prepared, issued,
+passed, and recorded the actual live execution final execution completion
+record review boundary. ORO-8V remains
+`actual_live_execution_final_execution_completion_record_review_approval_boundary_only`.
+
+- ORO-8V approves review evidence only
+- ORO-8U actual live execution final execution completion record review status: completion_record_reviewed_for_separate_actual_live_execution_final_execution_completion_record_review_approval_boundary_only
+- ORO-8U actual live execution final execution completion record review scope: actual_live_execution_final_execution_completion_record_review_boundary_only
+- ORO-8V actual live execution final execution completion record review approval status: completion_record_review_approval_recorded_for_separate_actual_live_execution_final_execution_completion_record_review_approval_boundary_only
+- ORO-8V actual live execution final execution completion record review approval scope: actual_live_execution_final_execution_completion_record_review_approval_boundary_only
+- actualLiveExecutionFinalExecutionCompletionRecordReviewPreparedFromOro8u=true
+- actualLiveExecutionFinalExecutionCompletionRecordReviewIssuedFromOro8u=true
+- actualLiveExecutionFinalExecutionCompletionRecordReviewPassedFromOro8u=true
+- actualLiveExecutionFinalExecutionCompletionRecordReviewRecordedFromOro8u=true
+- actualLiveExecutionFinalExecutionCompletionRecordReviewApprovalPrepared=true
+- actualLiveExecutionFinalExecutionCompletionRecordReviewApprovalIssued=true
+- actualLiveExecutionFinalExecutionCompletionRecordReviewApprovalPassed=true
+- actualLiveExecutionFinalExecutionCompletionRecordReviewApprovalRecorded=true
+- verifiedOro8uWasCompletionRecordReviewBoundaryOnly=true
+- verifiedOro8uConfirmedOro8tWasCompletionRecordBoundaryOnly=true
+- verifiedNoActualLiveExecutionOccurred=true
+- verifiedNoRuntimeActivationOccurred=true
+- verifiedNoRuntimeEnablementOccurred=true
+- verifiedNoRuntimeAuthorizationOccurred=true
+- verifiedNoExternalNetworkOccurred=true
+- verifiedNoLiveOroPlayApiCallOccurred=true
+- verifiedNoWalletMutationOccurred=true
+- verifiedNoLedgerMutationOccurred=true
+- verifiedNoPrismaWriteOccurred=true
+- verifiedNoDbTransactionOccurred=true
+- verifiedNoRouteEnablementOccurred=true
+- verifiedNoExpressMountOccurred=true
+- verifiedNoPublicAliasOccurred=true
+- actualExternalCallExecutionRuntimeEnabled=false
+- actualExternalCallExecutionActivated=false
+- actualExternalCallExecutionEnabled=false
+- actualExternalCallExecutionAuthorized=false
+- actualExternalCallExecutionLiveExecutionApproved=false
+- actualExternalCallExecutionLiveExecuted=false
+- actualLiveExecutionFinalExecutionRequestApproved=false
+- actualLiveExecutionFinalExecutionApproved=false
+- actualLiveExecutionFinalExecutionExecuted=false
+- actualLiveExecutionFinalExecutionClosed=false
+- actualLiveExecutionFinalExecutionArchived=false
+- actualLiveExecutionFinalExecutionAudited=false
+- actualLiveExecutionFinalExecutionCompletionRecorded=false
+- actualLiveExecutionFinalExecutionCompletionRecordReviewed=false
+- actualLiveExecutionFinalExecutionCompletionRecordReviewApproved=false
+- actualLiveExecutionExecuted=false
+- externalNetworkAllowed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCallAllowed=false
+- liveOroPlayApiCalled=false
+- walletMutationAllowed=false
+- ledgerMutationAllowed=false
+- prismaWriteAllowed=false
+- dbTransactionAllowed=false
+- routeEnablementAllowed=false
+- expressMountAllowed=false
+- publicAliasAllowed=false
+- apiBalanceAliasAllowed=false
+- apiTransactionAliasAllowed=false
+- apiOroplayBalanceRouteAllowed=false
+- apiOroplayTransactionRouteAllowed=false
+- nextPhaseRequiresSeparateActualLiveExecutionFinalExecutionCompletionRecordReviewApprovalRecordBoundary=true
+- humanApprovalRequiredForActualExecution=true
+- separateActualExecutionApprovalRequired=true
+- separateActualExecutionFinalExecutionCompletionRecordReviewApprovalRequired=true
+- secretsLeaked=false
+- smoke:oro-8v
+- smoke:oro-8v-actual-live-execution-final-execution-completion-record-review-approval-boundary

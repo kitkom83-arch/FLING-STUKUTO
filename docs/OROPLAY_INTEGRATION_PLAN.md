@@ -2098,3 +2098,15 @@ external network calls, live OroPlay calls, wallet mutation, ledger mutation,
 Prisma writes, DB transactions, migrations, deploys, route enablement, Express
 mounts, public aliases, actual live completion recording, or actual live
 completion record review.
+
+## ORO-8V Current
+
+ORO-8V is the current live traffic actual external call execution actual live execution final execution completion record review approval boundary only.
+It records static/mock completion record review approval evidence after ORO-8U completion record review evidence and emits
+`completion_record_review_approval_recorded_for_separate_actual_live_execution_final_execution_completion_record_review_approval_boundary_only`.
+
+It does not enable runtime execution, runtime authorization, runtime activation,
+external network calls, live OroPlay calls, wallet mutation, ledger mutation,
+Prisma writes, DB transactions, migrations, deploys, route enablement, Express
+mounts, public aliases, actual live completion recording, actual live
+completion record review, or actual live completion record review approval.
