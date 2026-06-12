@@ -4422,3 +4422,42 @@ deploy, mount routes, or expose public aliases.
 - `smoke:oro-8o` registration.
 - `smoke:oro-8o-actual-live-execution-final-execution-execution-boundary`
   registration.
+
+## ORO-8P current/live traffic actual external call execution actual live execution final execution post-execution verification boundary
+
+ORO-8P records the live traffic actual external call execution actual live
+execution final execution post-execution verification boundary after ORO-8O
+prepared, issued, passed, and recorded the final execution execution boundary.
+ORO-8P is actual live execution final execution post-execution verification boundary only.
+The ORO-8P post-execution verification scope is
+`actual_live_execution_final_execution_post_execution_verification_boundary_only`.
+ORO-8P depends on ORO-8O final execution execution scope
+`actual_live_execution_final_execution_execution_boundary_only` and final
+execution execution status
+`executed_as_mock_boundary_for_separate_actual_live_execution_final_execution_post_execution_verification_only`.
+ORO-8P issues only the actual live execution final execution post-execution
+verification status
+`verified_for_separate_actual_live_execution_final_execution_closeout_boundary_only`.
+ORO-8P verifies ORO-8O stayed mock/static only and still does not perform actual
+final execution, approve actual execution, execute an actual live call,
+authorize runtime execution, activate runtime execution, enable runtime
+execution, call external networks, call live OroPlay, mutate wallet or ledger,
+write data, run DB transactions, run migrations, deploy, mount routes, or
+expose public aliases.
+
+- ORO-8P actual live execution final execution post-execution verification boundary doc exists.
+- ORO-8P helper exports phase, status, post-execution verification builder,
+  validator, runner, summary builder, and closed safety flags.
+- ORO-8P fixtures cover happy path, missing ORO-8O dependency, ORO-8O final
+  execution execution not prepared/issued/passed/recorded/status/scope mismatch,
+  ORO-8O actual live execution proof failure, runtime execution approval,
+  runtime activation, runtime enablement, runtime authorization, live execution
+  attempt, network, live OroPlay, wallet, ledger, Prisma, DB transaction, route,
+  Express mount, public alias, API alias, OroPlay route, no-mutation proof,
+  closeout/human/separate approval, and sensitive-output blockers.
+- ORO-8P smoke confirms post-execution verification output, ORO-8O dependency,
+  closed runtime/network/mutation/route/approval flags, and no actual live
+  execution.
+- `smoke:oro-8p` registration.
+- `smoke:oro-8p-actual-live-execution-final-execution-post-execution-verification-boundary`
+  registration.

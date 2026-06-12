@@ -140,6 +140,7 @@ ORO-8O keeps all mutation and persistence paths closed:
 - separateActualExecutionApprovalRequired = true
 - separateActualExecutionFinalExecutionVerificationRequired = true
 
+ORO-8P follows ORO-8O as the separate actual live execution final execution post-execution verification boundary.
 ORO-8O records the mock actual live execution final execution execution result
 and keeps separate human, approval, and post-execution verification requirements
 in place for later phases.
