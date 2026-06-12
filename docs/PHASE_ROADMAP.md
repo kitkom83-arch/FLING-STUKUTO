@@ -4348,3 +4348,41 @@ deploy, mount routes, or expose public aliases.
   closed runtime/network/mutation/route/approval flags, and no actual live
   execution.
 - `smoke:oro-8m` registration.
+- `smoke:oro-8m-actual-live-execution-final-execution-approval-boundary`
+  registration.
+
+## ORO-8N current/live traffic actual external call execution actual live execution final execution decision boundary
+
+ORO-8N records the live traffic actual external call execution actual live
+execution final execution decision boundary after ORO-8M prepared, issued,
+passed, and recorded the final execution approval boundary. ORO-8N is actual live execution final execution decision boundary only.
+The ORO-8N final execution decision scope is
+`actual_live_execution_final_execution_decision_boundary_only`.
+ORO-8N depends on ORO-8M final execution approval scope
+`actual_live_execution_final_execution_approval_boundary_only` and final
+execution approval status
+`approved_for_separate_actual_live_execution_final_execution_decision_boundary_only`.
+ORO-8N issues only the actual live execution final execution decision status
+`decided_for_separate_actual_live_execution_final_execution_execution_boundary_only`.
+ORO-8N still does not approve actual final execution, approve actual execution,
+execute an actual live call, authorize runtime execution, activate runtime
+execution, enable runtime execution, call external networks, call live OroPlay,
+mutate wallet or ledger, write data, run DB transactions, run migrations,
+deploy, mount routes, or expose public aliases.
+
+- ORO-8N actual live execution final execution decision boundary doc exists.
+- ORO-8N helper exports phase, status, final execution decision builder,
+  validator, runner, summary builder, and closed safety flags.
+- ORO-8N fixtures cover happy path, missing ORO-8M dependency, ORO-8M final
+  execution approval not prepared/issued/passed/recorded/status/scope mismatch,
+  runtime execution approval, runtime activation, runtime enablement, runtime
+  authorization, live execution attempt, network, live OroPlay, wallet, ledger,
+  Prisma, DB transaction, route, Express mount, public alias, API alias,
+  OroPlay route, human/separate approval/final execution, and sensitive-output
+  blockers.
+- ORO-8N smoke confirms final execution decision output, ORO-8M dependency,
+  closed runtime/network/mutation/route/approval flags, and no actual live
+  execution.
+- `smoke:oro-8n` registration.
+- `smoke:oro-8n-actual-live-execution-final-execution-decision-boundary`
+  registration.

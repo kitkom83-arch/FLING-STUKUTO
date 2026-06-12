@@ -141,6 +141,8 @@ ORO-8M records the actual live execution final execution approval and keeps
 separate human, approval, and final decision requirements in place for later
 phases.
 
+ORO-8N follows ORO-8M as the separate actual live execution final execution decision boundary.
+
 ## Safety confirmation
 
 ORO-8M is docs, contract, static/mock harness, and local smoke only. It does not

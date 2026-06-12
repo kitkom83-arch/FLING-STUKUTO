@@ -7782,3 +7782,43 @@ recorded the actual live execution final execution request.
 - Confirms ORO-8M blockers are empty on the happy path and fail closed for
   dependency, status, scope, runtime, route, alias, mutation, approval,
   execution, and secret violations.
+
+## ORO-8N Live Traffic Actual External Call Execution Actual Live Execution Final Execution Decision Boundary Coverage
+
+ORO-8N Live Traffic Actual External Call Execution Actual Live Execution Final
+Execution Decision Boundary Coverage proves that ORO-8N records only the actual
+live execution final execution decision boundary after ORO-8M prepared, issued,
+passed, and recorded the actual live execution final execution approval
+boundary.
+
+- ORO-8N final execution decision boundary doc: live traffic actual external
+  call execution actual live execution final execution decision boundary.
+- ORO-8N mock helper: final execution decision scope, ORO-8M dependency, closed
+  runtime/external-call/approval surfaces, and fail-closed blocker generation.
+- ORO-8N fixtures: happy path, missing ORO-8M dependency, ORO-8M final approval
+  not prepared, ORO-8M final approval not issued, ORO-8M boundary not passed,
+  ORO-8M final approval not recorded, ORO-8M status/scope mismatch, runtime
+  execution approval, runtime activation, runtime enablement, runtime
+  authorization, live call execution, external network allowed, live OroPlay
+  allowed, wallet mutation allowed, ledger mutation allowed, Prisma write
+  allowed, DB transaction allowed, route enablement allowed, Express mount
+  allowed, public alias allowed, API balance alias allowed, API transaction
+  alias allowed, OroPlay balance route allowed, OroPlay transaction route
+  allowed, human/separate approval/final execution missing, and secret leak.
+- ORO-8N smoke: actual live execution final execution decision boundary smoke.
+- ORO-8N smoke wrapper: `src/local-smoke-tests/oro8nSmoke.js`.
+- ORO-8N actual live execution final execution decision-boundary package smoke alias
+- `smoke:oro-8n`
+- `smoke:oro-8n-actual-live-execution-final-execution-decision-boundary`
+- Confirms ORO-8N emits `phase=ORO-8N`, `result=PASS`, final execution
+  decision status, and final execution decision scope.
+- Confirms ORO-8N depends on ORO-8M final execution approval scope and final
+  execution approval status.
+- Confirms ORO-8N issues only the actual live execution final execution decision
+  record.
+- Confirms ORO-8N does not approve actual final execution, approve actual
+  execution, perform live execution, open external networks, mount routes, write
+  data, or leak secrets.
+- Confirms ORO-8N blockers are empty on the happy path and fail closed for
+  dependency, status, scope, runtime, route, alias, mutation, approval,
+  execution, and secret violations.

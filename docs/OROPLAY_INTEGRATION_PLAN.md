@@ -2019,3 +2019,12 @@ The ORO-8M final execution approval scope is `actual_live_execution_final_execut
 ORO-8M depends on ORO-8L final execution request scope `actual_live_execution_final_execution_request_boundary_only` and final execution request status `submitted_for_separate_actual_live_execution_final_execution_approval_only`.
 ORO-8M issues only the actual live execution final execution approval status `approved_for_separate_actual_live_execution_final_execution_decision_boundary_only`.
 ORO-8M still does not approve actual final execution, approve actual execution, execute an actual live call, authorize runtime execution, activate runtime execution, enable runtime execution, call external networks, call live OroPlay, mutate wallet or ledger, write data, run DB transactions, run migrations, deploy, mount routes, or expose public aliases.
+
+## ORO-8N Current
+
+ORO-8N records the live traffic actual external call execution actual live execution final execution decision boundary after ORO-8M prepared, issued, passed, and recorded the final execution approval boundary.
+ORO-8N is actual live execution final execution decision boundary only.
+The ORO-8N final execution decision scope is `actual_live_execution_final_execution_decision_boundary_only`.
+ORO-8N depends on ORO-8M final execution approval scope `actual_live_execution_final_execution_approval_boundary_only` and final execution approval status `approved_for_separate_actual_live_execution_final_execution_decision_boundary_only`.
+ORO-8N issues only the actual live execution final execution decision status `decided_for_separate_actual_live_execution_final_execution_execution_boundary_only`.
+ORO-8N still does not approve actual final execution, approve actual execution, execute an actual live call, authorize runtime execution, activate runtime execution, enable runtime execution, call external networks, call live OroPlay, mutate wallet or ledger, write data, run DB transactions, run migrations, deploy, mount routes, or expose public aliases.
