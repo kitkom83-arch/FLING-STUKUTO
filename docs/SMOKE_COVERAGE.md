@@ -8021,3 +8021,16 @@ Coverage confirms ORO-8S audit dependency evidence, ORO-8T completion record
 preparation, issuance, pass, and record markers, blocker fixtures, protected
 runtime paths, closed runtime/live/network/mutation/route/alias flags, no
 sensitive-shaped output, and no stage/commit/push requirement.
+
+## ORO-8U Live Traffic Actual External Call Execution Actual Live Execution Final Execution Completion Record Review Boundary Coverage
+
+ORO-8U actual live execution final execution completion-record-review-boundary package smoke alias:
+`smoke:oro-8u`.
+
+Detailed completion-record-review-boundary coverage:
+`smoke:oro-8u-actual-live-execution-final-execution-completion-record-review-boundary`.
+
+Coverage confirms ORO-8T completion record dependency evidence, ORO-8U
+completion record review preparation, issuance, pass, and record markers,
+blocker fixtures, protected runtime paths, closed runtime/live/network/mutation/route/alias
+flags, no sensitive-shaped output, and no stage/commit/push requirement.

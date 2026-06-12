@@ -172,6 +172,7 @@ ORO-8T keeps all mutation and persistence paths closed:
 
 ORO-8T records the mock completion record result and keeps separate human,
 approval, and completion-record review requirements in place for later phases.
+ORO-8U follows ORO-8T as the separate actual live execution final execution completion record review boundary.
 
 ## Safety confirmation
 

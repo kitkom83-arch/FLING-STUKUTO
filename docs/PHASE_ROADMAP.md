@@ -4566,3 +4566,16 @@ completion record review boundary.
 `smoke:oro-8t-actual-live-execution-final-execution-completion-record-boundary`
 registration cover the static helper, fixtures, docs, protected-path audit, and
 closed-flag checks.
+
+## ORO-8U current/live traffic actual external call execution actual live execution final execution completion record review boundary
+
+ORO-8U is actual live execution final execution completion record review boundary only.
+It depends on ORO-8T completion record boundary evidence, records the mock
+completion record review boundary, keeps all runtime/live/network/mutation/route/alias
+flags closed, and requires the next phase to be a separate actual live execution
+final execution completion record review approval boundary.
+
+`smoke:oro-8u` registration and
+`smoke:oro-8u-actual-live-execution-final-execution-completion-record-review-boundary`
+registration cover the static helper, fixtures, docs, protected-path audit, and
+closed-flag checks.
