@@ -162,6 +162,8 @@ ORO-8R keeps all mutation and persistence paths closed:
 - separateActualExecutionApprovalRequired = true
 - separateActualExecutionFinalExecutionAuditRequired = true
 
+ORO-8S follows ORO-8R as the separate actual live execution final execution audit boundary.
+
 ORO-8R records the mock archive result and keeps separate human, approval, and
 audit requirements in place for later phases.
 

@@ -7996,3 +7996,15 @@ boundary.
 - Confirms ORO-8R blockers are empty on the happy path and fail closed for
   dependency, status, scope, proof, runtime, route, alias, mutation, approval,
   execution, closeout, archive, and secret violations.
+## ORO-8S Live Traffic Actual External Call Execution Actual Live Execution Final Execution Audit Boundary Coverage
+
+ORO-8S actual live execution final execution audit-boundary package smoke alias:
+`smoke:oro-8s`.
+
+Detailed audit-boundary coverage:
+`smoke:oro-8s-actual-live-execution-final-execution-audit-boundary`.
+
+Coverage confirms ORO-8R archive dependency evidence, ORO-8S audit preparation,
+issuance, pass, and record markers, blocker fixtures, protected runtime paths,
+closed runtime/live/network/mutation/route/alias flags, no sensitive-shaped
+output, and no stage/commit/push requirement.

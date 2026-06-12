@@ -4541,3 +4541,15 @@ expose public aliases.
 - `smoke:oro-8r` registration.
 - `smoke:oro-8r-actual-live-execution-final-execution-archive-boundary`
   registration.
+## ORO-8S current/live traffic actual external call execution actual live execution final execution audit boundary
+
+ORO-8S is actual live execution final execution audit boundary only. It depends
+on ORO-8R archive boundary evidence, records the mock audit boundary, keeps all
+runtime/live/network/mutation/route/alias flags closed, and requires the next
+phase to be a separate actual live execution final execution completion record
+boundary.
+
+`smoke:oro-8s` registration and
+`smoke:oro-8s-actual-live-execution-final-execution-audit-boundary` registration
+cover the static helper, fixtures, docs, protected-path audit, and closed-flag
+checks.

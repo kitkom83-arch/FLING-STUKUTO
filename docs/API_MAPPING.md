@@ -4145,3 +4145,76 @@ closeout boundary. ORO-8R remains
 - secretsLeaked=false
 - smoke:oro-8r
 - smoke:oro-8r-actual-live-execution-final-execution-archive-boundary
+
+## ORO-8S Live Traffic Actual External Call Execution Actual Live Execution Final Execution Audit Boundary Mapping
+
+ORO-8S records actual live execution final execution audit only after ORO-8R
+prepared, issued, passed, and recorded the actual live execution final execution
+archive boundary. ORO-8S remains
+`actual_live_execution_final_execution_audit_boundary_only`.
+
+- ORO-8S records actual live execution final execution audit only
+- ORO-8R actual live execution final execution archive status: archived_for_separate_actual_live_execution_final_execution_audit_boundary_only
+- ORO-8R actual live execution final execution archive scope: actual_live_execution_final_execution_archive_boundary_only
+- ORO-8S actual live execution final execution audit status: audited_for_separate_actual_live_execution_final_execution_completion_record_boundary_only
+- ORO-8S actual live execution final execution audit scope: actual_live_execution_final_execution_audit_boundary_only
+- actualLiveExecutionFinalExecutionArchivePreparedFromOro8r=true
+- actualLiveExecutionFinalExecutionArchiveIssuedFromOro8r=true
+- actualLiveExecutionFinalExecutionArchivePassedFromOro8r=true
+- actualLiveExecutionFinalExecutionArchiveRecordedFromOro8r=true
+- actualLiveExecutionFinalExecutionAuditPrepared=true
+- actualLiveExecutionFinalExecutionAuditIssued=true
+- actualLiveExecutionFinalExecutionAuditPassed=true
+- actualLiveExecutionFinalExecutionAuditRecorded=true
+- verifiedOro8rWasArchiveBoundaryOnly=true
+- verifiedOro8rConfirmedOro8qWasCloseoutBoundaryOnly=true
+- verifiedOro8rConfirmedOro8pWasPostExecutionVerificationBoundaryOnly=true
+- verifiedOro8rConfirmedOro8oWasMockExecutionBoundaryOnly=true
+- verifiedNoActualLiveExecutionOccurred=true
+- verifiedNoRuntimeActivationOccurred=true
+- verifiedNoRuntimeEnablementOccurred=true
+- verifiedNoRuntimeAuthorizationOccurred=true
+- verifiedNoExternalNetworkOccurred=true
+- verifiedNoLiveOroPlayApiCallOccurred=true
+- verifiedNoWalletMutationOccurred=true
+- verifiedNoLedgerMutationOccurred=true
+- verifiedNoPrismaWriteOccurred=true
+- verifiedNoDbTransactionOccurred=true
+- verifiedNoRouteEnablementOccurred=true
+- verifiedNoExpressMountOccurred=true
+- verifiedNoPublicAliasOccurred=true
+- actualExternalCallExecutionRuntimeEnabled=false
+- actualExternalCallExecutionActivated=false
+- actualExternalCallExecutionEnabled=false
+- actualExternalCallExecutionAuthorized=false
+- actualExternalCallExecutionLiveExecutionApproved=false
+- actualExternalCallExecutionLiveExecuted=false
+- actualLiveExecutionFinalExecutionRequestApproved=false
+- actualLiveExecutionFinalExecutionApproved=false
+- actualLiveExecutionFinalExecutionExecuted=false
+- actualLiveExecutionFinalExecutionClosed=false
+- actualLiveExecutionFinalExecutionArchived=false
+- actualLiveExecutionFinalExecutionAudited=false
+- actualLiveExecutionExecuted=false
+- externalNetworkAllowed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCallAllowed=false
+- liveOroPlayApiCalled=false
+- walletMutationAllowed=false
+- ledgerMutationAllowed=false
+- prismaWriteAllowed=false
+- dbTransactionAllowed=false
+- routeEnablementAllowed=false
+- expressMountAllowed=false
+- publicAliasAllowed=false
+- apiBalanceAliasAllowed=false
+- apiTransactionAliasAllowed=false
+- apiOroplayBalanceRouteAllowed=false
+- apiOroplayTransactionRouteAllowed=false
+- nextPhaseRequiresSeparateActualLiveExecutionFinalExecutionCompletionRecordBoundary=true
+- humanApprovalRequiredForActualExecution=true
+- separateActualExecutionApprovalRequired=true
+- separateActualExecutionFinalExecutionCompletionRecordRequired=true
+- secretsLeaked=false
+- smoke:oro-8s
+- smoke:oro-8s-actual-live-execution-final-execution-audit-boundary
