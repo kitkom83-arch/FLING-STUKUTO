@@ -4609,7 +4609,7 @@ cover the boundary.
 ORO-8X is actual live execution final execution completion record review approval record finalization boundary only.
 It depends on ORO-8W completion record review approval record boundary evidence, records a mock/static
 completion record review approval record finalization, keeps all runtime/live/network/mutation/route/alias
-surfaces closed, and requires a later separate finalization review boundary before any runtime application.
+surfaces closed, and requires a later separate finalization review approval boundary before any runtime application.
 
 `smoke:oro-8x` registration and
 `smoke:oro-8x-actual-live-execution-final-execution-completion-record-review-approval-record-finalization-boundary`
@@ -4636,4 +4636,16 @@ before any runtime application.
 
 `smoke:oro-8z` registration and
 `smoke:oro-8z-actual-live-execution-final-execution-completion-record-review-approval-record-finalization-review-approval-boundary`
+cover the boundary.
+
+## ORO-9A current/live traffic actual external call execution actual live execution final execution completion record review approval record finalization review approval record boundary
+
+ORO-9A is actual live execution final execution completion record review approval record finalization review approval record boundary only.
+It depends on ORO-8Z completion record review approval record finalization review approval boundary evidence, records a mock/static
+completion record review approval record finalization review approval record, keeps all runtime/live/network/mutation/route/alias
+surfaces closed, keeps actual execution approval false, and requires a later separate finalization review approval record boundary
+before any runtime application.
+
+`smoke:oro-8z` registration and
+`smoke:oro-9a-actual-live-execution-final-execution-completion-record-review-approval-record-finalization-review-approval-record-boundary`
 cover the boundary.

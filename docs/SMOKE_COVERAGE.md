@@ -8074,7 +8074,7 @@ Coverage confirms ORO-8W completion record review approval record dependency evi
 completion record review approval record finalization preparation, issuance, pass, and record
 evidence, closed runtime/live/network/mutation/route/alias flags, sensitive
 output denial, approval-record-finalization runtime application denial, live-execution
-acceptance denial, and the next approval record finalization review boundary requirement.
+acceptance denial, and the next approval record finalization review approval boundary requirement.
 
 ## ORO-8Y Live Traffic Actual External Call Execution Actual Live Execution Final Execution Completion Record Review Approval Record Finalization Review Boundary Coverage
 
@@ -8100,6 +8100,20 @@ Detailed completion-record-review-approval-record-finalization-review-approval-b
 
 Coverage confirms ORO-8Y completion record review approval record finalization review dependency evidence, ORO-8Z
 completion record review approval record finalization review approval preparation, issuance, pass, and record
+evidence, closed runtime/live/network/mutation/route/alias flags, sensitive
+output denial, approval-record-finalization-review-approval runtime application denial, live-execution
+acceptance denial, actual-execution approval denial, and the next approval record finalization review approval record boundary requirement.
+
+## ORO-9A Live Traffic Actual External Call Execution Actual Live Execution Final Execution Completion Record Review Approval Record Finalization Review Approval Record Boundary Coverage
+
+ORO-9A actual live execution final execution completion-record-review-approval-record-finalization-review-approval-boundary package smoke alias:
+`smoke:oro-8z`.
+
+Detailed completion-record-review-approval-record-finalization-review-approval-boundary coverage:
+`smoke:oro-9a-actual-live-execution-final-execution-completion-record-review-approval-record-finalization-review-approval-record-boundary`.
+
+Coverage confirms ORO-8Z completion record review approval record finalization review approval dependency evidence, ORO-9A
+completion record review approval record finalization review approval record preparation, issuance, pass, and record
 evidence, closed runtime/live/network/mutation/route/alias flags, sensitive
 output denial, approval-record-finalization-review-approval runtime application denial, live-execution
 acceptance denial, actual-execution approval denial, and the next approval record finalization review approval record boundary requirement.
