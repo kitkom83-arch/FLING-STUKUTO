@@ -2075,3 +2075,14 @@ It does not enable runtime execution, runtime authorization, runtime activation,
 external network calls, live OroPlay calls, wallet mutation, ledger mutation,
 Prisma writes, DB transactions, migrations, deploys, route enablement, Express
 mounts, or public aliases.
+
+## ORO-8T Current
+
+ORO-8T is the current live traffic actual external call execution actual live execution final execution completion record boundary only.
+It records static/mock completion record evidence after ORO-8S audit evidence and emits
+`completion_recorded_for_separate_actual_live_execution_final_execution_completion_record_review_boundary_only`.
+
+It does not enable runtime execution, runtime authorization, runtime activation,
+external network calls, live OroPlay calls, wallet mutation, ledger mutation,
+Prisma writes, DB transactions, migrations, deploys, route enablement, Express
+mounts, public aliases, or actual live completion recording.

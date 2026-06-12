@@ -4218,3 +4218,78 @@ archive boundary. ORO-8S remains
 - secretsLeaked=false
 - smoke:oro-8s
 - smoke:oro-8s-actual-live-execution-final-execution-audit-boundary
+
+## ORO-8T Live Traffic Actual External Call Execution Actual Live Execution Final Execution Completion Record Boundary Mapping
+
+ORO-8T records actual live execution final execution completion record only
+after ORO-8S prepared, issued, passed, and recorded the actual live execution
+final execution audit boundary. ORO-8T remains
+`actual_live_execution_final_execution_completion_record_boundary_only`.
+
+- ORO-8T records actual live execution final execution completion record only
+- ORO-8S actual live execution final execution audit status: audited_for_separate_actual_live_execution_final_execution_completion_record_boundary_only
+- ORO-8S actual live execution final execution audit scope: actual_live_execution_final_execution_audit_boundary_only
+- ORO-8T actual live execution final execution completion record status: completion_recorded_for_separate_actual_live_execution_final_execution_completion_record_review_boundary_only
+- ORO-8T actual live execution final execution completion record scope: actual_live_execution_final_execution_completion_record_boundary_only
+- actualLiveExecutionFinalExecutionAuditPreparedFromOro8s=true
+- actualLiveExecutionFinalExecutionAuditIssuedFromOro8s=true
+- actualLiveExecutionFinalExecutionAuditPassedFromOro8s=true
+- actualLiveExecutionFinalExecutionAuditRecordedFromOro8s=true
+- actualLiveExecutionFinalExecutionCompletionRecordPrepared=true
+- actualLiveExecutionFinalExecutionCompletionRecordIssued=true
+- actualLiveExecutionFinalExecutionCompletionRecordPassed=true
+- actualLiveExecutionFinalExecutionCompletionRecordRecorded=true
+- verifiedOro8sWasAuditBoundaryOnly=true
+- verifiedOro8sConfirmedOro8rWasArchiveBoundaryOnly=true
+- verifiedOro8sConfirmedOro8qWasCloseoutBoundaryOnly=true
+- verifiedOro8sConfirmedOro8pWasPostExecutionVerificationBoundaryOnly=true
+- verifiedOro8sConfirmedOro8oWasMockExecutionBoundaryOnly=true
+- verifiedNoActualLiveExecutionOccurred=true
+- verifiedNoRuntimeActivationOccurred=true
+- verifiedNoRuntimeEnablementOccurred=true
+- verifiedNoRuntimeAuthorizationOccurred=true
+- verifiedNoExternalNetworkOccurred=true
+- verifiedNoLiveOroPlayApiCallOccurred=true
+- verifiedNoWalletMutationOccurred=true
+- verifiedNoLedgerMutationOccurred=true
+- verifiedNoPrismaWriteOccurred=true
+- verifiedNoDbTransactionOccurred=true
+- verifiedNoRouteEnablementOccurred=true
+- verifiedNoExpressMountOccurred=true
+- verifiedNoPublicAliasOccurred=true
+- actualExternalCallExecutionRuntimeEnabled=false
+- actualExternalCallExecutionActivated=false
+- actualExternalCallExecutionEnabled=false
+- actualExternalCallExecutionAuthorized=false
+- actualExternalCallExecutionLiveExecutionApproved=false
+- actualExternalCallExecutionLiveExecuted=false
+- actualLiveExecutionFinalExecutionRequestApproved=false
+- actualLiveExecutionFinalExecutionApproved=false
+- actualLiveExecutionFinalExecutionExecuted=false
+- actualLiveExecutionFinalExecutionClosed=false
+- actualLiveExecutionFinalExecutionArchived=false
+- actualLiveExecutionFinalExecutionAudited=false
+- actualLiveExecutionFinalExecutionCompletionRecorded=false
+- actualLiveExecutionExecuted=false
+- externalNetworkAllowed=false
+- externalNetworkCalled=false
+- liveOroPlayApiCallAllowed=false
+- liveOroPlayApiCalled=false
+- walletMutationAllowed=false
+- ledgerMutationAllowed=false
+- prismaWriteAllowed=false
+- dbTransactionAllowed=false
+- routeEnablementAllowed=false
+- expressMountAllowed=false
+- publicAliasAllowed=false
+- apiBalanceAliasAllowed=false
+- apiTransactionAliasAllowed=false
+- apiOroplayBalanceRouteAllowed=false
+- apiOroplayTransactionRouteAllowed=false
+- nextPhaseRequiresSeparateActualLiveExecutionFinalExecutionCompletionRecordReviewBoundary=true
+- humanApprovalRequiredForActualExecution=true
+- separateActualExecutionApprovalRequired=true
+- separateActualExecutionFinalExecutionCompletionRecordReviewRequired=true
+- secretsLeaked=false
+- smoke:oro-8t
+- smoke:oro-8t-actual-live-execution-final-execution-completion-record-boundary
