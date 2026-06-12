@@ -160,6 +160,8 @@ ORO-8Q keeps all mutation and persistence paths closed:
 ORO-8Q records the mock closeout result and keeps separate human, approval, and
 archive requirements in place for later phases.
 
+ORO-8R follows ORO-8Q as the separate actual live execution final execution archive boundary.
+
 ## Safety confirmation
 
 ORO-8Q is docs, contract, static/mock harness, and local smoke only. It does not

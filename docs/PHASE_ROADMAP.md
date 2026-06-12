@@ -4501,3 +4501,43 @@ run migrations, deploy, mount routes, or expose public aliases.
 - `smoke:oro-8q` registration.
 - `smoke:oro-8q-actual-live-execution-final-execution-closeout-boundary`
   registration.
+
+## ORO-8R current/live traffic actual external call execution actual live execution final execution archive boundary
+
+ORO-8R records the live traffic actual external call execution actual live
+execution final execution archive boundary after ORO-8Q prepared, issued,
+passed, and recorded the final execution closeout boundary. ORO-8R is actual live execution final execution archive boundary only. The ORO-8R archive scope
+is `actual_live_execution_final_execution_archive_boundary_only`. ORO-8R
+depends on ORO-8Q closeout scope
+`actual_live_execution_final_execution_closeout_boundary_only` and closeout
+status
+`closed_for_separate_actual_live_execution_final_execution_archive_boundary_only`.
+ORO-8R issues only the actual live execution final execution archive status
+`archived_for_separate_actual_live_execution_final_execution_audit_boundary_only`.
+ORO-8R verifies ORO-8Q stayed closeout-boundary only, verifies ORO-8Q confirmed
+ORO-8P stayed post-execution-verification-boundary only, and verifies ORO-8Q
+confirmed ORO-8O stayed mock execution boundary only. ORO-8R still does not
+perform actual final execution, close actual live final execution, archive
+actual live final execution, approve actual execution, execute an actual live
+call, authorize runtime execution, activate runtime execution, enable runtime
+execution, call external networks, call live OroPlay, mutate wallet or ledger,
+write data, run DB transactions, run migrations, deploy, mount routes, or
+expose public aliases.
+
+- ORO-8R actual live execution final execution archive boundary doc exists.
+- ORO-8R helper exports phase, status, archive builder, validator, runner,
+  summary builder, and closed safety flags.
+- ORO-8R fixtures cover happy path, missing ORO-8Q dependency, ORO-8Q closeout
+  not prepared/issued/passed/recorded/status/scope mismatch, ORO-8Q proof
+  failures, runtime execution approval, runtime activation, runtime enablement,
+  runtime authorization, live execution attempt, final execution
+  executed/closed/archived attempts, network, live OroPlay, wallet, ledger,
+  Prisma, DB transaction, route, Express mount, public alias, API alias, OroPlay
+  route, no-mutation proof, audit/human/separate approval, and
+  sensitive-output blockers.
+- ORO-8R smoke confirms archive output, ORO-8Q dependency, closed
+  runtime/network/mutation/route/approval/closeout/archive flags, and no actual
+  live execution.
+- `smoke:oro-8r` registration.
+- `smoke:oro-8r-actual-live-execution-final-execution-archive-boundary`
+  registration.

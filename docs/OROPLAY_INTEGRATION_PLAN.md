@@ -2055,3 +2055,12 @@ The ORO-8Q closeout scope is `actual_live_execution_final_execution_closeout_bou
 ORO-8Q depends on ORO-8P post-execution verification scope `actual_live_execution_final_execution_post_execution_verification_boundary_only` and post-execution verification status `verified_for_separate_actual_live_execution_final_execution_closeout_boundary_only`.
 ORO-8Q issues only the actual live execution final execution closeout status `closed_for_separate_actual_live_execution_final_execution_archive_boundary_only`.
 ORO-8Q verifies ORO-8P stayed post-execution-verification-boundary only, verifies ORO-8P confirmed ORO-8O stayed mock execution boundary only, and still does not perform actual final execution, close actual live final execution, approve actual execution, execute an actual live call, authorize runtime execution, activate runtime execution, enable runtime execution, call external networks, call live OroPlay, mutate wallet or ledger, write data, run DB transactions, run migrations, deploy, mount routes, or expose public aliases.
+
+## ORO-8R Current
+
+ORO-8R records the live traffic actual external call execution actual live execution final execution archive boundary after ORO-8Q prepared, issued, passed, and recorded the final execution closeout boundary.
+ORO-8R is actual live execution final execution archive boundary only.
+The ORO-8R archive scope is `actual_live_execution_final_execution_archive_boundary_only`.
+ORO-8R depends on ORO-8Q closeout scope `actual_live_execution_final_execution_closeout_boundary_only` and closeout status `closed_for_separate_actual_live_execution_final_execution_archive_boundary_only`.
+ORO-8R issues only the actual live execution final execution archive status `archived_for_separate_actual_live_execution_final_execution_audit_boundary_only`.
+ORO-8R verifies ORO-8Q stayed closeout-boundary only, verifies ORO-8Q confirmed ORO-8P stayed post-execution-verification-boundary only, verifies ORO-8Q confirmed ORO-8O stayed mock execution boundary only, and still does not perform actual final execution, close actual live final execution, archive actual live final execution, approve actual execution, execute an actual live call, authorize runtime execution, activate runtime execution, enable runtime execution, call external networks, call live OroPlay, mutate wallet or ledger, write data, run DB transactions, run migrations, deploy, mount routes, or expose public aliases.

@@ -7951,3 +7951,48 @@ verification boundary.
 - Confirms ORO-8Q blockers are empty on the happy path and fail closed for
   dependency, status, scope, proof, runtime, route, alias, mutation, approval,
   execution, closeout, and secret violations.
+
+## ORO-8R Live Traffic Actual External Call Execution Actual Live Execution Final Execution Archive Boundary Coverage
+
+ORO-8R Live Traffic Actual External Call Execution Actual Live Execution Final
+Execution Archive Boundary Coverage proves that ORO-8R records only the actual
+live execution final execution archive boundary after ORO-8Q prepared, issued,
+passed, and recorded the actual live execution final execution closeout
+boundary.
+
+- ORO-8R archive boundary doc: live traffic actual external call execution
+  actual live execution final execution archive boundary.
+- ORO-8R mock helper: archive scope, ORO-8Q dependency, ORO-8Q closeout-only
+  proof, ORO-8Q confirmation that ORO-8P was post-execution-verification-only,
+  ORO-8Q confirmation that ORO-8O was mock-only, closed
+  runtime/external-call/approval/closeout/archive surfaces, and fail-closed
+  blocker generation.
+- ORO-8R fixtures: happy path, missing ORO-8Q dependency, ORO-8Q closeout not
+  prepared, ORO-8Q closeout not issued, ORO-8Q boundary not passed, ORO-8Q
+  closeout not recorded, ORO-8Q status/scope mismatch, ORO-8Q mock-only proof
+  failures, runtime execution approval, runtime activation, runtime enablement,
+  runtime authorization, live call execution, final execution executed, final
+  execution closed, final execution archived, external network allowed, live
+  OroPlay allowed, wallet mutation allowed, ledger mutation allowed, Prisma
+  write allowed, DB transaction allowed, route enablement allowed, Express
+  mount allowed, public alias allowed, API balance alias allowed, API
+  transaction alias allowed, OroPlay balance route allowed, OroPlay transaction
+  route allowed, no-mutation proof missing, audit/human/separate approval
+  missing, and secret leak.
+- ORO-8R smoke: actual live execution final execution archive boundary smoke.
+- ORO-8R smoke wrapper: `src/local-smoke-tests/oro8rSmoke.js`.
+- ORO-8R actual live execution final execution archive-boundary package smoke alias
+- `smoke:oro-8r`
+- `smoke:oro-8r-actual-live-execution-final-execution-archive-boundary`
+- Confirms ORO-8R emits `phase=ORO-8R`, `result=PASS`, archive status, and
+  archive scope.
+- Confirms ORO-8R depends on ORO-8Q closeout scope and closeout status.
+- Confirms ORO-8R issues only the actual live execution final execution archive
+  record.
+- Confirms ORO-8R does not approve actual final execution, close actual final
+  execution, archive actual final execution, approve actual execution, perform
+  live execution, open external networks, mount routes, write data, or leak
+  secrets.
+- Confirms ORO-8R blockers are empty on the happy path and fail closed for
+  dependency, status, scope, proof, runtime, route, alias, mutation, approval,
+  execution, closeout, archive, and secret violations.

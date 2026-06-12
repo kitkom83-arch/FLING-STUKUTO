@@ -1261,6 +1261,19 @@ const RELATED_FILES = [
   ].join(""),
   "src/local-smoke-tests/oro8qSmoke.js",
   [
+    "src/game-provider-mock/oro8rLiveTrafficActualExternalCall",
+    "ExecutionActualLiveExecutionFinalExecutionArchiveBoundary.js",
+  ].join(""),
+  [
+    "src/game-provider-mock/oro8rLiveTrafficActualExternalCall",
+    "ExecutionActualLiveExecutionFinalExecutionArchiveBoundaryFixtures.js",
+  ].join(""),
+  [
+    "src/local-smoke-tests/oro8rLiveTrafficActualExternalCall",
+    "ExecutionActualLiveExecutionFinalExecutionArchiveBoundarySmoke.js",
+  ].join(""),
+  "src/local-smoke-tests/oro8rSmoke.js",
+  [
     "docs/ORO_8H_LIVE_TRAFFIC_ACTUAL_EXTERNAL_CALL",
     "EXECUTION_ACTUAL_LIVE_EXECUTION_EXECUTION_GATE.md",
   ].join(""),
@@ -1299,6 +1312,10 @@ const RELATED_FILES = [
   [
     "docs/ORO_8Q_LIVE_TRAFFIC_ACTUAL_EXTERNAL_CALL",
     "EXECUTION_ACTUAL_LIVE_EXECUTION_FINAL_EXECUTION_CLOSEOUT_BOUNDARY.md",
+  ].join("_"),
+  [
+    "docs/ORO_8R_LIVE_TRAFFIC_ACTUAL_EXTERNAL_CALL",
+    "EXECUTION_ACTUAL_LIVE_EXECUTION_FINAL_EXECUTION_ARCHIVE_BOUNDARY.md",
   ].join("_"),
   [
     "docs/ORO_8E_LIVE_TRAFFIC_ACTUAL_EXTERNAL_CALL",
@@ -1661,6 +1678,7 @@ const summary = [
   { key: "oro8o", label: "oro-8o", status: "PENDING" },
   { key: "oro8p", label: "oro-8p", status: "PENDING" },
   { key: "oro8q", label: "oro-8q", status: "PENDING" },
+  { key: "oro8r", label: "oro-8r", status: "PENDING" },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
   { key: "depositVerificationSource", label: "deposit-verification-source", status: "PENDING" },
   {
@@ -2927,6 +2945,12 @@ const steps = [
     summaryKey: "syntax",
   },
   {
+    name: "node --check oro8rSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oro8rSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
     name: "node --check memberQrDepositUxContract",
     command: nodeCommand,
     args: ["--check", "src/payment-provider-mock/memberQrDepositUxContract.js"],
@@ -4154,6 +4178,18 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oro-8q-actual-live-execution-final-execution-closeout-boundary"]),
     summaryKey: "oro8q",
+  },
+  {
+    name: "npm run smoke:oro-8r",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oro-8r"]),
+    summaryKey: "oro8r",
+  },
+  {
+    name: "npm run smoke:oro-8r-actual-live-execution-final-execution-archive-boundary",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oro-8r-actual-live-execution-final-execution-archive-boundary"]),
+    summaryKey: "oro8r",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",
