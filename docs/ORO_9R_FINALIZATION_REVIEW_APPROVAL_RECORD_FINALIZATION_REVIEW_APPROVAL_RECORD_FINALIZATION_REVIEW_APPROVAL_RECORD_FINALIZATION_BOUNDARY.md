@@ -131,3 +131,11 @@ Rollback for ORO-9R is a no-op for runtime. Removing the ORO-9R doc, static help
 - separateActualExecutionApprovalRequired = true
 
 ORO-9R does not authorize any later runtime application. Any finalization review, runtime acceptance, live execution, route alias, wallet/ledger mutation, Prisma write, DB transaction, migration, or deploy requires a separate explicit phase.
+
+## ORO-9R closed and ORO-9S continuation
+
+ORO-9R closed. ORO-9S follows ORO-9R as the finalization review approval record finalization review approval record finalization review approval record finalization review boundary.
+
+ORO-9S current work remains docs/static contract/mock helper/fixtures/local smoke only. It does not authorize actual execution, live execution, live OroPlay API calls, route aliases, runtime activation, runtime enablement, runtime authorization, runtime acceptance, runtime finalization, runtime finalization review, wallet mutation, ledger mutation, Prisma writes, DB transactions, migrations, or deploys.
+
+Next ORO-9S doc: docs/ORO_9S_FINALIZATION_REVIEW_APPROVAL_RECORD_FINALIZATION_REVIEW_APPROVAL_RECORD_FINALIZATION_REVIEW_APPROVAL_RECORD_FINALIZATION_REVIEW_BOUNDARY.md
