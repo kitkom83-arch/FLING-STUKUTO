@@ -242,3 +242,11 @@ ORO-9Q does not run migrations or deploy.
 - separateActualExecutionApprovalRequired = true
 
 ORO-9Q is not actual execution, not live execution, not route/runtime enablement, not permission to mutate wallet/ledger/DB, and not finalization/review/approval/record/finalization/review/approval/record applied into runtime.
+
+## ORO-9Q closed and ORO-9R continuation
+
+ORO-9Q closed. ORO-9R follows ORO-9Q as the finalization review approval record finalization review approval record finalization review approval record finalization boundary.
+
+ORO-9R current work remains docs/static contract/mock helper/fixtures/local smoke only. It does not authorize actual execution, live execution, live OroPlay API calls, route aliases, runtime activation, runtime enablement, runtime authorization, runtime acceptance, runtime finalization, runtime finalization review, runtime finalization review approval, runtime finalization review approval record, runtime finalization review approval record finalization, wallet mutation, ledger mutation, Prisma writes, DB transactions, migrations, or deploys.
+
+Next ORO-9R doc: docs/ORO_9R_FINALIZATION_REVIEW_APPROVAL_RECORD_FINALIZATION_REVIEW_APPROVAL_RECORD_FINALIZATION_REVIEW_APPROVAL_RECORD_FINALIZATION_BOUNDARY.md
