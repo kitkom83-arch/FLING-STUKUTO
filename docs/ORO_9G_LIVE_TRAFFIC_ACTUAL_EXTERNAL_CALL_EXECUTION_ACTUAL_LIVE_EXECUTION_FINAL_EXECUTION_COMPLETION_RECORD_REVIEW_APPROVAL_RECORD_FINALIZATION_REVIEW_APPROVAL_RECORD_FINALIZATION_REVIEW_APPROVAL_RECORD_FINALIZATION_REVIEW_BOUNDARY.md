@@ -138,6 +138,10 @@ ORO-9G records only the mock finalization review boundary and keeps separate hum
 - humanApprovalRequiredForActualExecution = true
 - separateActualExecutionApprovalRequired = true
 
+ORO-9H follows ORO-9G as the separate finalization review approval boundary.
+
+- nextPhaseRequiresSeparateActualLiveExecutionFinalExecutionCompletionRecordReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordBoundary = true
+
 ## Safety confirmation
 
 ORO-9G is docs, static contract, mock helper, fixtures, and local smoke only. It is not actual execution, not live execution, not route/runtime enablement, not runtime activation, not runtime authorization, not wallet mutation, not ledger mutation, not Prisma write, not DB transaction, not migration, and not deploy.
