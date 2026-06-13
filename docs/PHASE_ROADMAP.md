@@ -4767,3 +4767,14 @@ It follows the `smoke:oro-9k` registration and keeps ORO-9K as the required depe
 
 `smoke:oro-9l-finalization-review-approval-record-finalization-review-approval-boundary`
 cover the boundary.
+
+## ORO-9M current/finalization review approval record finalization review approval record boundary
+
+ORO-9M = finalization review approval record finalization review approval record boundary only.
+
+It follows the `smoke:oro-9l` registration and keeps ORO-9L as the required dependency before recording the mock/static finalization review approval record finalization review approval record boundary. It is not actual execution, not live execution, not route/runtime enablement, not runtime acceptance, not runtime finalization, not runtime finalization review, not runtime finalization review approval, not runtime finalization review approval record, and not permission to mutate wallet/ledger/DB.
+
+`smoke:oro-9m`
+
+`smoke:oro-9m-finalization-review-approval-record-finalization-review-approval-record-boundary`
+cover the boundary.
