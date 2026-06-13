@@ -4799,3 +4799,14 @@ This phase follows ORO-9N and records static/mock finalization review approval r
 
 `smoke:oro-9o-finalization-review-approval-record-finalization-review-approval-record-finalization-review-boundary`
 cover the boundary.
+
+## ORO-9P current/finalization review approval record finalization review approval record finalization review approval boundary
+
+ORO-9P = finalization review approval record finalization review approval record finalization review approval boundary only.
+
+This phase follows ORO-9O and records static/mock finalization review approval record finalization review approval record finalization review approval evidence only. It is not actual execution, not live execution, not route/runtime enablement, not runtime activation, not runtime authorization, not runtime acceptance, not runtime finalization, not runtime finalization review, not runtime finalization review approval, not runtime finalization review approval record, not runtime finalization review approval record finalization, not runtime finalization review approval record finalization review, not runtime finalization review approval record finalization review approval, not wallet/ledger/DB mutation, not migration, and not deploy.
+
+`smoke:oro-9p`
+
+`smoke:oro-9p-finalization-review-approval-record-finalization-review-approval-record-finalization-review-approval-boundary`
+cover the boundary.
