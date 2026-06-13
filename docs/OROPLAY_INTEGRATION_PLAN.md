@@ -2265,3 +2265,14 @@ It records static/mock finalization review approval record finalization review a
 
 ORO-9M does not perform actual live execution, actual final execution, actual external call execution, live OroPlay calls, runtime activation, runtime enablement, runtime authorization, runtime acceptance, runtime finalization, runtime finalization review, runtime finalization review approval, runtime finalization review approval record, wallet or ledger mutation, Prisma writes, DB transactions, route enablement, Express mounts, public aliases, migration, deploy, finalization review approval record finalization review approval record runtime application, live-execution acceptance, or actual execution approval.
 ORO-9M is not permission to mutate wallet, ledger, or DB state.
+
+## ORO-9N Current
+
+ORO-9N = finalization review approval record finalization review approval record finalization boundary only.
+
+ORO-9N is the current finalization review approval record finalization review approval record finalization boundary only.
+
+Scope: actual_live_execution_final_execution_completion_record_review_approval_record_finalization_review_approval_record_finalization_review_approval_record_finalization_review_approval_record_finalization_review_approval_record_finalization_boundary_only
+
+ORO-9N remains docs/static contract/mock helper/fixtures/local smoke only. It is not actual execution, not live execution, not route/runtime enablement, not runtime activation, not runtime enablement, not runtime authorization, not runtime acceptance, not runtime finalization, not runtime finalization review, not runtime finalization review approval, not runtime finalization review approval record, not runtime finalization review approval record finalization, not wallet mutation, not ledger mutation, not Prisma write, not DB transaction, not migration, and not deploy.
+ORO-9N is not permission to mutate wallet, ledger, or DB state.

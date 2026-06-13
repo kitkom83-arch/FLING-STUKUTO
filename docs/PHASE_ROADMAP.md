@@ -4777,4 +4777,14 @@ It follows the `smoke:oro-9l` registration and keeps ORO-9L as the required depe
 `smoke:oro-9m`
 
 `smoke:oro-9m-finalization-review-approval-record-finalization-review-approval-record-boundary`
+
+## ORO-9N current/finalization review approval record finalization review approval record finalization boundary
+
+ORO-9N = finalization review approval record finalization review approval record finalization boundary only.
+
+This phase follows ORO-9M and records static/mock finalization review approval record finalization review approval record finalization evidence only. It is not actual execution, not live execution, not route/runtime enablement, not runtime activation, not runtime authorization, not runtime acceptance, not runtime finalization, not runtime finalization review, not runtime finalization review approval, not runtime finalization review approval record, not runtime finalization review approval record finalization, not wallet/ledger/DB mutation, not migration, and not deploy.
+
+`smoke:oro-9n`
+
+`smoke:oro-9n-finalization-review-approval-record-finalization-review-approval-record-finalization-boundary`
 cover the boundary.
