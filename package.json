@@ -272,6 +272,8 @@
     "smoke:oro-9j": "node src/local-smoke-tests/oro9jSmoke.js",
     "smoke:oro-9k-finalization-review-approval-record-finalization-review-boundary": "node src/local-smoke-tests/oro9kFinalizationReviewApprovalRecordFinalizationReviewBoundarySmoke.js",
     "smoke:oro-9k": "node src/local-smoke-tests/oro9kSmoke.js",
+    "smoke:oro-9l-finalization-review-approval-record-finalization-review-approval-boundary": "node src/local-smoke-tests/oro9lFinalizationReviewApprovalRecordFinalizationReviewApprovalBoundarySmoke.js",
+    "smoke:oro-9l": "node src/local-smoke-tests/oro9lSmoke.js",
     "smoke:member-qr-deposit-ux": "node src/local-smoke-tests/memberQrDepositUxSmoke.js",
     "smoke:deposit-verification-source": "node src/local-smoke-tests/depositVerificationSourceSmoke.js",
     "smoke:deposit-ledger-reconciliation-guard": "node src/local-smoke-tests/depositLedgerReconciliationGuardSmoke.js",
