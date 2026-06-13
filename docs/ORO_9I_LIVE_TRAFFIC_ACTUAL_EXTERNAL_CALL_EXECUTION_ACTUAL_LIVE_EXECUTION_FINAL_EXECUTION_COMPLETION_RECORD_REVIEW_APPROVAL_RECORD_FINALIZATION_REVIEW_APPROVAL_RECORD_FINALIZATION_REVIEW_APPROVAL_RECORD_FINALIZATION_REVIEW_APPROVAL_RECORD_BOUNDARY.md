@@ -135,6 +135,8 @@ ORO-9I does not run migrations and does not deploy.
 ORO-9I records only the mock finalization review approval record boundary and keeps separate human approval in place for a later approval record finalization boundary.
 
 - nextPhaseRequiresSeparateActualLiveExecutionFinalExecutionCompletionRecordReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationBoundary = true
+- ORO-9J follows ORO-9I as the separate finalization review approval record finalization boundary.
+- nextPhaseRequiresSeparateActualLiveExecutionFinalExecutionCompletionRecordReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewBoundary = true
 - humanApprovalRequiredForActualExecution = true
 - separateActualExecutionApprovalRequired = true
 - blockers = []

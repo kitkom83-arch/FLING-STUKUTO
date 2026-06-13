@@ -8247,3 +8247,19 @@ Coverage confirms ORO-9H finalization review approval boundary dependency eviden
 Coverage confirms finalization review approval record preparation, issuance, pass, and record evidence, closed runtime/live/network/mutation/route/alias flags, sensitive
 output denial, finalization review approval record runtime application denial, live-execution acceptance denial, actual-execution approval denial,
 and the next approval record finalization boundary requirement.
+
+## ORO-9J Live Traffic Actual External Call Execution Actual Live Execution Final Execution Completion Record Review Approval Record Finalization Review Approval Record Finalization Review Approval Record Finalization Review Approval Record Finalization Boundary Coverage
+
+ORO-9J actual live execution final execution completion-record-review-approval-record-finalization-review-approval-record-finalization-review-approval-record-finalization-review-approval-record-finalization-boundary package smoke alias:
+
+`smoke:oro-9j`
+
+Detailed package smoke:
+
+`smoke:oro-9j-actual-live-execution-final-execution-completion-record-review-approval-record-finalization-review-approval-record-finalization-review-approval-record-finalization-review-approval-record-finalization-boundary`.
+
+Coverage confirms ORO-9I finalization review approval record boundary dependency evidence, ORO-9J finalization review approval record finalization prepared/issued/passed/recorded behavior, required no-runtime, no-runtime-acceptance, and no-runtime-finalization proof flags, requested false safety flags, approval record finalization runtime acceptance blocked, approval record finalization live-execution acceptance blocked, approval record finalization runtime application blocked, live OroPlay call blocked, external network blocked, wallet/ledger/Prisma/DB mutation blocked, route alias blocked, migration/deploy blocked, missing approval record finalization evidence blocked, and sensitive-shaped output blocked.
+
+Coverage confirms finalization review approval record finalization preparation, issuance, pass, and record evidence, closed runtime/live/network/mutation/route/alias flags, sensitive
+output denial, finalization review approval record finalization runtime application denial, runtime finalization denial, live-execution acceptance denial, actual-execution approval denial,
+and the next finalization review boundary requirement.
