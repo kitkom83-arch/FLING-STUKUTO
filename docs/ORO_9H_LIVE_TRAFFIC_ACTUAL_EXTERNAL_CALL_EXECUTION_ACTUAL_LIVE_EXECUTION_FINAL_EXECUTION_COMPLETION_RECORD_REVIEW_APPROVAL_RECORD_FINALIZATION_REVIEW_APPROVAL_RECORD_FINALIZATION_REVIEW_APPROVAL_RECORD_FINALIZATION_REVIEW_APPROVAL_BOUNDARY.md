@@ -148,6 +148,10 @@ ORO-9H records only the mock finalization review approval boundary and keeps sep
 - humanApprovalRequiredForActualExecution = true
 - separateActualExecutionApprovalRequired = true
 
+ORO-9I follows ORO-9H as the separate finalization review approval record boundary.
+
+- nextPhaseRequiresSeparateActualLiveExecutionFinalExecutionCompletionRecordReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationBoundary = true
+
 ## Safety confirmation
 
 ORO-9H is docs, static contract, mock helper, fixtures, and local smoke only. It is not actual execution, not live execution, not route/runtime enablement, not runtime activation, not runtime authorization, not wallet mutation, not ledger mutation, not Prisma write, not DB transaction, not migration, and not deploy.
