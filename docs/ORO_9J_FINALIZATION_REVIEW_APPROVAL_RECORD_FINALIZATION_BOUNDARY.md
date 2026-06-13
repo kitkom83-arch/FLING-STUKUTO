@@ -191,6 +191,15 @@ ORO-9J records only the mock finalization review approval record finalization bo
 - humanApprovalRequiredForActualExecution = true
 - separateActualExecutionApprovalRequired = true
 
+## ORO-9K handoff
+
+ORO-9K follows ORO-9J as the finalization review approval record finalization review boundary.
+
+- docs/ORO_9K_FINALIZATION_REVIEW_APPROVAL_RECORD_FINALIZATION_REVIEW_BOUNDARY.md
+- nextPhaseRequiresSeparateActualLiveExecutionFinalExecutionCompletionRecordReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalBoundary = true
+- ORO-9K remains docs/static contract/mock helper/fixtures/local smoke only.
+- ORO-9K is not actual execution, not live execution, not route/runtime enablement, not runtime acceptance, not runtime finalization, not runtime finalization review, and not permission to mutate wallet, ledger, or DB state.
+
 ## Operator note
 
 ORO-9J is docs, static contract, mock helper, fixtures, and local smoke only. It is not actual execution, not live execution, not route/runtime enablement, not runtime activation, not runtime authorization, not runtime acceptance, not runtime finalization, not wallet mutation, not ledger mutation, not Prisma write, not DB transaction, not migration, and not deploy. It is not authority to mutate wallet, ledger, or DB state.

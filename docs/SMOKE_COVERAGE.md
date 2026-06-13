@@ -8263,3 +8263,19 @@ Coverage confirms ORO-9I finalization review approval record boundary dependency
 Coverage confirms finalization review approval record finalization preparation, issuance, pass, and record evidence, closed runtime/live/network/mutation/route/alias flags, sensitive
 output denial, finalization review approval record finalization runtime application denial, runtime finalization denial, live-execution acceptance denial, actual-execution approval denial,
 and the next finalization review boundary requirement.
+
+## ORO-9K Finalization Review Approval Record Finalization Review Boundary Coverage
+
+ORO-9K finalization-review-approval-record-finalization-review-boundary package smoke alias:
+
+`smoke:oro-9k`
+
+Detailed package smoke:
+
+`smoke:oro-9k-finalization-review-approval-record-finalization-review-boundary`.
+
+Coverage confirms ORO-9J finalization review approval record finalization boundary dependency evidence, ORO-9K finalization review approval record finalization review prepared/issued/passed/recorded behavior, required no-runtime, no-runtime-acceptance, no-runtime-finalization, and no-runtime-finalization-review proof flags, requested false safety flags, finalization review runtime acceptance blocked, finalization review live-execution acceptance blocked, finalization review runtime application blocked, live OroPlay call blocked, external network blocked, wallet/ledger/Prisma/DB mutation blocked, route alias blocked, migration/deploy blocked, missing finalization review evidence blocked, and sensitive-shaped output blocked.
+
+Coverage confirms finalization review approval record finalization review preparation, issuance, pass, and record evidence, closed runtime/live/network/mutation/route/alias flags, sensitive
+output denial, finalization review approval record finalization review runtime application denial, runtime finalization denial, runtime finalization review denial, live-execution acceptance denial,
+actual-execution approval denial, and the next finalization review approval boundary requirement.
