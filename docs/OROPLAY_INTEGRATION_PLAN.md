@@ -2190,3 +2190,13 @@ It records static/mock completion record review approval record finalization rev
 completion_record_review_approval_record_finalization_review_approval_record_finalization_review_approval_record_finalized_for_separate_actual_live_execution_final_execution_completion_record_review_approval_record_finalization_review_approval_record_finalization_review_approval_record_finalization_boundary_only.
 
 ORO-9F does not perform actual live execution, actual final execution, actual external call execution, live OroPlay calls, runtime activation, runtime enablement, runtime authorization, wallet or ledger mutation, Prisma writes, DB transactions, route enablement, Express mounts, public aliases, completion record review approval record finalization review approval record finalization review approval record finalization runtime application, live-execution acceptance, or actual execution approval.
+
+## ORO-9G Current
+
+ORO-9G = finalization review boundary only.
+
+ORO-9G is the current live traffic actual external call execution actual live execution final execution completion record review approval record finalization review approval record finalization review approval record finalization review boundary only.
+It records static/mock finalization review evidence after ORO-9F finalization boundary evidence and emits
+`actual_live_execution_final_execution_completion_record_review_approval_record_finalization_review_approval_record_finalization_review_approval_record_finalization_review_boundary_only`.
+
+ORO-9G does not perform actual live execution, actual final execution, actual external call execution, live OroPlay calls, runtime activation, runtime enablement, runtime authorization, wallet or ledger mutation, Prisma writes, DB transactions, route enablement, Express mounts, public aliases, migration, deploy, finalization review runtime application, live-execution acceptance, or actual execution approval.
