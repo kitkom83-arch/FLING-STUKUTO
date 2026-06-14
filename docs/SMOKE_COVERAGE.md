@@ -8523,3 +8523,13 @@ Coverage confirms ORO-9X is docs/static contract/mock helper/fixtures/local smok
 - Covers no review decision, signed runtime approval, runtime approval, activation, runtime approval chain rollover, route mount, public alias, live execution, actual external call, live OroPlay API call, wallet mutation, ledger mutation, DB runtime flow, Prisma write, migration, or deploy.
 - Covers no secret-shaped output, no long ORO-10E filename, and separate next-phase approval.
 - Scripts: smoke:oro-10e, smoke:oro-10e:detailed.
+
+## ORO-10F Approval Chain Rollover Review Decision Intake Gate Coverage
+
+- ORO-10F approval-chain-rollover-review-decision-intake-gate package smoke alias.
+- ORO-10A closed; ORO-10B closed; ORO-10C closed; ORO-10D closed; ORO-10E closed; ORO-10F current.
+- ORO-10F is docs/static/mock/helper/fixtures/local smoke only.
+- Covers static/mock review decision intake only, with no runtime review decision or runtime authorization.
+- Covers no signed runtime approval, runtime approval, activation, runtime approval chain rollover, route mount, public alias, live execution, actual external call, live OroPlay API call, wallet mutation, ledger mutation, DB runtime flow, Prisma write, migration, or deploy.
+- Covers no secret-shaped output, no long ORO-10F filename, and separate next-phase approval.
+- Scripts: smoke:oro-10f, smoke:oro-10f:detailed.

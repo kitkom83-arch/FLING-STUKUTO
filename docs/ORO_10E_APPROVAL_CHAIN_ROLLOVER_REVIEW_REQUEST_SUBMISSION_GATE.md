@@ -144,6 +144,17 @@
 - npm run smoke:oro-10e
 - npm run smoke:oro-10e:detailed
 
+## ORO-10F Review Decision Intake Gate Handoff
+
+- ORO-10E closed.
+- ORO-10F current.
+- ORO-10E closed for ORO-10F continuation.
+- docs/ORO_10F_APPROVAL_CHAIN_ROLLOVER_REVIEW_DECISION_INTAKE_GATE.md
+- nextPhaseSeparateApprovalRequired = true
+- ORO-10F next phase = approval_chain_rollover_review_decision_intake_gate_only
+- ORO-10F must remain docs/static/mock/local smoke only unless a separate later approval explicitly authorizes runtime behavior.
+- ORO-10F must not create signed approval, signed runtime approval, runtime approval, runtime authorization, runtime approval chain rollover, route mount, public alias, wallet mutation, ledger mutation, DB runtime flow, Prisma write, migration, deploy, live execution, or actual external calls.
+
 ## Next Step Readiness
 
 - nextPhaseSeparateApprovalRequired = true

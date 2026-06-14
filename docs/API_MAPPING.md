@@ -6194,3 +6194,18 @@ ORO-9X records finalization review approval record finalization review approval 
 - ORO-10E scope: approval_chain_rollover_review_request_submission_gate_only
 - no review decision, signed runtime approval, runtime approval, runtime approval chain rollover, activation, route mount, public alias, live execution, actual external call, live OroPlay API call, wallet mutation, ledger mutation, DB runtime flow, Prisma write, migration, or deploy.
 - package smoke aliases: smoke:oro-10e, smoke:oro-10e:detailed.
+
+## ORO-10F Approval Chain Rollover Review Decision Intake Gate Mapping
+
+- ORO-10A closed.
+- ORO-10B closed.
+- ORO-10C closed.
+- ORO-10D closed.
+- ORO-10E closed.
+- ORO-10F current.
+- ORO-10F is the approval chain rollover review decision intake gate after ORO-10E.
+- ORO-10F review decision intake is static/mock only.
+- ORO-10F is docs/static/mock/local smoke only.
+- ORO-10F scope: approval_chain_rollover_review_decision_intake_gate_only
+- no runtime review decision, signed runtime approval, runtime approval, runtime authorization, activation, runtime approval chain rollover, route mount, public alias, live execution, actual external call, live OroPlay API call, wallet mutation, ledger mutation, DB runtime flow, Prisma write, migration, or deploy.
+- package smoke aliases: smoke:oro-10f, smoke:oro-10f:detailed.
