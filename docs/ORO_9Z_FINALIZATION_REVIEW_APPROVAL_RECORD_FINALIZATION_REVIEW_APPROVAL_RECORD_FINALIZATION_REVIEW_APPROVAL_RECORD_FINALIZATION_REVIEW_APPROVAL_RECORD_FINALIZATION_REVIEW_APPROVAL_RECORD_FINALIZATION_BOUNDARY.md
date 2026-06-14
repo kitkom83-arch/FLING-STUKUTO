@@ -2,7 +2,8 @@
 
 ## Scope
 
-- ORO-9Z current.
+- ORO-9Z closed.
+- ORO-10A current.
 - ORO-9Y closed.
 - ORO-9Z = finalization review approval record finalization review approval record finalization review approval record finalization review approval record finalization review approval record finalization boundary only.
 - ORO-9Z is docs, static contract, mock helper, fixtures, and local smoke coverage only.
@@ -118,6 +119,8 @@
 ## Next Phase Readiness Note
 
 - nextPhaseRequiresSeparateActualLiveExecutionFinalExecutionCompletionRecordReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordBoundary = true
+- nextPhaseRequiresSeparateApprovalChainRolloverReview = true
 - humanApprovalRequiredForActualExecution = true
 - separateActualExecutionApprovalRequired = true
+- ORO-10A continues from ORO-9Z as the approval chain rollover boundary in docs/ORO_10A_APPROVAL_CHAIN_ROLLOVER_BOUNDARY.md.
 - The next phase must remain separate from runtime activation, runtime enablement, runtime acceptance, runtime finalization, runtime review, runtime approval, wallet mutation, ledger mutation, Prisma writes, DB transactions, migrations, deploys, route aliases, and live OroPlay calls unless a later approved phase explicitly changes that boundary.

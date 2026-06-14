@@ -2416,3 +2416,12 @@ ORO-9X is not permission to mutate wallet, ledger, or DB state.
 - ORO-9Z scope: actual_live_execution_final_execution_completion_record_review_approval_record_finalization_review_approval_record_finalization_review_approval_record_finalization_review_approval_record_finalization_review_approval_record_finalization_review_approval_record_finalization_boundary_only
 - No live execution, live OroPlay API call, route alias, runtime activation, runtime enablement, runtime authz, runtime acceptance, runtime finalization, runtime finalization review, runtime finalization review approval, runtime finalization review approval record, runtime finalization review approval record finalization, runtime finalization review approval record finalization review, runtime finalization review approval record finalization review approval, runtime finalization review approval record finalization review approval record, or runtime finalization review approval record finalization review approval record finalization is authorized.
 - No wallet mutation, ledger mutation, Prisma write, DB transaction, migration, or deploy is authorized.
+## ORO-10A Current
+
+- ORO-9Z closed.
+- ORO-10A current.
+- ORO-10A starts the new approval chain rollover boundary after the ORO-9 series closure.
+- ORO-10A is docs/static/mock/local smoke only.
+- ORO-10A scope: approval_chain_rollover_boundary_only
+- No live execution, live OroPlay API call, route alias, runtime mount, runtime activation, runtime enablement, runtime authz, runtime acceptance, runtime finalization, or runtime approval chain rollover is authorized.
+- No wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB access, or real-money behavior is authorized.

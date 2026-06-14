@@ -8479,3 +8479,11 @@ Coverage confirms ORO-9X is docs/static contract/mock helper/fixtures/local smok
 - Covers no live execution, no live OroPlay API call, no route alias, no wallet/ledger mutation, no Prisma/DB/migration/deploy.
 - Covers no runtime activation/enablement/authz/acceptance/finalization/finalization review/finalization review approval/finalization review approval record/finalization review approval record finalization/finalization review approval record finalization review/finalization review approval record finalization review approval/finalization review approval record finalization review approval record/finalization review approval record finalization review approval record finalization.
 - Scripts: smoke:oro-9z, smoke:oro-9z:detailed.
+## ORO-10A Approval Chain Rollover Boundary Coverage
+
+- ORO-10A approval-chain-rollover-boundary package smoke alias.
+- ORO-9Z closed; ORO-10A current.
+- ORO-10A is docs/static/mock/helper/fixtures/local smoke only.
+- Covers no live execution, no live OroPlay API call, no route alias, no runtime mount, no wallet/ledger mutation, no Prisma/DB/migration/deploy.
+- Covers no runtime activation/enablement/authz/acceptance/finalization or runtime approval chain rollover.
+- Scripts: smoke:oro-10a, smoke:oro-10a:detailed.

@@ -6137,3 +6137,13 @@ ORO-9X records finalization review approval record finalization review approval 
 - no live execution, no live OroPlay API call, no route alias, no wallet/ledger mutation, no Prisma/DB/migration/deploy.
 - no runtime activation/enablement/authz/acceptance/finalization/finalization review/finalization review approval/finalization review approval record/finalization review approval record finalization/finalization review approval record finalization review/finalization review approval record finalization review approval/finalization review approval record finalization review approval record/finalization review approval record finalization review approval record finalization.
 - package smoke aliases: smoke:oro-9z, smoke:oro-9z:detailed.
+## ORO-10A Approval Chain Rollover Boundary Mapping
+
+- ORO-9Z closed.
+- ORO-10A current.
+- ORO-10A starts the new approval chain rollover boundary after the ORO-9 series closure.
+- ORO-10A is docs/static/mock/local smoke only.
+- ORO-10A scope: approval_chain_rollover_boundary_only
+- no live execution, no live OroPlay API call, no route alias, no runtime mount, no wallet/ledger mutation, no Prisma/DB/migration/deploy.
+- no runtime activation/enablement/authz/acceptance/finalization or runtime approval chain rollover.
+- package smoke aliases: smoke:oro-10a, smoke:oro-10a:detailed.

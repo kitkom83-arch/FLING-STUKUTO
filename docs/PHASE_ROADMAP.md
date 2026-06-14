@@ -4928,3 +4928,12 @@ cover the boundary.
 - No live execution, live OroPlay API call, route alias, runtime activation, runtime enablement, runtime authz, runtime acceptance, runtime finalization, runtime finalization review, runtime finalization review approval, runtime finalization review approval record, runtime finalization review approval record finalization, runtime finalization review approval record finalization review, runtime finalization review approval record finalization review approval, runtime finalization review approval record finalization review approval record, or runtime finalization review approval record finalization review approval record finalization.
 - No wallet mutation, ledger mutation, Prisma write, DB transaction, migration, or deploy.
 - Validate with `smoke:oro-9z` and `smoke:oro-9z:detailed`.
+## ORO-10A current/approval chain rollover boundary
+
+- ORO-9Z closed.
+- ORO-10A current.
+- ORO-10A starts the new approval chain rollover boundary after the ORO-9 series closure.
+- ORO-10A remains docs/static/mock/local smoke only.
+- No live execution, live OroPlay API call, route alias, runtime mount, runtime activation, runtime enablement, runtime authz, runtime acceptance, runtime finalization, or runtime approval chain rollover.
+- No wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB access, or real-money behavior.
+- Validate with `smoke:oro-10a` and `smoke:oro-10a:detailed`.
