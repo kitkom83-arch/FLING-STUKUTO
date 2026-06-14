@@ -2503,3 +2503,21 @@ ORO-9X is not permission to mutate wallet, ledger, or DB state.
 - ORO-10G scope: approval_chain_rollover_review_decision_validation_gate_only
 - No runtime review decision, signed runtime approval, runtime approval, runtime authorization, activation, route mount, public alias, public callback alias, live execution, actual external call, live OroPlay API call, runtime approval chain rollover, wallet mutation, ledger mutation, DB runtime flow, Prisma write, migration, or deploy is authorized.
 - The next phase requires separate approval before any signed approval, runtime approval, runtime authorization, runtime rollover, mount, alias, mutation, live execution, actual external call, migration, or deploy.
+
+## ORO-10H Current
+
+- ORO-10A closed.
+- ORO-10B closed.
+- ORO-10C closed.
+- ORO-10D closed.
+- ORO-10E closed.
+- ORO-10F closed.
+- ORO-10G closed.
+- ORO-10H current.
+- ORO-10H is the approval chain rollover review decision finalization boundary after ORO-10G.
+- ORO-10H review decision finalization is static/mock only.
+- ORO-10H finalization is non-authorizing finalization only.
+- ORO-10H is docs/static/mock/local smoke only.
+- ORO-10H scope: approval_chain_rollover_review_decision_finalization_boundary_only
+- Runtime review decision, signed runtime approval, runtime authorization, activation, mount, wallet mutation, ledger mutation, DB mutation, actual external call, and game launch call remain absent.
+- Next step still requires separate approval.

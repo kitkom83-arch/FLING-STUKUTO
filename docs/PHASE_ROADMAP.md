@@ -5011,3 +5011,20 @@ cover the boundary.
 - ORO-10G remains docs/static/mock/local smoke only.
 - No runtime review decision, signed runtime approval, runtime approval, runtime authorization, activation, runtime mount, public alias, public callback alias, live execution, actual external call, live OroPlay API call, runtime approval chain rollover, wallet mutation, ledger mutation, DB runtime flow, Prisma write, migration, or deploy.
 - Validate with `smoke:oro-10g` and `smoke:oro-10g:detailed`.
+
+## ORO-10H current/approval chain rollover review decision finalization boundary
+
+- ORO-10A closed.
+- ORO-10B closed.
+- ORO-10C closed.
+- ORO-10D closed.
+- ORO-10E closed.
+- ORO-10F closed.
+- ORO-10G closed.
+- ORO-10H current.
+- ORO-10H records the approval chain rollover review decision finalization boundary after ORO-10G.
+- ORO-10H review decision finalization remains static/mock only.
+- ORO-10H finalization remains non-authorizing finalization only.
+- ORO-10H remains docs/static/mock/local smoke only.
+- No runtime review decision, signed runtime approval, runtime authorization, activation, mount, wallet mutation, ledger mutation, DB mutation, actual external call, or game launch call is introduced.
+- Validate with `smoke:oro-10h` and `smoke:oro-10h:detailed`.
