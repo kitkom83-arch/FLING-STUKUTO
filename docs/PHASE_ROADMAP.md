@@ -4968,3 +4968,16 @@ cover the boundary.
 - ORO-10D remains docs/static/mock/local smoke only.
 - No review decision, signed approval, signed runtime approval, runtime approval, runtime approval chain rollover, route mount, public alias, public callback alias, live execution, actual external call, live OroPlay API call, wallet mutation, ledger mutation, DB runtime flow, Prisma write, migration, or deploy.
 - Validate with `smoke:oro-10d` and `smoke:oro-10d:detailed`.
+
+## ORO-10E current/approval chain rollover review request submission gate
+
+- ORO-10A closed.
+- ORO-10B closed.
+- ORO-10C closed.
+- ORO-10D closed.
+- ORO-10E current.
+- ORO-10E records the approval chain rollover review request submission gate after ORO-10D.
+- ORO-10E review request submission remains static/mock only.
+- ORO-10E remains docs/static/mock/local smoke only.
+- No review decision, signed runtime approval, runtime approval, activation, runtime mount, public alias, public callback alias, live execution, actual external call, live OroPlay API call, runtime approval chain rollover, wallet mutation, ledger mutation, DB runtime flow, Prisma write, migration, or deploy.
+- Validate with `smoke:oro-10e` and `smoke:oro-10e:detailed`.

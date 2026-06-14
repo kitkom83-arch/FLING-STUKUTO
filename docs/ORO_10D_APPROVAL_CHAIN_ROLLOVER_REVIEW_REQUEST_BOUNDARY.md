@@ -139,6 +139,17 @@
 - npm run smoke:oro-10d
 - npm run smoke:oro-10d:detailed
 
+## ORO-10E Review Request Submission Gate Handoff
+
+- ORO-10D closed.
+- ORO-10E current.
+- ORO-10D closed for ORO-10E continuation.
+- docs/ORO_10E_APPROVAL_CHAIN_ROLLOVER_REVIEW_REQUEST_SUBMISSION_GATE.md
+- nextPhaseSeparateApprovalRequired = true
+- ORO-10E next phase = approval_chain_rollover_review_request_submission_gate_only
+- ORO-10E must remain docs/static/mock/local smoke only unless a separate later approval explicitly authorizes runtime behavior.
+- ORO-10E must not create review decision, signed approval, signed runtime approval, runtime approval, runtime approval chain rollover, route mount, public alias, wallet mutation, ledger mutation, DB runtime flow, Prisma write, migration, deploy, live execution, or actual external calls.
+
 ## Next Step Readiness
 
 - nextPhaseSeparateReviewDecisionRequired = true
