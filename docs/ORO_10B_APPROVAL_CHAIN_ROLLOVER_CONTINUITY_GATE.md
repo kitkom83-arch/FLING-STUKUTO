@@ -108,6 +108,17 @@
 - npm run smoke:oro-10b
 - npm run smoke:oro-10b:detailed
 
+## ORO-10C Evidence Gate Handoff
+
+- ORO-10B closed.
+- ORO-10C current.
+- ORO-10B closed for ORO-10C continuation.
+- docs/ORO_10C_APPROVAL_CHAIN_ROLLOVER_EVIDENCE_GATE.md
+- nextPhaseSeparateApprovalRequired = true
+- ORO-10C next phase = approval_chain_rollover_evidence_gate_only
+- ORO-10C must remain docs/static/mock/local smoke only unless a separate later approval explicitly authorizes runtime behavior.
+- ORO-10C must not create signed runtime approval, runtime approval chain rollover, route mount, public alias, wallet mutation, ledger mutation, DB mutation, Prisma write, migration, deploy, live execution, or actual external calls.
+
 ## Next Step Readiness
 
 - nextStepRequiresSeparateContinuityApproval = true

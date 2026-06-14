@@ -4946,3 +4946,14 @@ cover the boundary.
 - No runtime approval, activation, runtime mount, public alias, live execution, actual external call, live OroPlay API call, or runtime approval chain rollover.
 - No wallet mutation, ledger mutation, DB mutation, Prisma write, DB transaction, migration, deploy, production DB access, or real-money behavior.
 - Validate with `smoke:oro-10b` and `smoke:oro-10b:detailed`.
+## ORO-10C current/approval chain rollover evidence gate
+
+- ORO-10A closed.
+- ORO-10B closed.
+- ORO-10C current.
+- ORO-10C records approval chain rollover evidence gate coverage after ORO-10B.
+- ORO-10C remains docs/static/mock/local smoke only.
+- No signed runtime approval, runtime approval, activation, runtime mount, public alias, public callback alias, live execution, actual external call, live OroPlay API call, or runtime approval chain rollover.
+- No wallet mutation, ledger mutation, DB mutation, Prisma write, DB transaction, migration, deploy, production DB access, or real-money behavior.
+- The next phase requires separate approval before any runtime behavior.
+- Validate with `smoke:oro-10c` and `smoke:oro-10c:detailed`.
