@@ -1562,6 +1562,11 @@ const RELATED_FILES = [
   "src/local-smoke-tests/oro9xFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalBoundarySmoke.js",
   "src/local-smoke-tests/oro9xSmoke.js",
   "docs/ORO_9X_FINALIZATION_REVIEW_APPROVAL_RECORD_FINALIZATION_REVIEW_APPROVAL_RECORD_FINALIZATION_REVIEW_APPROVAL_RECORD_FINALIZATION_REVIEW_APPROVAL_RECORD_FINALIZATION_REVIEW_APPROVAL_BOUNDARY.md",
+  "src/game-provider-mock/oro9yFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordBoundary.js",
+  "src/game-provider-mock/oro9yFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordBoundaryFixtures.js",
+  "src/local-smoke-tests/oro9yFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordBoundarySmoke.js",
+  "src/local-smoke-tests/oro9ySmoke.js",
+  "docs/ORO_9Y_FINALIZATION_REVIEW_APPROVAL_RECORD_FINALIZATION_REVIEW_APPROVAL_RECORD_FINALIZATION_REVIEW_APPROVAL_RECORD_FINALIZATION_REVIEW_APPROVAL_RECORD_FINALIZATION_REVIEW_APPROVAL_RECORD_BOUNDARY.md",
   [
     "docs/ORO_8H_LIVE_TRAFFIC_ACTUAL_EXTERNAL_CALL",
     "EXECUTION_ACTUAL_LIVE_EXECUTION_EXECUTION_GATE.md",
@@ -2075,6 +2080,7 @@ const summary = [
   { key: "oro9v", label: "oro-9v", status: "PENDING" },
   { key: "oro9w", label: "oro-9w", status: "PENDING" },
   { key: "oro9x", label: "oro-9x", status: "PENDING" },
+  { key: "oro9y", label: "oro-9y", status: "PENDING" },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
   { key: "depositVerificationSource", label: "deposit-verification-source", status: "PENDING" },
   {
@@ -3599,6 +3605,21 @@ const steps = [
     name: "node --check oro9xSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/oro9xSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oro9yFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordBoundarySmoke",
+    command: nodeCommand,
+    args: [
+      "--check",
+      "src/local-smoke-tests/oro9yFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordBoundarySmoke.js",
+    ],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oro9ySmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oro9ySmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -5291,6 +5312,18 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oro-9x:detailed"]),
     summaryKey: "oro9x",
+  },
+  {
+    name: "npm run smoke:oro-9y",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oro-9y"]),
+    summaryKey: "oro9y",
+  },
+  {
+    name: "npm run smoke:oro-9y:detailed",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oro-9y:detailed"]),
+    summaryKey: "oro9y",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

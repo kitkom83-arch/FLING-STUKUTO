@@ -6117,3 +6117,13 @@ ORO-9X records finalization review approval record finalization review approval 
 - separateActualExecutionApprovalRequired=true
 - smoke:oro-9x
 - smoke:oro-9x:detailed
+## ORO-9Y Finalization Review Approval Record Finalization Review Approval Record Finalization Review Approval Record Finalization Review Approval Record Finalization Review Approval Record Boundary Mapping
+
+- ORO-9X closed.
+- ORO-9Y current.
+- ORO-9Y is docs/static/mock/local smoke only.
+- ORO-9Y scope: actual_live_execution_final_execution_completion_record_review_approval_record_finalization_review_approval_record_finalization_review_approval_record_finalization_review_approval_record_finalization_review_approval_record_finalization_review_approval_record_boundary_only
+- nextPhaseRequiresSeparateActualLiveExecutionFinalExecutionCompletionRecordReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordFinalizationReviewApprovalRecordBoundary=true
+- no live execution, no live OroPlay API call, no route alias, no wallet/ledger mutation, no Prisma/DB/migration/deploy.
+- no runtime activation/enablement/authz/acceptance/finalization/finalization review/finalization review approval/finalization review approval record/finalization review approval record finalization/finalization review approval record finalization review/finalization review approval record finalization review approval/finalization review approval record finalization review approval record.
+- package smoke aliases: smoke:oro-9y, smoke:oro-9y:detailed.
