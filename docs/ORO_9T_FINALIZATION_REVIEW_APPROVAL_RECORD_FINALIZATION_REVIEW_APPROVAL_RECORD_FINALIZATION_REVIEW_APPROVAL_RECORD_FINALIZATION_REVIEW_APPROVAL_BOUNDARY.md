@@ -133,3 +133,12 @@ Removing the ORO-9T docs, helper, fixtures, smoke aliases, and local smoke regis
 - separateActualExecutionApprovalRequired = true
 
 ORO-9T does not authorize any later runtime application. Any finalization review approval record, runtime acceptance, live execution, route alias, wallet/ledger mutation, Prisma write, DB transaction, migration, or deploy requires a separate explicit phase.
+
+## ORO-9U Continuation Note
+
+- ORO-9T closed
+- ORO-9U current
+- ORO-9U follows ORO-9T as the finalization review approval record finalization review approval record finalization review approval record finalization review approval record boundary.
+- docs/ORO_9U_FINALIZATION_REVIEW_APPROVAL_RECORD_FINALIZATION_REVIEW_APPROVAL_RECORD_FINALIZATION_REVIEW_APPROVAL_RECORD_FINALIZATION_REVIEW_APPROVAL_RECORD_BOUNDARY.md
+
+ORO-9U remains docs/static contract/mock helper/fixtures/local smoke only. It is no actual live execution, no final execution, no live OroPlay API call, no route alias, no runtime activation, no runtime enablement, no runtime authorization, no runtime acceptance, no runtime finalization, no runtime finalization review, no runtime finalization review approval, no runtime finalization review approval record, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, and no deploy.

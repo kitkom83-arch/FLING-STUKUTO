@@ -4860,3 +4860,16 @@ This phase follows ORO-9S and records static/mock finalization review approval r
 
 `smoke:oro-9t:detailed`
 cover the boundary.
+
+## ORO-9U current/finalization review approval record finalization review approval record finalization review approval record finalization review approval record boundary
+
+ORO-9T closed.
+
+ORO-9U = finalization review approval record finalization review approval record finalization review approval record finalization review approval record boundary only.
+
+This phase follows ORO-9T and records static/mock finalization review approval record finalization review approval record finalization review approval record finalization review approval record evidence only. It is no actual execution, no final execution, no live execution, no live OroPlay API call, no route alias, no runtime activation, no runtime enablement, no runtime authorization, no runtime acceptance, no runtime finalization, no runtime finalization review, no runtime finalization review approval, no runtime finalization review approval record, no wallet/ledger/DB mutation, no Prisma write, no DB transaction, no migration, and no deploy.
+
+`smoke:oro-9u`
+
+`smoke:oro-9u:detailed`
+cover the boundary.

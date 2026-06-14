@@ -2348,3 +2348,16 @@ Scope: actual_live_execution_final_execution_completion_record_review_approval_r
 
 ORO-9T remains docs/static contract/mock helper/fixtures/local smoke only. It is no actual execution, no final execution, no live execution, no live OroPlay API call, no route alias, no runtime activation, no runtime enablement, no runtime authorization, no runtime acceptance, no runtime finalization, no runtime finalization review, no runtime finalization review approval, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, and no deploy.
 ORO-9T is not permission to mutate wallet, ledger, or DB state.
+
+## ORO-9U Current
+
+ORO-9T closed. ORO-9U current.
+
+ORO-9U = finalization review approval record finalization review approval record finalization review approval record finalization review approval record boundary only.
+
+ORO-9U is the current finalization review approval record finalization review approval record finalization review approval record finalization review approval record boundary only.
+
+Scope: actual_live_execution_final_execution_completion_record_review_approval_record_finalization_review_approval_record_finalization_review_approval_record_finalization_review_approval_record_boundary_only
+
+ORO-9U remains docs/static contract/mock helper/fixtures/local smoke only. It is no actual execution, no final execution, no live execution, no live OroPlay API call, no route alias, no runtime activation, no runtime enablement, no runtime authorization, no runtime acceptance, no runtime finalization, no runtime finalization review, no runtime finalization review approval, no runtime finalization review approval record, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, and no deploy.
+ORO-9U is not permission to mutate wallet, ledger, or DB state.
