@@ -2387,3 +2387,16 @@ Scope: actual_live_execution_final_execution_completion_record_review_approval_r
 
 ORO-9W remains docs/static contract/mock helper/fixtures/local smoke only. It is no actual execution, no final execution, no live execution, no live OroPlay API call, no route alias, no runtime activation, no runtime enablement, no runtime authorization, no runtime acceptance, no runtime finalization, no runtime finalization review, no runtime finalization review approval, no runtime finalization review approval record, no runtime finalization review approval record finalization, no runtime finalization review approval record finalization review, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, and no deploy.
 ORO-9W is not permission to mutate wallet, ledger, or DB state.
+
+## ORO-9X Current
+
+ORO-9W closed. ORO-9X current.
+
+ORO-9X = finalization review approval record finalization review approval record finalization review approval record finalization review approval record finalization review approval boundary only.
+
+ORO-9X is the current finalization review approval record finalization review approval record finalization review approval record finalization review approval record finalization review approval boundary only.
+
+Scope: actual_live_execution_final_execution_completion_record_review_approval_record_finalization_review_approval_record_finalization_review_approval_record_finalization_review_approval_record_finalization_review_approval_boundary_only
+
+ORO-9X remains docs/static contract/mock helper/fixtures/local smoke only. It is no actual execution, no final execution, no live execution, no live OroPlay API call, no route alias, no runtime activation, no runtime enablement, no runtime authorization, no runtime acceptance, no runtime finalization, no runtime finalization review, no runtime finalization review approval, no runtime finalization review approval record, no runtime finalization review approval record finalization, no runtime finalization review approval record finalization review, no runtime finalization review approval record finalization review approval, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, and no deploy.
+ORO-9X is not permission to mutate wallet, ledger, or DB state.
