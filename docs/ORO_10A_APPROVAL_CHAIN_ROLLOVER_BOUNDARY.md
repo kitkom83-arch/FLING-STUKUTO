@@ -3,7 +3,9 @@
 ## Scope
 
 - ORO-9Z closed.
+- ORO-10A closed.
 - ORO-10A current.
+- ORO-10B current.
 - ORO-10A starts the ORO-10 series after the ORO-9 finalization review approval record chain closed.
 - ORO-10A = approval chain rollover boundary only.
 - ORO-10A is docs, static contract, mock helper, fixtures, and local smoke coverage only.
@@ -126,6 +128,8 @@
 ## Next Phase Readiness Note
 
 - nextPhaseRequiresSeparateApprovalChainRolloverReview = true
+- nextStepRequiresSeparateContinuityApproval = true
 - humanApprovalRequiredForRuntimeRollover = true
 - separateRuntimeApprovalRequired = true
+- ORO-10B continues from ORO-10A as the approval chain rollover continuity review gate in docs/ORO_10B_APPROVAL_CHAIN_ROLLOVER_CONTINUITY_GATE.md.
 - The next phase must remain separate from runtime activation, runtime enablement, runtime acceptance, runtime finalization, runtime approval chain rollover, wallet mutation, ledger mutation, Prisma writes, DB transactions, migrations, deploys, route aliases, runtime mounts, and live OroPlay calls unless a later approved phase explicitly changes that boundary.

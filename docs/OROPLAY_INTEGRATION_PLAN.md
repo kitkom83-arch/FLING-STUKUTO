@@ -2425,3 +2425,12 @@ ORO-9X is not permission to mutate wallet, ledger, or DB state.
 - ORO-10A scope: approval_chain_rollover_boundary_only
 - No live execution, live OroPlay API call, route alias, runtime mount, runtime activation, runtime enablement, runtime authz, runtime acceptance, runtime finalization, or runtime approval chain rollover is authorized.
 - No wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB access, or real-money behavior is authorized.
+## ORO-10B Current
+
+- ORO-10A closed.
+- ORO-10B current.
+- ORO-10B is the approval chain rollover continuity review gate after ORO-10A.
+- ORO-10B is docs/static/mock/local smoke only.
+- ORO-10B scope: approval_chain_rollover_continuity_review_gate_only
+- No runtime approval, activation, route mount, public alias, live execution, actual external call, live OroPlay API call, or runtime approval chain rollover is authorized.
+- No wallet mutation, ledger mutation, DB mutation, Prisma write, DB transaction, migration, deploy, production DB access, or real-money behavior is authorized.

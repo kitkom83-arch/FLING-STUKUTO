@@ -6147,3 +6147,13 @@ ORO-9X records finalization review approval record finalization review approval 
 - no live execution, no live OroPlay API call, no route alias, no runtime mount, no wallet/ledger mutation, no Prisma/DB/migration/deploy.
 - no runtime activation/enablement/authz/acceptance/finalization or runtime approval chain rollover.
 - package smoke aliases: smoke:oro-10a, smoke:oro-10a:detailed.
+## ORO-10B Approval Chain Rollover Continuity Gate Mapping
+
+- ORO-10A closed.
+- ORO-10B current.
+- ORO-10B is the approval chain rollover continuity review gate after ORO-10A.
+- ORO-10B is docs/static/mock/local smoke only.
+- ORO-10B scope: approval_chain_rollover_continuity_review_gate_only
+- no live execution, no actual external call, no live OroPlay API call, no route alias, no runtime mount, no wallet/ledger mutation, no Prisma/DB/migration/deploy.
+- no runtime approval, activation, enablement, authz, acceptance, finalization, or runtime approval chain rollover.
+- package smoke aliases: smoke:oro-10b, smoke:oro-10b:detailed.
