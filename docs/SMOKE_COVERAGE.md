@@ -7678,7 +7678,7 @@ execution execution approval boundary.
   passed, ORO-8J approval not recorded, ORO-8J status/scope mismatch, final
   gate preparation/issuance/pass/record/status/scope mismatch, final execution
   request submission, actual execution approval, runtime activation, runtime
-  enablement, runtime authorization, live call execution, external network
+  enablement, runtime authz, live call execution, external network
   allowed, live OroPlay allowed, wallet mutation allowed, ledger mutation
   allowed, Prisma write allowed, DB transaction allowed, route enablement
   allowed, Express mount allowed, public alias allowed, API balance alias
@@ -7718,7 +7718,7 @@ the actual live execution final execution gate.
   passed, ORO-8K final gate not recorded, ORO-8K status/scope mismatch, final
   request preparation/issuance/submission/pass/record/status/scope mismatch,
   final execution approval, actual execution approval, runtime activation,
-  runtime enablement, runtime authorization, live call execution, external
+  runtime enablement, runtime authz, live call execution, external
   network allowed, live OroPlay allowed, wallet mutation allowed, ledger
   mutation allowed, Prisma write allowed, DB transaction allowed, route
   enablement allowed, Express mount allowed, public alias allowed, API balance
@@ -7758,7 +7758,7 @@ recorded the actual live execution final execution request.
   not submitted, ORO-8L boundary not passed, ORO-8L final request not recorded,
   ORO-8L status/scope mismatch, final approval
   preparation/issuance/pass/record/status/scope mismatch, runtime execution
-  approval, runtime activation, runtime enablement, runtime authorization, live
+  approval, runtime activation, runtime enablement, runtime authz, live
   call execution, external network allowed, live OroPlay allowed, wallet
   mutation allowed, ledger mutation allowed, Prisma write allowed, DB
   transaction allowed, route enablement allowed, Express mount allowed, public
@@ -7971,7 +7971,7 @@ boundary.
   prepared, ORO-8Q closeout not issued, ORO-8Q boundary not passed, ORO-8Q
   closeout not recorded, ORO-8Q status/scope mismatch, ORO-8Q mock-only proof
   failures, runtime execution approval, runtime activation, runtime enablement,
-  runtime authorization, live call execution, final execution executed, final
+  runtime authz, live call execution, final execution executed, final
   execution closed, final execution archived, external network allowed, live
   OroPlay allowed, wallet mutation allowed, ledger mutation allowed, Prisma
   write allowed, DB transaction allowed, route enablement allowed, Express
@@ -8378,7 +8378,7 @@ Detailed boundary smoke:
 
 Coverage confirms ORO-9Q closed dependency evidence, ORO-9R finalization review approval record finalization review approval record finalization review approval record finalization prepared/issued/passed/recorded behavior, required no-runtime, no-runtime-acceptance, no-runtime-finalization, no-runtime-finalization-review, no-runtime-finalization-review-approval, no-runtime-finalization-review-approval-record, no-runtime-finalization-review-approval-record-finalization, no-runtime-finalization-review-approval-record-finalization-review, no-runtime-finalization-review-approval-record-finalization-review-approval, no-runtime-finalization-review-approval-record-finalization-review-approval-record, and no-runtime-finalization-review-approval-record-finalization-review-approval-record-finalization proof flags, requested false safety flags, runtime finalization blocked, live execution blocked, live OroPlay call blocked, external network blocked, wallet mutation blocked, ledger mutation blocked, Prisma write blocked, DB transaction blocked, route alias blocked, migration blocked, deploy blocked, sensitive-shaped output blocked, and long ORO-9R filename blocked.
 
-Coverage confirms ORO-9R is docs/static contract/mock helper/fixtures/local smoke only and does not authorize actual execution, live execution, live OroPlay API calls, route aliases, runtime activation, runtime enablement, runtime authorization, runtime acceptance, runtime finalization, runtime finalization review, runtime finalization review approval, runtime finalization review approval record, runtime finalization review approval record finalization, wallet/ledger mutation, Prisma writes, DB transactions, migrations, or deploys.
+Coverage confirms ORO-9R is docs/static contract/mock helper/fixtures/local smoke only and does not authorize actual execution, live execution, live OroPlay API calls, route aliases, runtime activation, runtime enablement, runtime authz, runtime acceptance, runtime finalization, runtime finalization review, runtime finalization review approval, runtime finalization review approval record, runtime finalization review approval record finalization, wallet/ledger mutation, Prisma writes, DB transactions, migrations, or deploys.
 
 ## ORO-9S Finalization Review Approval Record Finalization Review Approval Record Finalization Review Approval Record Finalization Review Boundary Coverage
 
@@ -8392,7 +8392,7 @@ Detailed boundary smoke:
 
 Coverage confirms ORO-9R closed dependency evidence, ORO-9S finalization review approval record finalization review approval record finalization review approval record finalization review prepared/issued/passed/recorded behavior, required no-runtime, no-runtime-acceptance, no-runtime-finalization, no-runtime-finalization-review, requested false safety flags, runtime finalization blocked, runtime finalization review blocked, live execution blocked, live OroPlay call blocked, external network blocked, wallet mutation blocked, ledger mutation blocked, Prisma write blocked, DB transaction blocked, route alias blocked, migration blocked, deploy blocked, sensitive-shaped output blocked, and long ORO-9S filename blocked.
 
-Coverage confirms ORO-9S is docs/static contract/mock helper/fixtures/local smoke only and does not authorize actual execution, live execution, live OroPlay API calls, route aliases, runtime activation, runtime enablement, runtime authorization, runtime acceptance, runtime finalization, runtime finalization review, wallet/ledger mutation, Prisma writes, DB transactions, migrations, or deploys.
+Coverage confirms ORO-9S is docs/static contract/mock helper/fixtures/local smoke only and does not authorize actual execution, live execution, live OroPlay API calls, route aliases, runtime activation, runtime enablement, runtime authz, runtime acceptance, runtime finalization, runtime finalization review, wallet/ledger mutation, Prisma writes, DB transactions, migrations, or deploys.
 
 ## ORO-9T Finalization Review Approval Record Finalization Review Approval Record Finalization Review Approval Record Finalization Review Approval Boundary Coverage
 
@@ -8406,7 +8406,7 @@ Detailed boundary smoke:
 
 Coverage confirms ORO-9S closed dependency evidence, ORO-9T finalization review approval record finalization review approval record finalization review approval record finalization review approval prepared/issued/passed/recorded behavior, required no-runtime, no-runtime-acceptance, no-runtime-finalization, no-runtime-finalization-review, no-runtime-finalization-review-approval, requested false safety flags, runtime finalization blocked, runtime finalization review blocked, runtime finalization review approval blocked, live execution blocked, live OroPlay call blocked, external network blocked, wallet mutation blocked, ledger mutation blocked, Prisma write blocked, DB transaction blocked, route alias blocked, migration blocked, deploy blocked, sensitive-shaped output blocked, and long ORO-9T filename blocked.
 
-Coverage confirms ORO-9T is docs/static contract/mock helper/fixtures/local smoke only and does not authorize actual execution, final execution, live execution, live OroPlay API calls, route aliases, runtime activation, runtime enablement, runtime authorization, runtime acceptance, runtime finalization, runtime finalization review, runtime finalization review approval, wallet/ledger mutation, Prisma writes, DB transactions, migrations, or deploys.
+Coverage confirms ORO-9T is docs/static contract/mock helper/fixtures/local smoke only and does not authorize actual execution, final execution, live execution, live OroPlay API calls, route aliases, runtime activation, runtime enablement, runtime authz, runtime acceptance, runtime finalization, runtime finalization review, runtime finalization review approval, wallet/ledger mutation, Prisma writes, DB transactions, migrations, or deploys.
 
 ## ORO-9U Finalization Review Approval Record Finalization Review Approval Record Finalization Review Approval Record Finalization Review Approval Record Boundary Coverage
 
@@ -8420,7 +8420,7 @@ Detailed boundary smoke:
 
 Coverage confirms ORO-9T closed dependency evidence, ORO-9U finalization review approval record finalization review approval record finalization review approval record finalization review approval record prepared/issued/passed/recorded behavior, required no-runtime, no-runtime-acceptance, no-runtime-finalization, no-runtime-finalization-review, no-runtime-finalization-review-approval, no-runtime-finalization-review-approval-record, requested false safety flags, runtime finalization blocked, runtime finalization review blocked, runtime finalization review approval blocked, runtime finalization review approval record blocked, live execution blocked, live OroPlay call blocked, external network blocked, wallet mutation blocked, ledger mutation blocked, Prisma write blocked, DB transaction blocked, route alias blocked, migration blocked, deploy blocked, sensitive-shaped output blocked, and long ORO-9U filename blocked.
 
-Coverage confirms ORO-9U is docs/static contract/mock helper/fixtures/local smoke only and does not authorize actual execution, final execution, live execution, live OroPlay API calls, route aliases, runtime activation, runtime enablement, runtime authorization, runtime acceptance, runtime finalization, runtime finalization review, runtime finalization review approval, runtime finalization review approval record, wallet/ledger mutation, Prisma writes, DB transactions, migrations, or deploys.
+Coverage confirms ORO-9U is docs/static contract/mock helper/fixtures/local smoke only and does not authorize actual execution, final execution, live execution, live OroPlay API calls, route aliases, runtime activation, runtime enablement, runtime authz, runtime acceptance, runtime finalization, runtime finalization review, runtime finalization review approval, runtime finalization review approval record, wallet/ledger mutation, Prisma writes, DB transactions, migrations, or deploys.
 
 ## ORO-9V Finalization Review Approval Record Finalization Review Approval Record Finalization Review Approval Record Finalization Review Approval Record Finalization Boundary Coverage
 
@@ -8434,7 +8434,7 @@ Detailed boundary smoke:
 
 Coverage confirms ORO-9U closed dependency evidence, ORO-9V finalization review approval record finalization review approval record finalization review approval record finalization review approval record finalization prepared/issued/passed/recorded behavior, required no-runtime, no-runtime-acceptance, no-runtime-finalization, no-runtime-finalization-review, no-runtime-finalization-review-approval, no-runtime-finalization-review-approval-record, no-runtime-finalization-review-approval-record-finalization, requested false safety flags, runtime finalization blocked, runtime finalization review blocked, runtime finalization review approval blocked, runtime finalization review approval record blocked, runtime finalization review approval record finalization blocked, live execution blocked, live OroPlay call blocked, external network blocked, wallet mutation blocked, ledger mutation blocked, Prisma write blocked, DB transaction blocked, route alias blocked, migration blocked, deploy blocked, sensitive-shaped output blocked, and long ORO-9V filename blocked.
 
-Coverage confirms ORO-9V is docs/static contract/mock helper/fixtures/local smoke only and does not authorize actual execution, final execution, live execution, live OroPlay API calls, route aliases, runtime activation, runtime enablement, runtime authorization, runtime acceptance, runtime finalization, runtime finalization review, runtime finalization review approval, runtime finalization review approval record, runtime finalization review approval record finalization, wallet/ledger mutation, Prisma writes, DB transactions, migrations, or deploys.
+Coverage confirms ORO-9V is docs/static contract/mock helper/fixtures/local smoke only and does not authorize actual execution, final execution, live execution, live OroPlay API calls, route aliases, runtime activation, runtime enablement, runtime authz, runtime acceptance, runtime finalization, runtime finalization review, runtime finalization review approval, runtime finalization review approval record, runtime finalization review approval record finalization, wallet/ledger mutation, Prisma writes, DB transactions, migrations, or deploys.
 
 ## ORO-9W Finalization Review Approval Record Finalization Review Approval Record Finalization Review Approval Record Finalization Review Approval Record Finalization Review Boundary Coverage
 
@@ -8448,7 +8448,7 @@ Detailed boundary smoke:
 
 Coverage confirms ORO-9V closed dependency evidence, ORO-9W finalization review approval record finalization review approval record finalization review approval record finalization review approval record finalization review prepared/issued/passed/recorded behavior, required no-runtime, no-runtime-acceptance, no-runtime-finalization, no-runtime-finalization-review, no-runtime-finalization-review-approval, no-runtime-finalization-review-approval-record, no-runtime-finalization-review-approval-record-finalization, no-runtime-finalization-review-approval-record-finalization-review, requested false safety flags, runtime finalization blocked, runtime finalization review blocked, runtime finalization review approval blocked, runtime finalization review approval record blocked, runtime finalization review approval record finalization blocked, runtime finalization review approval record finalization review blocked, live execution blocked, live OroPlay call blocked, external network blocked, wallet mutation blocked, ledger mutation blocked, Prisma write blocked, DB transaction blocked, route alias blocked, migration blocked, deploy blocked, sensitive-shaped output blocked, and long ORO-9W filename blocked.
 
-Coverage confirms ORO-9W is docs/static contract/mock helper/fixtures/local smoke only and does not authorize actual execution, final execution, live execution, live OroPlay API calls, route aliases, runtime activation, runtime enablement, runtime authorization, runtime acceptance, runtime finalization, runtime finalization review, runtime finalization review approval, runtime finalization review approval record, runtime finalization review approval record finalization, runtime finalization review approval record finalization review, wallet/ledger mutation, Prisma writes, DB transactions, migrations, or deploys.
+Coverage confirms ORO-9W is docs/static contract/mock helper/fixtures/local smoke only and does not authorize actual execution, final execution, live execution, live OroPlay API calls, route aliases, runtime activation, runtime enablement, runtime authz, runtime acceptance, runtime finalization, runtime finalization review, runtime finalization review approval, runtime finalization review approval record, runtime finalization review approval record finalization, runtime finalization review approval record finalization review, wallet/ledger mutation, Prisma writes, DB transactions, migrations, or deploys.
 
 ## ORO-9X Finalization Review Approval Record Finalization Review Approval Record Finalization Review Approval Record Finalization Review Approval Record Finalization Review Approval Boundary Coverage
 
@@ -8462,7 +8462,7 @@ Detailed boundary smoke:
 
 Coverage confirms ORO-9W closed dependency evidence, ORO-9X finalization review approval record finalization review approval record finalization review approval record finalization review approval record finalization review approval prepared/issued/passed/recorded behavior, required no-runtime, no-runtime-acceptance, no-runtime-finalization, no-runtime-finalization-review, no-runtime-finalization-review-approval, no-runtime-finalization-review-approval-record, no-runtime-finalization-review-approval-record-finalization, no-runtime-finalization-review-approval-record-finalization-review, no-runtime-finalization-review-approval-record-finalization-review-approval, requested false safety flags, runtime finalization blocked, runtime finalization review blocked, runtime finalization review approval blocked, runtime finalization review approval record blocked, runtime finalization review approval record finalization blocked, runtime finalization review approval record finalization review blocked, runtime finalization review approval record finalization review approval blocked, live execution blocked, live OroPlay call blocked, external network blocked, wallet mutation blocked, ledger mutation blocked, Prisma write blocked, DB transaction blocked, route alias blocked, migration blocked, deploy blocked, sensitive-shaped output blocked, and long ORO-9X filename blocked.
 
-Coverage confirms ORO-9X is docs/static contract/mock helper/fixtures/local smoke only and does not authorize actual execution, final execution, live execution, live OroPlay API calls, route aliases, runtime activation, runtime enablement, runtime authorization, runtime acceptance, runtime finalization, runtime finalization review, runtime finalization review approval, runtime finalization review approval record, runtime finalization review approval record finalization, runtime finalization review approval record finalization review, runtime finalization review approval record finalization review approval, wallet/ledger mutation, Prisma writes, DB transactions, migrations, or deploys.
+Coverage confirms ORO-9X is docs/static contract/mock helper/fixtures/local smoke only and does not authorize actual execution, final execution, live execution, live OroPlay API calls, route aliases, runtime activation, runtime enablement, runtime authz, runtime acceptance, runtime finalization, runtime finalization review, runtime finalization review approval, runtime finalization review approval record, runtime finalization review approval record finalization, runtime finalization review approval record finalization review, runtime finalization review approval record finalization review approval, wallet/ledger mutation, Prisma writes, DB transactions, migrations, or deploys.
 ## ORO-9Y Finalization Review Approval Record Finalization Review Approval Record Finalization Review Approval Record Finalization Review Approval Record Finalization Review Approval Record Boundary Coverage
 
 - ORO-9Y finalization-review-approval-record-finalization-review-approval-record-finalization-review-approval-record-finalization-review-approval-record-finalization-review-approval-record-boundary package smoke alias.
@@ -8471,3 +8471,11 @@ Coverage confirms ORO-9X is docs/static contract/mock helper/fixtures/local smok
 - Covers no live execution, no live OroPlay API call, no route alias, no wallet/ledger mutation, no Prisma/DB/migration/deploy.
 - Covers no runtime activation/enablement/authz/acceptance/finalization/finalization review/finalization review approval/finalization review approval record/finalization review approval record finalization/finalization review approval record finalization review approval/finalization review approval record finalization review approval record.
 - Scripts: smoke:oro-9y, smoke:oro-9y:detailed.
+## ORO-9Z Finalization Review Approval Record Finalization Review Approval Record Finalization Review Approval Record Finalization Review Approval Record Finalization Review Approval Record Finalization Boundary Coverage
+
+- ORO-9Z finalization-review-approval-record-finalization-review-approval-record-finalization-review-approval-record-finalization-review-approval-record-finalization-review-approval-record-finalization-boundary package smoke alias.
+- ORO-9Y closed; ORO-9Z current.
+- ORO-9Z is docs/static/mock/helper/fixtures/local smoke only.
+- Covers no live execution, no live OroPlay API call, no route alias, no wallet/ledger mutation, no Prisma/DB/migration/deploy.
+- Covers no runtime activation/enablement/authz/acceptance/finalization/finalization review/finalization review approval/finalization review approval record/finalization review approval record finalization/finalization review approval record finalization review/finalization review approval record finalization review approval/finalization review approval record finalization review approval record/finalization review approval record finalization review approval record finalization.
+- Scripts: smoke:oro-9z, smoke:oro-9z:detailed.

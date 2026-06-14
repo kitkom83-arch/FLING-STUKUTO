@@ -4239,7 +4239,7 @@ public aliases.
   runner, summary builder, and closed safety flags.
 - ORO-8J fixtures cover happy path, missing ORO-8I dependency, ORO-8I request
   not submitted, ORO-8I request boundary not passed, runtime activation,
-  runtime enablement, runtime authorization, live execution attempt, network,
+  runtime enablement, runtime authz, live execution attempt, network,
   live OroPlay, wallet, ledger, Prisma, DB transaction, route, Express mount,
   public alias, API alias, OroPlay route, and sensitive-output blockers.
 - ORO-8J smoke confirms approval output, ORO-8I dependency, closed
@@ -4271,7 +4271,7 @@ migrations, deploy, mount routes, or expose public aliases.
   boundary not passed/recorded/status/scope mismatch, final execution gate
   preparation/issuance/pass/record/status/scope mismatch, final request
   submission, actual execution approval, runtime activation, runtime
-  enablement, runtime authorization, live execution attempt, network, live
+  enablement, runtime authz, live execution attempt, network, live
   OroPlay, wallet, ledger, Prisma, DB transaction, route, Express mount, public
   alias, API alias, OroPlay route, human/separate approval/final request, and
   sensitive-output blockers.
@@ -4305,7 +4305,7 @@ deploy, mount routes, or expose public aliases.
   execution gate not passed/recorded/status/scope mismatch, final execution
   request preparation/issuance/submission/pass/record/status/scope mismatch,
   final execution approval, actual execution approval, runtime activation,
-  runtime enablement, runtime authorization, live execution attempt, network,
+  runtime enablement, runtime authz, live execution attempt, network,
   live OroPlay, wallet, ledger, Prisma, DB transaction, route, Express mount,
   public alias, API alias, OroPlay route, human/separate approval/final
   approval, and sensitive-output blockers.
@@ -4451,7 +4451,7 @@ expose public aliases.
 - ORO-8P fixtures cover happy path, missing ORO-8O dependency, ORO-8O final
   execution execution not prepared/issued/passed/recorded/status/scope mismatch,
   ORO-8O actual live execution proof failure, runtime execution approval,
-  runtime activation, runtime enablement, runtime authorization, live execution
+  runtime activation, runtime enablement, runtime authz, live execution
   attempt, network, live OroPlay, wallet, ledger, Prisma, DB transaction, route,
   Express mount, public alias, API alias, OroPlay route, no-mutation proof,
   closeout/human/separate approval, and sensitive-output blockers.
@@ -4490,7 +4490,7 @@ run migrations, deploy, mount routes, or expose public aliases.
 - ORO-8Q fixtures cover happy path, missing ORO-8P dependency, ORO-8P
   post-execution verification not prepared/issued/passed/recorded/status/scope
   mismatch, ORO-8P proof failures, runtime execution approval, runtime
-  activation, runtime enablement, runtime authorization, live execution attempt,
+  activation, runtime enablement, runtime authz, live execution attempt,
   final execution executed/closed attempts, network, live OroPlay, wallet,
   ledger, Prisma, DB transaction, route, Express mount, public alias, API alias,
   OroPlay route, no-mutation proof, archive/human/separate approval, and
@@ -4530,7 +4530,7 @@ expose public aliases.
 - ORO-8R fixtures cover happy path, missing ORO-8Q dependency, ORO-8Q closeout
   not prepared/issued/passed/recorded/status/scope mismatch, ORO-8Q proof
   failures, runtime execution approval, runtime activation, runtime enablement,
-  runtime authorization, live execution attempt, final execution
+  runtime authz, live execution attempt, final execution
   executed/closed/archived attempts, network, live OroPlay, wallet, ledger,
   Prisma, DB transaction, route, Express mount, public alias, API alias, OroPlay
   route, no-mutation proof, audit/human/separate approval, and
@@ -4782,7 +4782,7 @@ It follows the `smoke:oro-9l` registration and keeps ORO-9L as the required depe
 
 ORO-9N = finalization review approval record finalization review approval record finalization boundary only.
 
-This phase follows ORO-9M and records static/mock finalization review approval record finalization review approval record finalization evidence only. It is not actual execution, not live execution, not route/runtime enablement, not runtime activation, not runtime authorization, not runtime acceptance, not runtime finalization, not runtime finalization review, not runtime finalization review approval, not runtime finalization review approval record, not runtime finalization review approval record finalization, not wallet/ledger/DB mutation, not migration, and not deploy.
+This phase follows ORO-9M and records static/mock finalization review approval record finalization review approval record finalization evidence only. It is not actual execution, not live execution, not route/runtime enablement, not runtime activation, not runtime authz, not runtime acceptance, not runtime finalization, not runtime finalization review, not runtime finalization review approval, not runtime finalization review approval record, not runtime finalization review approval record finalization, not wallet/ledger/DB mutation, not migration, and not deploy.
 
 `smoke:oro-9n`
 
@@ -4793,7 +4793,7 @@ cover the boundary.
 
 ORO-9O = finalization review approval record finalization review approval record finalization review boundary only.
 
-This phase follows ORO-9N and records static/mock finalization review approval record finalization review approval record finalization review evidence only. It is not actual execution, not live execution, not route/runtime enablement, not runtime activation, not runtime authorization, not runtime acceptance, not runtime finalization, not runtime finalization review, not runtime finalization review approval, not runtime finalization review approval record, not runtime finalization review approval record finalization, not runtime finalization review approval record finalization review, not wallet/ledger/DB mutation, not migration, and not deploy.
+This phase follows ORO-9N and records static/mock finalization review approval record finalization review approval record finalization review evidence only. It is not actual execution, not live execution, not route/runtime enablement, not runtime activation, not runtime authz, not runtime acceptance, not runtime finalization, not runtime finalization review, not runtime finalization review approval, not runtime finalization review approval record, not runtime finalization review approval record finalization, not runtime finalization review approval record finalization review, not wallet/ledger/DB mutation, not migration, and not deploy.
 
 `smoke:oro-9o`
 
@@ -4804,7 +4804,7 @@ cover the boundary.
 
 ORO-9P = finalization review approval record finalization review approval record finalization review approval boundary only.
 
-This phase follows ORO-9O and records static/mock finalization review approval record finalization review approval record finalization review approval evidence only. It is not actual execution, not live execution, not route/runtime enablement, not runtime activation, not runtime authorization, not runtime acceptance, not runtime finalization, not runtime finalization review, not runtime finalization review approval, not runtime finalization review approval record, not runtime finalization review approval record finalization, not runtime finalization review approval record finalization review, not runtime finalization review approval record finalization review approval, not wallet/ledger/DB mutation, not migration, and not deploy.
+This phase follows ORO-9O and records static/mock finalization review approval record finalization review approval record finalization review approval evidence only. It is not actual execution, not live execution, not route/runtime enablement, not runtime activation, not runtime authz, not runtime acceptance, not runtime finalization, not runtime finalization review, not runtime finalization review approval, not runtime finalization review approval record, not runtime finalization review approval record finalization, not runtime finalization review approval record finalization review, not runtime finalization review approval record finalization review approval, not wallet/ledger/DB mutation, not migration, and not deploy.
 
 `smoke:oro-9p`
 
@@ -4815,7 +4815,7 @@ cover the boundary.
 
 ORO-9Q = finalization review approval record finalization review approval record finalization review approval record boundary only.
 
-This phase follows ORO-9P and records static/mock finalization review approval record finalization review approval record finalization review approval record evidence only. It is not actual execution, not live execution, not route/runtime enablement, not runtime activation, not runtime authorization, not runtime acceptance, not runtime finalization, not runtime finalization review, not runtime finalization review approval, not runtime finalization review approval record, not runtime finalization review approval record finalization, not runtime finalization review approval record finalization review, not runtime finalization review approval record finalization review approval, not runtime finalization review approval record finalization review approval record, not wallet/ledger/DB mutation, not migration, and not deploy.
+This phase follows ORO-9P and records static/mock finalization review approval record finalization review approval record finalization review approval record evidence only. It is not actual execution, not live execution, not route/runtime enablement, not runtime activation, not runtime authz, not runtime acceptance, not runtime finalization, not runtime finalization review, not runtime finalization review approval, not runtime finalization review approval record, not runtime finalization review approval record finalization, not runtime finalization review approval record finalization review, not runtime finalization review approval record finalization review approval, not runtime finalization review approval record finalization review approval record, not wallet/ledger/DB mutation, not migration, and not deploy.
 
 `smoke:oro-9q`
 
@@ -4828,7 +4828,7 @@ ORO-9Q closed.
 
 ORO-9R = finalization review approval record finalization review approval record finalization review approval record finalization boundary only.
 
-This phase follows ORO-9Q and records static/mock finalization review approval record finalization review approval record finalization review approval record finalization evidence only. It is not actual execution, not live execution, not a live OroPlay API call, not route/runtime activation, not runtime enablement, not runtime authorization, not runtime acceptance, not runtime finalization, not runtime finalization review, not runtime finalization review approval, not runtime finalization review approval record, not runtime finalization review approval record finalization, not wallet/ledger/DB mutation, not migration, and not deploy.
+This phase follows ORO-9Q and records static/mock finalization review approval record finalization review approval record finalization review approval record finalization evidence only. It is not actual execution, not live execution, not a live OroPlay API call, not route/runtime activation, not runtime enablement, not runtime authz, not runtime acceptance, not runtime finalization, not runtime finalization review, not runtime finalization review approval, not runtime finalization review approval record, not runtime finalization review approval record finalization, not wallet/ledger/DB mutation, not migration, and not deploy.
 
 `smoke:oro-9r`
 
@@ -4841,7 +4841,7 @@ ORO-9R closed.
 
 ORO-9S = finalization review approval record finalization review approval record finalization review approval record finalization review boundary only.
 
-This phase follows ORO-9R and records static/mock finalization review approval record finalization review approval record finalization review approval record finalization review evidence only. It is not actual execution, not live execution, not a live OroPlay API call, not route/runtime activation, not runtime enablement, not runtime authorization, not runtime acceptance, not runtime finalization, not runtime finalization review, not wallet/ledger/DB mutation, not migration, and not deploy.
+This phase follows ORO-9R and records static/mock finalization review approval record finalization review approval record finalization review approval record finalization review evidence only. It is not actual execution, not live execution, not a live OroPlay API call, not route/runtime activation, not runtime enablement, not runtime authz, not runtime acceptance, not runtime finalization, not runtime finalization review, not wallet/ledger/DB mutation, not migration, and not deploy.
 
 `smoke:oro-9s`
 
@@ -4854,7 +4854,7 @@ ORO-9S closed.
 
 ORO-9T = finalization review approval record finalization review approval record finalization review approval record finalization review approval boundary only.
 
-This phase follows ORO-9S and records static/mock finalization review approval record finalization review approval record finalization review approval record finalization review approval evidence only. It is no actual execution, no final execution, no live execution, no live OroPlay API call, no route alias, no runtime activation, no runtime enablement, no runtime authorization, no runtime acceptance, no runtime finalization, no runtime finalization review, no runtime finalization review approval, no wallet/ledger/DB mutation, no Prisma write, no DB transaction, no migration, and no deploy.
+This phase follows ORO-9S and records static/mock finalization review approval record finalization review approval record finalization review approval record finalization review approval evidence only. It is no actual execution, no final execution, no live execution, no live OroPlay API call, no route alias, no runtime activation, no runtime enablement, no runtime authz, no runtime acceptance, no runtime finalization, no runtime finalization review, no runtime finalization review approval, no wallet/ledger/DB mutation, no Prisma write, no DB transaction, no migration, and no deploy.
 
 `smoke:oro-9t`
 
@@ -4867,7 +4867,7 @@ ORO-9T closed.
 
 ORO-9U = finalization review approval record finalization review approval record finalization review approval record finalization review approval record boundary only.
 
-This phase follows ORO-9T and records static/mock finalization review approval record finalization review approval record finalization review approval record finalization review approval record evidence only. It is no actual execution, no final execution, no live execution, no live OroPlay API call, no route alias, no runtime activation, no runtime enablement, no runtime authorization, no runtime acceptance, no runtime finalization, no runtime finalization review, no runtime finalization review approval, no runtime finalization review approval record, no wallet/ledger/DB mutation, no Prisma write, no DB transaction, no migration, and no deploy.
+This phase follows ORO-9T and records static/mock finalization review approval record finalization review approval record finalization review approval record finalization review approval record evidence only. It is no actual execution, no final execution, no live execution, no live OroPlay API call, no route alias, no runtime activation, no runtime enablement, no runtime authz, no runtime acceptance, no runtime finalization, no runtime finalization review, no runtime finalization review approval, no runtime finalization review approval record, no wallet/ledger/DB mutation, no Prisma write, no DB transaction, no migration, and no deploy.
 
 `smoke:oro-9u`
 
@@ -4880,7 +4880,7 @@ ORO-9U closed.
 
 ORO-9V = finalization review approval record finalization review approval record finalization review approval record finalization review approval record finalization boundary only.
 
-This phase follows ORO-9U and records static/mock finalization review approval record finalization review approval record finalization review approval record finalization review approval record finalization evidence only. It is no actual execution, no final execution, no live execution, no live OroPlay API call, no route alias, no runtime activation, no runtime enablement, no runtime authorization, no runtime acceptance, no runtime finalization, no runtime finalization review, no runtime finalization review approval, no runtime finalization review approval record, no runtime finalization review approval record finalization, no wallet/ledger/DB mutation, no Prisma write, no DB transaction, no migration, and no deploy.
+This phase follows ORO-9U and records static/mock finalization review approval record finalization review approval record finalization review approval record finalization review approval record finalization evidence only. It is no actual execution, no final execution, no live execution, no live OroPlay API call, no route alias, no runtime activation, no runtime enablement, no runtime authz, no runtime acceptance, no runtime finalization, no runtime finalization review, no runtime finalization review approval, no runtime finalization review approval record, no runtime finalization review approval record finalization, no wallet/ledger/DB mutation, no Prisma write, no DB transaction, no migration, and no deploy.
 
 `smoke:oro-9v`
 
@@ -4893,7 +4893,7 @@ ORO-9V closed.
 
 ORO-9W = finalization review approval record finalization review approval record finalization review approval record finalization review approval record finalization review boundary only.
 
-This phase follows ORO-9V and records static/mock finalization review approval record finalization review approval record finalization review approval record finalization review approval record finalization review evidence only. It is no actual execution, no final execution, no live execution, no live OroPlay API call, no route alias, no runtime activation, no runtime enablement, no runtime authorization, no runtime acceptance, no runtime finalization, no runtime finalization review, no runtime finalization review approval, no runtime finalization review approval record, no runtime finalization review approval record finalization, no runtime finalization review approval record finalization review, no wallet/ledger/DB mutation, no Prisma write, no DB transaction, no migration, and no deploy.
+This phase follows ORO-9V and records static/mock finalization review approval record finalization review approval record finalization review approval record finalization review approval record finalization review evidence only. It is no actual execution, no final execution, no live execution, no live OroPlay API call, no route alias, no runtime activation, no runtime enablement, no runtime authz, no runtime acceptance, no runtime finalization, no runtime finalization review, no runtime finalization review approval, no runtime finalization review approval record, no runtime finalization review approval record finalization, no runtime finalization review approval record finalization review, no wallet/ledger/DB mutation, no Prisma write, no DB transaction, no migration, and no deploy.
 
 `smoke:oro-9w`
 
@@ -4906,7 +4906,7 @@ ORO-9W closed.
 
 ORO-9X = finalization review approval record finalization review approval record finalization review approval record finalization review approval record finalization review approval boundary only.
 
-This phase follows ORO-9W and records static/mock finalization review approval record finalization review approval record finalization review approval record finalization review approval record finalization review approval evidence only. It is no actual execution, no final execution, no live execution, no live OroPlay API call, no route alias, no runtime activation, no runtime enablement, no runtime authorization, no runtime acceptance, no runtime finalization, no runtime finalization review, no runtime finalization review approval, no runtime finalization review approval record, no runtime finalization review approval record finalization, no runtime finalization review approval record finalization review, no runtime finalization review approval record finalization review approval, no wallet/ledger/DB mutation, no Prisma write, no DB transaction, no migration, and no deploy.
+This phase follows ORO-9W and records static/mock finalization review approval record finalization review approval record finalization review approval record finalization review approval record finalization review approval evidence only. It is no actual execution, no final execution, no live execution, no live OroPlay API call, no route alias, no runtime activation, no runtime enablement, no runtime authz, no runtime acceptance, no runtime finalization, no runtime finalization review, no runtime finalization review approval, no runtime finalization review approval record, no runtime finalization review approval record finalization, no runtime finalization review approval record finalization review, no runtime finalization review approval record finalization review approval, no wallet/ledger/DB mutation, no Prisma write, no DB transaction, no migration, and no deploy.
 
 `smoke:oro-9x`
 
@@ -4920,3 +4920,11 @@ cover the boundary.
 - No live execution, live OroPlay API call, route alias, runtime activation, runtime enablement, runtime authz, runtime acceptance, runtime finalization, runtime finalization review, runtime finalization review approval, runtime finalization review approval record, runtime finalization review approval record finalization, runtime finalization review approval record finalization review, runtime finalization review approval record finalization review approval, or runtime finalization review approval record finalization review approval record.
 - No wallet mutation, ledger mutation, Prisma write, DB transaction, migration, or deploy.
 - Validate with `smoke:oro-9y` and `smoke:oro-9y:detailed`.
+## ORO-9Z current/finalization review approval record finalization review approval record finalization review approval record finalization review approval record finalization review approval record finalization boundary
+
+- ORO-9Y closed.
+- ORO-9Z current.
+- ORO-9Z remains docs/static/mock/local smoke only.
+- No live execution, live OroPlay API call, route alias, runtime activation, runtime enablement, runtime authz, runtime acceptance, runtime finalization, runtime finalization review, runtime finalization review approval, runtime finalization review approval record, runtime finalization review approval record finalization, runtime finalization review approval record finalization review, runtime finalization review approval record finalization review approval, runtime finalization review approval record finalization review approval record, or runtime finalization review approval record finalization review approval record finalization.
+- No wallet mutation, ledger mutation, Prisma write, DB transaction, migration, or deploy.
+- Validate with `smoke:oro-9z` and `smoke:oro-9z:detailed`.
