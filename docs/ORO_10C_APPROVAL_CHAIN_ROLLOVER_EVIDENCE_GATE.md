@@ -117,6 +117,17 @@
 - npm run smoke:oro-10c
 - npm run smoke:oro-10c:detailed
 
+## ORO-10D Review Request Boundary Handoff
+
+- ORO-10C closed.
+- ORO-10D current.
+- ORO-10C closed for ORO-10D continuation.
+- docs/ORO_10D_APPROVAL_CHAIN_ROLLOVER_REVIEW_REQUEST_BOUNDARY.md
+- nextPhaseSeparateReviewDecisionRequired = true
+- ORO-10D next phase = approval_chain_rollover_review_request_boundary_only
+- ORO-10D must remain docs/static/mock/local smoke only unless a separate later approval explicitly authorizes runtime behavior.
+- ORO-10D must not create review decision, signed approval, signed runtime approval, runtime approval, runtime approval chain rollover, route mount, public alias, wallet mutation, ledger mutation, DB runtime flow, Prisma write, migration, deploy, live execution, or actual external calls.
+
 ## Next Step Readiness
 
 - nextPhaseSeparateApprovalRequired = true
