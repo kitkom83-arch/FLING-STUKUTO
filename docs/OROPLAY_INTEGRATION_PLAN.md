@@ -2603,3 +2603,26 @@ ORO-9X is not permission to mutate wallet, ledger, or DB state.
 - ORO-10L scope: approval_chain_rollover_signed_approval_artifact_verification_record_boundary_only
 - Signed runtime approval, signed approval artifact acceptance, actual signed approval verification, verification-record runtime authorization, runtime authorization, activation, mount, wallet mutation, ledger mutation, DB mutation, actual external call, and game launch call remain absent.
 - Next step still requires separate approval.
+
+## ORO-10M Current
+
+- ORO-10A closed.
+- ORO-10B closed.
+- ORO-10C closed.
+- ORO-10D closed.
+- ORO-10E closed.
+- ORO-10F closed.
+- ORO-10G closed.
+- ORO-10H closed.
+- ORO-10I closed.
+- ORO-10J closed.
+- ORO-10K closed.
+- ORO-10L closed.
+- ORO-10M current.
+- ORO-10M is the approval chain rollover signed approval artifact verification record review gate after ORO-10L.
+- ORO-10M signed approval artifact verification record review is static/mock only.
+- ORO-10M verification record review is non-authorizing verification record review only.
+- ORO-10M is docs/static/mock/local smoke only.
+- ORO-10M scope: approval_chain_rollover_signed_approval_artifact_verification_record_review_gate_only
+- Signed runtime approval, signed approval artifact acceptance, actual signed approval verification, verification-record runtime authorization, verification-record-review runtime authorization, runtime authorization, activation, mount, wallet mutation, ledger mutation, DB mutation, actual external call, and game launch call remain absent.
+- Next step still requires separate approval.
