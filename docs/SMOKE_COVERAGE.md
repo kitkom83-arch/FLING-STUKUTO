@@ -8617,3 +8617,15 @@ Coverage confirms ORO-9X is docs/static contract/mock helper/fixtures/local smok
 - Covers no signed runtime approval, no signed approval artifact acceptance, no actual signed approval verification, no verification-record runtime authorization, no verification-record-review runtime authorization, no runtime review decision, no runtime authorization, no runtime approval chain rollover, no runtime mount, no route alias, no public alias, no live execution, no actual external call, no game launch call, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, and no deploy.
 - Covers no secret-shaped output, no long ORO-10M filename, and separate next-phase approval.
 - Scripts: smoke:oro-10m, smoke:oro-10m:detailed.
+
+## ORO-10N Approval Chain Rollover Signed Approval Artifact Verification Record Review Finalization Boundary Coverage
+
+- ORO-10N approval-chain-rollover-signed-approval-artifact-verification-record-review-finalization-boundary package smoke alias.
+- ORO-10A closed; ORO-10B closed; ORO-10C closed; ORO-10D closed; ORO-10E closed; ORO-10F closed; ORO-10G closed; ORO-10H closed; ORO-10I closed; ORO-10J closed; ORO-10K closed; ORO-10L closed; ORO-10M closed; ORO-10N current.
+- ORO-10M closed; ORO-10N current.
+- ORO-10N is docs/static/mock/helper/fixtures/local smoke only.
+- Covers ORO-10M predecessor validation, ORO-10C evidence gate, ORO-10D review request boundary, ORO-10E review request submission gate, ORO-10F review decision intake gate, ORO-10G review decision validation gate, ORO-10H review decision finalization boundary, ORO-10I signed approval request boundary, ORO-10J signed approval artifact intake gate, ORO-10K signed approval artifact verification gate, ORO-10L signed approval artifact verification record boundary, and ORO-10M signed approval artifact verification record review gate.
+- Covers static/mock signed approval artifact verification record review finalization, non-authorizing review finalization, and separate next-step approval requirement.
+- Covers no signed runtime approval, no signed approval artifact acceptance, no actual signed approval verification, no verification-record runtime authorization, no verification-record-review runtime authorization, no review-finalization runtime authorization, no runtime review decision, no runtime authorization, no runtime approval chain rollover, no runtime mount, no route alias, no public alias, no live execution, no actual external call, no game launch call, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, and no deploy.
+- Covers no secret-shaped output, no long ORO-10N filename, and separate next-phase approval.
+- Scripts: smoke:oro-10n, smoke:oro-10n:detailed.

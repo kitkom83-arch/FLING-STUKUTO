@@ -6358,3 +6358,31 @@ ORO-9X records finalization review approval record finalization review approval 
 - local smoke: src/local-smoke-tests/oro10mApprovalChainRolloverSignedApprovalArtifactVerificationRecordReviewGateSmoke.js
 - wrapper smoke: src/local-smoke-tests/oro10mSmoke.js
 - package smoke aliases: smoke:oro-10m, smoke:oro-10m:detailed.
+
+## ORO-10N Approval Chain Rollover Signed Approval Artifact Verification Record Review Finalization Boundary Mapping
+
+- ORO-10A closed.
+- ORO-10B closed.
+- ORO-10C closed.
+- ORO-10D closed.
+- ORO-10E closed.
+- ORO-10F closed.
+- ORO-10G closed.
+- ORO-10H closed.
+- ORO-10I closed.
+- ORO-10J closed.
+- ORO-10K closed.
+- ORO-10L closed.
+- ORO-10M closed.
+- ORO-10N current.
+- ORO-10N is the approval chain rollover signed approval artifact verification record review finalization boundary after ORO-10M.
+- ORO-10N signed approval artifact verification record review finalization is static/mock only.
+- ORO-10N review finalization is non-authorizing review finalization only.
+- ORO-10N is docs/static/mock/local smoke only.
+- ORO-10N scope: approval_chain_rollover_signed_approval_artifact_verification_record_review_finalization_boundary_only
+- ORO-10N does not issue signed runtime approval, signed approval artifact acceptance, actual signed approval verification, runtime authorization, activation, mount, wallet mutation, ledger mutation, DB mutation, actual external call, or game launch call.
+- helper: src/game-provider-mock/oro10nApprovalChainRolloverSignedApprovalArtifactVerificationRecordReviewFinalizationBoundary.js
+- fixtures: src/game-provider-mock/oro10nApprovalChainRolloverSignedApprovalArtifactVerificationRecordReviewFinalizationBoundaryFixtures.js
+- local smoke: src/local-smoke-tests/oro10nApprovalChainRolloverSignedApprovalArtifactVerificationRecordReviewFinalizationBoundarySmoke.js
+- wrapper smoke: src/local-smoke-tests/oro10nSmoke.js
+- package smoke aliases: smoke:oro-10n, smoke:oro-10n:detailed.
