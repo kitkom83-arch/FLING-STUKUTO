@@ -203,3 +203,18 @@
 - nextStepRequiresSeparateApproval = true
 - nextStepRequiresSeparateRuntimeApproval = true
 - Any later final approval issued, signed runtime approval, signed approval artifact acceptance, final approval decision runtime authorization, runtime review decision, runtime approval, runtime authorization, activation, mount, alias, wallet mutation, ledger mutation, DB mutation, Prisma write, migration, deploy, live execution, game launch call, or actual external call requires a separate explicit approval.
+
+## ORO-10T Handoff
+
+- ORO-10S closed.
+- ORO-10T current.
+- ORO-10T continues from ORO-10S.
+- ORO-10T next phase = approval_chain_rollover_final_approval_decision_record_verification_gate_only
+- ORO-10T final approval decision record verification is static/mock only.
+- ORO-10T final approval decision record verification does not issue final approval.
+- ORO-10T final approval decision record verification does not issue signed runtime approval.
+- ORO-10T final approval decision record verification does not accept a signed approval artifact.
+- ORO-10T final approval decision record verification does not perform actual signed approval artifact verification.
+- ORO-10T record verification does not authorize runtime.
+- ORO-10T record verification does not mount routes, create public aliases, authorize external calls, authorize game launch, mutate wallet, mutate ledger, write Prisma, open DB transactions, run migrations, deploy, touch production DB, or touch real-money state.
+- docs/ORO_10T_FINAL_APPROVAL_DECISION_RECORD_VERIFICATION_GATE.md

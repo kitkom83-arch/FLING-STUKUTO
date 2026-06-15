@@ -6537,3 +6537,29 @@ ORO-9X records finalization review approval record finalization review approval 
 - local smoke: src/local-smoke-tests/oro10sFinalApprovalDecisionRecordGateSmoke.js
 - wrapper smoke: src/local-smoke-tests/oro10sSmoke.js
 - package smoke aliases: smoke:oro-10s, smoke:oro-10s:detailed.
+
+## ORO-10T Final Approval Decision Record Verification Gate Mapping
+
+- ORO-10S closed.
+- ORO-10T current.
+- ORO-10T is the final approval decision record verification gate after ORO-10S.
+- ORO-10T final approval decision record verification is verification-only and static/mock only.
+- ORO-10T final approval decision record verification compares static record metadata and deterministic digest evidence only.
+- ORO-10T verified_for_review_only is not final approval issued.
+- ORO-10T record verification pass is not signed runtime approval.
+- ORO-10T record verification digest is not actual signed approval artifact verification.
+- ORO-10T signed approval artifact acceptance is not issued.
+- ORO-10T actual signed approval artifact verification is not performed.
+- ORO-10T runtime authorization is not issued.
+- ORO-10T final approval is not issued.
+- ORO-10T signed runtime approval is not issued.
+- ORO-10T route mount and public alias authorization are not issued.
+- ORO-10T live execution, external call, and game launch are not authorized.
+- ORO-10T wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior are not authorized.
+- ORO-10T is docs/static/mock/local smoke only.
+- ORO-10T scope: approval_chain_rollover_final_approval_decision_record_verification_gate_only
+- helper: src/game-provider-mock/oro10tFinalApprovalDecisionRecordVerificationGate.js
+- fixtures: src/game-provider-mock/oro10tFinalApprovalDecisionRecordVerificationGateFixtures.js
+- local smoke: src/local-smoke-tests/oro10tFinalApprovalDecisionRecordVerificationGateSmoke.js
+- wrapper smoke: src/local-smoke-tests/oro10tSmoke.js
+- package smoke aliases: smoke:oro-10t, smoke:oro-10t:detailed.
