@@ -5241,4 +5241,21 @@ cover the boundary.
 - ORO-10Q remains docs/static/mock/local smoke only.
 - No runtime authorization, runtime approval chain rollover, activation, mount, route alias, public alias, wallet/ledger/DB mutation, actual external call, or game launch call is enabled.
 - Validate with `smoke:oro-10q` and `smoke:oro-10q:detailed`.
+
+## ORO-10R current/final approval decision review gate
+
+- ORO-10Q closed.
+- ORO-10R current.
+- ORO-10R reviews, classifies, and validates the final approval decision intake after ORO-10Q.
+- ORO-10R final approval decision review remains static/mock only.
+- ORO-10R approval-for-review-only is not runtime approval.
+- ORO-10R review pass is not final approval issued.
+- ORO-10R runtime authorization is not issued.
+- ORO-10R final approval is not issued.
+- ORO-10R signed runtime approval is not issued.
+- ORO-10R does not mount routes or create public aliases.
+- ORO-10R does not authorize live execution, external calls, or game launch.
+- ORO-10R does not mutate wallet, ledger, Prisma, DB transaction, migration, deploy, production DB, or real-money state.
+- ORO-10R scope: approval_chain_rollover_final_approval_decision_review_gate_only
+- Validate with `smoke:oro-10r` and `smoke:oro-10r:detailed`.
 - Next step still requires separate approval.

@@ -2739,5 +2739,23 @@ ORO-9X is not permission to mutate wallet, ledger, or DB state.
 - ORO-10Q runtime authorization is not issued.
 - ORO-10Q is docs/static/mock/local smoke only.
 - ORO-10Q scope: approval_chain_rollover_final_approval_decision_intake_gate_only
+
+## ORO-10R Current
+
+- ORO-10Q closed.
+- ORO-10R current.
+- ORO-10R is the final approval decision review gate after ORO-10Q.
+- ORO-10R final approval decision review is static/mock only.
+- ORO-10R final approval decision review classifies the ORO-10Q intake for review only.
+- ORO-10R approval-for-review-only is not runtime approval.
+- ORO-10R review pass is not final approval issued.
+- ORO-10R runtime authorization is not issued.
+- ORO-10R final approval is not issued.
+- ORO-10R signed runtime approval is not issued.
+- ORO-10R route mount and public alias authorization are not issued.
+- ORO-10R live execution, external call, and game launch are not authorized.
+- ORO-10R wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior are not authorized.
+- ORO-10R is docs/static/mock/local smoke only.
+- ORO-10R scope: approval_chain_rollover_final_approval_decision_review_gate_only
 - Runtime authorization, activation, mount, route alias, public alias, wallet mutation, ledger mutation, DB mutation, actual external call, and game launch call remain absent.
 - Next step still requires separate approval.
