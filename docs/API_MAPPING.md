@@ -6563,3 +6563,29 @@ ORO-9X records finalization review approval record finalization review approval 
 - local smoke: src/local-smoke-tests/oro10tFinalApprovalDecisionRecordVerificationGateSmoke.js
 - wrapper smoke: src/local-smoke-tests/oro10tSmoke.js
 - package smoke aliases: smoke:oro-10t, smoke:oro-10t:detailed.
+
+## ORO-10U Final Approval Decision Evidence Pack Gate Mapping
+
+- ORO-10T closed.
+- ORO-10U current.
+- ORO-10U is the final approval decision evidence pack gate after ORO-10T.
+- ORO-10U final approval decision evidence pack is evidence-pack-only and static/mock only.
+- ORO-10U final approval decision evidence pack compares static verified record metadata and deterministic digest evidence only.
+- ORO-10U review_only_ready is not final approval issued.
+- ORO-10U evidence pack pass is not signed runtime approval.
+- ORO-10U evidence pack digest is not actual signed approval artifact verification.
+- ORO-10U signed approval artifact acceptance is not issued.
+- ORO-10U actual signed approval artifact verification is not performed.
+- ORO-10U runtime authorization is not issued.
+- ORO-10U final approval is not issued.
+- ORO-10U signed runtime approval is not issued.
+- ORO-10U route mount and public alias authorization are not issued.
+- ORO-10U live execution, external call, and game launch are not authorized.
+- ORO-10U wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior are not authorized.
+- ORO-10U is docs/static/mock/local smoke only.
+- ORO-10U scope: approval_chain_rollover_final_approval_decision_evidence_pack_gate_only
+- helper: src/game-provider-mock/oro10uFinalApprovalDecisionEvidencePackGate.js
+- fixtures: src/game-provider-mock/oro10uFinalApprovalDecisionEvidencePackGateFixtures.js
+- local smoke: src/local-smoke-tests/oro10uFinalApprovalDecisionEvidencePackGateSmoke.js
+- wrapper smoke: src/local-smoke-tests/oro10uSmoke.js
+- package smoke aliases: smoke:oro-10u, smoke:oro-10u:detailed.
