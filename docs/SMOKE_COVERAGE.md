@@ -8708,3 +8708,14 @@ Coverage confirms ORO-9X is docs/static contract/mock helper/fixtures/local smok
 - Covers mock_evidence_pack_prepared, mock_evidence_pack_review_only_ready, mock_evidence_pack_rejected, mock_evidence_pack_changes_required, mock_evidence_pack_verification_failed, mock_evidence_pack_hash_mismatch, mock_evidence_pack_evidence_missing, mock_evidence_pack_expired, mock_evidence_pack_conflict, mock_evidence_pack_invalid, and fail_closed.
 - Covers no runtime authorization, no final approval issued, no signed runtime approval, no signed approval artifact accepted, no actual signed approval artifact verified, no route mount, no public alias, no live execution, no external call, no game launch, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, no deploy, no credential-shaped output, no credential-header-shaped guarded marker, no long ORO-10U filename, and separate next-phase approval.
 - Scripts: smoke:oro-10u, smoke:oro-10u:detailed.
+
+## ORO-10V Final Approval Decision Evidence Pack Verification Gate Coverage
+
+- ORO-10V final-approval-decision-evidence-pack-verification-gate package smoke alias.
+- ORO-10A closed; ORO-10B closed; ORO-10C closed; ORO-10D closed; ORO-10E closed; ORO-10F closed; ORO-10G closed; ORO-10H closed; ORO-10I closed; ORO-10J closed; ORO-10K closed; ORO-10L closed; ORO-10M closed; ORO-10N closed; ORO-10O closed; ORO-10P closed; ORO-10Q closed; ORO-10R closed; ORO-10S closed; ORO-10T closed; ORO-10U closed; ORO-10V current.
+- ORO-10U closed; ORO-10V current.
+- ORO-10V is docs/static/mock/helper/fixtures/local smoke only.
+- ORO-10V scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_gate_only
+- Covers evidence-pack-verification-only source model, completeness, integrity, digest comparison, review-only verification metadata, fail-closed digest mismatch, missing evidence, incomplete evidence, expired evidence, conflicting evidence, invalid evidence, and static verification status classification.
+- Covers no runtime authorization, no final approval issued, no signed runtime approval, no signed approval artifact accepted, no actual signed approval artifact verified, no route mount, no public alias, no live execution, no external call, no game launch, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, no deploy, no credential-shaped output, no credential-header-shaped guarded marker, no long ORO-10V filename, and separate next-phase approval.
+- Scripts: smoke:oro-10v, smoke:oro-10v:detailed.

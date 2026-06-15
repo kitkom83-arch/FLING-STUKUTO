@@ -106,3 +106,17 @@
 - nextStepRequiresSeparateApproval = true
 - nextStepRequiresSeparateRuntimeApproval = true
 - Any later final approval issued, signed runtime approval, signed approval artifact acceptance, actual signed approval artifact verification, final approval decision runtime authorization, runtime review decision, runtime approval, runtime authorization, activation, mount, alias, wallet mutation, ledger mutation, DB mutation, Prisma write, migration, deploy, live execution, game launch call, or actual external call requires a separate explicit approval.
+
+## ORO-10V Handoff
+
+- ORO-10U closed.
+- ORO-10V current.
+- docs/ORO_10V_FINAL_APPROVAL_DECISION_EVIDENCE_PACK_VERIFICATION_GATE.md
+- ORO-10V next phase = approval_chain_rollover_final_approval_decision_evidence_pack_verification_gate_only
+- ORO-10V final approval decision evidence pack verification is static/mock only.
+- ORO-10V evidence pack verification does not authorize runtime.
+- ORO-10V does not issue final approval.
+- ORO-10V does not issue signed runtime approval.
+- ORO-10V does not accept a signed approval artifact.
+- ORO-10V does not perform actual signed approval artifact verification.
+- ORO-10V does not mount routes, create public aliases, perform live execution, call external networks, launch games, mutate wallet or ledger state, write Prisma, open DB transactions, run migrations, deploy, touch production DB, or touch real money.

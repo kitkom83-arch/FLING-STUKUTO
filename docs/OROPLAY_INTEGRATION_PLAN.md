@@ -2821,5 +2821,26 @@ ORO-9X is not permission to mutate wallet, ledger, or DB state.
 - ORO-10U wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior are not authorized.
 - ORO-10U is docs/static/mock/local smoke only.
 - ORO-10U scope: approval_chain_rollover_final_approval_decision_evidence_pack_gate_only
+
+## ORO-10V Current
+
+- ORO-10U closed.
+- ORO-10V current.
+- ORO-10V is the final approval decision evidence pack verification gate after ORO-10U.
+- ORO-10V final approval decision evidence pack verification remains evidence-pack-verification-only and static/mock only.
+- ORO-10V verifies static ORO-10U evidence pack source metadata, completeness, integrity, deterministic digest comparison, and review-only verification metadata.
+- ORO-10V verified_for_review_only is not final approval issued.
+- ORO-10V evidence pack verification pass is not signed runtime approval.
+- ORO-10V evidence pack verification digest is not actual signed approval artifact verification.
+- ORO-10V signed approval artifact acceptance is not issued.
+- ORO-10V actual signed approval artifact verification is not performed.
+- ORO-10V runtime authorization is not issued.
+- ORO-10V final approval is not issued.
+- ORO-10V signed runtime approval is not issued.
+- ORO-10V route mount and public alias authorization are not issued.
+- ORO-10V live execution, external call, and game launch are not authorized.
+- ORO-10V wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior are not authorized.
+- ORO-10V is docs/static/mock/local smoke only.
+- ORO-10V scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_gate_only
 - Runtime authorization, activation, mount, route alias, public alias, wallet mutation, ledger mutation, DB mutation, actual external call, and game launch call remain absent.
 - Next step still requires separate approval.

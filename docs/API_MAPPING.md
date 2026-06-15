@@ -6589,3 +6589,29 @@ ORO-9X records finalization review approval record finalization review approval 
 - local smoke: src/local-smoke-tests/oro10uFinalApprovalDecisionEvidencePackGateSmoke.js
 - wrapper smoke: src/local-smoke-tests/oro10uSmoke.js
 - package smoke aliases: smoke:oro-10u, smoke:oro-10u:detailed.
+
+## ORO-10V Final Approval Decision Evidence Pack Verification Gate Mapping
+
+- ORO-10U closed.
+- ORO-10V current.
+- ORO-10V is the final approval decision evidence pack verification gate after ORO-10U.
+- ORO-10V final approval decision evidence pack verification is evidence-pack-verification-only and static/mock only.
+- ORO-10V verifies static ORO-10U evidence pack metadata and deterministic digest evidence only.
+- ORO-10V verified_for_review_only is not final approval issued.
+- ORO-10V evidence pack verification pass is not signed runtime approval.
+- ORO-10V evidence pack verification digest is not actual signed approval artifact verification.
+- ORO-10V signed approval artifact acceptance is not issued.
+- ORO-10V actual signed approval artifact verification is not performed.
+- ORO-10V runtime authorization is not issued.
+- ORO-10V final approval is not issued.
+- ORO-10V signed runtime approval is not issued.
+- ORO-10V route mount and public alias authorization are not issued.
+- ORO-10V live execution, external call, and game launch are not authorized.
+- ORO-10V wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior are not authorized.
+- ORO-10V is docs/static/mock/local smoke only.
+- ORO-10V scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_gate_only
+- helper: src/game-provider-mock/oro10vFinalApprovalDecisionEvidencePackVerificationGate.js
+- fixtures: src/game-provider-mock/oro10vFinalApprovalDecisionEvidencePackVerificationGateFixtures.js
+- local smoke: src/local-smoke-tests/oro10vFinalApprovalDecisionEvidencePackVerificationGateSmoke.js
+- wrapper smoke: src/local-smoke-tests/oro10vSmoke.js
+- package smoke aliases: smoke:oro-10v, smoke:oro-10v:detailed.
