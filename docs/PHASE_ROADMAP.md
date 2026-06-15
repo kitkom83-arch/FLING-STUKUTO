@@ -5151,3 +5151,33 @@ cover the boundary.
 - ORO-10N remains docs/static/mock/local smoke only.
 - No signed runtime approval, signed approval artifact acceptance, actual signed approval verification, verification-record runtime authorization, verification-record-review runtime authorization, review-finalization runtime authorization, runtime authorization, activation, mount, wallet/ledger/DB mutation, actual external call, or game launch call is enabled.
 - Validate with `smoke:oro-10n` and `smoke:oro-10n:detailed`.
+
+## ORO-10O current/approval chain rollover signed approval artifact verification record review finalization approval request boundary
+
+- ORO-10A closed.
+- ORO-10B closed.
+- ORO-10C closed.
+- ORO-10D closed.
+- ORO-10E closed.
+- ORO-10F closed.
+- ORO-10G closed.
+- ORO-10H closed.
+- ORO-10I closed.
+- ORO-10J closed.
+- ORO-10K closed.
+- ORO-10L closed.
+- ORO-10M closed.
+- ORO-10N closed.
+- ORO-10O current.
+- ORO-10O records the approval chain rollover signed approval artifact verification record review finalization approval request boundary after ORO-10N.
+- ORO-10O approval request remains static/mock only.
+- ORO-10O approval request remains non-authorizing approval request only.
+- ORO-10O approval request submission is not performed.
+- ORO-10O final approval is not issued.
+- ORO-10O signed runtime approval is not issued.
+- ORO-10O signed approval artifact acceptance is not performed.
+- ORO-10O actual signed approval verification is not performed.
+- ORO-10O remains docs/static/mock/local smoke only.
+- No runtime authorization, runtime approval chain rollover, activation, mount, route alias, public alias, wallet/ledger/DB mutation, actual external call, or game launch call is enabled.
+- Validate with `smoke:oro-10o` and `smoke:oro-10o:detailed`.
+- Next step still requires separate approval.

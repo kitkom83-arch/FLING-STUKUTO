@@ -6386,3 +6386,37 @@ ORO-9X records finalization review approval record finalization review approval 
 - local smoke: src/local-smoke-tests/oro10nApprovalChainRolloverSignedApprovalArtifactVerificationRecordReviewFinalizationBoundarySmoke.js
 - wrapper smoke: src/local-smoke-tests/oro10nSmoke.js
 - package smoke aliases: smoke:oro-10n, smoke:oro-10n:detailed.
+
+## ORO-10O Approval Chain Rollover Signed Approval Artifact Verification Record Review Finalization Approval Request Boundary Mapping
+
+- ORO-10A closed.
+- ORO-10B closed.
+- ORO-10C closed.
+- ORO-10D closed.
+- ORO-10E closed.
+- ORO-10F closed.
+- ORO-10G closed.
+- ORO-10H closed.
+- ORO-10I closed.
+- ORO-10J closed.
+- ORO-10K closed.
+- ORO-10L closed.
+- ORO-10M closed.
+- ORO-10N closed.
+- ORO-10O current.
+- ORO-10O is the approval chain rollover signed approval artifact verification record review finalization approval request boundary after ORO-10N.
+- ORO-10O approval request is static/mock only.
+- ORO-10O approval request is non-authorizing approval request only.
+- ORO-10O approval request submission is not performed.
+- ORO-10O final approval is not issued.
+- ORO-10O signed runtime approval is not issued.
+- ORO-10O signed approval artifact acceptance is not performed.
+- ORO-10O actual signed approval verification is not performed.
+- ORO-10O is docs/static/mock/local smoke only.
+- ORO-10O scope: approval_chain_rollover_signed_approval_artifact_verification_record_review_finalization_approval_request_boundary_only
+- ORO-10O does not issue runtime authorization, runtime approval chain rollover, activation, mount, route alias, public alias, wallet mutation, ledger mutation, DB mutation, actual external call, or game launch call.
+- helper: src/game-provider-mock/oro10oApprovalChainRolloverSignedApprovalArtifactVerificationRecordReviewFinalizationApprovalRequestBoundary.js
+- fixtures: src/game-provider-mock/oro10oApprovalChainRolloverSignedApprovalArtifactVerificationRecordReviewFinalizationApprovalRequestBoundaryFixtures.js
+- local smoke: src/local-smoke-tests/oro10oApprovalChainRolloverSignedApprovalArtifactVerificationRecordReviewFinalizationApprovalRequestBoundarySmoke.js
+- wrapper smoke: src/local-smoke-tests/oro10oSmoke.js
+- package smoke aliases: smoke:oro-10o, smoke:oro-10o:detailed.
