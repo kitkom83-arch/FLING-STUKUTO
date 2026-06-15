@@ -192,3 +192,16 @@
 - nextStepRequiresSeparateApproval = true
 - nextStepRequiresSeparateRuntimeApproval = true
 - Any later final approval issued, signed runtime approval, final approval decision runtime authorization, runtime review decision, runtime approval, runtime authorization, activation, mount, alias, wallet mutation, ledger mutation, DB mutation, Prisma write, migration, deploy, live execution, game launch call, or actual external call requires a separate explicit approval.
+
+## ORO-10S Handoff
+
+- ORO-10R closed.
+- ORO-10S current.
+- ORO-10S doc: docs/ORO_10S_FINAL_APPROVAL_DECISION_RECORD_GATE.md
+- ORO-10S next phase = approval_chain_rollover_final_approval_decision_record_gate_only
+- ORO-10S final approval decision record is static/mock only.
+- ORO-10S final approval decision record does not authorize runtime.
+- ORO-10S final approval decision record does not issue final approval.
+- ORO-10S final approval decision record does not issue signed runtime approval.
+- ORO-10S final approval decision record does not accept signed approval artifacts.
+- ORO-10S final approval decision record does not mount routes, create public aliases, perform live execution, perform external calls, launch games, mutate wallet/ledger/DB state, write through Prisma, run migrations, or deploy.

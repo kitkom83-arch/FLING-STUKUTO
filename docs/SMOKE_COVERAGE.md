@@ -8678,3 +8678,13 @@ Coverage confirms ORO-9X is docs/static contract/mock helper/fixtures/local smok
 - Covers module load, required fixtures, valid decision received for review, approved-for-review-only, rejected, changes-required, expired, conflict, invalid id, missing evidence, malicious wording blocks, redaction, and wallet/ledger/DB/migration/deploy denial.
 - Covers no runtime authorization, no final approval issued, no signed runtime approval, no route mount, no public alias, no live execution, no external call, no game launch, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, no deploy, no secret-shaped output, no long ORO-10R filename, and separate next-phase approval.
 - Scripts: smoke:oro-10r, smoke:oro-10r:detailed.
+
+## ORO-10S Final Approval Decision Record Gate Coverage
+
+- ORO-10S final-approval-decision-record-gate package smoke alias.
+- ORO-10A closed; ORO-10B closed; ORO-10C closed; ORO-10D closed; ORO-10E closed; ORO-10F closed; ORO-10G closed; ORO-10H closed; ORO-10I closed; ORO-10J closed; ORO-10K closed; ORO-10L closed; ORO-10M closed; ORO-10N closed; ORO-10O closed; ORO-10P closed; ORO-10Q closed; ORO-10R closed; ORO-10S current.
+- ORO-10R closed; ORO-10S current.
+- ORO-10S is docs/static/mock/helper/fixtures/local smoke only.
+- Covers module load, required fixtures, valid reviewed decision record prepared, review-only accepted, rejected, changes-required, expired, conflict, invalid id, missing evidence, malicious wording blocks, redaction, static digest, and wallet/ledger/DB/migration/deploy denial.
+- Covers no runtime authorization, no final approval issued, no signed runtime approval, no signed approval artifact accepted, no route mount, no public alias, no live execution, no external call, no game launch, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, no deploy, no secret-shaped output, no auth-header-shaped guarded marker, no long ORO-10S filename, and separate next-phase approval.
+- Scripts: smoke:oro-10s, smoke:oro-10s:detailed.

@@ -6512,3 +6512,28 @@ ORO-9X records finalization review approval record finalization review approval 
 - local smoke: src/local-smoke-tests/oro10rFinalApprovalDecisionReviewGateSmoke.js
 - wrapper smoke: src/local-smoke-tests/oro10rSmoke.js
 - package smoke aliases: smoke:oro-10r, smoke:oro-10r:detailed.
+
+## ORO-10S Final Approval Decision Record Gate Mapping
+
+- ORO-10R closed.
+- ORO-10S current.
+- ORO-10S is the final approval decision record gate after ORO-10R.
+- ORO-10S final approval decision record is record-only and static/mock only.
+- ORO-10S final approval decision record prepares deterministic static record metadata only.
+- ORO-10S record accepted is not final approval issued.
+- ORO-10S record prepared is not signed runtime approval.
+- ORO-10S record digest is not signed approval artifact verification.
+- ORO-10S signed approval artifact acceptance is not issued.
+- ORO-10S runtime authorization is not issued.
+- ORO-10S final approval is not issued.
+- ORO-10S signed runtime approval is not issued.
+- ORO-10S route mount and public alias authorization are not issued.
+- ORO-10S live execution, external call, and game launch are not authorized.
+- ORO-10S wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior are not authorized.
+- ORO-10S is docs/static/mock/local smoke only.
+- ORO-10S scope: approval_chain_rollover_final_approval_decision_record_gate_only
+- helper: src/game-provider-mock/oro10sFinalApprovalDecisionRecordGate.js
+- fixtures: src/game-provider-mock/oro10sFinalApprovalDecisionRecordGateFixtures.js
+- local smoke: src/local-smoke-tests/oro10sFinalApprovalDecisionRecordGateSmoke.js
+- wrapper smoke: src/local-smoke-tests/oro10sSmoke.js
+- package smoke aliases: smoke:oro-10s, smoke:oro-10s:detailed.

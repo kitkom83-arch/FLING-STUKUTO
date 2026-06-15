@@ -2757,5 +2757,25 @@ ORO-9X is not permission to mutate wallet, ledger, or DB state.
 - ORO-10R wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior are not authorized.
 - ORO-10R is docs/static/mock/local smoke only.
 - ORO-10R scope: approval_chain_rollover_final_approval_decision_review_gate_only
+
+## ORO-10S Current
+
+- ORO-10R closed.
+- ORO-10S current.
+- ORO-10S is the final approval decision record gate after ORO-10R.
+- ORO-10S final approval decision record is record-only and static/mock only.
+- ORO-10S final approval decision record records the reviewed ORO-10R decision for static contract evidence only.
+- ORO-10S record accepted is not final approval issued.
+- ORO-10S record prepared is not signed runtime approval.
+- ORO-10S record digest is not signed approval artifact verification.
+- ORO-10S signed approval artifact acceptance is not issued.
+- ORO-10S runtime authorization is not issued.
+- ORO-10S final approval is not issued.
+- ORO-10S signed runtime approval is not issued.
+- ORO-10S route mount and public alias authorization are not issued.
+- ORO-10S live execution, external call, and game launch are not authorized.
+- ORO-10S wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior are not authorized.
+- ORO-10S is docs/static/mock/local smoke only.
+- ORO-10S scope: approval_chain_rollover_final_approval_decision_record_gate_only
 - Runtime authorization, activation, mount, route alias, public alias, wallet mutation, ledger mutation, DB mutation, actual external call, and game launch call remain absent.
 - Next step still requires separate approval.

@@ -5258,4 +5258,24 @@ cover the boundary.
 - ORO-10R does not mutate wallet, ledger, Prisma, DB transaction, migration, deploy, production DB, or real-money state.
 - ORO-10R scope: approval_chain_rollover_final_approval_decision_review_gate_only
 - Validate with `smoke:oro-10r` and `smoke:oro-10r:detailed`.
+
+## ORO-10S current/final approval decision record gate
+
+- ORO-10R closed.
+- ORO-10S current.
+- ORO-10S prepares and validates a static/mock final approval decision record after ORO-10R.
+- ORO-10S final approval decision record remains record-only and static/mock only.
+- ORO-10S record accepted is not final approval issued.
+- ORO-10S record prepared is not signed runtime approval.
+- ORO-10S record review pass does not authorize runtime.
+- ORO-10S record digest is not signed approval artifact verification.
+- ORO-10S signed approval artifact acceptance is not issued.
+- ORO-10S runtime authorization is not issued.
+- ORO-10S final approval is not issued.
+- ORO-10S signed runtime approval is not issued.
+- ORO-10S does not mount routes or create public aliases.
+- ORO-10S does not authorize live execution, external calls, or game launch.
+- ORO-10S does not mutate wallet, ledger, Prisma, DB transaction, migration, deploy, production DB, or real-money state.
+- ORO-10S scope: approval_chain_rollover_final_approval_decision_record_gate_only
+- Validate with `smoke:oro-10s` and `smoke:oro-10s:detailed`.
 - Next step still requires separate approval.
