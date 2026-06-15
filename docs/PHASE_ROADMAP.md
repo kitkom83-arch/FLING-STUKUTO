@@ -5181,3 +5181,33 @@ cover the boundary.
 - No runtime authorization, runtime approval chain rollover, activation, mount, route alias, public alias, wallet/ledger/DB mutation, actual external call, or game launch call is enabled.
 - Validate with `smoke:oro-10o` and `smoke:oro-10o:detailed`.
 - Next step still requires separate approval.
+
+## ORO-10P current/final approval request submission gate
+
+- ORO-10A closed.
+- ORO-10B closed.
+- ORO-10C closed.
+- ORO-10D closed.
+- ORO-10E closed.
+- ORO-10F closed.
+- ORO-10G closed.
+- ORO-10H closed.
+- ORO-10I closed.
+- ORO-10J closed.
+- ORO-10K closed.
+- ORO-10L closed.
+- ORO-10M closed.
+- ORO-10N closed.
+- ORO-10O closed.
+- ORO-10P current.
+- ORO-10P records the final approval request submission gate after ORO-10O.
+- ORO-10P approval request submission remains static/mock only.
+- ORO-10P approval request submission remains non-authorizing submission only.
+- ORO-10P final approval is not issued.
+- ORO-10P signed runtime approval is not issued.
+- ORO-10P signed approval artifact acceptance is not performed.
+- ORO-10P actual signed approval verification is not performed.
+- ORO-10P remains docs/static/mock/local smoke only.
+- No runtime authorization, runtime approval chain rollover, activation, mount, route alias, public alias, wallet/ledger/DB mutation, actual external call, or game launch call is enabled.
+- Validate with `smoke:oro-10p` and `smoke:oro-10p:detailed`.
+- Next step still requires separate approval.

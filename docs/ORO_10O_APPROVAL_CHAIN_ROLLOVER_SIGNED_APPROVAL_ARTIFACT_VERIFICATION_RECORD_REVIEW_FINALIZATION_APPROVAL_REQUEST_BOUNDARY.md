@@ -230,3 +230,18 @@
 - nextStepRequiresSeparateRuntimeApproval = true
 - approval chain rollover remains inside the safety gate chain only.
 - Any later approval request submission, final approval issued, signed runtime approval, signed approval artifact acceptance, actual signed approval artifact verification, approval-request runtime authorization, runtime review decision, runtime approval, runtime authorization, activation, mount, alias, wallet mutation, ledger mutation, DB mutation, Prisma write, migration, deploy, live execution, launch game call, or actual external call requires a separate explicit approval.
+
+## ORO-10P Handoff
+
+- ORO-10O closed.
+- ORO-10P current.
+- ORO-10P continues in docs/ORO_10P_FINAL_APPROVAL_REQUEST_SUBMISSION_GATE.md.
+- nextPhaseSeparateApprovalRequired = true
+- ORO-10P next phase = approval_chain_rollover_final_approval_request_submission_gate_only
+- ORO-10P approval request submission is static/mock only.
+- ORO-10P approval request submission does not authorize runtime.
+- ORO-10P final approval is not issued.
+- ORO-10P signed runtime approval is not issued.
+- ORO-10P signed approval artifact acceptance is not performed.
+- ORO-10P actual signed approval artifact verification is not performed.
+- ORO-10P has no route mount, route alias, public alias, runtime authorization, wallet mutation, ledger mutation, DB mutation, Prisma write, migration, deploy, live execution, actual external call, or game launch call.

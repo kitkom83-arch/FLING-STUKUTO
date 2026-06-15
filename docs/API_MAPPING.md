@@ -6420,3 +6420,37 @@ ORO-9X records finalization review approval record finalization review approval 
 - local smoke: src/local-smoke-tests/oro10oApprovalChainRolloverSignedApprovalArtifactVerificationRecordReviewFinalizationApprovalRequestBoundarySmoke.js
 - wrapper smoke: src/local-smoke-tests/oro10oSmoke.js
 - package smoke aliases: smoke:oro-10o, smoke:oro-10o:detailed.
+
+## ORO-10P Final Approval Request Submission Gate Mapping
+
+- ORO-10A closed.
+- ORO-10B closed.
+- ORO-10C closed.
+- ORO-10D closed.
+- ORO-10E closed.
+- ORO-10F closed.
+- ORO-10G closed.
+- ORO-10H closed.
+- ORO-10I closed.
+- ORO-10J closed.
+- ORO-10K closed.
+- ORO-10L closed.
+- ORO-10M closed.
+- ORO-10N closed.
+- ORO-10O closed.
+- ORO-10P current.
+- ORO-10P is the final approval request submission gate after ORO-10O.
+- ORO-10P approval request submission is static/mock only.
+- ORO-10P approval request submission is non-authorizing submission only.
+- ORO-10P final approval is not issued.
+- ORO-10P signed runtime approval is not issued.
+- ORO-10P signed approval artifact acceptance is not performed.
+- ORO-10P actual signed approval verification is not performed.
+- ORO-10P is docs/static/mock/local smoke only.
+- ORO-10P scope: approval_chain_rollover_final_approval_request_submission_gate_only
+- ORO-10P does not issue runtime authorization, runtime approval chain rollover, activation, mount, route alias, public alias, wallet mutation, ledger mutation, DB mutation, actual external call, or game launch call.
+- helper: src/game-provider-mock/oro10pFinalApprovalRequestSubmissionGate.js
+- fixtures: src/game-provider-mock/oro10pFinalApprovalRequestSubmissionGateFixtures.js
+- local smoke: src/local-smoke-tests/oro10pFinalApprovalRequestSubmissionGateSmoke.js
+- wrapper smoke: src/local-smoke-tests/oro10pSmoke.js
+- package smoke aliases: smoke:oro-10p, smoke:oro-10p:detailed.
