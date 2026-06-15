@@ -1,4 +1,4 @@
-# ORO-10J Approval Chain Rollover Signed Approval Artifact Intake Gate
+# ORO-10K Approval Chain Rollover Signed Approval Artifact Verification Gate
 
 ## Scope
 
@@ -11,31 +11,32 @@
 - ORO-10G closed.
 - ORO-10H closed.
 - ORO-10I closed.
-- ORO-10J current.
-- ORO-10J continues from ORO-10I.
-- ORO-10J is a signed approval artifact intake gate only.
-- The signed approval artifact intake in ORO-10J is a static/mock record only.
-- ORO-10J artifact intake result is non-authorizing.
-- ORO-10J is docs, static contract, mock helper, fixtures, and local smoke coverage only.
-- ORO-10J artifact intake is not runtime authorization.
-- ORO-10J artifact intake is not signed runtime approval.
-- ORO-10J artifact intake is not actual artifact acceptance.
-- ORO-10J artifact intake is not actual artifact verification.
-- ORO-10J artifact intake is not a decision that authorizes route/runtime.
-- ORO-10J is not activation.
-- ORO-10J is not final execution.
-- ORO-10J is not live execution.
-- ORO-10J is not actual external call.
-- ORO-10J is not launch game call.
-- ORO-10J is not route mount.
-- ORO-10J is not public alias.
-- ORO-10J is not runtime approval chain rollover.
-- ORO-10J is not runtime review decision.
-- ORO-10J is not wallet mutation, ledger mutation, DB mutation, DB runtime flow, Prisma write, migration, deploy, production DB access, or real-money behavior.
+- ORO-10J closed.
+- ORO-10K current.
+- ORO-10K continues from ORO-10J.
+- ORO-10K is a signed approval artifact verification gate only.
+- The signed approval artifact verification in ORO-10K is a static/mock record only.
+- ORO-10K artifact verification result is non-authorizing.
+- ORO-10K is docs, static contract, mock helper, fixtures, and local smoke coverage only.
+- ORO-10K artifact verification is not runtime authorization.
+- ORO-10K artifact verification is not signed runtime approval.
+- ORO-10K artifact verification is not actual artifact acceptance.
+- ORO-10K artifact verification is not actual artifact verification.
+- ORO-10K artifact verification is not a decision that authorizes route/runtime.
+- ORO-10K is not activation.
+- ORO-10K is not final execution.
+- ORO-10K is not live execution.
+- ORO-10K is not actual external call.
+- ORO-10K is not launch game call.
+- ORO-10K is not route mount.
+- ORO-10K is not public alias.
+- ORO-10K is not runtime approval chain rollover.
+- ORO-10K is not runtime review decision.
+- ORO-10K is not wallet mutation, ledger mutation, DB mutation, DB runtime flow, Prisma write, migration, deploy, production DB access, or real-money behavior.
 - Approval chain rollover remains inside the safety gate chain only.
 - The next step must require separate approval.
 
-## Signed Approval Artifact Intake Requirements
+## Signed Approval Artifact Verification Requirements
 
 - predecessor ORO-10A present = true
 - predecessor ORO-10B present = true
@@ -46,6 +47,7 @@
 - predecessor ORO-10G present = true
 - predecessor ORO-10H present = true
 - predecessor ORO-10I present = true
+- predecessor ORO-10J present = true
 - ORO-10C evidence gate present = true
 - ORO-10D review request boundary present = true
 - ORO-10E review request submission gate present = true
@@ -53,15 +55,16 @@
 - ORO-10G review decision validation gate present = true
 - ORO-10H review decision finalization boundary present = true
 - ORO-10I signed approval request boundary present = true
-- ORO-10J short filename confirmed = true
+- ORO-10J signed approval artifact intake gate present = true
+- ORO-10K short filename confirmed = true
 - no long filename confirmed = true
 - local targeted validation required = true
 - Safe CI required after commit/push in closeout only = true
-- signed approval artifact intake static/mock only = true
-- artifact intake is non-authorizing = true
+- signed approval artifact verification static/mock only = true
+- artifact verification is non-authorizing = true
 - signed runtime approval not issued = true
 - signed approval artifact not accepted = true
-- signed approval artifact not verified = true
+- signed approval artifact not actually verified = true
 - runtime authorization not issued = true
 - runtime approval chain rollover not issued = true
 - no wallet/ledger/DB mutation = true
@@ -70,27 +73,29 @@
 - no game launch call evidence = true
 - next phase requires separate approval = true
 
-## Signed Approval Artifact Intake Gate Definition
+## Signed Approval Artifact Verification Gate Definition
 
-- signedApprovalArtifactIntakeGateScope = approval_chain_rollover_signed_approval_artifact_intake_gate_only
-- signedApprovalArtifactIntakeGateStatus = approval_chain_rollover_signed_approval_artifact_intake_recorded_pending_separate_approval_for_static_contract_only
-- approvalChainRolloverSignedApprovalArtifactIntakeGatePresent = true
-- staticSignedApprovalArtifactIntakeRecordPresent = true
-- signedApprovalArtifactIntakeStaticMockOnly = true
-- signedApprovalArtifactIntakeRecorded = true
-- signedApprovalArtifactIntakeSanitized = true
-- signedApprovalArtifactIntakeNonAuthorizing = true
-- staticMockSignedApprovalArtifactIntakeOnly = true
-- nonAuthorizingArtifactIntakeOnly = true
+- signedApprovalArtifactVerificationGateScope = approval_chain_rollover_signed_approval_artifact_verification_gate_only
+- signedApprovalArtifactVerificationGateStatus = approval_chain_rollover_signed_approval_artifact_verification_recorded_pending_separate_approval_for_static_contract_only
+- approvalChainRolloverSignedApprovalArtifactVerificationGatePresent = true
+- staticSignedApprovalArtifactVerificationRecordPresent = true
+- signedApprovalArtifactVerificationStaticMockOnly = true
+- signedApprovalArtifactVerificationRecorded = true
+- signedApprovalArtifactVerificationSanitized = true
+- signedApprovalArtifactVerificationNonAuthorizing = true
+- staticMockSignedApprovalArtifactVerificationOnly = true
+- nonAuthorizingArtifactVerificationOnly = true
 - runtimeReviewDecision = false
 - decisionAuthorizesRuntime = false
 - finalizationAuthorizesRuntime = false
 - requestAuthorizesRuntime = false
 - artifactIntakeAuthorizesRuntime = false
+- artifactVerificationAuthorizesRuntime = false
 - runtime authorization = false
 - signedRuntimeApproval = false
 - signedApprovalArtifactAccepted = false
 - signedApprovalArtifactVerified = false
+- actualSignedApprovalVerification = false
 - runtimeApprovalChainRollover = false
 - gameLaunchCall = false
 - nextPhaseSeparateApprovalRequired = true
@@ -111,15 +116,15 @@
 - no_runtime_authorization
 - no_signed_runtime_approval
 - no_signed_approval_artifact_acceptance
-- no_signed_approval_artifact_verification
+- no_actual_signed_approval_artifact_verification
 - no_wallet_mutation
 - no_ledger_mutation
 - no_prisma_write
 - no_db_transaction
 - no_migration
 - no_deploy
-- static_mock_signed_approval_artifact_intake_only
-- non_authorizing_artifact_intake_only
+- static_mock_signed_approval_artifact_verification_only
+- non_authorizing_artifact_verification_only
 
 ## Explicit Non-Runtime Statement
 
@@ -128,12 +133,14 @@
 - finalizationAuthorizesRuntime = false
 - requestAuthorizesRuntime = false
 - artifactIntakeAuthorizesRuntime = false
+- artifactVerificationAuthorizesRuntime = false
 - runtime authorization = false
 - reviewDecisionApproved = false
 - signedApproval = false
 - signedRuntimeApproval = false
 - signedApprovalArtifactAccepted = false
 - signedApprovalArtifactVerified = false
+- actualSignedApprovalVerification = false
 - runtimeApproval = false
 - runtimeActivation = false
 - runtimeEnablement = false
@@ -182,25 +189,14 @@
 
 ## Rollback And No-Op
 
-- ORO-10J has no runtime side effect to roll back.
-- Removing the ORO-10J doc, helper, fixtures, and local smoke returns the repo to the ORO-10I closed static state.
+- ORO-10K has no runtime side effect to roll back.
+- Removing the ORO-10K doc, helper, fixtures, and local smoke returns the repo to the ORO-10J closed static state.
 - No wallet, ledger, database, route, alias, deployment, production, real-money, live OroPlay, launch game, signed runtime approval, actual signed approval artifact acceptance, actual signed approval verification, or actual external call state is changed.
 
 ## Local Smoke
 
-- npm run smoke:oro-10j
-- npm run smoke:oro-10j:detailed
-
-## ORO-10K Handoff
-
-- ORO-10J closed.
-- ORO-10K current.
-- docs/ORO_10K_APPROVAL_CHAIN_ROLLOVER_SIGNED_APPROVAL_ARTIFACT_VERIFICATION_GATE.md
-- nextPhaseSeparateApprovalRequired = true
-- ORO-10K next phase = approval_chain_rollover_signed_approval_artifact_verification_gate_only
-- ORO-10K signed approval artifact verification is static/mock only.
-- ORO-10K artifact verification does not authorize runtime.
-- ORO-10K does not authorize signed runtime approval, actual signed approval artifact acceptance, actual signed approval verification, route/runtime mount, alias enablement, wallet/ledger/DB mutation, Prisma write, migration, deployment, live execution, launch game call, or actual external call.
+- npm run smoke:oro-10k
+- npm run smoke:oro-10k:detailed
 
 ## Next Step Readiness
 
