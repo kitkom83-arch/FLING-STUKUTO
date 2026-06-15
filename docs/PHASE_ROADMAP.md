@@ -5211,3 +5211,34 @@ cover the boundary.
 - No runtime authorization, runtime approval chain rollover, activation, mount, route alias, public alias, wallet/ledger/DB mutation, actual external call, or game launch call is enabled.
 - Validate with `smoke:oro-10p` and `smoke:oro-10p:detailed`.
 - Next step still requires separate approval.
+
+## ORO-10Q current/final approval decision intake gate
+
+- ORO-10A closed.
+- ORO-10B closed.
+- ORO-10C closed.
+- ORO-10D closed.
+- ORO-10E closed.
+- ORO-10F closed.
+- ORO-10G closed.
+- ORO-10H closed.
+- ORO-10I closed.
+- ORO-10J closed.
+- ORO-10K closed.
+- ORO-10L closed.
+- ORO-10M closed.
+- ORO-10N closed.
+- ORO-10O closed.
+- ORO-10P closed.
+- ORO-10Q current.
+- ORO-10Q records the final approval decision intake gate after ORO-10P.
+- ORO-10Q final approval decision intake remains static/mock only.
+- ORO-10Q final approval decision intake remains non-authorizing decision intake only.
+- ORO-10Q final approval is not issued.
+- ORO-10Q signed runtime approval is not issued.
+- ORO-10Q runtime review decision is not performed.
+- ORO-10Q runtime authorization is not issued.
+- ORO-10Q remains docs/static/mock/local smoke only.
+- No runtime authorization, runtime approval chain rollover, activation, mount, route alias, public alias, wallet/ledger/DB mutation, actual external call, or game launch call is enabled.
+- Validate with `smoke:oro-10q` and `smoke:oro-10q:detailed`.
+- Next step still requires separate approval.

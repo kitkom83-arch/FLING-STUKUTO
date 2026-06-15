@@ -6454,3 +6454,38 @@ ORO-9X records finalization review approval record finalization review approval 
 - local smoke: src/local-smoke-tests/oro10pFinalApprovalRequestSubmissionGateSmoke.js
 - wrapper smoke: src/local-smoke-tests/oro10pSmoke.js
 - package smoke aliases: smoke:oro-10p, smoke:oro-10p:detailed.
+
+## ORO-10Q Final Approval Decision Intake Gate Mapping
+
+- ORO-10A closed.
+- ORO-10B closed.
+- ORO-10C closed.
+- ORO-10D closed.
+- ORO-10E closed.
+- ORO-10F closed.
+- ORO-10G closed.
+- ORO-10H closed.
+- ORO-10I closed.
+- ORO-10J closed.
+- ORO-10K closed.
+- ORO-10L closed.
+- ORO-10M closed.
+- ORO-10N closed.
+- ORO-10O closed.
+- ORO-10P closed.
+- ORO-10Q current.
+- ORO-10Q is the final approval decision intake gate after ORO-10P.
+- ORO-10Q final approval decision intake is static/mock only.
+- ORO-10Q final approval decision intake is non-authorizing decision intake only.
+- ORO-10Q final approval is not issued.
+- ORO-10Q signed runtime approval is not issued.
+- ORO-10Q runtime review decision is not performed.
+- ORO-10Q runtime authorization is not issued.
+- ORO-10Q is docs/static/mock/local smoke only.
+- ORO-10Q scope: approval_chain_rollover_final_approval_decision_intake_gate_only
+- ORO-10Q does not issue runtime authorization, runtime approval chain rollover, activation, mount, route alias, public alias, wallet mutation, ledger mutation, DB mutation, actual external call, or game launch call.
+- helper: src/game-provider-mock/oro10qFinalApprovalDecisionIntakeGate.js
+- fixtures: src/game-provider-mock/oro10qFinalApprovalDecisionIntakeGateFixtures.js
+- local smoke: src/local-smoke-tests/oro10qFinalApprovalDecisionIntakeGateSmoke.js
+- wrapper smoke: src/local-smoke-tests/oro10qSmoke.js
+- package smoke aliases: smoke:oro-10q, smoke:oro-10q:detailed.

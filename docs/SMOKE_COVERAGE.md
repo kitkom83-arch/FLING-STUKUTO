@@ -8655,3 +8655,16 @@ Coverage confirms ORO-9X is docs/static contract/mock helper/fixtures/local smok
 - Covers no runtime approval request submission, no approval-request-submission runtime authorization, no runtime review decision, no runtime authorization, no runtime approval chain rollover, no runtime mount, no route alias, no public alias, no live execution, no actual external call, no game launch call, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, and no deploy.
 - Covers no secret-shaped output, no long ORO-10P filename, and separate next-phase approval.
 - Scripts: smoke:oro-10p, smoke:oro-10p:detailed.
+
+## ORO-10Q Final Approval Decision Intake Gate Coverage
+
+- ORO-10Q final-approval-decision-intake-gate package smoke alias.
+- ORO-10A closed; ORO-10B closed; ORO-10C closed; ORO-10D closed; ORO-10E closed; ORO-10F closed; ORO-10G closed; ORO-10H closed; ORO-10I closed; ORO-10J closed; ORO-10K closed; ORO-10L closed; ORO-10M closed; ORO-10N closed; ORO-10O closed; ORO-10P closed; ORO-10Q current.
+- ORO-10P closed; ORO-10Q current.
+- ORO-10Q is docs/static/mock/helper/fixtures/local smoke only.
+- Covers ORO-10P predecessor validation, ORO-10O approval request boundary presence, and ORO-10P final approval request submission gate presence.
+- Covers static/mock final approval decision intake gate presence, non-authorizing decision intake result, and final approval absence.
+- Covers signed runtime approval absence, final approval decision runtime authorization absence, runtime review decision absence, and runtime authorization absence.
+- Covers no runtime approval chain rollover, no runtime mount, no route alias, no public alias, no live execution, no actual external call, no game launch call, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, and no deploy.
+- Covers no secret-shaped output, no long ORO-10Q filename, and separate next-phase approval.
+- Scripts: smoke:oro-10q, smoke:oro-10q:detailed.
