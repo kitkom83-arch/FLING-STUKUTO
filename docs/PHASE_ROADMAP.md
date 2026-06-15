@@ -5046,3 +5046,22 @@ cover the boundary.
 - ORO-10I remains docs/static/mock/local smoke only.
 - No signed runtime approval, signed approval artifact intake, signed approval verification, runtime review decision, runtime authorization, runtime approval chain rollover, activation, mount, wallet mutation, ledger mutation, DB mutation, actual external call, or game launch call is introduced.
 - Validate with `smoke:oro-10i` and `smoke:oro-10i:detailed`.
+
+## ORO-10J current/approval chain rollover signed approval artifact intake gate
+
+- ORO-10A closed.
+- ORO-10B closed.
+- ORO-10C closed.
+- ORO-10D closed.
+- ORO-10E closed.
+- ORO-10F closed.
+- ORO-10G closed.
+- ORO-10H closed.
+- ORO-10I closed.
+- ORO-10J current.
+- ORO-10J records the approval chain rollover signed approval artifact intake gate after ORO-10I.
+- ORO-10J signed approval artifact intake remains static/mock only.
+- ORO-10J artifact intake remains non-authorizing artifact intake only.
+- ORO-10J remains docs/static/mock/local smoke only.
+- No signed runtime approval, signed approval artifact acceptance, signed approval verification, runtime review decision, runtime authorization, runtime approval chain rollover, activation, mount, wallet mutation, ledger mutation, DB mutation, actual external call, or game launch call is introduced.
+- Validate with `smoke:oro-10j` and `smoke:oro-10j:detailed`.

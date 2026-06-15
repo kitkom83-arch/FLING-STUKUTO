@@ -8569,3 +8569,15 @@ Coverage confirms ORO-9X is docs/static contract/mock helper/fixtures/local smok
 - Covers no signed runtime approval, no signed approval artifact intake, no signed approval verification, no runtime review decision, no runtime authorization, no runtime approval chain rollover, no runtime mount, no route alias, no public alias, no live execution, no actual external call, no game launch call, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, and no deploy.
 - Covers no secret-shaped output, no long ORO-10I filename, and separate next-phase approval.
 - Scripts: smoke:oro-10i, smoke:oro-10i:detailed.
+
+## ORO-10J Approval Chain Rollover Signed Approval Artifact Intake Gate Coverage
+
+- ORO-10J approval-chain-rollover-signed-approval-artifact-intake-gate package smoke alias.
+- ORO-10A closed; ORO-10B closed; ORO-10C closed; ORO-10D closed; ORO-10E closed; ORO-10F closed; ORO-10G closed; ORO-10H closed; ORO-10I closed; ORO-10J current.
+- ORO-10I closed; ORO-10J current.
+- ORO-10J is docs/static/mock/helper/fixtures/local smoke only.
+- Covers ORO-10I predecessor validation, ORO-10C evidence gate, ORO-10D review request boundary, ORO-10E review request submission gate, ORO-10F review decision intake gate, ORO-10G review decision validation gate, ORO-10H review decision finalization boundary, and ORO-10I signed approval request boundary.
+- Covers static/mock signed approval artifact intake only and non-authorizing artifact intake only.
+- Covers no signed runtime approval, no signed approval artifact acceptance, no signed approval verification, no runtime review decision, no runtime authorization, no runtime approval chain rollover, no runtime mount, no route alias, no public alias, no live execution, no actual external call, no game launch call, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, and no deploy.
+- Covers no secret-shaped output, no long ORO-10J filename, and separate next-phase approval.
+- Scripts: smoke:oro-10j, smoke:oro-10j:detailed.

@@ -2540,3 +2540,23 @@ ORO-9X is not permission to mutate wallet, ledger, or DB state.
 - ORO-10I scope: approval_chain_rollover_signed_approval_request_boundary_only
 - Signed runtime approval, signed approval artifact intake, signed approval verification, runtime authorization, activation, mount, wallet mutation, ledger mutation, DB mutation, actual external call, and game launch call remain absent.
 - Next step still requires separate approval.
+
+## ORO-10J Current
+
+- ORO-10A closed.
+- ORO-10B closed.
+- ORO-10C closed.
+- ORO-10D closed.
+- ORO-10E closed.
+- ORO-10F closed.
+- ORO-10G closed.
+- ORO-10H closed.
+- ORO-10I closed.
+- ORO-10J current.
+- ORO-10J is the approval chain rollover signed approval artifact intake gate after ORO-10I.
+- ORO-10J signed approval artifact intake is static/mock only.
+- ORO-10J artifact intake is non-authorizing artifact intake only.
+- ORO-10J is docs/static/mock/local smoke only.
+- ORO-10J scope: approval_chain_rollover_signed_approval_artifact_intake_gate_only
+- Signed runtime approval, signed approval artifact acceptance, signed approval verification, runtime authorization, activation, mount, wallet mutation, ledger mutation, DB mutation, actual external call, and game launch call remain absent.
+- Next step still requires separate approval.
