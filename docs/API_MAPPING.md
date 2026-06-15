@@ -6245,3 +6245,23 @@ ORO-9X records finalization review approval record finalization review approval 
 - No runtime review decision, signed runtime approval, runtime authorization, activation, mount, wallet mutation, ledger mutation, DB mutation, actual external call, or game launch call is introduced.
 - Local smoke coverage: helper, fixtures, detailed smoke, wrapper smoke, runAllLocalSmoke, and runProjectCheck.
 - package smoke aliases: smoke:oro-10h, smoke:oro-10h:detailed.
+
+## ORO-10I Approval Chain Rollover Signed Approval Request Boundary Mapping
+
+- ORO-10A closed.
+- ORO-10B closed.
+- ORO-10C closed.
+- ORO-10D closed.
+- ORO-10E closed.
+- ORO-10F closed.
+- ORO-10G closed.
+- ORO-10H closed.
+- ORO-10I current.
+- ORO-10I is the approval chain rollover signed approval request boundary after ORO-10H.
+- ORO-10I signed approval request is static/mock only.
+- ORO-10I request is non-authorizing request only.
+- ORO-10I is docs/static/mock/local smoke only.
+- ORO-10I scope: approval_chain_rollover_signed_approval_request_boundary_only
+- No signed runtime approval, signed approval artifact intake, signed approval verification, runtime review decision, runtime authorization, runtime approval chain rollover, activation, mount, wallet mutation, ledger mutation, DB mutation, actual external call, or game launch call is introduced.
+- Local smoke coverage: helper, fixtures, detailed smoke, wrapper smoke, runAllLocalSmoke, and runProjectCheck.
+- package smoke aliases: smoke:oro-10i, smoke:oro-10i:detailed.

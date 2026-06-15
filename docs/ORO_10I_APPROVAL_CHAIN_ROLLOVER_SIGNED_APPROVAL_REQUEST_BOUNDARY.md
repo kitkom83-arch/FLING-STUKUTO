@@ -1,4 +1,4 @@
-# ORO-10H Approval Chain Rollover Review Decision Finalization Boundary
+# ORO-10I Approval Chain Rollover Signed Approval Request Boundary
 
 ## Scope
 
@@ -9,28 +9,32 @@
 - ORO-10E closed.
 - ORO-10F closed.
 - ORO-10G closed.
-- ORO-10H current.
-- ORO-10H continues from ORO-10G.
-- ORO-10H is a review decision finalization boundary only.
-- The finalization in ORO-10H is a static/mock record only.
-- ORO-10H is docs, static contract, mock helper, fixtures, and local smoke coverage only.
-- ORO-10H finalization result is not runtime authorization.
-- ORO-10H finalization result is not signed runtime approval.
-- ORO-10H finalization result is not a decision that authorizes route/runtime.
-- ORO-10H is not activation.
-- ORO-10H is not final execution.
-- ORO-10H is not live execution.
-- ORO-10H is not actual external call.
-- ORO-10H is not launch game call.
-- ORO-10H is not route mount.
-- ORO-10H is not public alias.
-- ORO-10H is not runtime approval chain rollover.
-- ORO-10H is not runtime review decision.
-- ORO-10H is not wallet mutation, ledger mutation, DB mutation, DB runtime flow, Prisma write, migration, deploy, production DB access, or real-money behavior.
+- ORO-10H closed.
+- ORO-10I current.
+- ORO-10I continues from ORO-10H.
+- ORO-10I is a signed approval request boundary only.
+- The signed approval request in ORO-10I is a static/mock record only.
+- ORO-10I request result is non-authorizing.
+- ORO-10I is docs, static contract, mock helper, fixtures, and local smoke coverage only.
+- ORO-10I request is not runtime authorization.
+- ORO-10I request is not signed runtime approval.
+- ORO-10I request is not approval artifact intake.
+- ORO-10I request is not signed approval verification.
+- ORO-10I request is not a decision that authorizes route/runtime.
+- ORO-10I is not activation.
+- ORO-10I is not final execution.
+- ORO-10I is not live execution.
+- ORO-10I is not actual external call.
+- ORO-10I is not launch game call.
+- ORO-10I is not route mount.
+- ORO-10I is not public alias.
+- ORO-10I is not runtime approval chain rollover.
+- ORO-10I is not runtime review decision.
+- ORO-10I is not wallet mutation, ledger mutation, DB mutation, DB runtime flow, Prisma write, migration, deploy, production DB access, or real-money behavior.
 - Approval chain rollover remains inside the safety gate chain only.
 - The next step must require separate approval.
 
-## Review Decision Finalization Requirements
+## Signed Approval Request Requirements
 
 - predecessor ORO-10A present = true
 - predecessor ORO-10B present = true
@@ -39,19 +43,22 @@
 - predecessor ORO-10E present = true
 - predecessor ORO-10F present = true
 - predecessor ORO-10G present = true
+- predecessor ORO-10H present = true
 - ORO-10C evidence gate present = true
 - ORO-10D review request boundary present = true
 - ORO-10E review request submission gate present = true
 - ORO-10F review decision intake gate present = true
 - ORO-10G review decision validation gate present = true
-- ORO-10H short filename confirmed = true
+- ORO-10H review decision finalization boundary present = true
+- ORO-10I short filename confirmed = true
 - no long filename confirmed = true
 - local targeted validation required = true
 - Safe CI required after commit/push in closeout only = true
-- review decision finalization static/mock only = true
-- non-authorizing finalization only = true
-- runtime review decision not issued = true
+- signed approval request static/mock only = true
+- request is non-authorizing = true
 - signed runtime approval not issued = true
+- signed approval artifact not accepted = true
+- signed approval artifact not verified = true
 - runtime authorization not issued = true
 - runtime approval chain rollover not issued = true
 - no wallet/ledger/DB mutation = true
@@ -60,23 +67,27 @@
 - no game launch call evidence = true
 - next phase requires separate approval = true
 
-## Review Decision Finalization Boundary Definition
+## Signed Approval Request Boundary Definition
 
-- reviewDecisionFinalizationBoundaryScope = approval_chain_rollover_review_decision_finalization_boundary_only
-- reviewDecisionFinalizationBoundaryStatus = approval_chain_rollover_review_decision_finalization_recorded_pending_separate_approval_for_static_contract_only
-- approvalChainRolloverReviewDecisionFinalizationBoundaryPresent = true
-- staticReviewDecisionFinalizationRecordPresent = true
-- reviewDecisionFinalizationStaticMockOnly = true
-- reviewDecisionFinalizationRecorded = true
-- reviewDecisionFinalizationSanitized = true
-- reviewDecisionFinalizationNonAuthorizing = true
-- staticMockReviewDecisionFinalizationOnly = true
-- nonAuthorizingFinalizationOnly = true
+- signedApprovalRequestBoundaryScope = approval_chain_rollover_signed_approval_request_boundary_only
+- signedApprovalRequestBoundaryStatus = approval_chain_rollover_signed_approval_request_recorded_pending_separate_approval_for_static_contract_only
+- approvalChainRolloverSignedApprovalRequestBoundaryPresent = true
+- staticSignedApprovalRequestRecordPresent = true
+- signedApprovalRequestStaticMockOnly = true
+- signedApprovalRequestRecorded = true
+- signedApprovalRequestSanitized = true
+- signedApprovalRequestNonAuthorizing = true
+- staticMockSignedApprovalRequestOnly = true
+- nonAuthorizingRequestOnly = true
 - runtimeReviewDecision = false
 - decisionAuthorizesRuntime = false
 - finalizationAuthorizesRuntime = false
+- requestAuthorizesRuntime = false
 - runtime authorization = false
 - signedRuntimeApproval = false
+- signedApprovalArtifactPresent = false
+- signedApprovalArtifactAccepted = false
+- signedApprovalArtifactVerified = false
 - runtimeApprovalChainRollover = false
 - gameLaunchCall = false
 - nextPhaseSeparateApprovalRequired = true
@@ -96,24 +107,30 @@
 - no_runtime_review_decision
 - no_runtime_authorization
 - no_signed_runtime_approval
+- no_signed_approval_artifact_intake
+- no_signed_approval_verification
 - no_wallet_mutation
 - no_ledger_mutation
 - no_prisma_write
 - no_db_transaction
 - no_migration
 - no_deploy
-- static_mock_review_decision_finalization_only
-- non_authorizing_finalization_only
+- static_mock_signed_approval_request_only
+- non_authorizing_request_only
 
 ## Explicit Non-Runtime Statement
 
 - runtimeReviewDecision = false
 - decisionAuthorizesRuntime = false
 - finalizationAuthorizesRuntime = false
+- requestAuthorizesRuntime = false
 - runtime authorization = false
 - reviewDecisionApproved = false
 - signedApproval = false
 - signedRuntimeApproval = false
+- signedApprovalArtifactPresent = false
+- signedApprovalArtifactAccepted = false
+- signedApprovalArtifactVerified = false
 - runtimeApproval = false
 - runtimeActivation = false
 - runtimeEnablement = false
@@ -162,25 +179,14 @@
 
 ## Rollback And No-Op
 
-- ORO-10H has no runtime side effect to roll back.
-- Removing the ORO-10H doc, helper, fixtures, and local smoke returns the repo to the ORO-10G closed static state.
-- No wallet, ledger, database, route, alias, deployment, production, real-money, live OroPlay, launch game, or actual external call state is changed.
+- ORO-10I has no runtime side effect to roll back.
+- Removing the ORO-10I doc, helper, fixtures, and local smoke returns the repo to the ORO-10H closed static state.
+- No wallet, ledger, database, route, alias, deployment, production, real-money, live OroPlay, launch game, signed runtime approval, signed approval artifact intake, signed approval verification, or actual external call state is changed.
 
 ## Local Smoke
 
-- npm run smoke:oro-10h
-- npm run smoke:oro-10h:detailed
-
-## ORO-10I Handoff
-
-- ORO-10H closed.
-- ORO-10I current.
-- ORO-10I doc: docs/ORO_10I_APPROVAL_CHAIN_ROLLOVER_SIGNED_APPROVAL_REQUEST_BOUNDARY.md
-- ORO-10I next phase = approval_chain_rollover_signed_approval_request_boundary_only
-- ORO-10I signed approval request is static/mock only.
-- ORO-10I request does not authorize runtime.
-- nextPhaseSeparateApprovalRequired = true
-- No signed runtime approval, signed approval artifact intake, signed approval verification, runtime authorization, runtime approval chain rollover, route mount, public alias, live execution, actual external call, launch game call, wallet mutation, ledger mutation, DB mutation, Prisma write, migration, or deploy is introduced by the ORO-10I handoff.
+- npm run smoke:oro-10i
+- npm run smoke:oro-10i:detailed
 
 ## Next Step Readiness
 
@@ -188,4 +194,4 @@
 - nextStepRequiresSeparateApproval = true
 - nextStepRequiresSeparateRuntimeApproval = true
 - approval chain rollover remains inside the safety gate chain only.
-- Any later signed approval, signed runtime approval, runtime approval, runtime authorization, activation, mount, alias, wallet mutation, ledger mutation, DB mutation, Prisma write, migration, deploy, live execution, launch game call, or actual external call requires a separate explicit approval.
+- Any later signed runtime approval, signed approval artifact intake, signed approval verification, runtime approval, runtime authorization, activation, mount, alias, wallet mutation, ledger mutation, DB mutation, Prisma write, migration, deploy, live execution, launch game call, or actual external call requires a separate explicit approval.

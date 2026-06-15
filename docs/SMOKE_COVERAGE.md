@@ -8557,3 +8557,15 @@ Coverage confirms ORO-9X is docs/static contract/mock helper/fixtures/local smok
 - Covers no runtime review decision, no signed runtime approval, no runtime authorization, no runtime approval chain rollover, no runtime mount, no route alias, no public alias, no live execution, no actual external call, no game launch call, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, and no deploy.
 - Covers no secret-shaped output, no long ORO-10H filename, and separate next-phase approval.
 - Scripts: smoke:oro-10h, smoke:oro-10h:detailed.
+
+## ORO-10I Approval Chain Rollover Signed Approval Request Boundary Coverage
+
+- ORO-10I approval-chain-rollover-signed-approval-request-boundary package smoke alias.
+- ORO-10A closed; ORO-10B closed; ORO-10C closed; ORO-10D closed; ORO-10E closed; ORO-10F closed; ORO-10G closed; ORO-10H closed; ORO-10I current.
+- ORO-10H closed; ORO-10I current.
+- ORO-10I is docs/static/mock/helper/fixtures/local smoke only.
+- Covers ORO-10H predecessor validation, ORO-10C evidence gate, ORO-10D review request boundary, ORO-10E review request submission gate, ORO-10F review decision intake gate, ORO-10G review decision validation gate, and ORO-10H review decision finalization boundary.
+- Covers static/mock signed approval request only and non-authorizing request only.
+- Covers no signed runtime approval, no signed approval artifact intake, no signed approval verification, no runtime review decision, no runtime authorization, no runtime approval chain rollover, no runtime mount, no route alias, no public alias, no live execution, no actual external call, no game launch call, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, and no deploy.
+- Covers no secret-shaped output, no long ORO-10I filename, and separate next-phase approval.
+- Scripts: smoke:oro-10i, smoke:oro-10i:detailed.
