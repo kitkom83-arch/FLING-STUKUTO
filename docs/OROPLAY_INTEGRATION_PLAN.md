@@ -2940,3 +2940,27 @@ ORO-9X is not permission to mutate wallet, ledger, or DB state.
 - ORO-10Z scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_review_record_verification_gate_only
 - Runtime authorization, activation, mount, route alias, public alias, wallet mutation, ledger mutation, DB mutation, actual external call, and game launch call remain absent.
 - Next phase requires separate gate.
+## ORO-11A Current
+
+- ORO-10Z closed.
+- ORO-11A current.
+- ORO-11A is the evidence pack verification record review record verification record gate after ORO-10Z.
+- ORO-11A final approval decision evidence pack verification record review record verification record remains verification-record-gate-only and static/mock only.
+- ORO-11A records static ORO-10Z verification output, verification result metadata, completeness, integrity, deterministic digest comparison, and verification-record-only metadata.
+- ORO-11A verification record is not final approval issued.
+- ORO-11A verification record is not review decision authority.
+- ORO-11A verification record is not audit authority.
+- ORO-11A verification record is not finalization.
+- ORO-11A verification record is not signed runtime approval.
+- ORO-11A verification record is not signed approval artifact acceptance.
+- ORO-11A verification record is not actual signed approval artifact verification.
+- ORO-11A runtime authorization is not issued.
+- ORO-11A final approval is not issued.
+- ORO-11A signed runtime approval is not issued.
+- ORO-11A route mount and public alias authorization are not issued.
+- ORO-11A live execution, external call, and game launch are not authorized.
+- ORO-11A wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior are not authorized.
+- ORO-11A is docs/static/mock/local smoke only.
+- ORO-11A scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_review_record_verification_record_gate_only
+
+- Next phase requires separate gate.
