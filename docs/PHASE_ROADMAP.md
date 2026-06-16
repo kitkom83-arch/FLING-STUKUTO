@@ -5451,3 +5451,26 @@ cover the boundary.
 - ORO-11A scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_review_record_verification_record_gate_only
 - Validate with `smoke:oro-11a` and `smoke:oro-11a:detailed`.
 - Next phase requires separate gate.
+
+## ORO-11B current/evidence pack verification record review record verification record review gate
+
+- ORO-11A closed.
+- ORO-11B current.
+- ORO-11B reviews the static/mock final approval decision evidence pack verification record review record verification record after ORO-11A.
+- ORO-11B evidence pack verification record review record verification record review remains verification-record-review-gate-only and static/mock only.
+- ORO-11B verification record review is not final approval issued.
+- ORO-11B verification record review is not review decision authority.
+- ORO-11B verification record review is not audit authority.
+- ORO-11B verification record review is not finalization.
+- ORO-11B verification record review is not signed runtime approval.
+- ORO-11B verification record review is not signed approval artifact acceptance.
+- ORO-11B verification record review is not actual signed approval artifact verification.
+- ORO-11B runtime authorization is not issued.
+- ORO-11B final approval is not issued.
+- ORO-11B signed runtime approval is not issued.
+- ORO-11B does not mount routes or create public aliases.
+- ORO-11B does not authorize live execution, external calls, or game launch.
+- ORO-11B does not mutate wallet, ledger, Prisma, DB transaction, migration, deploy, production DB, or real-money state.
+- ORO-11B scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_review_record_verification_record_review_gate_only
+- Validate with `smoke:oro-11b` and `smoke:oro-11b:detailed`.
+- Next phase requires separate gate.

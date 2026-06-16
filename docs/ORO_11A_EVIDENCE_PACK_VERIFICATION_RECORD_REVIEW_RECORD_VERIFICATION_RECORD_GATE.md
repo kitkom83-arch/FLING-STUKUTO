@@ -140,3 +140,13 @@
 ## Next Phase
 
 - Next phase requires separate gate.
+
+## ORO-11B Handoff
+
+- ORO-11A closed.
+- ORO-11B current.
+- docs/ORO_11B_EVIDENCE_PACK_VERIFICATION_RECORD_REVIEW_RECORD_VERIFICATION_RECORD_REVIEW_GATE.md
+- ORO-11B next phase = approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_review_record_verification_record_review_gate_only
+- ORO-11B final approval decision evidence pack verification record review record verification record review is static/mock only.
+- ORO-11B verification record review record verification record review does not authorize runtime.
+- ORO-11B does not issue final approval, final approval review decision authority, audit authority, finalization, signed runtime approval, signed approval artifact acceptance, actual signed approval artifact verification, route mount, public alias, live execution, external call, wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB access, or real-money behavior.
