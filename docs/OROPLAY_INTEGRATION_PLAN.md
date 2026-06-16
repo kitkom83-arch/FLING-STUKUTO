@@ -3112,3 +3112,20 @@ ORO-9X is not permission to mutate wallet, ledger, or DB state.
 - ORO-11G scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_review_record_verification_record_review_record_gate_only
 - Validate with smoke:oro-11g and smoke:oro-11g:detailed.
 - Next phase requires separate gate.
+
+## ORO-11H Current
+
+- ORO-11G closed.
+- ORO-11H current.
+- ORO-11H is the user-approved evidence pack separate gate after ORO-11G.
+- ORO-11H was created from explicit human approval after the roadmap ended ORO-11G with `Next phase requires separate gate.`
+- ORO-11H was not inferred from a prior explicit ORO-11H roadmap marker.
+- ORO-11H scope: user_approved_evidence_pack_separate_gate_after_oro_11g_only
+- ORO-11H is not runtime implementation.
+- ORO-11H is not live execution.
+- ORO-11H route mount and public alias authorization are not issued.
+- ORO-11H runtime traffic, live execution, external call, live OroPlay API call, and game launch remain disabled.
+- ORO-11H wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior remain disabled.
+- ORO-11H is docs/static/mock/local smoke only.
+- Validate with smoke:oro-11h and smoke:oro-11h:detailed.
+- Next phase requires separate gate.

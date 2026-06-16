@@ -5587,3 +5587,20 @@ cover the boundary.
 - ORO-11G scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_review_record_verification_record_review_record_gate_only
 - Validate with `smoke:oro-11g` and `smoke:oro-11g:detailed`.
 - Next phase requires separate gate.
+
+## ORO-11H current/user-approved evidence pack separate gate
+
+- ORO-11G closed.
+- ORO-11H current.
+- ORO-11H was created from explicit human approval after ORO-11G.
+- ORO-11H records that the roadmap previously ended ORO-11G with `Next phase requires separate gate.`
+- ORO-11H was not inferred from a prior explicit roadmap marker.
+- ORO-11H scope: user_approved_evidence_pack_separate_gate_after_oro_11g_only
+- ORO-11H remains separate-gate-only and static/mock only.
+- ORO-11H is not runtime implementation.
+- ORO-11H is not live execution.
+- ORO-11H does not mount routes or create public aliases.
+- ORO-11H does not authorize runtime traffic, live execution, external calls, live OroPlay API calls, or game launch.
+- ORO-11H does not mutate wallet, ledger, Prisma, DB transaction, migration, deploy, production DB, or real-money state.
+- Validate with `smoke:oro-11h` and `smoke:oro-11h:detailed`.
+- Next phase requires separate gate.

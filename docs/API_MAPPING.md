@@ -6918,3 +6918,23 @@ ORO-9X records finalization review approval record finalization review approval 
 - detailed smoke: src/local-smoke-tests/oro11gEvidencePackVerificationRecordReviewRecordVerificationRecordReviewRecordGateSmoke.js
 - wrapper smoke: src/local-smoke-tests/oro11gSmoke.js
 - package smoke aliases: smoke:oro-11g, smoke:oro-11g:detailed.
+
+## ORO-11H User-Approved Separate Gate Mapping
+
+- ORO-11G closed.
+- ORO-11H current.
+- ORO-11H is the user-approved evidence pack separate gate after ORO-11G.
+- ORO-11H was created from explicit human approval because the roadmap previously ended ORO-11G with `Next phase requires separate gate.`
+- ORO-11H was not inferred from a prior explicit ORO-11H roadmap marker.
+- ORO-11H scope: user_approved_evidence_pack_separate_gate_after_oro_11g_only
+- ORO-11H separate gate is not runtime implementation.
+- ORO-11H separate gate is not live execution.
+- ORO-11H route mount and public alias authorization are not issued.
+- ORO-11H runtime traffic, live execution, external call, and game launch are not authorized.
+- ORO-11H wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior are not authorized.
+- ORO-11H is docs/static/mock/local smoke only.
+- helper: src/game-provider-mock/oro11hSeparateGate.js
+- fixtures: src/game-provider-mock/oro11hSeparateGateFixtures.js
+- detailed smoke: src/local-smoke-tests/oro11hSeparateGateSmoke.js
+- wrapper smoke: src/local-smoke-tests/oro11hSmoke.js
+- package smoke aliases: smoke:oro-11h, smoke:oro-11h:detailed.
