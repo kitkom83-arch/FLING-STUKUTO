@@ -6807,3 +6807,30 @@ ORO-9X records finalization review approval record finalization review approval 
 - detailed smoke: src/local-smoke-tests/oro11cEvidencePackVerificationRecordReviewRecordVerificationRecordReviewRecordGateSmoke.js
 - wrapper smoke: src/local-smoke-tests/oro11cSmoke.js
 - package smoke aliases: smoke:oro-11c, smoke:oro-11c:detailed.
+## ORO-11D Evidence Pack Verification Record Review Record Verification Record Review Record Verification Gate Mapping
+
+- ORO-11C closed.
+- ORO-11D current.
+- ORO-11D is the evidence pack verification record review record verification record review record verification gate after ORO-11C.
+- ORO-11D final approval decision evidence pack verification record review record verification record review record verification is review-record-verification-gate-only and static/mock only.
+- ORO-11D verifies static ORO-11C verification record review record output, verification metadata, completeness, integrity, deterministic digest evidence, and verification-only disposition only.
+- ORO-11D verification record review record verification is not final approval issued.
+- ORO-11D verification record review record verification is not review decision authority.
+- ORO-11D verification record review record verification is not audit authority.
+- ORO-11D verification record review record verification is not finalization.
+- ORO-11D verification record review record verification is not signed runtime approval.
+- ORO-11D verification record review record verification is not signed approval artifact acceptance.
+- ORO-11D verification record review record verification is not actual signed approval artifact verification.
+- ORO-11D runtime authorization is not issued.
+- ORO-11D final approval is not issued.
+- ORO-11D signed runtime approval is not issued.
+- ORO-11D route mount and public alias authorization are not issued.
+- ORO-11D live execution, external call, and game launch are not authorized.
+- ORO-11D wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior are not authorized.
+- ORO-11D is docs/static/mock/local smoke only.
+- ORO-11D scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_review_record_verification_record_review_record_verification_gate_only
+- helper: src/game-provider-mock/oro11dEvidencePackVerificationRecordReviewRecordVerificationRecordReviewRecordVerificationGate.js
+- fixtures: src/game-provider-mock/oro11dEvidencePackVerificationRecordReviewRecordVerificationRecordReviewRecordVerificationGateFixtures.js
+- detailed smoke: src/local-smoke-tests/oro11dEvidencePackVerificationRecordReviewRecordVerificationRecordReviewRecordVerificationGateSmoke.js
+- wrapper smoke: src/local-smoke-tests/oro11dSmoke.js
+- package smoke aliases: smoke:oro-11d, smoke:oro-11d:detailed.
