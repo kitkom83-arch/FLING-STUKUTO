@@ -8719,3 +8719,14 @@ Coverage confirms ORO-9X is docs/static contract/mock helper/fixtures/local smok
 - Covers evidence-pack-verification-only source model, completeness, integrity, digest comparison, review-only verification metadata, fail-closed digest mismatch, missing evidence, incomplete evidence, expired evidence, conflicting evidence, invalid evidence, and static verification status classification.
 - Covers no runtime authorization, no final approval issued, no signed runtime approval, no signed approval artifact accepted, no actual signed approval artifact verified, no route mount, no public alias, no live execution, no external call, no game launch, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, no deploy, no credential-shaped output, no credential-header-shaped guarded marker, no long ORO-10V filename, and separate next-phase approval.
 - Scripts: smoke:oro-10v, smoke:oro-10v:detailed.
+
+## ORO-10W Evidence Pack Verification Record Gate Coverage
+
+- ORO-10W evidence-pack-verification-record-gate package smoke alias.
+- ORO-10A closed; ORO-10B closed; ORO-10C closed; ORO-10D closed; ORO-10E closed; ORO-10F closed; ORO-10G closed; ORO-10H closed; ORO-10I closed; ORO-10J closed; ORO-10K closed; ORO-10L closed; ORO-10M closed; ORO-10N closed; ORO-10O closed; ORO-10P closed; ORO-10Q closed; ORO-10R closed; ORO-10S closed; ORO-10T closed; ORO-10U closed; ORO-10V closed; ORO-10W current.
+- ORO-10V closed; ORO-10W current.
+- ORO-10W is docs/static/mock/helper/fixtures/local smoke only.
+- ORO-10W scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_gate_only
+- Covers mock_verification_record_prepared, mock_verification_record_recorded_for_review_only, mock_verification_record_rejected, mock_verification_record_changes_required, mock_verification_record_digest_mismatch, mock_verification_record_missing_prior_gate, mock_verification_record_missing_evidence, mock_verification_record_incomplete, mock_verification_record_expired, mock_verification_record_conflict, mock_verification_record_invalid, and fail_closed.
+- Covers no runtime authorization, no final approval issued, no review authority, no finalization, no signed runtime approval, no signed approval artifact accepted, no actual signed approval artifact verified, no route mount, no public alias, no live execution, no external call, no game launch, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, no deploy, no credential-shaped output, no credential-header-shaped guarded marker, no long ORO-10W filename, and separate next-phase gate.
+- Scripts: smoke:oro-10w, smoke:oro-10w:detailed.

@@ -5340,3 +5340,25 @@ cover the boundary.
 - ORO-10V scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_gate_only
 - Validate with `smoke:oro-10v` and `smoke:oro-10v:detailed`.
 - Next step still requires separate approval.
+
+## ORO-10W current/evidence pack verification record gate
+
+- ORO-10V closed.
+- ORO-10W current.
+- ORO-10W records the static/mock final approval decision evidence pack verification result after ORO-10V.
+- ORO-10W evidence pack verification record remains record-gate-only and static/mock only.
+- ORO-10W verification record is not final approval issued.
+- ORO-10W verification record is not review authority.
+- ORO-10W verification record is not finalization.
+- ORO-10W verification record is not signed runtime approval.
+- ORO-10W verification record is not signed approval artifact acceptance.
+- ORO-10W verification record is not actual signed approval artifact verification.
+- ORO-10W runtime authorization is not issued.
+- ORO-10W final approval is not issued.
+- ORO-10W signed runtime approval is not issued.
+- ORO-10W does not mount routes or create public aliases.
+- ORO-10W does not authorize live execution, external calls, or game launch.
+- ORO-10W does not mutate wallet, ledger, Prisma, DB transaction, migration, deploy, production DB, or real-money state.
+- ORO-10W scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_gate_only
+- Validate with `smoke:oro-10w` and `smoke:oro-10w:detailed`.
+- Next phase requires separate gate.

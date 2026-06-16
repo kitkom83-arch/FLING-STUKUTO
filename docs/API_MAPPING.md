@@ -6615,3 +6615,30 @@ ORO-9X records finalization review approval record finalization review approval 
 - local smoke: src/local-smoke-tests/oro10vFinalApprovalDecisionEvidencePackVerificationGateSmoke.js
 - wrapper smoke: src/local-smoke-tests/oro10vSmoke.js
 - package smoke aliases: smoke:oro-10v, smoke:oro-10v:detailed.
+
+## ORO-10W Evidence Pack Verification Record Gate Mapping
+
+- ORO-10V closed.
+- ORO-10W current.
+- ORO-10W is the evidence pack verification record gate after ORO-10V.
+- ORO-10W final approval decision evidence pack verification record is record-gate-only and static/mock only.
+- ORO-10W records static ORO-10V evidence pack verification output, metadata, completeness, integrity, and deterministic digest evidence only.
+- ORO-10W verification record is not final approval issued.
+- ORO-10W verification record is not review authority.
+- ORO-10W verification record is not finalization.
+- ORO-10W verification record is not signed runtime approval.
+- ORO-10W verification record is not signed approval artifact acceptance.
+- ORO-10W verification record is not actual signed approval artifact verification.
+- ORO-10W runtime authorization is not issued.
+- ORO-10W final approval is not issued.
+- ORO-10W signed runtime approval is not issued.
+- ORO-10W route mount and public alias authorization are not issued.
+- ORO-10W live execution, external call, and game launch are not authorized.
+- ORO-10W wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior are not authorized.
+- ORO-10W is docs/static/mock/local smoke only.
+- ORO-10W scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_gate_only
+- helper: src/game-provider-mock/oro10wEvidencePackVerificationRecordGate.js
+- fixtures: src/game-provider-mock/oro10wEvidencePackVerificationRecordGateFixtures.js
+- local smoke: src/local-smoke-tests/oro10wEvidencePackVerificationRecordGateSmoke.js
+- wrapper smoke: src/local-smoke-tests/oro10wSmoke.js
+- package smoke aliases: smoke:oro-10w, smoke:oro-10w:detailed.
