@@ -2989,3 +2989,27 @@ ORO-9X is not permission to mutate wallet, ledger, or DB state.
 - ORO-11B scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_review_record_verification_record_review_gate_only
 
 - Next phase requires separate gate.
+## ORO-11C Current
+
+- ORO-11B closed.
+- ORO-11C current.
+- ORO-11C is the evidence pack verification record review record verification record review record gate after ORO-11B.
+- ORO-11C final approval decision evidence pack verification record review record verification record review record remains verification-record-review-record-gate-only and static/mock only.
+- ORO-11C records static ORO-11B verification record review output, review record metadata, completeness, integrity, deterministic digest comparison, and review-record-only metadata.
+- ORO-11C verification record review record is not final approval issued.
+- ORO-11C verification record review record is not review decision authority.
+- ORO-11C verification record review record is not audit authority.
+- ORO-11C verification record review record is not finalization.
+- ORO-11C verification record review record is not signed runtime approval.
+- ORO-11C verification record review record is not signed approval artifact acceptance.
+- ORO-11C verification record review record is not actual signed approval artifact verification.
+- ORO-11C runtime authorization is not issued.
+- ORO-11C final approval is not issued.
+- ORO-11C signed runtime approval is not issued.
+- ORO-11C route mount and public alias authorization are not issued.
+- ORO-11C live execution, external call, and game launch are not authorized.
+- ORO-11C wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior are not authorized.
+- ORO-11C is docs/static/mock/local smoke only.
+- ORO-11C scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_review_record_verification_record_review_record_gate_only
+- Validate with smoke:oro-11c and smoke:oro-11c:detailed.
+- Next phase requires separate gate.
