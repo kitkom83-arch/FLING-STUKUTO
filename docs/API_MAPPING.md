@@ -6697,3 +6697,31 @@ ORO-9X records finalization review approval record finalization review approval 
 - local smoke: src/local-smoke-tests/oro10yEvidencePackVerificationRecordReviewRecordGateSmoke.js
 - wrapper smoke: src/local-smoke-tests/oro10ySmoke.js
 - package smoke aliases: smoke:oro-10y, smoke:oro-10y:detailed.
+
+## ORO-10Z Evidence Pack Verification Record Review Record Verification Gate Mapping
+
+- ORO-10Y closed.
+- ORO-10Z current.
+- ORO-10Z is the evidence pack verification record review record verification gate after ORO-10Y.
+- ORO-10Z final approval decision evidence pack verification record review record verification is review-record-verification-gate-only and static/mock only.
+- ORO-10Z verifies static ORO-10Y review record output, verification metadata, completeness, integrity, deterministic digest evidence, and verification-only disposition only.
+- ORO-10Z verification record review record verification is not final approval issued.
+- ORO-10Z verification record review record verification is not review decision authority.
+- ORO-10Z verification record review record verification is not audit authority.
+- ORO-10Z verification record review record verification is not finalization.
+- ORO-10Z verification record review record verification is not signed runtime approval.
+- ORO-10Z verification record review record verification is not signed approval artifact acceptance.
+- ORO-10Z verification record review record verification is not actual signed approval artifact verification.
+- ORO-10Z runtime authorization is not issued.
+- ORO-10Z final approval is not issued.
+- ORO-10Z signed runtime approval is not issued.
+- ORO-10Z route mount and public alias authorization are not issued.
+- ORO-10Z live execution, external call, and game launch are not authorized.
+- ORO-10Z wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior are not authorized.
+- ORO-10Z is docs/static/mock/local smoke only.
+- ORO-10Z scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_review_record_verification_gate_only
+- helper: src/game-provider-mock/oro10zEvidencePackVerificationRecordReviewRecordVerificationGate.js
+- fixtures: src/game-provider-mock/oro10zEvidencePackVerificationRecordReviewRecordVerificationGateFixtures.js
+- local smoke: src/local-smoke-tests/oro10zEvidencePackVerificationRecordReviewRecordVerificationGateSmoke.js
+- wrapper smoke: src/local-smoke-tests/oro10zSmoke.js
+- package smoke aliases: smoke:oro-10z, smoke:oro-10z:detailed.
