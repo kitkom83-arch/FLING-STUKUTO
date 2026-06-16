@@ -1727,6 +1727,11 @@ const RELATED_FILES = [
   "src/local-smoke-tests/oro11eEvidencePackVerificationRecordReviewRecordVerificationRecordReviewRecordVerificationRecordGateSmoke.js",
   "src/local-smoke-tests/oro11eSmoke.js",
   "docs/ORO_11E_EVIDENCE_PACK_VERIFICATION_RECORD_REVIEW_RECORD_VERIFICATION_RECORD_REVIEW_RECORD_VERIFICATION_RECORD_GATE.md",
+  "src/game-provider-mock/oro11fEvidencePackVerificationRecordReviewRecordVerificationRecordReviewRecordVerificationRecordReviewGate.js",
+  "src/game-provider-mock/oro11fEvidencePackVerificationRecordReviewRecordVerificationRecordReviewRecordVerificationRecordReviewGateFixtures.js",
+  "src/local-smoke-tests/oro11fEvidencePackVerificationRecordReviewRecordVerificationRecordReviewRecordVerificationRecordReviewGateSmoke.js",
+  "src/local-smoke-tests/oro11fSmoke.js",
+  "docs/ORO_11F_EVIDENCE_PACK_VERIFICATION_RECORD_REVIEW_RECORD_VERIFICATION_RECORD_REVIEW_RECORD_VERIFICATION_RECORD_REVIEW_GATE.md",
   [
     "docs/ORO_8H_LIVE_TRAFFIC_ACTUAL_EXTERNAL_CALL",
     "EXECUTION_ACTUAL_LIVE_EXECUTION_EXECUTION_GATE.md",
@@ -2273,6 +2278,7 @@ const summary = [
   { key: "oro11c", label: "oro-11c", status: "PENDING" },
   { key: "oro11d", label: "oro-11d", status: "PENDING" },
   { key: "oro11e", label: "oro-11e", status: "PENDING" },
+  { key: "oro11f", label: "oro-11f", status: "PENDING" },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
   { key: "depositVerificationSource", label: "deposit-verification-source", status: "PENDING" },
   {
@@ -4218,6 +4224,21 @@ const steps = [
     name: "node --check oro11eSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/oro11eSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oro11fEvidencePackVerificationRecordReviewRecordVerificationRecordReviewRecordVerificationRecordReviewGateSmoke",
+    command: nodeCommand,
+    args: [
+      "--check",
+      "src/local-smoke-tests/oro11fEvidencePackVerificationRecordReviewRecordVerificationRecordReviewRecordVerificationRecordReviewGateSmoke.js",
+    ],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oro11fSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oro11fSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -6306,6 +6327,18 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oro-11e:detailed"]),
     summaryKey: "oro11e",
+  },
+  {
+    name: "npm run smoke:oro-11f",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oro-11f"]),
+    summaryKey: "oro11f",
+  },
+  {
+    name: "npm run smoke:oro-11f:detailed",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oro-11f:detailed"]),
+    summaryKey: "oro11f",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

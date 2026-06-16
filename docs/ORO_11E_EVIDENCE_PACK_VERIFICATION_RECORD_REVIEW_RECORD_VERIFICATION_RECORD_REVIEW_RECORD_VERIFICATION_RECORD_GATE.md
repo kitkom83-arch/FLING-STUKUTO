@@ -132,6 +132,15 @@
 - npm run smoke:oro-11e:detailed
 - npm run check
 
+## ORO-11F Handoff
+
+- ORO-11F current.
+- ORO-11F doc: docs/ORO_11F_EVIDENCE_PACK_VERIFICATION_RECORD_REVIEW_RECORD_VERIFICATION_RECORD_REVIEW_RECORD_VERIFICATION_RECORD_REVIEW_GATE.md
+- ORO-11F scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_review_record_verification_record_review_record_verification_record_review_gate_only
+- ORO-11F reviews the ORO-11E verification record as static/mock verification record review only.
+- ORO-11F verification record review does not authorize runtime.
+- ORO-11F does not issue final approval, review decision authority, audit authority, finalization, signed runtime approval, signed approval artifact acceptance, actual signed approval artifact verification, route mount, public alias, live execution, external call, game launch, wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, or real-money behavior.
+
 ## Rollback
 
 - ORO-11E has no runtime side effect to roll back.
