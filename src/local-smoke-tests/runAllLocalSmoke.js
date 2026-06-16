@@ -1732,6 +1732,11 @@ const RELATED_FILES = [
   "src/local-smoke-tests/oro11fEvidencePackVerificationRecordReviewRecordVerificationRecordReviewRecordVerificationRecordReviewGateSmoke.js",
   "src/local-smoke-tests/oro11fSmoke.js",
   "docs/ORO_11F_EVIDENCE_PACK_VERIFICATION_RECORD_REVIEW_RECORD_VERIFICATION_RECORD_REVIEW_RECORD_VERIFICATION_RECORD_REVIEW_GATE.md",
+  "src/game-provider-mock/oro11gEvidencePackVerificationRecordReviewRecordVerificationRecordReviewRecordGate.js",
+  "src/game-provider-mock/oro11gEvidencePackVerificationRecordReviewRecordVerificationRecordReviewRecordGateFixtures.js",
+  "src/local-smoke-tests/oro11gEvidencePackVerificationRecordReviewRecordVerificationRecordReviewRecordGateSmoke.js",
+  "src/local-smoke-tests/oro11gSmoke.js",
+  "docs/ORO_11G_EVIDENCE_PACK_VERIFICATION_RECORD_REVIEW_RECORD_VERIFICATION_RECORD_REVIEW_RECORD_GATE.md",
   [
     "docs/ORO_8H_LIVE_TRAFFIC_ACTUAL_EXTERNAL_CALL",
     "EXECUTION_ACTUAL_LIVE_EXECUTION_EXECUTION_GATE.md",
@@ -2279,6 +2284,7 @@ const summary = [
   { key: "oro11d", label: "oro-11d", status: "PENDING" },
   { key: "oro11e", label: "oro-11e", status: "PENDING" },
   { key: "oro11f", label: "oro-11f", status: "PENDING" },
+  { key: "oro11g", label: "oro-11g", status: "PENDING" },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
   { key: "depositVerificationSource", label: "deposit-verification-source", status: "PENDING" },
   {
@@ -4239,6 +4245,21 @@ const steps = [
     name: "node --check oro11fSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/oro11fSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oro11gEvidencePackVerificationRecordReviewRecordVerificationRecordReviewRecordGateSmoke",
+    command: nodeCommand,
+    args: [
+      "--check",
+      "src/local-smoke-tests/oro11gEvidencePackVerificationRecordReviewRecordVerificationRecordReviewRecordGateSmoke.js",
+    ],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oro11gSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oro11gSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -6339,6 +6360,18 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oro-11f:detailed"]),
     summaryKey: "oro11f",
+  },
+  {
+    name: "npm run smoke:oro-11g",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oro-11g"]),
+    summaryKey: "oro11g",
+  },
+  {
+    name: "npm run smoke:oro-11g:detailed",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oro-11g:detailed"]),
+    summaryKey: "oro11g",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",

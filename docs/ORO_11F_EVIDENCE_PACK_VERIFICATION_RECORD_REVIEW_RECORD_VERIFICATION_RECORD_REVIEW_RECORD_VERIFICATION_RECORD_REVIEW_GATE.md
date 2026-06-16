@@ -130,3 +130,18 @@
 ## Next Phase
 
 - Next phase requires separate gate.
+
+## ORO-11G Handoff
+
+- ORO-11F closed.
+- ORO-11G current.
+- ORO-11G continues from the ORO-11F verification record review result.
+- ORO-11G doc: docs/ORO_11G_EVIDENCE_PACK_VERIFICATION_RECORD_REVIEW_RECORD_VERIFICATION_RECORD_REVIEW_RECORD_GATE.md
+- ORO-11G scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_review_record_verification_record_review_record_gate_only
+- ORO-11G verification record review record does not authorize runtime.
+- ORO-11G verification record review record does not issue final approval.
+- ORO-11G verification record review record does not grant review decision authority, audit authority, finalization, signed runtime approval, signed approval artifact acceptance, or actual signed approval artifact verification.
+- ORO-11G verification record review record does not mount routes, create public aliases, permit live execution, permit external calls, permit game launch, mutate wallet, mutate ledger, write Prisma, open DB transactions, run migrations, deploy, touch production DB, or touch real-money state.
+- ORO-11G remains docs/static/mock/helper/fixtures/local smoke only.
+- Validate with `smoke:oro-11g` and `smoke:oro-11g:detailed`.
+- Next phase requires separate gate.

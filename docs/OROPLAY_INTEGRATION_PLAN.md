@@ -3087,3 +3087,28 @@ ORO-9X is not permission to mutate wallet, ledger, or DB state.
 - ORO-11F scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_review_record_verification_record_review_record_verification_record_review_gate_only
 - Validate with smoke:oro-11f and smoke:oro-11f:detailed.
 - Next phase requires separate gate.
+
+## ORO-11G Current
+
+- ORO-11F closed.
+- ORO-11G current.
+- ORO-11G is the evidence pack verification record review record verification record review record gate after ORO-11F.
+- ORO-11G final approval decision evidence pack verification record review record verification record review record remains verification-record-review-record-gate-only and static/mock only.
+- ORO-11G records static ORO-11F verification record review output, review record metadata, completeness, integrity, deterministic digest evidence, and review-record-only disposition only.
+- ORO-11G verification record review record is not final approval issued.
+- ORO-11G verification record review record is not review decision authority.
+- ORO-11G verification record review record is not audit authority.
+- ORO-11G verification record review record is not finalization.
+- ORO-11G verification record review record is not signed runtime approval.
+- ORO-11G verification record review record is not signed approval artifact acceptance.
+- ORO-11G verification record review record is not actual signed approval artifact verification.
+- ORO-11G runtime authorization is not issued.
+- ORO-11G final approval is not issued.
+- ORO-11G signed runtime approval is not issued.
+- ORO-11G route mount and public alias authorization are not issued.
+- ORO-11G live execution, external call, and game launch are not authorized.
+- ORO-11G wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior are not authorized.
+- ORO-11G is docs/static/mock/local smoke only.
+- ORO-11G scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_review_record_verification_record_review_record_gate_only
+- Validate with smoke:oro-11g and smoke:oro-11g:detailed.
+- Next phase requires separate gate.
