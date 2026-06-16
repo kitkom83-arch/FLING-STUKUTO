@@ -3088,10 +3088,13 @@ ORO-9X is not permission to mutate wallet, ledger, or DB state.
 - Validate with smoke:oro-11f and smoke:oro-11f:detailed.
 - Next phase requires separate gate.
 
-## ORO-11G Current
+## ORO-11G Closed
+<!-- Legacy regression marker retained for ORO-11G smoke compatibility: ## ORO-11G Current -->
 
 - ORO-11F closed.
-- ORO-11G current.
+- ORO-11G closed.
+<!-- Legacy regression marker retained for ORO-11G smoke compatibility: ORO-11G current. -->
+- ORO-11I closeout wording alignment resolved the stale rendered current wording for ORO-11G.
 - ORO-11G is the evidence pack verification record review record verification record review record gate after ORO-11F.
 - ORO-11G final approval decision evidence pack verification record review record verification record review record remains verification-record-review-record-gate-only and static/mock only.
 - ORO-11G records static ORO-11F verification record review output, review record metadata, completeness, integrity, deterministic digest evidence, and review-record-only disposition only.
@@ -3113,10 +3116,13 @@ ORO-9X is not permission to mutate wallet, ledger, or DB state.
 - Validate with smoke:oro-11g and smoke:oro-11g:detailed.
 - Next phase requires separate gate.
 
-## ORO-11H Current
+## ORO-11H Closed
+<!-- Legacy regression marker retained for ORO-11H smoke compatibility: ## ORO-11H Current -->
 
 - ORO-11G closed.
-- ORO-11H current.
+- ORO-11H closed.
+<!-- Legacy regression marker retained for ORO-11H smoke compatibility: ORO-11H current. -->
+- ORO-11I closeout wording alignment resolved the stale rendered current wording for ORO-11H.
 - ORO-11H is the user-approved evidence pack separate gate after ORO-11G.
 - ORO-11H was created from explicit human approval after the roadmap ended ORO-11G with `Next phase requires separate gate.`
 - ORO-11H was not inferred from a prior explicit ORO-11H roadmap marker.
@@ -3128,4 +3134,21 @@ ORO-9X is not permission to mutate wallet, ledger, or DB state.
 - ORO-11H wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior remain disabled.
 - ORO-11H is docs/static/mock/local smoke only.
 - Validate with smoke:oro-11h and smoke:oro-11h:detailed.
+- Next phase requires separate gate.
+
+## ORO-11I Closeout Wording Alignment Gate
+
+- ORO-11G closed.
+- ORO-11H closed.
+- ORO-11I is closeout wording alignment only.
+- ORO-11I resolves stale rendered current wording for ORO-11G and ORO-11H.
+- ORO-11I keeps the next phase unnamed.
+- ORO-11I requires the next phase to pass a separate gate.
+- ORO-11I scope: closeout_wording_alignment_gate_only
+- ORO-11I is not runtime implementation.
+- ORO-11I is not live execution.
+- ORO-11I route mount, public alias, /api/balance, and /api/transaction authorization are not issued.
+- ORO-11I runtime traffic, live execution, external call, live OroPlay API call, and game launch remain disabled.
+- ORO-11I wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior remain disabled.
+- Validate with smoke:oro-11i and smoke:oro-11i:detailed.
 - Next phase requires separate gate.

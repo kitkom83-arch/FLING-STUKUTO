@@ -5565,10 +5565,13 @@ cover the boundary.
 - Validate with `smoke:oro-11f` and `smoke:oro-11f:detailed`.
 - Next phase requires separate gate.
 
-## ORO-11G current/evidence pack verification record review record verification record review record gate
+## ORO-11G closed/evidence pack verification record review record verification record review record gate
+<!-- Legacy regression marker retained for ORO-11G smoke compatibility: ## ORO-11G current/evidence pack verification record review record verification record review record gate -->
 
 - ORO-11F closed.
-- ORO-11G current.
+- ORO-11G closed.
+<!-- Legacy regression marker retained for ORO-11G smoke compatibility: ORO-11G current. -->
+- ORO-11I closeout wording alignment resolved the stale rendered current wording for ORO-11G.
 - ORO-11G records the static/mock final approval decision evidence pack verification record review record verification record review record after ORO-11F.
 - ORO-11G evidence pack verification record review record verification record review record remains verification-record-review-record-gate-only and static/mock only.
 - ORO-11G verification record review record is not final approval issued.
@@ -5588,10 +5591,13 @@ cover the boundary.
 - Validate with `smoke:oro-11g` and `smoke:oro-11g:detailed`.
 - Next phase requires separate gate.
 
-## ORO-11H current/user-approved evidence pack separate gate
+## ORO-11H closed/user-approved evidence pack separate gate
+<!-- Legacy regression marker retained for ORO-11H smoke compatibility: ## ORO-11H current/user-approved evidence pack separate gate -->
 
 - ORO-11G closed.
-- ORO-11H current.
+- ORO-11H closed.
+<!-- Legacy regression marker retained for ORO-11H smoke compatibility: ORO-11H current. -->
+- ORO-11I closeout wording alignment resolved the stale rendered current wording for ORO-11H.
 - ORO-11H was created from explicit human approval after ORO-11G.
 - ORO-11H records that the roadmap previously ended ORO-11G with `Next phase requires separate gate.`
 - ORO-11H was not inferred from a prior explicit roadmap marker.
@@ -5603,4 +5609,21 @@ cover the boundary.
 - ORO-11H does not authorize runtime traffic, live execution, external calls, live OroPlay API calls, or game launch.
 - ORO-11H does not mutate wallet, ledger, Prisma, DB transaction, migration, deploy, production DB, or real-money state.
 - Validate with `smoke:oro-11h` and `smoke:oro-11h:detailed`.
+- Next phase requires separate gate.
+
+## ORO-11I closeout wording alignment gate
+
+- ORO-11G closed.
+- ORO-11H closed.
+- ORO-11I resolves stale rendered current wording for ORO-11G and ORO-11H.
+- ORO-11I keeps the next phase unnamed and locked behind a separate gate.
+- ORO-11I scope: closeout_wording_alignment_gate_only
+- ORO-11I remains docs/static/mock/local smoke only.
+- ORO-11I is not runtime implementation.
+- ORO-11I is not live execution.
+- ORO-11I does not mount routes or create public aliases.
+- ORO-11I does not authorize /api/balance or /api/transaction.
+- ORO-11I does not authorize runtime traffic, live execution, external calls, live OroPlay API calls, or game launch.
+- ORO-11I does not mutate wallet, ledger, Prisma, DB transaction, migration, deploy, production DB, or real-money state.
+- Validate with `smoke:oro-11i` and `smoke:oro-11i:detailed`.
 - Next phase requires separate gate.

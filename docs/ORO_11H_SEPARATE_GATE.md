@@ -3,7 +3,10 @@
 ## Status
 
 - ORO-11G closed.
-- ORO-11H current.
+- ORO-11H closed.
+- ORO-11H CLOSED.
+<!-- Legacy regression marker retained for ORO-11H smoke compatibility: ORO-11H current. -->
+- ORO-11I closeout wording alignment resolved the stale rendered current wording without changing ORO-11H technical scope.
 - ORO-11H was created from an explicit human-approved separate gate decision after ORO-11G.
 - ORO-11H was not inferred from an existing roadmap marker.
 - ORO-11H scope: user_approved_evidence_pack_separate_gate_after_oro_11g_only

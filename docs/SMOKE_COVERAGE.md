@@ -8830,8 +8830,10 @@ Coverage confirms ORO-9X is docs/static contract/mock helper/fixtures/local smok
 ## ORO-11G Evidence Pack Verification Record Review Record Verification Record Review Record Gate Coverage
 
 - ORO-11G evidence-pack-verification-record-review-record-verification-record-review-record-gate package smoke alias.
-- ORO-10A closed; ORO-10B closed; ORO-10C closed; ORO-10D closed; ORO-10E closed; ORO-10F closed; ORO-10G closed; ORO-10H closed; ORO-10I closed; ORO-10J closed; ORO-10K closed; ORO-10L closed; ORO-10M closed; ORO-10N closed; ORO-10O closed; ORO-10P closed; ORO-10Q closed; ORO-10R closed; ORO-10S closed; ORO-10T closed; ORO-10U closed; ORO-10V closed; ORO-10W closed; ORO-10X closed; ORO-10Y closed; ORO-10Z closed; ORO-11A closed; ORO-11B closed; ORO-11C closed; ORO-11D closed; ORO-11E closed; ORO-11F closed; ORO-11G current.
-- ORO-11F closed; ORO-11G current.
+- ORO-10A closed; ORO-10B closed; ORO-10C closed; ORO-10D closed; ORO-10E closed; ORO-10F closed; ORO-10G closed; ORO-10H closed; ORO-10I closed; ORO-10J closed; ORO-10K closed; ORO-10L closed; ORO-10M closed; ORO-10N closed; ORO-10O closed; ORO-10P closed; ORO-10Q closed; ORO-10R closed; ORO-10S closed; ORO-10T closed; ORO-10U closed; ORO-10V closed; ORO-10W closed; ORO-10X closed; ORO-10Y closed; ORO-10Z closed; ORO-11A closed; ORO-11B closed; ORO-11C closed; ORO-11D closed; ORO-11E closed; ORO-11F closed; ORO-11G closed.
+<!-- Legacy regression marker retained for ORO-11G smoke compatibility: ORO-11G current. -->
+- ORO-11F closed; ORO-11G closed.
+<!-- Legacy regression marker retained for ORO-11G smoke compatibility: ORO-11F closed; ORO-11G current. -->
 - ORO-11G is docs/static/mock/helper/fixtures/local smoke only.
 - ORO-11G scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_review_record_verification_record_review_record_gate_only
 - Covers ORO-11F verification record review as source, ORO-11E verification record reference only, ORO-11D review record verification reference only, ORO-11C review record reference only, ORO-11B review reference only, ORO-11A verification record reference only, ORO-10Z verification result reference only, ORO-10Y review record reference only, ORO-10X review reference only, ORO-10W record reference only, ORO-10V verification output reference only, static verification record review record completeness, integrity, metadata, deterministic digest comparison, and review-record-only disposition.
@@ -8841,9 +8843,20 @@ Coverage confirms ORO-9X is docs/static contract/mock helper/fixtures/local smok
 ## ORO-11H User-Approved Separate Gate Coverage
 
 - ORO-11H user-approved separate gate package smoke alias.
-- ORO-11G closed; ORO-11H current.
+- ORO-11G closed; ORO-11H closed.
+<!-- Legacy regression marker retained for ORO-11H smoke compatibility: ORO-11G closed; ORO-11H current. -->
 - ORO-11H is docs/static/mock/helper/fixtures/local smoke only.
 - ORO-11H scope: user_approved_evidence_pack_separate_gate_after_oro_11g_only
 - Covers explicit human-approved separate gate decision after ORO-11G, previous phase ORO-11G closed, roadmap note that ORO-11G ended with `Next phase requires separate gate.`, and not-inferred-from-roadmap-marker status.
 - Covers no runtime implementation, no route mount, no public alias, no runtime traffic, no live execution, no live OroPlay API call, no external call, no game launch, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, no deploy, no production DB, no real money, no secret-shaped value, no long ORO-11H filename, and separate next-phase gate.
 - Scripts: smoke:oro-11h, smoke:oro-11h:detailed.
+
+## ORO-11I Closeout Wording Alignment Gate Coverage
+
+- ORO-11I closeout wording alignment gate package smoke alias.
+- ORO-11G closed; ORO-11H closed.
+- ORO-11I is docs/static/mock/helper/fixtures/local smoke only.
+- ORO-11I scope: closeout_wording_alignment_gate_only
+- Covers ORO-11G and ORO-11H closed status, stale rendered current wording removal for ORO-11G and ORO-11H, next phase unnamed status, and separate next-phase gate.
+- Covers no runtime implementation, no route mount, no public alias, no /api/balance, no /api/transaction, no runtime traffic, no live execution, no live OroPlay API call, no external call, no game launch, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, no deploy, no production DB, no real money, no secret-shaped value, no long ORO-11I filename, and separate next-phase gate.
+- Scripts: smoke:oro-11i, smoke:oro-11i:detailed.

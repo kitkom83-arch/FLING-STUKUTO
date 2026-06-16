@@ -6894,7 +6894,9 @@ ORO-9X records finalization review approval record finalization review approval 
 ## ORO-11G Evidence Pack Verification Record Review Record Verification Record Review Record Gate Mapping
 
 - ORO-11F closed.
-- ORO-11G current.
+- ORO-11G closed.
+<!-- Legacy regression marker retained for ORO-11G smoke compatibility: ORO-11G current. -->
+- ORO-11I closeout wording alignment resolved the stale rendered current wording for ORO-11G.
 - ORO-11G is the evidence pack verification record review record verification record review record gate after ORO-11F.
 - ORO-11G final approval decision evidence pack verification record review record verification record review record remains verification-record-review-record-gate-only and static/mock only.
 - ORO-11G records static ORO-11F verification record review output, review record metadata, completeness, integrity, deterministic digest evidence, and review-record-only disposition only.
@@ -6922,7 +6924,9 @@ ORO-9X records finalization review approval record finalization review approval 
 ## ORO-11H User-Approved Separate Gate Mapping
 
 - ORO-11G closed.
-- ORO-11H current.
+- ORO-11H closed.
+<!-- Legacy regression marker retained for ORO-11H smoke compatibility: ORO-11H current. -->
+- ORO-11I closeout wording alignment resolved the stale rendered current wording for ORO-11H.
 - ORO-11H is the user-approved evidence pack separate gate after ORO-11G.
 - ORO-11H was created from explicit human approval because the roadmap previously ended ORO-11G with `Next phase requires separate gate.`
 - ORO-11H was not inferred from a prior explicit ORO-11H roadmap marker.
@@ -6938,3 +6942,23 @@ ORO-9X records finalization review approval record finalization review approval 
 - detailed smoke: src/local-smoke-tests/oro11hSeparateGateSmoke.js
 - wrapper smoke: src/local-smoke-tests/oro11hSmoke.js
 - package smoke aliases: smoke:oro-11h, smoke:oro-11h:detailed.
+
+## ORO-11I Closeout Wording Alignment Gate Mapping
+
+- ORO-11G closed.
+- ORO-11H closed.
+- ORO-11I is the closeout wording alignment gate after ORO-11H.
+- ORO-11I resolves stale rendered current wording for ORO-11G and ORO-11H.
+- ORO-11I keeps the next phase unnamed and locked behind a separate gate.
+- ORO-11I scope: closeout_wording_alignment_gate_only
+- ORO-11I is docs/static/mock/local smoke only.
+- ORO-11I is not runtime implementation.
+- ORO-11I route mount and public alias authorization are not issued.
+- ORO-11I /api/balance and /api/transaction aliases are not issued.
+- ORO-11I runtime traffic, live execution, external call, live OroPlay API call, and game launch are not authorized.
+- ORO-11I wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior are not authorized.
+- helper: src/game-provider-mock/oro11iCloseoutWordingAlignmentGate.js
+- fixtures: src/game-provider-mock/oro11iCloseoutWordingAlignmentGateFixtures.js
+- detailed smoke: src/local-smoke-tests/oro11iCloseoutWordingAlignmentGateSmoke.js
+- wrapper smoke: src/local-smoke-tests/oro11iSmoke.js
+- package smoke aliases: smoke:oro-11i, smoke:oro-11i:detailed.

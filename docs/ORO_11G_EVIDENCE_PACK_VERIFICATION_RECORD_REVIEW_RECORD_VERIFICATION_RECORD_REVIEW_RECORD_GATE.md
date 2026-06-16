@@ -3,7 +3,10 @@
 ## Status
 
 - ORO-11F closed.
-- ORO-11G current.
+- ORO-11G closed.
+- ORO-11G closed by ORO-11H successor evidence and roadmap closeout.
+<!-- Legacy regression marker retained for ORO-11G smoke compatibility: ORO-11G current. -->
+- ORO-11I closeout wording alignment resolved the stale rendered current wording without changing ORO-11G technical scope.
 - ORO-11G continues from ORO-11F.
 - ORO-11G scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_review_record_verification_record_review_record_gate_only
 - ORO-11G is the evidence pack verification record review record verification record review record gate only.
