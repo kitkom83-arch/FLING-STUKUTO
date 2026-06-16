@@ -2890,5 +2890,28 @@ ORO-9X is not permission to mutate wallet, ledger, or DB state.
 - ORO-10X wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior are not authorized.
 - ORO-10X is docs/static/mock/local smoke only.
 - ORO-10X scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_review_gate_only
+
+## ORO-10Y Current
+
+- ORO-10X closed.
+- ORO-10Y current.
+- ORO-10Y is the evidence pack verification record review record gate after ORO-10X.
+- ORO-10Y final approval decision evidence pack verification record review record remains review-record-gate-only and static/mock only.
+- ORO-10Y records static ORO-10X verification record review output, review result metadata, completeness, integrity, deterministic digest comparison, and review-record-only metadata.
+- ORO-10Y verification record review record is not final approval issued.
+- ORO-10Y verification record review record is not review decision authority.
+- ORO-10Y verification record review record is not audit authority.
+- ORO-10Y verification record review record is not finalization.
+- ORO-10Y verification record review record is not signed runtime approval.
+- ORO-10Y verification record review record is not signed approval artifact acceptance.
+- ORO-10Y verification record review record is not actual signed approval artifact verification.
+- ORO-10Y runtime authorization is not issued.
+- ORO-10Y final approval is not issued.
+- ORO-10Y signed runtime approval is not issued.
+- ORO-10Y route mount and public alias authorization are not issued.
+- ORO-10Y live execution, external call, and game launch are not authorized.
+- ORO-10Y wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior are not authorized.
+- ORO-10Y is docs/static/mock/local smoke only.
+- ORO-10Y scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_review_record_gate_only
 - Runtime authorization, activation, mount, route alias, public alias, wallet mutation, ledger mutation, DB mutation, actual external call, and game launch call remain absent.
 - Next phase requires separate gate.

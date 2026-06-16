@@ -6669,3 +6669,31 @@ ORO-9X records finalization review approval record finalization review approval 
 - local smoke: src/local-smoke-tests/oro10xEvidencePackVerificationRecordReviewGateSmoke.js
 - wrapper smoke: src/local-smoke-tests/oro10xSmoke.js
 - package smoke aliases: smoke:oro-10x, smoke:oro-10x:detailed.
+
+## ORO-10Y Evidence Pack Verification Record Review Record Gate Mapping
+
+- ORO-10X closed.
+- ORO-10Y current.
+- ORO-10Y is the evidence pack verification record review record gate after ORO-10X.
+- ORO-10Y final approval decision evidence pack verification record review record is review-record-gate-only and static/mock only.
+- ORO-10Y records static ORO-10X verification record review output, review result metadata, completeness, integrity, deterministic digest evidence, and review-record-only disposition only.
+- ORO-10Y verification record review record is not final approval issued.
+- ORO-10Y verification record review record is not review decision authority.
+- ORO-10Y verification record review record is not audit authority.
+- ORO-10Y verification record review record is not finalization.
+- ORO-10Y verification record review record is not signed runtime approval.
+- ORO-10Y verification record review record is not signed approval artifact acceptance.
+- ORO-10Y verification record review record is not actual signed approval artifact verification.
+- ORO-10Y runtime authorization is not issued.
+- ORO-10Y final approval is not issued.
+- ORO-10Y signed runtime approval is not issued.
+- ORO-10Y route mount and public alias authorization are not issued.
+- ORO-10Y live execution, external call, and game launch are not authorized.
+- ORO-10Y wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior are not authorized.
+- ORO-10Y is docs/static/mock/local smoke only.
+- ORO-10Y scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_review_record_gate_only
+- helper: src/game-provider-mock/oro10yEvidencePackVerificationRecordReviewRecordGate.js
+- fixtures: src/game-provider-mock/oro10yEvidencePackVerificationRecordReviewRecordGateFixtures.js
+- local smoke: src/local-smoke-tests/oro10yEvidencePackVerificationRecordReviewRecordGateSmoke.js
+- wrapper smoke: src/local-smoke-tests/oro10ySmoke.js
+- package smoke aliases: smoke:oro-10y, smoke:oro-10y:detailed.
