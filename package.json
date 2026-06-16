@@ -348,6 +348,8 @@
     "smoke:oro-10v": "node src/local-smoke-tests/oro10vSmoke.js",
     "smoke:oro-10w:detailed": "node src/local-smoke-tests/oro10wEvidencePackVerificationRecordGateSmoke.js",
     "smoke:oro-10w": "node src/local-smoke-tests/oro10wSmoke.js",
+    "smoke:oro-10x:detailed": "node src/local-smoke-tests/oro10xEvidencePackVerificationRecordReviewGateSmoke.js",
+    "smoke:oro-10x": "node src/local-smoke-tests/oro10xSmoke.js",
     "smoke:member-qr-deposit-ux": "node src/local-smoke-tests/memberQrDepositUxSmoke.js",
     "smoke:deposit-verification-source": "node src/local-smoke-tests/depositVerificationSourceSmoke.js",
     "smoke:deposit-ledger-reconciliation-guard": "node src/local-smoke-tests/depositLedgerReconciliationGuardSmoke.js",

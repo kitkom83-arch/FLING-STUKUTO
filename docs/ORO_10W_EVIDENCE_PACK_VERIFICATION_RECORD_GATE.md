@@ -123,3 +123,13 @@
 - nextStepRequiresSeparateRuntimeApproval = true
 - Next phase requires separate gate.
 - Any later final approval issued, review approval, finalization, signed runtime approval, signed approval artifact acceptance, actual signed approval artifact verification, final approval decision runtime authorization, runtime review decision, runtime approval, runtime authorization, activation, mount, alias, wallet mutation, ledger mutation, DB mutation, Prisma write, migration, deploy, live execution, game launch call, or actual external call requires a separate explicit approval.
+
+## ORO-10X Handoff
+
+- ORO-10W closed.
+- ORO-10X current.
+- docs/ORO_10X_EVIDENCE_PACK_VERIFICATION_RECORD_REVIEW_GATE.md
+- ORO-10X next phase = approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_review_gate_only
+- ORO-10X final approval decision evidence pack verification record review is static/mock only.
+- ORO-10X verification record review does not authorize runtime.
+- ORO-10X does not issue final approval, review approval decision authority, finalization, signed runtime approval, signed approval artifact acceptance, actual signed approval artifact verification, runtime authorization, route mount, external call, game launch, wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, or real-money behavior.

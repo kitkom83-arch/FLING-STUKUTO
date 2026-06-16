@@ -6642,3 +6642,30 @@ ORO-9X records finalization review approval record finalization review approval 
 - local smoke: src/local-smoke-tests/oro10wEvidencePackVerificationRecordGateSmoke.js
 - wrapper smoke: src/local-smoke-tests/oro10wSmoke.js
 - package smoke aliases: smoke:oro-10w, smoke:oro-10w:detailed.
+
+## ORO-10X Evidence Pack Verification Record Review Gate Mapping
+
+- ORO-10W closed.
+- ORO-10X current.
+- ORO-10X is the evidence pack verification record review gate after ORO-10W.
+- ORO-10X final approval decision evidence pack verification record review is record-review-gate-only and static/mock only.
+- ORO-10X reviews static ORO-10W evidence pack verification record output, metadata, completeness, integrity, and deterministic digest evidence only.
+- ORO-10X verification record review is not final approval issued.
+- ORO-10X verification record review is not review decision authority.
+- ORO-10X verification record review is not finalization.
+- ORO-10X verification record review is not signed runtime approval.
+- ORO-10X verification record review is not signed approval artifact acceptance.
+- ORO-10X verification record review is not actual signed approval artifact verification.
+- ORO-10X runtime authorization is not issued.
+- ORO-10X final approval is not issued.
+- ORO-10X signed runtime approval is not issued.
+- ORO-10X route mount and public alias authorization are not issued.
+- ORO-10X live execution, external call, and game launch are not authorized.
+- ORO-10X wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior are not authorized.
+- ORO-10X is docs/static/mock/local smoke only.
+- ORO-10X scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_review_gate_only
+- helper: src/game-provider-mock/oro10xEvidencePackVerificationRecordReviewGate.js
+- fixtures: src/game-provider-mock/oro10xEvidencePackVerificationRecordReviewGateFixtures.js
+- local smoke: src/local-smoke-tests/oro10xEvidencePackVerificationRecordReviewGateSmoke.js
+- wrapper smoke: src/local-smoke-tests/oro10xSmoke.js
+- package smoke aliases: smoke:oro-10x, smoke:oro-10x:detailed.

@@ -2868,3 +2868,27 @@ ORO-9X is not permission to mutate wallet, ledger, or DB state.
 - ORO-10W scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_gate_only
 - Runtime authorization, activation, mount, route alias, public alias, wallet mutation, ledger mutation, DB mutation, actual external call, and game launch call remain absent.
 - Next phase requires separate gate.
+
+## ORO-10X Current
+
+- ORO-10W closed.
+- ORO-10X current.
+- ORO-10X is the evidence pack verification record review gate after ORO-10W.
+- ORO-10X final approval decision evidence pack verification record review remains record-review-gate-only and static/mock only.
+- ORO-10X reviews static ORO-10W verification record output, review metadata, completeness, integrity, deterministic digest comparison, and review-only record review metadata.
+- ORO-10X verification record review is not final approval issued.
+- ORO-10X verification record review is not review decision authority.
+- ORO-10X verification record review is not finalization.
+- ORO-10X verification record review is not signed runtime approval.
+- ORO-10X verification record review is not signed approval artifact acceptance.
+- ORO-10X verification record review is not actual signed approval artifact verification.
+- ORO-10X runtime authorization is not issued.
+- ORO-10X final approval is not issued.
+- ORO-10X signed runtime approval is not issued.
+- ORO-10X route mount and public alias authorization are not issued.
+- ORO-10X live execution, external call, and game launch are not authorized.
+- ORO-10X wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior are not authorized.
+- ORO-10X is docs/static/mock/local smoke only.
+- ORO-10X scope: approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_review_gate_only
+- Runtime authorization, activation, mount, route alias, public alias, wallet mutation, ledger mutation, DB mutation, actual external call, and game launch call remain absent.
+- Next phase requires separate gate.
