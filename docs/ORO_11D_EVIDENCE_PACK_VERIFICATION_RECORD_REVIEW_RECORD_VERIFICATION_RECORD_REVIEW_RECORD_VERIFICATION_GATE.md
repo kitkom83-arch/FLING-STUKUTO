@@ -143,6 +143,17 @@
 - ORO-11D has no runtime side effect to roll back.
 - Removing the ORO-11D doc, helper, fixtures, and local smoke returns the repo to the ORO-11C closed static state.
 
+## ORO-11E Handoff
+
+- ORO-11D closed.
+- ORO-11E current.
+- ORO-11E doc: docs/ORO_11E_EVIDENCE_PACK_VERIFICATION_RECORD_REVIEW_RECORD_VERIFICATION_RECORD_REVIEW_RECORD_VERIFICATION_RECORD_GATE.md
+- ORO-11E next phase = approval_chain_rollover_final_approval_decision_evidence_pack_verification_record_review_record_verification_record_review_record_verification_record_gate_only
+- ORO-11E final approval decision evidence pack verification record review record verification record review record verification record is static/mock only.
+- ORO-11E verification record does not authorize runtime.
+- ORO-11E verification record does not issue final approval, review decision authority, audit authority, finalization, signed runtime approval, signed approval artifact acceptance, actual signed approval artifact verification, route mount, public alias, live execution, external call, game launch, wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, or real-money behavior.
+- ORO-11E requires separate targeted validation with `smoke:oro-11e` and `smoke:oro-11e:detailed`.
+
 ## Next Phase
 
-- Next phase requires separate gate.
+- Next phase requires separate gate after ORO-11E.
