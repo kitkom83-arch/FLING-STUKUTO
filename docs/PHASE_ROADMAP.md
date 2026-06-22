@@ -5671,3 +5671,42 @@ cover the boundary.
 - Safety markers: no_runtime_implementation, no_route_mount, no_public_alias, no_api_balance, no_api_transaction, no_live_oroplay_api_call, no_external_network, no_wallet_mutation, no_ledger_mutation, no_prisma_write, no_migration, no_deploy, no_production_db, no_real_money, no_secret_token_password_clientSecret.
 - Validate with `smoke:oro-11k` and `smoke:oro-11k:detailed`.
 - Next phase requires separate gate.
+
+## ORO-11L current/separate successor phase authorization request gate
+
+- ORO-11I closed.
+- ORO-11J closed.
+- ORO-11K closed.
+- ORO-11K selected ORO-11L as the next candidate phase.
+- Candidate phase name: ORO-11L Separate Successor Phase Authorization Request Gate.
+- ORO-11L Separate Successor Phase Authorization Request Gate records authorization request status only.
+- ORO-11L is authorization request gate only.
+- ORO-11L scope: separate_successor_phase_authorization_request_gate_only
+- ORO-11L request status: submitted_pending_separate_successor_phase_authorization_decision.
+- ORO-11L is not approval granted.
+- ORO-11L is not runtime implementation.
+- ORO-11L is not live execution.
+- ORO-11L does not approve external call.
+- ORO-11L does not approve route mount.
+- ORO-11L does not approve public alias.
+- ORO-11L remains docs/static/mock/local smoke only.
+- ORO-11L does not authorize /api/balance or /api/transaction.
+- ORO-11L does not authorize runtime traffic, live execution, live OroPlay API calls, external calls, external network, or game launch.
+- ORO-11L does not mutate wallet, ledger, Prisma, DB transaction, migration, deploy, production DB, or real-money state.
+- Safety markers: no_api_balance, no_api_transaction, no_live_oroplay_api_call, no_external_network, no_wallet_mutation, no_ledger_mutation, no_prisma_write, no_migration, no_deploy, no_production_db, no_real_money, no_secret_token_password_clientSecret.
+- Validate with `smoke:oro-11l` and `smoke:oro-11l:detailed`.
+- Next phase requires separate gate.
+
+
+### ORO-11L Required Safety Markers
+- ORO-11L does not issue /api/balance.
+- ORO-11L does not issue /api/transaction.
+- ORO-11L does not authorize live OroPlay API call.
+- ORO-11L does not authorize external network.
+- ORO-11L does not authorize wallet mutation.
+- ORO-11L does not authorize ledger mutation.
+- ORO-11L does not authorize Prisma write.
+- ORO-11L does not authorize migration.
+- ORO-11L does not authorize deploy.
+- ORO-11L does not authorize production DB.
+- ORO-11L does not authorize real money.

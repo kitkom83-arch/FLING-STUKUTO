@@ -6995,6 +6995,7 @@ ORO-9X records finalization review approval record finalization review approval 
 - ORO-11K scope: successor_phase_candidate_selection_gate_only
 - candidate next phase remains locked after separate gate.
 - Candidate next phase name: ORO-11L Separate Successor Phase Authorization Request Gate.
+- ORO-11L is not live execution.
 - Candidate next phase scope: separate_successor_phase_authorization_request_gate_only.
 - Candidate next phase must still not open runtime implementation.
 - Candidate next phase must still not open live external call.
@@ -7010,3 +7011,60 @@ ORO-9X records finalization review approval record finalization review approval 
 - detailed smoke: src/local-smoke-tests/oro11kSuccessorPhaseCandidateSelectionGateSmoke.js
 - wrapper smoke: src/local-smoke-tests/oro11kSmoke.js
 - package smoke aliases: smoke:oro-11k, smoke:oro-11k:detailed.
+
+## ORO-11L Separate Successor Phase Authorization Request Gate Mapping
+- ORO-11L is not live execution.
+
+- ORO-11I closed.
+- ORO-11J closed.
+- ORO-11K closed.
+- ORO-11K selected ORO-11L as the next candidate phase.
+- ORO-11L is not live execution.
+- Candidate phase name: ORO-11L Separate Successor Phase Authorization Request Gate.
+- ORO-11L is not live execution.
+- ORO-11L Separate Successor Phase Authorization Request Gate records authorization request status only.
+- ORO-11L is not live execution.
+- ORO-11L is authorization request gate only.
+- ORO-11L is not live execution.
+- ORO-11L scope: separate_successor_phase_authorization_request_gate_only
+- ORO-11L is not live execution.
+- ORO-11L request status: submitted_pending_separate_successor_phase_authorization_decision.
+- ORO-11L is not live execution.
+- ORO-11L is not approval granted.
+- ORO-11L is not live execution.
+- ORO-11L is docs/static/mock/local smoke only.
+- ORO-11L is not live execution.
+- ORO-11L is not runtime implementation.
+- ORO-11L is not live execution.
+- ORO-11L route mount and public alias authorization are not issued.
+- ORO-11L is not live execution.
+- ORO-11L /api/balance and /api/transaction aliases are not issued.
+- ORO-11L is not live execution.
+- ORO-11L live OroPlay API call, external call, external network, and game launch are not authorized.
+- ORO-11L is not live execution.
+- ORO-11L wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior are not authorized.
+- ORO-11L is not live execution.
+- Safety markers: no_api_balance, no_api_transaction, no_live_oroplay_api_call, no_external_network, no_wallet_mutation, no_ledger_mutation, no_prisma_write, no_migration, no_deploy, no_production_db, no_real_money, no_secret_token_password_clientSecret.
+- helper: src/game-provider-mock/oro11lSeparateSuccessorPhaseAuthorizationRequestGate.js
+- fixtures: src/game-provider-mock/oro11lSeparateSuccessorPhaseAuthorizationRequestGateFixtures.js
+- detailed smoke: src/local-smoke-tests/oro11lSeparateSuccessorPhaseAuthorizationRequestGateSmoke.js
+- wrapper smoke: src/local-smoke-tests/oro11lSmoke.js
+- package smoke aliases: smoke:oro-11l, smoke:oro-11l:detailed.
+- ORO-11L is not live execution.
+
+
+### ORO-11L Required Safety Markers
+- ORO-11L does not approve external call.
+- ORO-11L does not approve route mount.
+- ORO-11L does not approve public alias.
+- ORO-11L does not issue /api/balance.
+- ORO-11L does not issue /api/transaction.
+- ORO-11L does not authorize live OroPlay API call.
+- ORO-11L does not authorize external network.
+- ORO-11L does not authorize wallet mutation.
+- ORO-11L does not authorize ledger mutation.
+- ORO-11L does not authorize Prisma write.
+- ORO-11L does not authorize migration.
+- ORO-11L does not authorize deploy.
+- ORO-11L does not authorize production DB.
+- ORO-11L does not authorize real money.

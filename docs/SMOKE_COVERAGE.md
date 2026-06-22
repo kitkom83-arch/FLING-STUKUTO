@@ -8892,3 +8892,39 @@ Coverage confirms ORO-9X is docs/static contract/mock helper/fixtures/local smok
 - Covers no runtime implementation, no route mount, no public alias, no /api/balance, no /api/transaction, no runtime traffic, no live execution, no live OroPlay API call, no external call, no external network, no game launch, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, no deploy, no production DB, no real money, no secret/token/password/clientSecret, and separate next-phase gate.
 - Safety markers: no_runtime_implementation, no_route_mount, no_public_alias, no_api_balance, no_api_transaction, no_live_oroplay_api_call, no_external_network, no_wallet_mutation, no_ledger_mutation, no_prisma_write, no_migration, no_deploy, no_production_db, no_real_money, no_secret_token_password_clientSecret.
 - Scripts: smoke:oro-11k, smoke:oro-11k:detailed.
+
+## ORO-11L Separate Successor Phase Authorization Request Gate Coverage
+
+- ORO-11L Separate Successor Phase Authorization Request Gate package smoke alias.
+- ORO-11I closed.
+- ORO-11J closed.
+- ORO-11K closed.
+- ORO-11K selected ORO-11L as the next candidate phase.
+- ORO-11L is docs/static/mock/helper/fixtures/local smoke only.
+- ORO-11L is authorization request gate only.
+- ORO-11L scope: separate_successor_phase_authorization_request_gate_only
+- ORO-11L request status: submitted_pending_separate_successor_phase_authorization_decision.
+- ORO-11L is not approval granted.
+- Covers ORO-11I, ORO-11J, and ORO-11K closed status, ORO-11K candidate selection of ORO-11L, submitted authorization request status, and separate next-phase gate.
+- Covers no runtime implementation, no route mount, no public alias, no /api/balance, no /api/transaction, no runtime traffic, no live execution, no live OroPlay API call, no external call, no external network, no game launch, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, no deploy, no production DB, no real money, no secret/token/password/clientSecret, and separate next-phase gate.
+- Safety markers: no_api_balance, no_api_transaction, no_live_oroplay_api_call, no_external_network, no_wallet_mutation, no_ledger_mutation, no_prisma_write, no_migration, no_deploy, no_production_db, no_real_money, no_secret_token_password_clientSecret.
+- Scripts: smoke:oro-11l, smoke:oro-11l:detailed.
+
+
+### ORO-11L Required Safety Markers
+- ORO-11L is not runtime implementation.
+- ORO-11L is not live execution.
+- ORO-11L does not approve external call.
+- ORO-11L does not approve route mount.
+- ORO-11L does not approve public alias.
+- ORO-11L does not issue /api/balance.
+- ORO-11L does not issue /api/transaction.
+- ORO-11L does not authorize live OroPlay API call.
+- ORO-11L does not authorize external network.
+- ORO-11L does not authorize wallet mutation.
+- ORO-11L does not authorize ledger mutation.
+- ORO-11L does not authorize Prisma write.
+- ORO-11L does not authorize migration.
+- ORO-11L does not authorize deploy.
+- ORO-11L does not authorize production DB.
+- ORO-11L does not authorize real money.
