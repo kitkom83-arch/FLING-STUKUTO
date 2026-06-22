@@ -3152,3 +3152,21 @@ ORO-9X is not permission to mutate wallet, ledger, or DB state.
 - ORO-11I wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior remain disabled.
 - Validate with smoke:oro-11i and smoke:oro-11i:detailed.
 - Next phase requires separate gate.
+
+## ORO-11J Next Phase Discovery Gate
+
+- ORO-11I closed.
+- ORO-11J did not exist before this discovery gate.
+- The post-ORO-11I next phase was unnamed and required a separate gate before ORO-11J.
+- post-ORO-11I next phase was unnamed and required a separate gate.
+- ORO-11J Next Phase Discovery Gate records discovery status only.
+- ORO-11J is discovery gate only.
+- ORO-11J scope: next_phase_discovery_gate_only
+- ORO-11J is not runtime implementation.
+- ORO-11J is not live execution.
+- ORO-11J route mount, public alias, /api/balance, and /api/transaction authorization are not issued.
+- ORO-11J runtime traffic, live execution, live OroPlay API call, external call, external network, and game launch remain disabled.
+- ORO-11J wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior remain disabled.
+- Safety markers: no_runtime_implementation, no_route_mount, no_public_alias, no_api_balance, no_api_transaction, no_live_oroplay_api_call, no_external_network, no_wallet_mutation, no_ledger_mutation, no_prisma_write, no_migration, no_deploy, no_production_db, no_real_money, no_secret_token_password_clientSecret.
+- Validate with smoke:oro-11j and smoke:oro-11j:detailed.
+- Next phase requires separate gate.

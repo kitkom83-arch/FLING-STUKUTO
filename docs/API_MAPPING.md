@@ -6962,3 +6962,25 @@ ORO-9X records finalization review approval record finalization review approval 
 - detailed smoke: src/local-smoke-tests/oro11iCloseoutWordingAlignmentGateSmoke.js
 - wrapper smoke: src/local-smoke-tests/oro11iSmoke.js
 - package smoke aliases: smoke:oro-11i, smoke:oro-11i:detailed.
+
+## ORO-11J Next Phase Discovery Gate Mapping
+
+- ORO-11I closed.
+- ORO-11J did not exist before this discovery gate.
+- The post-ORO-11I next phase was unnamed and required a separate gate before ORO-11J.
+- post-ORO-11I next phase was unnamed and required a separate gate.
+- ORO-11J Next Phase Discovery Gate records discovery status only.
+- ORO-11J is discovery gate only.
+- ORO-11J scope: next_phase_discovery_gate_only
+- ORO-11J is docs/static/mock/local smoke only.
+- ORO-11J is not runtime implementation.
+- ORO-11J route mount and public alias authorization are not issued.
+- ORO-11J /api/balance and /api/transaction aliases are not issued.
+- ORO-11J live OroPlay API call, external call, external network, and game launch are not authorized.
+- ORO-11J wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior are not authorized.
+- Safety markers: no_runtime_implementation, no_route_mount, no_public_alias, no_api_balance, no_api_transaction, no_live_oroplay_api_call, no_external_network, no_wallet_mutation, no_ledger_mutation, no_prisma_write, no_migration, no_deploy, no_production_db, no_real_money, no_secret_token_password_clientSecret.
+- helper: src/game-provider-mock/oro11jNextPhaseDiscoveryGate.js
+- fixtures: src/game-provider-mock/oro11jNextPhaseDiscoveryGateFixtures.js
+- detailed smoke: src/local-smoke-tests/oro11jNextPhaseDiscoveryGateSmoke.js
+- wrapper smoke: src/local-smoke-tests/oro11jSmoke.js
+- package smoke aliases: smoke:oro-11j, smoke:oro-11j:detailed.

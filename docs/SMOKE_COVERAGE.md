@@ -8860,3 +8860,18 @@ Coverage confirms ORO-9X is docs/static contract/mock helper/fixtures/local smok
 - Covers ORO-11G and ORO-11H closed status, stale rendered current wording removal for ORO-11G and ORO-11H, next phase unnamed status, and separate next-phase gate.
 - Covers no runtime implementation, no route mount, no public alias, no /api/balance, no /api/transaction, no runtime traffic, no live execution, no live OroPlay API call, no external call, no game launch, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, no deploy, no production DB, no real money, no secret-shaped value, no long ORO-11I filename, and separate next-phase gate.
 - Scripts: smoke:oro-11i, smoke:oro-11i:detailed.
+
+## ORO-11J Next Phase Discovery Gate Coverage
+
+- ORO-11J Next Phase Discovery Gate package smoke alias.
+- ORO-11I closed.
+- ORO-11J did not exist before this discovery gate.
+- The post-ORO-11I next phase was unnamed and required a separate gate before ORO-11J.
+- post-ORO-11I next phase was unnamed and required a separate gate.
+- ORO-11J is docs/static/mock/helper/fixtures/local smoke only.
+- ORO-11J is discovery gate only.
+- ORO-11J scope: next_phase_discovery_gate_only
+- Covers ORO-11I closed status, ORO-11J absent-before-gate discovery, unnamed post-ORO-11I next phase, and separate next-phase gate.
+- Covers no runtime implementation, no route mount, no public alias, no /api/balance, no /api/transaction, no runtime traffic, no live execution, no live OroPlay API call, no external call, no external network, no game launch, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, no deploy, no production DB, no real money, no secret/token/password/clientSecret, and separate next-phase gate.
+- Safety markers: no_runtime_implementation, no_route_mount, no_public_alias, no_api_balance, no_api_transaction, no_live_oroplay_api_call, no_external_network, no_wallet_mutation, no_ledger_mutation, no_prisma_write, no_migration, no_deploy, no_production_db, no_real_money, no_secret_token_password_clientSecret.
+- Scripts: smoke:oro-11j, smoke:oro-11j:detailed.
