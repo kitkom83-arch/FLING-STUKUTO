@@ -6984,3 +6984,29 @@ ORO-9X records finalization review approval record finalization review approval 
 - detailed smoke: src/local-smoke-tests/oro11jNextPhaseDiscoveryGateSmoke.js
 - wrapper smoke: src/local-smoke-tests/oro11jSmoke.js
 - package smoke aliases: smoke:oro-11j, smoke:oro-11j:detailed.
+
+## ORO-11K Successor Phase Candidate Selection Gate Mapping
+
+- ORO-11I closed.
+- ORO-11J closed.
+- ORO-11J completed its discovery gate role.
+- ORO-11K Successor Phase Candidate Selection Gate records successor selection status only.
+- ORO-11K is successor candidate selection gate only.
+- ORO-11K scope: successor_phase_candidate_selection_gate_only
+- candidate next phase remains locked after separate gate.
+- Candidate next phase name: ORO-11L Separate Successor Phase Authorization Request Gate.
+- Candidate next phase scope: separate_successor_phase_authorization_request_gate_only.
+- Candidate next phase must still not open runtime implementation.
+- Candidate next phase must still not open live external call.
+- ORO-11K is docs/static/mock/local smoke only.
+- ORO-11K is not runtime implementation.
+- ORO-11K route mount and public alias authorization are not issued.
+- ORO-11K /api/balance and /api/transaction aliases are not issued.
+- ORO-11K live OroPlay API call, external call, external network, and game launch are not authorized.
+- ORO-11K wallet mutation, ledger mutation, Prisma write, DB transaction, migration, deploy, production DB, and real-money behavior are not authorized.
+- Safety markers: no_runtime_implementation, no_route_mount, no_public_alias, no_api_balance, no_api_transaction, no_live_oroplay_api_call, no_external_network, no_wallet_mutation, no_ledger_mutation, no_prisma_write, no_migration, no_deploy, no_production_db, no_real_money, no_secret_token_password_clientSecret.
+- helper: src/game-provider-mock/oro11kSuccessorPhaseCandidateSelectionGate.js
+- fixtures: src/game-provider-mock/oro11kSuccessorPhaseCandidateSelectionGateFixtures.js
+- detailed smoke: src/local-smoke-tests/oro11kSuccessorPhaseCandidateSelectionGateSmoke.js
+- wrapper smoke: src/local-smoke-tests/oro11kSmoke.js
+- package smoke aliases: smoke:oro-11k, smoke:oro-11k:detailed.

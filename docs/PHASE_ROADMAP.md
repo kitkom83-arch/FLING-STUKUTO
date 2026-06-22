@@ -5647,3 +5647,27 @@ cover the boundary.
 - Safety markers: no_runtime_implementation, no_route_mount, no_public_alias, no_api_balance, no_api_transaction, no_live_oroplay_api_call, no_external_network, no_wallet_mutation, no_ledger_mutation, no_prisma_write, no_migration, no_deploy, no_production_db, no_real_money, no_secret_token_password_clientSecret.
 - Validate with `smoke:oro-11j` and `smoke:oro-11j:detailed`.
 - Next phase requires separate gate.
+
+## ORO-11K current/successor phase candidate selection gate
+
+- ORO-11I closed.
+- ORO-11J closed.
+- ORO-11J completed its discovery gate role.
+- ORO-11K Successor Phase Candidate Selection Gate records successor selection status only.
+- ORO-11K is successor candidate selection gate only.
+- ORO-11K scope: successor_phase_candidate_selection_gate_only
+- candidate next phase remains locked after separate gate.
+- Candidate next phase name: ORO-11L Separate Successor Phase Authorization Request Gate.
+- Candidate next phase scope: separate_successor_phase_authorization_request_gate_only.
+- Candidate next phase must still not open runtime implementation.
+- Candidate next phase must still not open live external call.
+- ORO-11K remains docs/static/mock/local smoke only.
+- ORO-11K is not runtime implementation.
+- ORO-11K is not live execution.
+- ORO-11K does not mount routes or create public aliases.
+- ORO-11K does not authorize /api/balance or /api/transaction.
+- ORO-11K does not authorize runtime traffic, live execution, live OroPlay API calls, external calls, external network, or game launch.
+- ORO-11K does not mutate wallet, ledger, Prisma, DB transaction, migration, deploy, production DB, or real-money state.
+- Safety markers: no_runtime_implementation, no_route_mount, no_public_alias, no_api_balance, no_api_transaction, no_live_oroplay_api_call, no_external_network, no_wallet_mutation, no_ledger_mutation, no_prisma_write, no_migration, no_deploy, no_production_db, no_real_money, no_secret_token_password_clientSecret.
+- Validate with `smoke:oro-11k` and `smoke:oro-11k:detailed`.
+- Next phase requires separate gate.

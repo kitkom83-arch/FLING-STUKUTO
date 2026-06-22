@@ -8875,3 +8875,20 @@ Coverage confirms ORO-9X is docs/static contract/mock helper/fixtures/local smok
 - Covers no runtime implementation, no route mount, no public alias, no /api/balance, no /api/transaction, no runtime traffic, no live execution, no live OroPlay API call, no external call, no external network, no game launch, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, no deploy, no production DB, no real money, no secret/token/password/clientSecret, and separate next-phase gate.
 - Safety markers: no_runtime_implementation, no_route_mount, no_public_alias, no_api_balance, no_api_transaction, no_live_oroplay_api_call, no_external_network, no_wallet_mutation, no_ledger_mutation, no_prisma_write, no_migration, no_deploy, no_production_db, no_real_money, no_secret_token_password_clientSecret.
 - Scripts: smoke:oro-11j, smoke:oro-11j:detailed.
+
+## ORO-11K Successor Phase Candidate Selection Gate Coverage
+
+- ORO-11K Successor Phase Candidate Selection Gate package smoke alias.
+- ORO-11I closed.
+- ORO-11J closed.
+- ORO-11J completed its discovery gate role.
+- ORO-11K is docs/static/mock/helper/fixtures/local smoke only.
+- ORO-11K is successor candidate selection gate only.
+- ORO-11K scope: successor_phase_candidate_selection_gate_only
+- candidate next phase remains locked after separate gate.
+- Candidate next phase name: ORO-11L Separate Successor Phase Authorization Request Gate.
+- Candidate next phase scope: separate_successor_phase_authorization_request_gate_only.
+- Covers ORO-11I and ORO-11J closed status, completed ORO-11J discovery role, selected successor candidate phase, and separate next-phase gate.
+- Covers no runtime implementation, no route mount, no public alias, no /api/balance, no /api/transaction, no runtime traffic, no live execution, no live OroPlay API call, no external call, no external network, no game launch, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, no deploy, no production DB, no real money, no secret/token/password/clientSecret, and separate next-phase gate.
+- Safety markers: no_runtime_implementation, no_route_mount, no_public_alias, no_api_balance, no_api_transaction, no_live_oroplay_api_call, no_external_network, no_wallet_mutation, no_ledger_mutation, no_prisma_write, no_migration, no_deploy, no_production_db, no_real_money, no_secret_token_password_clientSecret.
+- Scripts: smoke:oro-11k, smoke:oro-11k:detailed.
