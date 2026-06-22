@@ -8950,3 +8950,23 @@ Coverage confirms ORO-9X is docs/static contract/mock helper/fixtures/local smok
 - Covers no runtime implementation, no route mount, no public alias, no /api/balance, no /api/transaction, no live execution, no live OroPlay API call, no external network, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, no deploy, no production DB, no real money, no secret/token/password/clientSecret, and no external call execution approval.
 - Safety markers: no_api_balance, no_api_transaction, no_live_oroplay_api_call, no_external_network, no_wallet_mutation, no_ledger_mutation, no_prisma_write, no_migration, no_deploy, no_production_db, no_real_money, no_secret_token_password_clientSecret.
 - Scripts: smoke:oro-11m, smoke:oro-11m:detailed.
+
+## ORO-11N Separate Successor Phase Authorization Decision Closeout Confirmation Gate Coverage
+
+- ORO-11N Separate Successor Phase Authorization Decision Closeout Confirmation Gate package smoke alias.
+- ORO-11M closed.
+- ORO-11M was authorization decision gate only.
+- Previous phase from ORO-11N: ORO-11M.
+- ORO-11N is docs/static/mock/helper/fixtures/local smoke only.
+- ORO-11N is post-decision closeout confirmation gate only.
+- ORO-11N gate purpose: authorization decision closeout confirmation
+- ORO-11N scope: separate_successor_phase_authorization_decision_closeout_confirmation_gate_only
+- ORO-11N closeout status: separate_successor_phase_authorization_decision_closeout_confirmed.
+- ORO-11N is not runtime implementation.
+- ORO-11N is not live execution.
+- ORO-11N does not approve route mount.
+- ORO-11N does not approve public alias.
+- Covers ORO-11M closed status, prior authorization decision role, recorded closeout confirmation status, and separate next-phase gate.
+- Covers no runtime implementation, no route mount, no public alias, no /api/balance, no /api/transaction, no live execution, no live OroPlay API call, no external network, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, no deploy, no production DB, no real money, and no secret/token/password/clientSecret.
+- Safety markers: no_api_balance, no_api_transaction, no_live_oroplay_api_call, no_external_network, no_wallet_mutation, no_ledger_mutation, no_prisma_write, no_migration, no_deploy, no_production_db, no_real_money, no_secret_token_password_clientSecret.
+- Scripts: smoke:oro-11n, smoke:oro-11n:detailed.
