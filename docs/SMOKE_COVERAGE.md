@@ -8928,3 +8928,25 @@ Coverage confirms ORO-9X is docs/static contract/mock helper/fixtures/local smok
 - ORO-11L does not authorize deploy.
 - ORO-11L does not authorize production DB.
 - ORO-11L does not authorize real money.
+
+## ORO-11M Separate Successor Phase Authorization Decision Gate Coverage
+
+- ORO-11M Separate Successor Phase Authorization Decision Gate package smoke alias.
+- ORO-11I closed.
+- ORO-11J closed.
+- ORO-11K closed.
+- ORO-11L closed.
+- ORO-11L was authorization request gate only.
+- ORO-11M is docs/static/mock/helper/fixtures/local smoke only.
+- ORO-11M is authorization decision gate only.
+- ORO-11M scope: separate_successor_phase_authorization_decision_gate_only
+- ORO-11M decision status: separate_successor_phase_authorization_decision_recorded.
+- ORO-11M is not runtime implementation.
+- ORO-11M is not live execution.
+- ORO-11M does not approve route mount.
+- ORO-11M does not approve public alias.
+- ORO-11M does not approve external call execution.
+- Covers ORO-11I, ORO-11J, ORO-11K, and ORO-11L closed status, completed ORO-11L authorization request role, recorded authorization decision status, and separate next-phase gate.
+- Covers no runtime implementation, no route mount, no public alias, no /api/balance, no /api/transaction, no live execution, no live OroPlay API call, no external network, no wallet mutation, no ledger mutation, no Prisma write, no DB transaction, no migration, no deploy, no production DB, no real money, no secret/token/password/clientSecret, and no external call execution approval.
+- Safety markers: no_api_balance, no_api_transaction, no_live_oroplay_api_call, no_external_network, no_wallet_mutation, no_ledger_mutation, no_prisma_write, no_migration, no_deploy, no_production_db, no_real_money, no_secret_token_password_clientSecret.
+- Scripts: smoke:oro-11m, smoke:oro-11m:detailed.

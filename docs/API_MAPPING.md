@@ -7068,3 +7068,30 @@ ORO-9X records finalization review approval record finalization review approval 
 - ORO-11L does not authorize deploy.
 - ORO-11L does not authorize production DB.
 - ORO-11L does not authorize real money.
+
+## ORO-11M Separate Successor Phase Authorization Decision Gate Mapping
+
+- ORO-11I closed.
+- ORO-11J closed.
+- ORO-11K closed.
+- ORO-11L closed.
+- ORO-11L was authorization request gate only.
+- Candidate phase name from ORO-11L: ORO-11L Separate Successor Phase Authorization Request Gate.
+- ORO-11M Separate Successor Phase Authorization Decision Gate records authorization decision status only.
+- ORO-11M is authorization decision gate only.
+- ORO-11M scope: separate_successor_phase_authorization_decision_gate_only
+- ORO-11M decision status: separate_successor_phase_authorization_decision_recorded.
+- ORO-11M is docs/static/mock/local smoke only.
+- ORO-11M is not runtime implementation.
+- ORO-11M is not live execution.
+- ORO-11M does not approve route mount.
+- ORO-11M does not approve public alias.
+- ORO-11M route mount and public alias authorization are not issued.
+- ORO-11M /api/balance and /api/transaction aliases are not issued.
+- ORO-11M live OroPlay API call, external network, wallet mutation, ledger mutation, Prisma write, migration, deploy, production DB, and real-money behavior are not authorized.
+- ORO-11M does not approve external call execution.
+- helper: src/game-provider-mock/oro11mSeparateSuccessorPhaseAuthorizationDecisionGate.js
+- fixtures: src/game-provider-mock/oro11mSeparateSuccessorPhaseAuthorizationDecisionGateFixtures.js
+- detailed smoke: src/local-smoke-tests/oro11mSeparateSuccessorPhaseAuthorizationDecisionGateSmoke.js
+- wrapper smoke: src/local-smoke-tests/oro11mSmoke.js
+- package smoke aliases: smoke:oro-11m, smoke:oro-11m:detailed.

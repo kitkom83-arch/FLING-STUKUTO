@@ -5710,3 +5710,27 @@ cover the boundary.
 - ORO-11L does not authorize deploy.
 - ORO-11L does not authorize production DB.
 - ORO-11L does not authorize real money.
+
+## ORO-11M current/separate successor phase authorization decision gate
+
+- ORO-11I closed.
+- ORO-11J closed.
+- ORO-11K closed.
+- ORO-11L closed.
+- ORO-11L was authorization request gate only.
+- Candidate phase name from ORO-11L: ORO-11L Separate Successor Phase Authorization Request Gate.
+- ORO-11M Separate Successor Phase Authorization Decision Gate records authorization decision status only.
+- ORO-11M is authorization decision gate only.
+- ORO-11M scope: separate_successor_phase_authorization_decision_gate_only
+- ORO-11M decision status: separate_successor_phase_authorization_decision_recorded.
+- ORO-11M is not runtime implementation.
+- ORO-11M is not live execution.
+- ORO-11M does not approve external call execution.
+- ORO-11M does not approve route mount.
+- ORO-11M does not approve public alias.
+- ORO-11M remains docs/static/mock/local smoke only.
+- ORO-11M does not authorize /api/balance or /api/transaction.
+- ORO-11M does not authorize live OroPlay API call, external network, wallet mutation, ledger mutation, Prisma write, migration, deploy, production DB, or real money.
+- Safety markers: no_api_balance, no_api_transaction, no_live_oroplay_api_call, no_external_network, no_wallet_mutation, no_ledger_mutation, no_prisma_write, no_migration, no_deploy, no_production_db, no_real_money, no_secret_token_password_clientSecret.
+- Validate with `smoke:oro-11m` and `smoke:oro-11m:detailed`.
+- Next phase requires separate gate.
