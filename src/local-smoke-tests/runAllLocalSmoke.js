@@ -1771,6 +1771,10 @@ const RELATED_FILES = [
   "src/game-provider-mock/oro11oSeparateSuccessorPhaseImplementationReadinessDiscoveryGateFixtures.js",
   "src/local-smoke-tests/oro11oSeparateSuccessorPhaseImplementationReadinessDiscoveryGateSmoke.js",
   "src/local-smoke-tests/oro11oSmoke.js",
+  "src/game-provider-mock/oro11pSeparateSuccessorPhaseImplementationReadinessReviewGate.js",
+  "src/game-provider-mock/oro11pSeparateSuccessorPhaseImplementationReadinessReviewGateFixtures.js",
+  "src/local-smoke-tests/oro11pSeparateSuccessorPhaseImplementationReadinessReviewGateSmoke.js",
+  "src/local-smoke-tests/oro11pSmoke.js",
   [
     "docs/ORO_8H_LIVE_TRAFFIC_ACTUAL_EXTERNAL_CALL",
     "EXECUTION_ACTUAL_LIVE_EXECUTION_EXECUTION_GATE.md",
@@ -2327,6 +2331,7 @@ const summary = [
   { key: "oro11m", label: "oro-11m", status: "PENDING" },
   { key: "oro11n", label: "oro-11n", status: "PENDING" },
   { key: "oro11o", label: "oro-11o", status: "PENDING" },
+  { key: "oro11p", label: "oro-11p", status: "PENDING" },
   { key: "memberQrDepositUx", label: "member-qr-deposit-ux", status: "PENDING" },
   { key: "depositVerificationSource", label: "deposit-verification-source", status: "PENDING" },
   {
@@ -4398,6 +4403,18 @@ const steps = [
     name: "node --check oro11oSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/oro11oSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oro11pSeparateSuccessorPhaseImplementationReadinessReviewGateSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oro11pSeparateSuccessorPhaseImplementationReadinessReviewGateSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check oro11pSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/oro11pSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -6606,6 +6623,18 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:oro-11o:detailed"]),
     summaryKey: "oro11o",
+  },
+  {
+    name: "npm run smoke:oro-11p",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oro-11p"]),
+    summaryKey: "oro11p",
+  },
+  {
+    name: "npm run smoke:oro-11p:detailed",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:oro-11p:detailed"]),
+    summaryKey: "oro11p",
   },
   {
     name: "npm run smoke:member-qr-deposit-ux",
