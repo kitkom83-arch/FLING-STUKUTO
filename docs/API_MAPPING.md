@@ -7324,3 +7324,31 @@ ORO-9X records finalization review approval record finalization review approval 
 - detailed smoke: src/local-smoke-tests/oro11vSeparateSuccessorPhaseRuntimeImplementationReadinessDiscoveryGateSmoke.js
 - wrapper smoke: src/local-smoke-tests/oro11vSmoke.js
 - package smoke aliases: smoke:oro-11v, smoke:oro-11v:detailed.
+
+## ORO-11W Separate Successor Phase Runtime Implementation Readiness Review Gate Mapping
+
+- ORO-11U closed runtime implementation authorization decision closeout confirmation already.
+- ORO-11V closed runtime implementation readiness discovery already.
+- Previous phase from ORO-11W: ORO-11V.
+- ORO-11W Separate Successor Phase Runtime Implementation Readiness Review Gate is runtime implementation readiness review only.
+- ORO-11W is runtime implementation readiness review only.
+- ORO-11W reviews runtime implementation readiness before runtime implementation and does not implement runtime.
+- ORO-11W does not approve runtime implementation.
+- ORO-11W does not activate live execution.
+- ORO-11W gate purpose: runtime implementation readiness review
+- ORO-11W scope: separate_successor_phase_runtime_implementation_readiness_review_gate_only
+- ORO-11W review status: separate_successor_phase_runtime_implementation_readiness_reviewed.
+- ORO-11W is docs/static/mock/local smoke only.
+- ORO-11W is not runtime implementation.
+- ORO-11W is not live execution.
+- ORO-11W does not approve route mount.
+- ORO-11W does not approve public alias.
+- ORO-11W route mount and public alias authorization are not issued.
+- ORO-11W /api/balance and /api/transaction aliases are not issued.
+- ORO-11W live OroPlay API call, external network, wallet mutation, ledger mutation, Prisma write, migration, deploy, production DB, and real-money behavior are not authorized.
+- Safety markers: no_api_balance, no_api_transaction, no_live_oroplay_api_call, no_external_network, no_wallet_mutation, no_ledger_mutation, no_prisma_write, no_migration, no_deploy, no_production_db, no_real_money, no_secret_token_password_clientSecret.
+- helper: src/game-provider-mock/oro11wSeparateSuccessorPhaseRuntimeImplementationReadinessReviewGate.js
+- fixtures: src/game-provider-mock/oro11wSeparateSuccessorPhaseRuntimeImplementationReadinessReviewGateFixtures.js
+- detailed smoke: src/local-smoke-tests/oro11wSeparateSuccessorPhaseRuntimeImplementationReadinessReviewGateSmoke.js
+- wrapper smoke: src/local-smoke-tests/oro11wSmoke.js
+- package smoke aliases: smoke:oro-11w, smoke:oro-11w:detailed.
