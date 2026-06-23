@@ -13,7 +13,7 @@
           <p class="eyebrow">PG77 Visible Demo</p>
           <h1>Lucky Wheel Member Demo</h1>
           <p class="subcopy">
-            Local mock demo only. No real money, no live provider, and no external payout.
+            Safe local demo only. API-backed mode is allowed on localhost, and mock fallback stays available at all times.
           </p>
         </div>
         <div class="hero-actions">
@@ -58,6 +58,7 @@
             </div>
             <span id="mode-pill" class="mode-pill">-</span>
           </div>
+          <p id="mode-detail" class="mode-detail">Checking local demo mode...</p>
           <div id="wheel-board" class="wheel-board" aria-live="polite"></div>
           <p id="rules-text" class="rules-text">-</p>
         </section>
@@ -66,7 +67,7 @@
           <div class="panel-heading">
             <div>
               <h2>Latest Result</h2>
-              <p>Sanitized mock-only response.</p>
+              <p>Sanitized local-only response.</p>
             </div>
           </div>
           <div id="result-empty" class="empty-state">Spin to see the latest reward.</div>
@@ -101,7 +102,7 @@
           <div class="panel-heading">
             <div>
               <h2>Spin History</h2>
-              <p>Latest local/mock spins.</p>
+              <p>Latest local or API-backed spins.</p>
             </div>
           </div>
           <div id="history-empty" class="empty-state">No spins yet.</div>
@@ -125,7 +126,7 @@
           <div class="panel-heading">
             <div>
               <h2>My Rewards</h2>
-              <p>Pending and claimed mock rewards.</p>
+              <p>Pending and claimed local-safe rewards.</p>
             </div>
           </div>
           <div id="rewards-empty" class="empty-state">No rewards yet.</div>

@@ -8,6 +8,9 @@
   --accent-soft: #f3d2b5;
   --line: #e5d7c6;
   --success: #177245;
+  --success-soft: #dff5e7;
+  --warning: #9a3412;
+  --warning-soft: #fde7d8;
   --shadow: 0 18px 45px rgba(72, 44, 18, 0.12);
 }
 
@@ -93,7 +96,8 @@ button:disabled {
 .panel-heading p,
 .rules-text,
 #status-text,
-.empty-state {
+.empty-state,
+.mode-detail {
   color: var(--muted);
 }
 
@@ -141,7 +145,7 @@ button:disabled {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .mode-pill {
@@ -150,6 +154,21 @@ button:disabled {
   border-radius: 999px;
   background: var(--accent-soft);
   color: var(--accent-deep);
+}
+
+.mode-pill[data-mode="local_api_backed"] {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.mode-pill[data-mode="local_mock_fallback"] {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.mode-detail {
+  margin: 0 0 1rem;
+  font-size: 0.95rem;
 }
 
 .wheel-board {
