@@ -3310,3 +3310,23 @@ ORO-9X is not permission to mutate wallet, ledger, or DB state.
 - Safety markers: no_api_balance, no_api_transaction, no_live_oroplay_api_call, no_external_network, no_wallet_mutation, no_ledger_mutation, no_prisma_write, no_migration, no_deploy, no_production_db, no_real_money, no_secret_token_password_clientSecret.
 - Validate with smoke:oro-11p and smoke:oro-11p:detailed.
 - Next phase requires separate gate.
+
+## ORO-11Q Separate Successor Phase Implementation Readiness Decision Gate
+
+- ORO-11O closed implementation readiness discovery already.
+- ORO-11P closed implementation readiness review already.
+- Previous phase from ORO-11Q: ORO-11P.
+- ORO-11Q Separate Successor Phase Implementation Readiness Decision Gate is implementation readiness decision only.
+- ORO-11Q is decision recording before implementation and is not implementation itself.
+- ORO-11Q gate purpose: implementation readiness decision
+- ORO-11Q scope: separate_successor_phase_implementation_readiness_decision_gate_only
+- ORO-11Q decision status: separate_successor_phase_implementation_readiness_decision_recorded.
+- ORO-11Q is not runtime implementation.
+- ORO-11Q is not live execution.
+- ORO-11Q does not approve route mount.
+- ORO-11Q does not approve public alias.
+- ORO-11Q route mount, public alias, /api/balance, and /api/transaction authorization are not issued.
+- ORO-11Q live OroPlay API call, external network, wallet mutation, ledger mutation, Prisma write, migration, deploy, production DB, and real-money behavior remain disabled.
+- Safety markers: no_api_balance, no_api_transaction, no_live_oroplay_api_call, no_external_network, no_wallet_mutation, no_ledger_mutation, no_prisma_write, no_migration, no_deploy, no_production_db, no_real_money, no_secret_token_password_clientSecret.
+- Validate with smoke:oro-11q and smoke:oro-11q:detailed.
+- Next phase requires separate gate.

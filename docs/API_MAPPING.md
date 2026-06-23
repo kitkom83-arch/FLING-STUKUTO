@@ -7164,3 +7164,27 @@ ORO-9X records finalization review approval record finalization review approval 
 - detailed smoke: src/local-smoke-tests/oro11pSeparateSuccessorPhaseImplementationReadinessReviewGateSmoke.js
 - wrapper smoke: src/local-smoke-tests/oro11pSmoke.js
 - package smoke aliases: smoke:oro-11p, smoke:oro-11p:detailed.
+
+## ORO-11Q Separate Successor Phase Implementation Readiness Decision Gate Mapping
+
+- ORO-11O closed implementation readiness discovery already.
+- ORO-11P closed implementation readiness review already.
+- Previous phase from ORO-11Q: ORO-11P.
+- ORO-11Q Separate Successor Phase Implementation Readiness Decision Gate is implementation readiness decision only.
+- ORO-11Q is decision recording before implementation and is not implementation itself.
+- ORO-11Q gate purpose: implementation readiness decision
+- ORO-11Q scope: separate_successor_phase_implementation_readiness_decision_gate_only
+- ORO-11Q decision status: separate_successor_phase_implementation_readiness_decision_recorded.
+- ORO-11Q is docs/static/mock/local smoke only.
+- ORO-11Q is not runtime implementation.
+- ORO-11Q is not live execution.
+- ORO-11Q does not approve route mount.
+- ORO-11Q does not approve public alias.
+- ORO-11Q route mount and public alias authorization are not issued.
+- ORO-11Q /api/balance and /api/transaction aliases are not issued.
+- ORO-11Q live OroPlay API call, external network, wallet mutation, ledger mutation, Prisma write, migration, deploy, production DB, and real-money behavior are not authorized.
+- helper: src/game-provider-mock/oro11qSeparateSuccessorPhaseImplementationReadinessDecisionGate.js
+- fixtures: src/game-provider-mock/oro11qSeparateSuccessorPhaseImplementationReadinessDecisionGateFixtures.js
+- detailed smoke: src/local-smoke-tests/oro11qSeparateSuccessorPhaseImplementationReadinessDecisionGateSmoke.js
+- wrapper smoke: src/local-smoke-tests/oro11qSmoke.js
+- package smoke aliases: smoke:oro-11q, smoke:oro-11q:detailed.
