@@ -40,4 +40,3 @@
 - Member session create/re-login restores the ready state only after token verification.
 - Admin approve/reject actions are guarded and refresh the relevant queues/tables.
 - Deposit and withdrawal reject flows stay within the local demo boundary and do not open live rails.
-
