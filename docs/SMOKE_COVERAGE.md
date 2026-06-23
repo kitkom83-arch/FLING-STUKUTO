@@ -126,6 +126,15 @@ GitHub Actions also scans `src/local-smoke-tests` for secret-shaped values. It d
 - Wallet ledger row count and amount checks.
 - Admin log checks for deposit approve, withdrawal approve, and withdrawal mark-paid.
 
+### Money Demo / Pilot 1-3 Notes
+
+- `npm run smoke:money-flow` is the happy-path local money demo smoke for Pilot 1 and Pilot 2 continuity.
+- It covers member registration, member login, bank account approval, deposit creation/approval, withdrawal creation/approval, duplicate approval guards, wallet balance checks, ledger row checks, and admin log checks.
+- It does not exercise reject flows directly; the reject flows are verified through browser/manual review on `/member-money-demo/` and `/admin-money-demo/`.
+- `smoke:bank-module` covers the mock bank account create/update/disable boundary that supports the local demo bank account lifecycle.
+- `smoke:admin-bank-account-review-release-pack` covers the static release pack, UAT checklist, and operator runbook contract for the bank account review flow.
+- Manual browser checks are still required for reject behavior, queue refresh behavior, and the session-ready console checks in the Money Demo runbook.
+
 ## 4. smoke:core-api Coverage
 
 - Safety guard blocks unsafe environment, production-like DB/API targets, and live provider modes.
@@ -235,7 +244,27 @@ GitHub Actions also scans `src/local-smoke-tests` for secret-shaped values. It d
 - Slip OCR mock success and fail responses.
 - Response leak scan, including DB URL markers, auth values, password/token/secret markers, JWT-like values, and credential-shaped PostgreSQL URLs.
 
+### Money Demo Coverage Notes
+
+- The bank module smoke is the supporting fixture smoke for the money demo bank-account lifecycle.
+- Reject-flow behavior for deposits, withdrawals, and member bank accounts is still validated best through the browser manual checklist in `docs/MONEY_DEMO_RUNBOOK.md`.
+- The smoke suite does not use live bank rails or live Slip OCR.
+
 All bank module endpoints covered here are mock/sandbox only. The smoke test does not call real bank rails, real OCR, webhooks, or external file services.
+
+## Money Demo Manual Browser Checklist
+
+The Money Demo evidence pack is considered complete only when the browser manual checklist in `docs/MONEY_DEMO_RUNBOOK.md` has been verified.
+
+Checklist focus:
+
+- Session restore and ready-state verification.
+- Bank account approve/reject behavior.
+- Deposit approve/reject behavior.
+- Withdrawal approve/reject behavior.
+- Wallet, ledger, audit, and queue refresh behavior.
+- Console cleanliness after ready state.
+
 
 ## 10. smoke:admin-permission Coverage
 
