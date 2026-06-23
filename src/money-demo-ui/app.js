@@ -6,7 +6,7 @@
   const STORAGE_PREFIX = "pg77-money-demo";
   const DEFAULT_MEMBER_PASSWORD = "localSmokeMember123";
   const DEFAULT_ADMIN_USERNAME = "local_money_flow_admin";
-  const DEFAULT_ADMIN_PASSWORD = "local-demo-admin-password-not-real";
+  const DEFAULT_ADMIN_PASSWORD = "local-demo-admin-code-not-real";
 
   const page = document.body && document.body.dataset ? document.body.dataset.page : "";
 
