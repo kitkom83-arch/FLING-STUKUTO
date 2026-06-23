@@ -3374,3 +3374,27 @@ ORO-9X is not permission to mutate wallet, ledger, or DB state.
 - Safety markers: no_api_balance, no_api_transaction, no_live_oroplay_api_call, no_external_network, no_wallet_mutation, no_ledger_mutation, no_prisma_write, no_migration, no_deploy, no_production_db, no_real_money, no_secret_token_password_clientSecret.
 - Validate with smoke:oro-11s and smoke:oro-11s:detailed.
 - Next phase requires separate gate.
+
+## ORO-11T Separate Successor Phase Runtime Implementation Authorization Decision Gate
+
+- ORO-11R closed implementation readiness decision closeout confirmation already.
+- ORO-11S closed runtime implementation authorization request already.
+- Previous phase from ORO-11T: ORO-11S.
+- ORO-11T Separate Successor Phase Runtime Implementation Authorization Decision Gate is runtime implementation authorization decision only.
+- ORO-11T is runtime implementation authorization decision only.
+- ORO-11T records the runtime implementation authorization decision before runtime implementation and does not implement runtime.
+- ORO-11T does not approve runtime implementation.
+- ORO-11T does not activate live execution.
+- ORO-11T gate purpose: runtime implementation authorization decision
+- ORO-11T scope: separate_successor_phase_runtime_implementation_authorization_decision_gate_only
+- ORO-11T decision status: separate_successor_phase_runtime_implementation_authorization_decision_recorded.
+- ORO-11T is docs/static/mock/helper/fixtures/local smoke only.
+- ORO-11T is not runtime implementation.
+- ORO-11T is not live execution.
+- ORO-11T does not approve route mount.
+- ORO-11T does not approve public alias.
+- ORO-11T route mount, public alias, /api/balance, and /api/transaction authorization are not issued.
+- ORO-11T live OroPlay API call, external network, wallet mutation, ledger mutation, Prisma write, migration, deploy, production DB, and real-money behavior remain disabled.
+- Safety markers: no_api_balance, no_api_transaction, no_live_oroplay_api_call, no_external_network, no_wallet_mutation, no_ledger_mutation, no_prisma_write, no_migration, no_deploy, no_production_db, no_real_money, no_secret_token_password_clientSecret.
+- Validate with smoke:oro-11t and smoke:oro-11t:detailed.
+- Next phase requires separate gate.

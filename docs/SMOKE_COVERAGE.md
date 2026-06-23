@@ -628,7 +628,7 @@ Confirmed from current docs and scripts:
 - Production deployment smoke is not covered. `smoke:staging` is only for non-production staging/test hosts.
 - Full end-to-end frontend coverage is not covered.
 - Lucky Wheel frontend Phaser integration and real reward claiming are not covered.
-- docs/API.md still contains older "ต้องตรวจเพิ่ม" notes for some endpoints that are now covered by newer smoke scripts; ต้องตรวจเพิ่ม before using that section as the source of truth.
+- docs/API.md still contains older "เธ•เนเธญเธเธ•เธฃเธงเธเน€เธเธดเนเธก" notes for some endpoints that are now covered by newer smoke scripts; เธ•เนเธญเธเธ•เธฃเธงเธเน€เธเธดเนเธก before using that section as the source of truth.
 
 ## 27. How to Add a New Smoke
 
@@ -1474,7 +1474,7 @@ npm run smoke:master-spec-mapping
 Coverage:
 
 - Confirms all six Phase AJ master docs exist.
-- Confirms `MASTER_BACKOFFICE_SPEC` includes รายงาน, จัดการสมาชิก, รายการเดินบัญชี, ธนาคาร, บริการเสริม, and ตั้งค่า.
+- Confirms `MASTER_BACKOFFICE_SPEC` includes เธฃเธฒเธขเธเธฒเธ, เธเธฑเธ”เธเธฒเธฃเธชเธกเธฒเธเธดเธ, เธฃเธฒเธขเธเธฒเธฃเน€เธ”เธดเธเธเธฑเธเธเธต, เธเธเธฒเธเธฒเธฃ, เธเธฃเธดเธเธฒเธฃเน€เธชเธฃเธดเธก, and เธ•เธฑเนเธเธเนเธฒ.
 - Confirms `MASTER_FRONTEND_MEMBER_SPEC` includes Login, Register, Deposit, Withdraw, Promotions, Lucky Wheel, and Provider modal.
 - Confirms `API_MAPPING` includes Endpoint, Permission, Audit action, Current status, and required module mappings.
 - Confirms `PERMISSION_MATRIX` includes owner, super_admin, finance, support, graphic, viewer, read-only permission, write permission, reason, audit, no self-approval, and certification boundary markers.
@@ -9074,4 +9074,28 @@ Coverage confirms ORO-9X is docs/static contract/mock helper/fixtures/local smok
 - ORO-11S live OroPlay API call, external network, wallet mutation, ledger mutation, Prisma write, migration, deploy, production DB, and real-money behavior remain disabled.
 - Safety markers: no_api_balance, no_api_transaction, no_live_oroplay_api_call, no_external_network, no_wallet_mutation, no_ledger_mutation, no_prisma_write, no_migration, no_deploy, no_production_db, no_real_money, no_secret_token_password_clientSecret.
 - Validate with smoke:oro-11s and smoke:oro-11s:detailed.
+- Next phase requires separate gate.
+
+## ORO-11T Separate Successor Phase Runtime Implementation Authorization Decision Gate
+
+- ORO-11R closed implementation readiness decision closeout confirmation already.
+- ORO-11S closed runtime implementation authorization request already.
+- Previous phase from ORO-11T: ORO-11S.
+- ORO-11T Separate Successor Phase Runtime Implementation Authorization Decision Gate is runtime implementation authorization decision only.
+- ORO-11T is runtime implementation authorization decision only.
+- ORO-11T records the runtime implementation authorization decision before runtime implementation and does not implement runtime.
+- ORO-11T does not approve runtime implementation.
+- ORO-11T does not activate live execution.
+- ORO-11T gate purpose: runtime implementation authorization decision
+- ORO-11T scope: separate_successor_phase_runtime_implementation_authorization_decision_gate_only
+- ORO-11T decision status: separate_successor_phase_runtime_implementation_authorization_decision_recorded.
+- ORO-11T is docs/static/mock/helper/fixtures/local smoke only.
+- ORO-11T is not runtime implementation.
+- ORO-11T is not live execution.
+- ORO-11T does not approve route mount.
+- ORO-11T does not approve public alias.
+- ORO-11T route mount, public alias, /api/balance, and /api/transaction authorization are not issued.
+- ORO-11T live OroPlay API call, external network, wallet mutation, ledger mutation, Prisma write, migration, deploy, production DB, and real-money behavior remain disabled.
+- Safety markers: no_api_balance, no_api_transaction, no_live_oroplay_api_call, no_external_network, no_wallet_mutation, no_ledger_mutation, no_prisma_write, no_migration, no_deploy, no_production_db, no_real_money, no_secret_token_password_clientSecret.
+- Validate with smoke:oro-11t and smoke:oro-11t:detailed.
 - Next phase requires separate gate.
