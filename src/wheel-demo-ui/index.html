@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lucky Wheel Demo</title>
+    <link rel="stylesheet" href="/wheel-demo/styles.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="hero-card">
+        <div class="hero-copy">
+          <p class="eyebrow">PG77 Visible Demo</p>
+          <h1>Lucky Wheel Member Demo</h1>
+          <p class="subcopy">
+            Local mock demo only. No real money, no live provider, and no external payout.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <button id="refresh-all" type="button" class="secondary">Refresh</button>
+          <button id="spin-button" type="button">Spin Now</button>
+        </div>
+      </section>
+
+      <section class="status-grid" aria-label="Lucky Wheel summary">
+        <article class="status-card">
+          <span>Campaign</span>
+          <strong id="campaign-name">-</strong>
+        </article>
+        <article class="status-card">
+          <span>Status</span>
+          <strong id="campaign-status">-</strong>
+        </article>
+        <article class="status-card">
+          <span>Remaining today</span>
+          <strong id="remaining-spins">-</strong>
+        </article>
+        <article class="status-card">
+          <span>Points</span>
+          <strong id="member-points">-</strong>
+        </article>
+        <article class="status-card">
+          <span>Mock credit</span>
+          <strong id="member-credit">-</strong>
+        </article>
+        <article class="status-card">
+          <span>Demo tickets</span>
+          <strong id="member-tickets">-</strong>
+        </article>
+      </section>
+
+      <section class="two-up">
+        <section class="panel wheel-panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Wheel Rewards</h2>
+              <p>Backend selects the result. This page never submits reward ids.</p>
+            </div>
+            <span id="mode-pill" class="mode-pill">-</span>
+          </div>
+          <div id="wheel-board" class="wheel-board" aria-live="polite"></div>
+          <p id="rules-text" class="rules-text">-</p>
+        </section>
+
+        <section class="panel result-panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Latest Result</h2>
+              <p>Sanitized mock-only response.</p>
+            </div>
+          </div>
+          <div id="result-empty" class="empty-state">Spin to see the latest reward.</div>
+          <div id="result-card" class="result-card hidden">
+            <span class="result-label" id="result-label">-</span>
+            <strong id="result-value">-</strong>
+            <p id="result-meta">-</p>
+            <dl class="result-grid">
+              <div>
+                <dt>Spin ID</dt>
+                <dd id="result-spin-id">-</dd>
+              </div>
+              <div>
+                <dt>Prize Index</dt>
+                <dd id="result-prize-index">-</dd>
+              </div>
+              <div>
+                <dt>Balance After</dt>
+                <dd id="result-balance-after">-</dd>
+              </div>
+              <div>
+                <dt>Remaining Today</dt>
+                <dd id="result-remaining-after">-</dd>
+              </div>
+            </dl>
+          </div>
+        </section>
+      </section>
+
+      <section class="two-up">
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Spin History</h2>
+              <p>Latest local/mock spins.</p>
+            </div>
+          </div>
+          <div id="history-empty" class="empty-state">No spins yet.</div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Reward</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Prize</th>
+                </tr>
+              </thead>
+              <tbody id="history-rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>My Rewards</h2>
+              <p>Pending and claimed mock rewards.</p>
+            </div>
+          </div>
+          <div id="rewards-empty" class="empty-state">No rewards yet.</div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Created</th>
+                  <th>Label</th>
+                  <th>Type</th>
+                  <th>Value</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="reward-rows"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section class="footer-bar">
+        <p id="status-text">Loading Lucky Wheel demo...</p>
+        <a href="/admin-wheel/">Open Admin Lucky Wheel Console</a>
+      </section>
+    </main>
+    <script src="/wheel-demo/app.js"></script>
+  </body>
+</html>
