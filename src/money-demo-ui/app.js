@@ -915,6 +915,7 @@
       renderWithdrawals();
       renderLedger();
       renderAudit();
+      setBusy(state.busy);
     }
 
     function makeActionButton(label, variant, onClick) {
@@ -922,6 +923,7 @@
       button.type = "button";
       button.className = variant;
       button.textContent = label;
+      button.disabled = state.busy;
       button.addEventListener("click", function () {
         onClick();
       });
