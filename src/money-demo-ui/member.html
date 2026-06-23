@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Member Money Demo</title>
+    <link rel="stylesheet" href="/member-money-demo/styles.css" />
+  </head>
+  <body data-page="member">
+    <main class="page-shell">
+      <section class="hero-card">
+        <div class="hero-copy">
+          <p class="eyebrow">PG77 Pilot 1</p>
+          <h1>Member Money Demo</h1>
+          <p class="subcopy">
+            Local PostgreSQL only. Manual deposit and withdrawal requests. No real money, no live bank, no live payout.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <button id="member-bootstrap" type="button">Create Demo Member</button>
+          <button id="member-refresh" type="button" class="secondary">Refresh Data</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Member Session</h2>
+            <p>Register or re-login with local-safe demo credentials only.</p>
+          </div>
+          <span class="mode-pill">local_mock_manual_approve</span>
+        </div>
+        <div class="form-grid">
+          <label>
+            <span>Phone / Username</span>
+            <input id="member-phone" type="text" autocomplete="off" />
+          </label>
+          <label>
+            <span>Password</span>
+            <input id="member-password" type="password" autocomplete="off" />
+          </label>
+          <label>
+            <span>Username Alias</span>
+            <input id="member-username" type="text" autocomplete="off" />
+          </label>
+          <label>
+            <span>Bank Code</span>
+            <input id="member-bank-code" type="text" value="MOCK" autocomplete="off" />
+          </label>
+          <label>
+            <span>Bank Account Number</span>
+            <input id="member-bank-number" type="text" autocomplete="off" />
+          </label>
+          <label>
+            <span>Bank Account Name</span>
+            <input id="member-bank-name" type="text" value="Local Demo Member" autocomplete="off" />
+          </label>
+        </div>
+        <div class="button-row">
+          <button id="member-login" type="button" class="secondary">Re-Login</button>
+          <button id="member-clear-session" type="button" class="secondary">Clear Session</button>
+        </div>
+      </section>
+
+      <section class="status-grid" aria-label="Member wallet summary">
+        <article class="status-card">
+          <span>Wallet Balance</span>
+          <strong id="wallet-balance">-</strong>
+        </article>
+        <article class="status-card">
+          <span>Currency</span>
+          <strong id="wallet-currency">-</strong>
+        </article>
+        <article class="status-card">
+          <span>Approved Bank Accounts</span>
+          <strong id="bank-approved-count">-</strong>
+        </article>
+        <article class="status-card">
+          <span>Pending Deposits</span>
+          <strong id="deposit-pending-count">-</strong>
+        </article>
+        <article class="status-card">
+          <span>Pending Withdrawals</span>
+          <strong id="withdraw-pending-count">-</strong>
+        </article>
+        <article class="status-card">
+          <span>Session Status</span>
+          <strong id="member-session-status">not_ready</strong>
+        </article>
+      </section>
+
+      <section class="two-up">
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Manual Deposit Request</h2>
+              <p>Create a local-only pending deposit request.</p>
+            </div>
+          </div>
+          <div class="form-grid compact">
+            <label>
+              <span>Amount</span>
+              <input id="deposit-amount" type="number" min="1" step="0.01" value="100.00" />
+            </label>
+            <label>
+              <span>Channel</span>
+              <input id="deposit-channel" type="text" value="manual_bank_mock" />
+            </label>
+            <label>
+              <span>Bank Account</span>
+              <select id="deposit-bank-account"></select>
+            </label>
+            <label class="full-span">
+              <span>Note</span>
+              <input id="deposit-note" type="text" value="member money demo deposit" />
+            </label>
+          </div>
+          <div class="button-row">
+            <button id="create-deposit" type="button">Create Deposit</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Manual Withdrawal Request</h2>
+              <p>Uses approved member bank accounts only.</p>
+            </div>
+          </div>
+          <div class="form-grid compact">
+            <label>
+              <span>Amount</span>
+              <input id="withdraw-amount" type="number" min="1" step="0.01" value="10.00" />
+            </label>
+            <label>
+              <span>Approved Bank Account</span>
+              <select id="withdraw-bank-account"></select>
+            </label>
+            <label class="full-span">
+              <span>Note</span>
+              <input id="withdraw-note" type="text" value="member money demo withdrawal" />
+            </label>
+          </div>
+          <div class="button-row">
+            <button id="create-withdrawal" type="button">Create Withdrawal</button>
+          </div>
+        </section>
+      </section>
+
+      <section class="two-up">
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>My Bank Accounts</h2>
+              <p>Pending member bank accounts must be approved by admin before withdrawal can be created.</p>
+            </div>
+          </div>
+          <div id="bank-empty" class="empty-state">No bank accounts yet.</div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Bank</th>
+                  <th>Account</th>
+                  <th>Status</th>
+                  <th>Approved At</th>
+                </tr>
+              </thead>
+              <tbody id="bank-rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Wallet Ledger</h2>
+              <p>Latest local ledger rows only.</p>
+            </div>
+          </div>
+          <div id="ledger-empty" class="empty-state">No ledger rows yet.</div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Type</th>
+                  <th>Amount</th>
+                  <th>Balance After</th>
+                  <th>Reference</th>
+                </tr>
+              </thead>
+              <tbody id="ledger-rows"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section class="two-up">
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>My Deposits</h2>
+              <p>Newest first.</p>
+            </div>
+          </div>
+          <div id="deposits-empty" class="empty-state">No deposits yet.</div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Created</th>
+                  <th>Transaction</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Approved At</th>
+                </tr>
+              </thead>
+              <tbody id="deposits-rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>My Withdrawals</h2>
+              <p>Newest first.</p>
+            </div>
+          </div>
+          <div id="withdrawals-empty" class="empty-state">No withdrawals yet.</div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Created</th>
+                  <th>Transaction</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Approved At</th>
+                </tr>
+              </thead>
+              <tbody id="withdrawals-rows"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section class="footer-bar">
+        <p id="member-status-text">Preparing local money demo...</p>
+        <a href="/admin-money-demo/">Open Admin Money Demo</a>
+      </section>
+    </main>
+    <script src="/member-money-demo/app.js"></script>
+  </body>
+</html>

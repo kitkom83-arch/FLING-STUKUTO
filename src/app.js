@@ -20,6 +20,7 @@ const adminUiDir = path.join(__dirname, "admin-ui");
 const adminWheelUiDir = path.join(__dirname, "admin-wheel-ui");
 const adminAuditUiDir = path.join(__dirname, "admin-audit-ui");
 const memberWheelDemoUiDir = path.join(__dirname, "wheel-demo-ui");
+const moneyDemoUiDir = path.join(__dirname, "money-demo-ui");
 
 function corsOrigin(origin, callback) {
   if (!origin && env.nodeEnv === "development") return callback(null, true);
@@ -57,6 +58,14 @@ function sendMemberWheelDemoUi(_req, res) {
   res.sendFile(path.join(memberWheelDemoUiDir, "index.html"));
 }
 
+function sendMemberMoneyDemoUi(_req, res) {
+  res.sendFile(path.join(moneyDemoUiDir, "member.html"));
+}
+
+function sendAdminMoneyDemoUi(_req, res) {
+  res.sendFile(path.join(moneyDemoUiDir, "admin.html"));
+}
+
 function staticGetHead(route, dir, options) {
   const middleware = express.static(dir, options);
   app.use(route, (req, res, next) => {
@@ -78,6 +87,8 @@ app.get(["/admin", "/admin/", "/admin/roles", "/admin/roles/", "/admin/work-sche
 app.get(["/admin/audit-security", "/admin/audit-security/"], sendAdminAuditUi);
 app.get(["/admin-wheel", "/admin-wheel/", "/admin/lucky-wheel", "/admin/lucky-wheel/"], sendAdminWheelUi);
 app.get(["/wheel-demo", "/wheel-demo/", "/member/wheel-demo", "/member/wheel-demo/"], sendMemberWheelDemoUi);
+app.get(["/member-money-demo", "/member-money-demo/"], sendMemberMoneyDemoUi);
+app.get(["/admin-money-demo", "/admin-money-demo/"], sendAdminMoneyDemoUi);
 staticGetHead("/admin/work-schedules", adminUiDir, { index: "index.html" });
 staticGetHead("/admin/roles", adminUiDir, { index: "index.html" });
 staticGetHead("/admin/audit-security", adminAuditUiDir, { index: "index.html" });
@@ -85,6 +96,8 @@ staticGetHead("/admin-wheel", adminWheelUiDir, { index: "index.html" });
 staticGetHead("/admin/lucky-wheel", adminWheelUiDir, { index: "index.html" });
 staticGetHead("/wheel-demo", memberWheelDemoUiDir, { index: "index.html" });
 staticGetHead("/member/wheel-demo", memberWheelDemoUiDir, { index: "index.html" });
+staticGetHead("/member-money-demo", moneyDemoUiDir, { index: "member.html" });
+staticGetHead("/admin-money-demo", moneyDemoUiDir, { index: "admin.html" });
 // ORO-5N: internal fail-closed OroPlay callback staging mount only.
 app.use("/api/oroplay", oroplayCallbackStubRoutes);
 // ORO-5S: public aliases reuse the existing fail-closed no-mutation handlers.

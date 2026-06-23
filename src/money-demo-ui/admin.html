@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Money Demo</title>
+    <link rel="stylesheet" href="/admin-money-demo/styles.css" />
+  </head>
+  <body data-page="admin">
+    <main class="page-shell">
+      <section class="hero-card">
+        <div class="hero-copy">
+          <p class="eyebrow">PG77 Pilot 1</p>
+          <h1>Admin Money Demo</h1>
+          <p class="subcopy">
+            Local-only admin finance queue. Manual approve or reject only. No payout, no live rails, no production DB.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <button id="admin-login" type="button">Admin Login</button>
+          <button id="admin-refresh" type="button" class="secondary">Refresh Queues</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Admin Session</h2>
+            <p>Use local-safe admin credentials only.</p>
+          </div>
+          <span class="mode-pill">local_manual_review_only</span>
+        </div>
+        <div class="form-grid compact">
+          <label>
+            <span>Username</span>
+            <input id="admin-username" type="text" value="local_money_flow_admin" />
+          </label>
+          <label>
+            <span>Password</span>
+            <input id="admin-password" type="password" value="local-demo-admin-password-not-real" />
+          </label>
+        </div>
+        <div class="button-row">
+          <button id="admin-clear-session" type="button" class="secondary">Clear Session</button>
+        </div>
+      </section>
+
+      <section class="status-grid">
+        <article class="status-card">
+          <span>Pending Bank Accounts</span>
+          <strong id="admin-bank-count">-</strong>
+        </article>
+        <article class="status-card">
+          <span>Pending Deposits</span>
+          <strong id="admin-deposit-count">-</strong>
+        </article>
+        <article class="status-card">
+          <span>Pending Withdrawals</span>
+          <strong id="admin-withdraw-count">-</strong>
+        </article>
+        <article class="status-card">
+          <span>Ledger Rows</span>
+          <strong id="admin-ledger-count">-</strong>
+        </article>
+        <article class="status-card">
+          <span>Audit Rows</span>
+          <strong id="admin-audit-count">-</strong>
+        </article>
+        <article class="status-card">
+          <span>Session Status</span>
+          <strong id="admin-session-status">not_ready</strong>
+        </article>
+      </section>
+
+      <section class="two-up">
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Pending Bank Accounts</h2>
+              <p>Approve or reject bank account verification needed for withdrawals.</p>
+            </div>
+          </div>
+          <div id="admin-bank-empty" class="empty-state">No pending bank accounts.</div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Member</th>
+                  <th>Bank</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="admin-bank-rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Pending Deposits</h2>
+              <p>Approve or reject manual deposit requests.</p>
+            </div>
+          </div>
+          <div id="admin-deposit-empty" class="empty-state">No pending deposits.</div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Transaction</th>
+                  <th>Member</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="admin-deposit-rows"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section class="two-up">
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Pending Withdrawals</h2>
+              <p>Approve or reject manual withdrawal requests.</p>
+            </div>
+          </div>
+          <div id="admin-withdraw-empty" class="empty-state">No pending withdrawals.</div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Transaction</th>
+                  <th>Member</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="admin-withdraw-rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Wallet Ledger</h2>
+              <p>Latest local ledger rows after approvals.</p>
+            </div>
+          </div>
+          <div id="admin-ledger-empty" class="empty-state">No ledger rows yet.</div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Type</th>
+                  <th>Amount</th>
+                  <th>Reference</th>
+                  <th>By</th>
+                </tr>
+              </thead>
+              <tbody id="admin-ledger-rows"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Admin Audit / Logs</h2>
+            <p>Readable local audit trail for finance actions.</p>
+          </div>
+        </div>
+        <div id="admin-audit-empty" class="empty-state">No audit rows yet.</div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Action</th>
+                <th>Target</th>
+                <th>Actor</th>
+                <th>Summary</th>
+              </tr>
+            </thead>
+            <tbody id="admin-audit-rows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="footer-bar">
+        <p id="admin-status-text">Preparing admin money demo...</p>
+        <a href="/member-money-demo/">Open Member Money Demo</a>
+      </section>
+    </main>
+    <script src="/admin-money-demo/app.js"></script>
+  </body>
+</html>
