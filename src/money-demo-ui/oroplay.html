@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OroPlay Local Game Launcher</title>
+    <link rel="stylesheet" href="/oroplay-demo/styles.css" />
+  </head>
+  <body data-page="oroplay">
+    <main class="page-shell">
+      <section class="hero-card">
+        <div class="hero-copy">
+          <p class="eyebrow eyebrow-alt">PG77 Pilot 4B</p>
+          <h1>OroPlay Local Game Launcher</h1>
+          <p class="subcopy">
+            Local/demo only. Browse vendors and games, create a temporary test user, deposit a small balance, and launch a real game through the existing OroPlay transfer client.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <button id="refresh-vendors" type="button">Refresh Vendors</button>
+          <button id="create-session" type="button" class="secondary">Create Test User</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Demo Session</h2>
+            <p>Temporary memory-only session for local/internal testing.</p>
+          </div>
+          <span class="mode-pill">local_test_only</span>
+        </div>
+        <div class="form-grid compact">
+          <label>
+            <span>Vendor</span>
+            <select id="vendor-select"></select>
+          </label>
+          <label>
+            <span>Deposit Amount</span>
+            <input id="deposit-amount" type="number" min="1" step="0.01" value="20.00" />
+          </label>
+        </div>
+        <div class="button-row">
+          <button id="deposit-session" type="button" class="secondary">Deposit Small Balance</button>
+          <button id="launch-game" type="button">Launch Selected Game</button>
+        </div>
+        <p class="status-note">Launch opens in a new tab by following the backend redirect. The real launch URL is not logged or persisted.</p>
+      </section>
+
+      <section class="status-grid" aria-label="OroPlay demo summary">
+        <article class="status-card">
+          <span>Vendor Count</span>
+          <strong id="vendor-count">-</strong>
+        </article>
+        <article class="status-card">
+          <span>Game Count</span>
+          <strong id="game-count">-</strong>
+        </article>
+        <article class="status-card">
+          <span>Session</span>
+          <strong id="session-state">not_ready</strong>
+        </article>
+        <article class="status-card">
+          <span>Selected Game</span>
+          <strong id="selected-game">-</strong>
+        </article>
+        <article class="status-card">
+          <span>Deposit</span>
+          <strong id="session-balance">-</strong>
+        </article>
+        <article class="status-card">
+          <span>Safety</span>
+          <strong>local_demo_only</strong>
+        </article>
+      </section>
+
+      <section class="two-up">
+        <section class="panel stack">
+          <div class="panel-heading">
+            <div>
+              <h2>Vendors</h2>
+              <p>Select a vendor to load its game list.</p>
+            </div>
+          </div>
+          <div id="vendor-empty" class="empty-state">Loading vendors...</div>
+          <div id="vendor-list" class="vendor-list" aria-label="Vendor options"></div>
+        </section>
+
+        <section class="panel stack">
+          <div class="panel-heading">
+            <div>
+              <h2>Games</h2>
+              <p>Choose a launchable game and open it in a new tab.</p>
+            </div>
+          </div>
+          <div id="game-empty" class="empty-state">Loading games...</div>
+          <div id="game-grid" class="game-grid" aria-label="OroPlay games"></div>
+        </section>
+      </section>
+
+      <section class="footer-bar">
+        <p id="status-text">Preparing OroPlay local launcher...</p>
+        <span id="session-summary">No session yet.</span>
+      </section>
+    </main>
+    <form id="launch-form" class="launch-form" method="POST" target="_blank"></form>
+    <script src="/oroplay-demo/oroplay.js"></script>
+  </body>
+</html>
