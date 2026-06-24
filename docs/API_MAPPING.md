@@ -156,6 +156,30 @@ Status: Phase AS mock/static/sandbox-readiness only. These rows define future sa
 | sandbox reconciliation handoff | `/api/admin/sandbox/providers/:providerKey/readiness` | GET | Phase AS mock/static/sandbox-readiness only | `mock` | no real QR; no real payment; no auto-credit; no ledger posting runtime action; no external network in Phase AS; no live provider |
 | sandbox ledger guard handoff | `/api/admin/sandbox/providers/:providerKey/dry-run` | POST | Phase AS mock/static/sandbox-readiness only | `mock` | no real QR; no real payment; no auto-credit; no ledger posting runtime action; no external network in Phase AS; no live provider |
 
+## Verified OroPlay Transfer API Evidence
+
+Transfer API verified end-to-end in sanitized live test evidence. This section records only confirmed endpoint mapping and deliberately omits token values, secrets, and full launch URLs.
+
+| Area | Method | Endpoint | Verified evidence | Notes |
+| --- | --- | --- | --- | --- |
+| Auth | POST | `/auth/createtoken` | HTTP 200; token and expiration returned; token redacted | Create token works as the first step in the transfer flow. |
+| Agent balance | GET | `/agent/balance` | HTTP 200; success=true; errorCode=0; balance=`32366.60` | GET is the validated method; POST returned 405. |
+| Vendor list | GET | `/vendors/list` | HTTP 200; success=true; errorCode=0; vendor count=`44`; includes `slot-pgsoft` | Vendor list is confirmed. |
+| Game list | GET | `/games/list` | HTTP 200; success=true; errorCode=0; gameCount=`136` for `slot-pgsoft` | Game list is confirmed. |
+| Game detail | evidence payload only | N/A | vendorCode=`slot-pgsoft`; gameCode=`doomsday-rampg`; gameName=`Doomsday Rampage`; slug=`doomsday-rampg-by-pg-soft`; isNew=true; underMaintenance=false | Detail evidence is confirmed from provider payload; no separate endpoint is asserted in repo docs. |
+| Create user | POST | `/user/create` | userCode=`testuser_25690624224452`; HTTP 200; success=true; errorCode=0 | Temporary test user creation is confirmed. |
+| User balance | GET | `/user/balance` | HTTP 200; success=true; errorCode=0; balance=`0` before deposit | Balance read is confirmed. |
+| Deposit | POST | `/user/deposit` | orderNo=`TESTDEP-25690624224905`; amount=`10`; HTTP 200; success=true; errorCode=0; returned balance=`10` | Deposit is confirmed. |
+| Launch | POST | `/game/launch-url` | HTTP 200; success=true; errorCode=0; launch host=`m.pgf-oua7zy.com` | Full launch URL is intentionally not stored. |
+| Betting history | GET | `/betting/history/by-date-v2` | HTTP 200; success=true; errorCode=0; count=`1`; betAmount=`10.00`; winAmount=`0.00`; beforeBalance=`10.00`; afterBalance=`0.00`; status=`1` | Balance moved to zero after play, confirming real game deduction. |
+| Withdraw all cleanup | POST | `/user/withdraw` | success=true; errorCode=0; amount=`0` | Cleanup completed; withdraw-all mapping remains confirmed. |
+| Balance history | evidence payload only | N/A | orderNo=`TESTDEP-25690624224905`; HTTP 200; success=true; errorCode=0; type=`1`; createdAt=`1782316147` | History evidence is confirmed from sanitized live evidence; no separate endpoint is asserted in repo docs. |
+
+Notes:
+- Transfer API verified end-to-end.
+- Seamless Wallet callback work remains separate and is not implied by this evidence.
+- Do not store token, secret, password, or full launch URL values in docs or logs.
+
 ## Future OroPlay API Mapping
 
 Status: ORO-2B fail-closed callback stub only remains the active runtime behavior, ORO-2C readiness contract is closed, ORO-3A runtime simulation closed, ORO-3B adapter contract is closed, ORO-3C execution plan only is closed, ORO-3D readiness gate only is closed, ORO-4Q mount authorization hold gate is closed, ORO-4R private artifact hash registry is closed, ORO-4S signed approval record / mount authorization request preparation boundary is closed, ORO-4T request submission review boundary is closed, ORO-4U final pre-mount decision boundary is closed, ORO-4V route mount approval boundary is closed, ORO-4W implementation approval readiness is closed, ORO-4X implementation approval decision is closed, ORO-4Y execution approval readiness is closed, ORO-4Z patch review decision is closed, ORO-5A execution approval request is closed, ORO-5B execution decision is closed, ORO-5C implementation request is closed, ORO-5D implementation decision is closed, ORO-5E actual patch approval request is closed, ORO-5F actual patch approval decision is closed, ORO-5G actual patch authorization request is closed, ORO-5H actual patch authorization decision is closed, ORO-5I actual patch implementation execution readiness is closed, ORO-5J actual patch implementation execution is closed, ORO-5K post-execution validation route mount authorization request readiness is closed, ORO-5L route mount authorization request submission is closed, ORO-5M route mount authorization decision is closed, ORO-5N route mount implementation boundary is closed, ORO-5O post-mount validation boundary is closed, ORO-5P post-mount validation decision boundary is closed, ORO-5Q public alias authorization request submission boundary is closed, ORO-5R public alias authorization decision boundary is closed, and ORO-5S public alias implementation boundary is current/local pending for OroPlay API / Seamless Wallet integration. These rows are not production runtime and do not add callback processing, services, migrations, deploy, production DB access, real money runtime flow, live payout, live provider calls, callback wallet mutation, runtime wallet mutation, runtime ledger mutation, Prisma write, provider alias enablement, or hardcoded secrets.

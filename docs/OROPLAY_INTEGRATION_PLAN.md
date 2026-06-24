@@ -112,9 +112,25 @@ ORO-3C callback runtime wallet-ledger execution plan is current and remains exec
 ## Current Integration Direction
 
 - Prefer Seamless Wallet for planning because admin currently shows API mode as Seamless Wallet.
-- Treat Balance Transfer API as documented by OroPlay but secondary until confirmed.
+- Transfer API is now verified end-to-end in sanitized live evidence, but Seamless Wallet callback work remains a separate stream.
+- Treat Balance Transfer API as verified for transfer-side evidence, but callback behavior is still separate until that workstream is approved.
 - Keep provider credential exchange internal only; never expose provider credential creation as a public member endpoint.
 - Keep betting history sync for reconciliation, not as a wallet source of truth.
+
+## Transfer API Verified Evidence
+
+- Verified live test flow: create token, vendor list, game list, game detail, create user, user balance, deposit, launch, betting history, agent balance, withdraw-all cleanup, and balance history.
+- `GET /agent/balance` is the verified method for agent balance.
+- Vendor list returned 44 vendors and included `slot-pgsoft`.
+- Game list for `slot-pgsoft` returned 136 games.
+- Game detail for `doomsday-rampg` returned `Doomsday Rampage`, slug `doomsday-rampg-by-pg-soft`, `isNew=true`, and `underMaintenance=false`.
+- Create user succeeded for `testuser_25690624224452`.
+- User balance before deposit was `0`; deposit of `10` returned balance `10`.
+- Launch succeeded and reached host `m.pgf-oua7zy.com`; the full launch URL is intentionally not stored.
+- Betting history returned 1 row with `betAmount=10.00`, `winAmount=0.00`, `beforeBalance=10.00`, `afterBalance=0.00`, and `status=1`.
+- Withdraw-all cleanup returned `amount=0`.
+- Balance history recorded the deposit order with sanitized metadata.
+- Token, secret, and full launch URL values must remain redacted in docs.
 
 ## Required Future Evidence
 

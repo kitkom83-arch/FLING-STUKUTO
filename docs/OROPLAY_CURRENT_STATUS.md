@@ -1,6 +1,6 @@
 # OroPlay Current Status
 
-ORO-0 status date: 2026-06-01.
+ORO-0 status date: 2026-06-24.
 
 This document records the current safe repository understanding for OroPlay API / Seamless Wallet integration. It is docs/static only and does not enable runtime integration.
 
@@ -17,8 +17,20 @@ This document records the current safe repository understanding for OroPlay API 
 
 ## Test History Summary
 
-- Transfer API test flow previously passed in the test environment.
-- That prior test result does not authorize live production use from this repository.
+- Transfer API verified end-to-end with sanitized live API evidence.
+- Verified flow: create token, vendor list, game list, game detail, create user, user balance, deposit, launch, betting history, agent balance, withdraw-all cleanup, and balance history.
+- Vendor list returned 44 vendors and included `slot-pgsoft`.
+- Game list for `slot-pgsoft` returned 136 games.
+- Game detail for `doomsday-rampg` returned `Doomsday Rampage`, slug `doomsday-rampg-by-pg-soft`, `isNew=true`, `underMaintenance=false`, and a sanitized thumbnail URL.
+- Create user succeeded for `testuser_25690624224452`.
+- User balance before deposit was `0`.
+- Deposit of `10` returned balance `10`.
+- Launch succeeded and the launch host was `m.pgf-oua7zy.com`; the full launch URL is intentionally not stored.
+- Betting history returned 1 row with a `10.00` bet and `0.00` win, and balance moved from `10.00` to `0.00`.
+- Agent balance is verified with `GET /agent/balance`, not POST.
+- Withdraw-all cleanup completed with `amount=0`.
+- Balance history recorded the deposit order with sanitized metadata.
+- This evidence is transfer-side verification only; the Seamless Wallet callback workstream remains separate.
 - ORO-0 only records status and planning context before any mock, staging, callback, wallet, or provider runtime work.
 
 ## Risk Notes
@@ -33,6 +45,7 @@ This document records the current safe repository understanding for OroPlay API 
 - No raw admin credential, provider credential, signing material, payment address credential, or messaging bot credential may be committed.
 - Production credentials must remain outside the repository in approved secret storage.
 - Sanitized docs may reference redacted provider/account labels only.
+- Token values, secrets, and full launch URLs must not be stored in this repository.
 
 ## ORO-0 Boundary
 
