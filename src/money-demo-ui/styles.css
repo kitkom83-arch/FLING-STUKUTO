@@ -373,6 +373,37 @@ th {
   color: var(--ink);
 }
 
+.game-entry-card {
+  margin-bottom: 1rem;
+}
+
+.game-entry-copy {
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 0.9rem;
+}
+
+.game-entry-note {
+  margin: 0;
+  color: var(--muted);
+}
+
+.game-entry-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.78rem 1.1rem;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%);
+  color: #fff;
+  text-decoration: none;
+  min-width: 11rem;
+}
+
+.game-entry-link:hover {
+  filter: brightness(1.04);
+}
+
 .launch-form {
   display: none;
 }
