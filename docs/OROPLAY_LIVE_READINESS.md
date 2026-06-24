@@ -103,6 +103,79 @@ ORO-LIVE-GATE-2 is a read-only controlled canary plan gate only. It does not ena
 - Real money is still not enabled.
 - Real game launch is still not enabled.
 
+## ORO-LIVE-GATE-3 Runtime Activation Approval Request Gate
+
+ORO-LIVE-GATE-3 is a runtime activation approval request gate only. It prepares the approval request package for a later separate runtime activation decision or controlled activation gate and does not activate runtime.
+
+### Gate Intent
+
+- Record that Gate 1 and Gate 2 prerequisites are satisfied before any runtime activation approval is requested.
+- Prepare the approval checklist, operator sign-off requirements, rollback readiness, monitoring readiness, and abort conditions for a later separate Gate 4 decision.
+- Keep `OROPLAY_ENABLED=0` and `OROPLAY_MODE=production_disabled`.
+- Keep live transactional traffic, real-money traffic, real-game launch, provider mutation, and callback runtime activation disabled.
+
+### Gate Prerequisites
+
+- ORO-LIVE-GATE-1 is closed/pass.
+- ORO-LIVE-GATE-2 is closed/pass.
+- Safe CI latest result is PASS.
+- VPS is synced to commit `0cbbc27`.
+- VPS working tree is clean.
+- OroPlay auth diagnostic passed in sanitized form.
+- OroPlay read-only balance diagnostic passed in sanitized form.
+- Staging health passes.
+- `pm2` process `pg77-api` is online.
+- `OROPLAY_ENABLED=0` remains unchanged.
+- `OROPLAY_MODE=production_disabled` remains unchanged.
+
+### Approval Checklist Before Runtime Activation
+
+- Explicit user approval request is recorded for a later separate Gate 4.
+- Runtime activation decision authority is identified.
+- PM2/env change authority is identified but not exercised in Gate 3.
+- Runtime change window, operator owner, rollback owner, and monitoring owner are identified.
+- Confirmation that no runtime activation, no public live route enablement, and no provider mutation occur inside Gate 3.
+- Confirmation that Gate 4 alone may decide runtime activation or controlled activation.
+
+### Required Operator Sign-off
+
+- Operator confirms Gate 1 and Gate 2 evidence remains valid.
+- Operator confirms current runtime remains disabled.
+- Operator confirms no PM2 env change and no service restart for live mode were performed in Gate 3.
+- Operator confirms no deposit, withdraw, withdraw-all, launch game, create user, or provider mutation action was attempted.
+
+### Required Rollback Readiness
+
+- Rollback instruction remains fail-closed: keep `OROPLAY_ENABLED=0`.
+- Rollback instruction remains fail-closed: keep `OROPLAY_MODE=production_disabled`.
+- PM2 env remains unchanged.
+- No service restart is used to change runtime state.
+- Any approval-request wording that implies runtime is already active must be rejected or reverted before Gate 4 review.
+
+### Required Monitoring Readiness
+
+- Monitoring owner confirms staging `/api/health` remains healthy.
+- Monitoring owner confirms PM2 `pg77-api` remains online.
+- Monitoring owner confirms sanitized diagnostic evidence remains available without exposing secret, token, password, client secret, or launch URL.
+- Monitoring owner confirms no live traffic, no provider mutation, and no runtime activation event occurred during Gate 3.
+
+### Abort Conditions
+
+- Any step attempts `OROPLAY_ENABLED=1`.
+- Any step attempts PM2 env changes or service restart for live mode.
+- Any step attempts deposit, withdraw, withdraw-all, launch game, create user, provider mutation, DB write, Prisma schema change, migration, or public live route enablement.
+- Any step attempts external network calls.
+- Any artifact introduces secret-shaped strings, raw token material, auth header literals, JWT/API-key-looking strings, or database assignment literals.
+- Any wording claims runtime activation, live traffic, real money, or real game launch is already enabled.
+
+### Gate Outcome
+
+- ORO-LIVE-GATE-3 is approval request only.
+- Runtime activation remains pending approval.
+- Gate 4 must remain separate as the runtime activation decision or controlled activation gate.
+- Real money is still not enabled.
+- Real game launch is still not enabled.
+
 ## Diagnostic Script
 
 - `npm run oroplay:auth:diagnostic`

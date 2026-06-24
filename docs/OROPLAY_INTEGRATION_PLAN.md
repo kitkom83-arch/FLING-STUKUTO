@@ -145,6 +145,18 @@ ORO-LIVE-GATE-1 closed/pass. ORO-LIVE-GATE-2 current. ORO-LIVE-GATE-2 is a read-
 - Gate 2 does not allow deposit, withdraw, withdraw-all, launch game, create user, DB write, Prisma schema change, migration, deploy, public live route exposure, or secret/token printing.
 - Runtime activation must remain a separate successor gate with explicit approval after Gate 2 readiness is accepted.
 
+## ORO-LIVE-GATE-3 Current
+
+ORO-LIVE-GATE-1 closed/pass. ORO-LIVE-GATE-2 closed/pass. ORO-LIVE-GATE-3 current. ORO-LIVE-GATE-3 is a runtime activation approval request gate only.
+
+- Gate objective: prepare the approval request package for a later separate runtime activation decision.
+- Gate 3 depends on Gate 1 and Gate 2 already being closed/pass.
+- Gate 3 keeps the verified runtime state at `OROPLAY_ENABLED=0` and `OROPLAY_MODE=production_disabled`.
+- Gate 3 documents approval checklist, operator sign-off, rollback readiness, monitoring readiness, and abort conditions only.
+- Gate 3 does not activate runtime, does not enable live transactional traffic, does not enable real-money traffic, does not enable real-game launch, and does not allow provider mutation.
+- Gate 3 does not allow PM2 env edits, service restart for live mode, deposit, withdraw, withdraw-all, launch game, create user, DB write, Prisma schema change, migration, deploy, public live route exposure, external network calls, or secret/token printing.
+- Gate 4 only may act as the runtime activation decision or controlled activation gate. Gate 3 remains approval request only and must stay separate from actual enablement.
+
 ## Required Future Evidence
 
 - OroPlay callback credential type and rotation process.
