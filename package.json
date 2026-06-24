@@ -54,6 +54,7 @@
     "smoke:admin-bank-account-review-release-pack": "node src/local-smoke-tests/adminBankAccountReviewReleasePackSmoke.js",
     "smoke:payment-provider-contract": "node src/local-smoke-tests/paymentProviderContractSmoke.js",
     "smoke:oroplay-seamless-contract": "node src/local-smoke-tests/oroplaySeamlessContractSmoke.js",
+    "smoke:oroplay-production-transfer": "node src/local-smoke-tests/oroplayProductionTransferSmoke.js",
     "smoke:oroplay-callback-boundary": "node src/local-smoke-tests/oroplayCallbackBoundarySmoke.js",
     "smoke:oroplay-callback-stub": "node src/local-smoke-tests/oroplayCallbackStubSmoke.js",
     "smoke:oroplay-callback-readiness": "node src/local-smoke-tests/oroplayCallbackReadinessSmoke.js",

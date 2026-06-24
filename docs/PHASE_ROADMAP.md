@@ -4,6 +4,12 @@ Phase AJ status: master roadmap after Phase AH and Phase AI closure.
 
 Safety boundary: docs/static only. No production DB, no real money, no live provider/payment/bank/SMS/Slip OCR, no migration, no deploy, and no runtime write action is enabled here.
 
+## Current Vertical Slice
+
+| Phase | Goal | Scope | Allowed files | Forbidden actions | Required tests | Exit criteria | Safety boundary |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Pilot 4A OroPlay Production Transfer API Vertical Slice | Prove the controlled OroPlay transfer flow with an env-driven connector and local-only smoke evidence. | OroPlay transfer connector, local smoke runner, runbook, evidence, and safe coverage docs. | `src/game-provider-oroplay/*`, `src/local-smoke-tests/oroplayProductionTransferSmoke.js`, `package.json`, `docs/OROPLAY_PRODUCTION_TRANSFER_RUNBOOK.md`, `docs/OROPLAY_PRODUCTION_TRANSFER_EVIDENCE.md`, `docs/SMOKE_COVERAGE.md`, `docs/PHASE_ROADMAP.md`. | Hardcoded secrets, public live route, customer-live access, real customer money, commit/push before approval, weaker secret scan. | `git status --short`, `git status -sb`, `git log -1 --oneline`, `git diff --check`, `node --check src/app.js`, `node --check src/local-smoke-tests/oroplayProductionTransferSmoke.js`, `npm run smoke:oroplay-production-transfer`, `npm run smoke:admin-bank-account-review-release-pack`, secret-shaped value scan. | Controlled production proof demonstrates token, agent balance, vendor list, game list, player create, deposit, 5-6 launches, balance, betting history, withdraw all, and masked summary. | Controlled production test only; no customer traffic, no public live route, no real customer money. |
+
 ## Completed Phases
 
 | Phase | Goal | Scope | Allowed files | Forbidden actions | Required tests | Exit criteria | Safety boundary |
