@@ -50,6 +50,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `oroplayLiveGate2CanaryPlanSmoke.js` | `npm run smoke:oroplay-live-gate-2` | No | No | No | Static docs/readiness contract | ORO-LIVE-GATE-2 read-only controlled canary plan smoke for Gate 1 closed/pass status, Gate 2 plan/readiness wording, preflight/monitoring/rollback/abort/approval markers, runtime activation separation, and static secret-shaped value scan. |
 | `oroplayLiveGate3ActivationApprovalRequestSmoke.js` | `npm run smoke:oroplay-live-gate-3` | No | No | No | Static docs/approval-request contract | ORO-LIVE-GATE-3 runtime activation approval request smoke for Gate 2 closed/pass status, Gate 3 approval-request wording, prerequisites/approval checklist/operator sign-off/rollback/monitoring/abort markers, Gate 4 separation, and static secret-shaped value scan. |
 | `oroplayLiveGate4ActivationDecisionSmoke.js` | `npm run smoke:oroplay-live-gate-4` | No | No | No | Static docs/decision-gate contract | ORO-LIVE-GATE-4 runtime activation decision smoke for Gate 3 closed/pass status, Gate 4 decision-only wording, decision options/evidence/sign-off/rollback/monitoring/abort/Go-No-Go markers, Gate 5 separation, and static secret-shaped value scan. |
+| `oroplayLiveGate5PreActivationGuardSmoke.js` | `npm run smoke:oroplay-live-gate-5` | No | No | No | Static docs/pre-activation-guard contract | ORO-LIVE-GATE-5 controlled activation plan / pre-activation guard smoke for Gate 4 closed/pass status, Gate 5 plan-only wording, plan/guard/operator/window/rollback/monitoring/health/abort/approval markers, Gate 6 separation, and static secret-shaped value scan. |
 | `adminWorkScheduleSmoke.js` | `npm run smoke:admin-work-schedule` | Yes | Yes | Yes | Syntax check only | Admin work schedule UI/API checks for schedule list/read/update, permission guards, login block/allow, emergency override, expired override, audit history, rollback, and leak scan. |
 | `adminWorkScheduleUiSmoke.js` | `npm run smoke:admin-work-schedule-ui` | Yes | Yes | Yes | Syntax check only | Static admin schedule UI route/assets, owner flow, no-permission block, emergency override, masked audit history, and leak scan. |
 | `adminAuditSecuritySmoke.js` | `npm run smoke:admin-audit-security` | Yes | Yes | Yes | Syntax check only | Static audit/security UI route/assets, UX markers, report endpoints, filters, permission block, empty response shape, masked IP, raw user-agent omission, and leak scan. |
@@ -1984,7 +1985,7 @@ ORO-LIVE-GATE-4 local smoke coverage:
 - Gate 4 includes monitoring readiness checklist markers.
 - Gate 4 includes abort condition markers.
 - Gate 4 includes Go/No-Go criteria markers.
-- Gate 4 states Gate 5 only may act as the actual controlled activation gate.
+- Gate 4 states Gate 5 only may act as the controlled activation plan / pre-activation guard gate and Gate 6 only may act as the actual controlled runtime enablement gate.
 - Gate 4 does not claim live traffic, real money, or real game launch is already enabled.
 - Static secret-shaped value scan stays clean across the changed docs, `package.json`, and the Gate 4 smoke file.
 
@@ -1992,6 +1993,40 @@ Boundary:
 
 - Docs/static/read-only/local-only.
 - Decision-gate-only.
+- No runtime activation.
+- No PM2 env change.
+- No migration.
+- No deploy.
+- No production DB.
+- No real money runtime flow.
+
+ORO-LIVE-GATE-5 local smoke coverage:
+
+- `smoke:oroplay-live-gate-5`
+
+`smoke:oroplay-live-gate-5` checks:
+
+- ORO-LIVE-GATE-4 is recorded as closed/pass.
+- ORO-LIVE-GATE-5 is recorded as a controlled activation plan / pre-activation guard gate only.
+- Gate 5 includes prerequisites from Gate 1 through Gate 4.
+- Gate 5 includes controlled activation plan markers.
+- Gate 5 includes pre-activation guard checklist markers.
+- Gate 5 includes operator readiness checklist markers.
+- Gate 5 includes live activation window checklist markers.
+- Gate 5 includes rollback runbook template markers.
+- Gate 5 includes monitoring checklist markers.
+- Gate 5 includes health verification checklist markers.
+- Gate 5 includes post-activation verification checklist markers for Gate 6.
+- Gate 5 includes abort condition markers.
+- Gate 5 includes approval requirement markers for Gate 6.
+- Gate 5 states Gate 6 only may act as the actual controlled runtime enablement gate.
+- Gate 5 does not claim live traffic, real money, or real game launch is already enabled.
+- Static secret-shaped value scan stays clean across the changed docs, `package.json`, and the Gate 5 smoke file.
+
+Boundary:
+
+- Docs/static/read-only/local-only.
+- Plan-and-guard-only.
 - No runtime activation.
 - No PM2 env change.
 - No migration.

@@ -135,7 +135,7 @@ ORO-LIVE-GATE-3 is a runtime activation approval request gate only. It prepares 
 - PM2/env change authority is identified but not exercised in Gate 3.
 - Runtime change window, operator owner, rollback owner, and monitoring owner are identified.
 - Confirmation that no runtime activation, no public live route enablement, and no provider mutation occur inside Gate 3.
-- Confirmation that Gate 4 remains decision-only and Gate 5 stays separate for any actual controlled activation.
+- Confirmation that Gate 4 remains decision-only, Gate 5 stays separate for controlled activation planning and guard preparation, and Gate 6 stays separate for any actual controlled runtime enablement.
 
 ### Required Operator Sign-off
 
@@ -172,7 +172,7 @@ ORO-LIVE-GATE-3 is a runtime activation approval request gate only. It prepares 
 
 - ORO-LIVE-GATE-3 is approval request only.
 - Runtime activation remains pending approval.
-- Gate 4 must remain the runtime activation decision gate only, and Gate 5 must remain separate for any actual controlled activation.
+- Gate 4 must remain the runtime activation decision gate only, Gate 5 must remain separate for controlled activation planning and guard preparation, and Gate 6 must remain separate for any actual controlled runtime enablement.
 - Real money is still not enabled.
 - Real game launch is still not enabled.
 
@@ -208,10 +208,10 @@ ORO-LIVE-GATE-4 is a runtime activation decision gate only. It records the runti
 
 ### Decision Options
 
-- Approve for controlled activation planning in Gate 5 only.
+- Approve for controlled activation planning and pre-activation guard preparation in Gate 5 only.
 - Reject runtime activation progression.
 - Defer pending scheduling or operator readiness.
-- Request more evidence before any Gate 5 review.
+- Request more evidence before any Gate 5 planning review.
 
 ### Required Evidence Checklist
 
@@ -230,7 +230,7 @@ ORO-LIVE-GATE-4 is a runtime activation decision gate only. It records the runti
 - Operator owner signs off that no PM2 env change is performed in Gate 4.
 - Operator owner signs off that no service restart is performed for live mode in Gate 4.
 - Operator owner signs off that no deposit, withdraw, withdraw-all, launch game, or create user action is performed in Gate 4.
-- Operator owner signs off that actual controlled activation may occur only in a separate Gate 5 after explicit approval.
+- Operator owner signs off that Gate 5 remains plan-only and that actual controlled runtime enablement may occur only in a separate Gate 6 after explicit approval.
 
 ### Rollback Readiness Checklist
 
@@ -238,7 +238,7 @@ ORO-LIVE-GATE-4 is a runtime activation decision gate only. It records the runti
 - Keep `OROPLAY_MODE=production_disabled`.
 - Keep PM2 env unchanged.
 - Do not restart services to change runtime state.
-- Preserve the fail-closed position that runtime remains disabled unless a separate Gate 5 is explicitly approved.
+- Preserve the fail-closed position that runtime remains disabled unless a separate Gate 6 is explicitly approved after Gate 5 planning and guard review.
 - Reject or revert any wording that implies live runtime, real money, or real game launch is already enabled.
 
 ### Monitoring Readiness Checklist
@@ -261,7 +261,7 @@ ORO-LIVE-GATE-4 is a runtime activation decision gate only. It records the runti
 
 - Go only if Gate 1, Gate 2, and Gate 3 remain closed/pass with no contradictory evidence.
 - Go only if decision owner, operator owner, rollback owner, and monitoring owner are identified.
-- Go only if current runtime remains disabled and Gate 5 is explicitly reserved for actual controlled activation.
+- Go only if current runtime remains disabled, Gate 5 is explicitly reserved for planning/guard preparation, and Gate 6 is explicitly reserved for actual controlled runtime enablement.
 - No-Go if any required evidence is stale, missing, contradictory, or implies runtime was changed outside this gate.
 
 ### Gate Outcome
@@ -270,7 +270,121 @@ ORO-LIVE-GATE-4 is a runtime activation decision gate only. It records the runti
 - Runtime activation is still not enabled.
 - Real money is still not enabled.
 - Real game launch is still not enabled.
-- Gate 5 only may act as the actual controlled activation gate after Gate 4 approval.
+- Gate 5 only may act as the controlled activation plan / pre-activation guard gate after Gate 4 approval, and Gate 6 only may act as the actual controlled runtime enablement gate.
+
+## ORO-LIVE-GATE-5 Controlled Activation Plan / Pre-Activation Guard Gate
+
+ORO-LIVE-GATE-5 is a controlled activation plan / pre-activation guard gate only. It prepares the controlled activation plan, guardrails, rollback template, monitoring readiness, verification checklists, and operator runbook for a later separate gate, but it does not activate runtime.
+
+### Gate Prerequisites
+
+- ORO-LIVE-GATE-1 is closed/pass.
+- ORO-LIVE-GATE-2 is closed/pass.
+- ORO-LIVE-GATE-3 is closed/pass.
+- ORO-LIVE-GATE-4 is closed/pass.
+- Safe CI latest result is PASS.
+- VPS is synced to commit `8dfe183`.
+- VPS working tree is clean.
+- OroPlay auth diagnostic passed in sanitized form.
+- OroPlay read-only balance diagnostic passed in sanitized form.
+- `OROPLAY_ENABLED=0` remains unchanged.
+- `OROPLAY_MODE=production_disabled` remains unchanged.
+- Live transactional traffic remains off.
+
+### Controlled Activation Plan
+
+- Define the future activation sequence as a documented human-reviewed plan only.
+- Limit future activation scope to a controlled, reversible, and explicitly approved window.
+- Keep runtime disabled throughout Gate 5 while preparing the next-gate checklist.
+- Separate plan preparation, approval review, runtime change execution, and post-change verification into distinct stages.
+- Reserve Gate 6 only for any actual controlled runtime enablement decision and execution boundary.
+
+### Pre-Activation Guard Checklist
+
+- Confirm current runtime remains disabled with `OROPLAY_ENABLED=0`.
+- Confirm current runtime remains disabled with `OROPLAY_MODE=production_disabled`.
+- Confirm PM2 env remains unchanged.
+- Confirm no service restart is used to change runtime state during Gate 5.
+- Confirm no provider mutation, no DB write, no public live route enablement, and no external network call occur during Gate 5.
+- Confirm no instruction in this gate adds an immediate live-enablement command.
+
+### Operator Readiness Checklist
+
+- Operator owner is identified for the later activation window.
+- Rollback owner is identified for the later activation window.
+- Monitoring owner is identified for the later activation window.
+- Decision owner confirms Gate 5 remains plan-only.
+- Operator owner confirms no deposit, withdraw, withdraw-all, launch game, or create user action is performed in Gate 5.
+
+### Live Activation Window Checklist
+
+- Planned activation date:
+- Planned activation time window:
+- Operator owner:
+- Rollback owner:
+- Monitoring owner:
+- Decision owner:
+- Verification owner:
+- Business communication readiness:
+- Incident channel readiness:
+
+### Rollback Runbook Template
+
+- Rollback trigger:
+- Rollback decision owner:
+- Rollback communication owner:
+- Verified fail-closed target state:
+- Runtime-disabled confirmation checklist:
+- Post-rollback verification checklist:
+- Incident notes location:
+
+### Monitoring Checklist
+
+- Monitor staging `/api/health` and safe health response shape.
+- Monitor PM2 `pg77-api` online status.
+- Monitor sanitized application and Nginx logs only for safe readiness evidence.
+- Monitor that no live transactional traffic, no provider mutation, and no member-creation event occurs in Gate 5.
+- Monitor that no secret, token, password, client secret, auth value, or launch URL is printed in docs, logs, or smoke output.
+
+### Health Verification Checklist
+
+- Verify staging health remains healthy before any later activation review.
+- Verify PM2 `pg77-api` remains online before any later activation review.
+- Verify sanitized auth diagnostic evidence remains valid.
+- Verify sanitized read-only balance evidence remains valid.
+- Verify no contradictory runtime change evidence appears during Gate 5.
+
+### Post-Activation Verification Checklist For Gate 6
+
+- Verify Gate 6 approval is explicit before any runtime state change.
+- Verify post-change health checks are defined before Gate 6 starts.
+- Verify rollback ownership and monitoring ownership are confirmed before Gate 6 starts.
+- Verify post-change observation window and success criteria are documented before Gate 6 starts.
+- Verify Gate 6 includes separate execution and verification evidence handling.
+
+### Abort Conditions
+
+- Any step attempts `OROPLAY_ENABLED=1`.
+- Any step attempts PM2 env changes or service restart for live mode.
+- Any step attempts deposit, withdraw, withdraw-all, launch game, create user, provider mutation, DB write, Prisma schema change, or migration.
+- Any step attempts external network calls.
+- Any artifact introduces secret-shaped strings, raw auth values, JWT/API-key-looking strings, database assignment literals, or wording that acts like an immediate live-enablement command.
+- Any wording claims runtime activation, live traffic, real money, or real game launch is already enabled.
+
+### Approval Requirements For Gate 6
+
+- Explicit user approval for Gate 6 as a separate runtime enablement gate.
+- Explicit confirmation that Gate 5 remained plan-only with runtime still disabled.
+- Explicit review of controlled activation plan, pre-activation guard checklist, rollback template, monitoring checklist, and verification checklist.
+- Explicit confirmation that no live-enablement command is embedded in Gate 5 artifacts.
+
+### Gate Outcome
+
+- ORO-LIVE-GATE-5 is plan-only and pre-activation-guard-only.
+- Runtime activation is still not enabled.
+- Real money is still not enabled.
+- Real game launch is still not enabled.
+- Gate 6 only may act as the actual controlled runtime enablement gate after Gate 5 approval.
 
 ## Diagnostic Script
 

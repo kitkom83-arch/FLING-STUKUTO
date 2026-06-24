@@ -155,7 +155,7 @@ ORO-LIVE-GATE-1 closed/pass. ORO-LIVE-GATE-2 closed/pass. ORO-LIVE-GATE-3 curren
 - Gate 3 documents approval checklist, operator sign-off, rollback readiness, monitoring readiness, and abort conditions only.
 - Gate 3 does not activate runtime, does not enable live transactional traffic, does not enable real-money traffic, does not enable real-game launch, and does not allow provider mutation.
 - Gate 3 does not allow PM2 env edits, service restart for live mode, deposit, withdraw, withdraw-all, launch game, create user, DB write, Prisma schema change, migration, deploy, public live route exposure, external network calls, or secret/token printing.
-- Gate 4 only may act as the runtime activation decision gate. Gate 5 must remain separate for any actual controlled activation, and Gate 3 remains approval request only.
+- Gate 4 only may act as the runtime activation decision gate. Gate 5 must remain separate for controlled activation planning / guard preparation, Gate 6 must remain separate for any actual controlled runtime enablement, and Gate 3 remains approval request only.
 
 ## ORO-LIVE-GATE-4 Current
 
@@ -166,7 +166,18 @@ ORO-LIVE-GATE-1 closed/pass. ORO-LIVE-GATE-2 closed/pass. ORO-LIVE-GATE-3 closed
 - Gate 4 keeps the verified runtime state at `OROPLAY_ENABLED=0` and `OROPLAY_MODE=production_disabled`.
 - Gate 4 is decision/sign-off only and does not activate runtime, does not enable live transactional traffic, does not enable real-money traffic, does not enable real-game launch, and does not allow provider mutation.
 - Gate 4 does not allow PM2 env edits, service restart for live mode, deposit, withdraw, withdraw-all, launch game, create user, DB write, Prisma schema change, migration, deploy, public live route exposure, external network calls, or secret/auth value printing.
-- Gate 5 only may act as the actual controlled activation gate if Gate 4 approves. Gate 4 must stay separate from actual enablement.
+- Gate 5 only may act as the controlled activation plan / pre-activation guard gate if Gate 4 approves. Gate 6 must remain separate for any actual controlled runtime enablement, and Gate 4 must stay separate from actual enablement.
+
+## ORO-LIVE-GATE-5 Current
+
+ORO-LIVE-GATE-1 closed/pass. ORO-LIVE-GATE-2 closed/pass. ORO-LIVE-GATE-3 closed/pass. ORO-LIVE-GATE-4 closed/pass. ORO-LIVE-GATE-5 current. ORO-LIVE-GATE-5 is a controlled activation plan / pre-activation guard gate only.
+
+- Gate objective: prepare the controlled activation plan, pre-activation guard checklist, operator readiness, activation window checklist, rollback template, monitoring checklist, health verification checklist, and post-activation verification checklist for a later separate enablement gate.
+- Gate 5 depends on Gate 1, Gate 2, Gate 3, and Gate 4 already being closed/pass.
+- Gate 5 keeps the verified runtime state at `OROPLAY_ENABLED=0` and `OROPLAY_MODE=production_disabled`.
+- Gate 5 is plan/guard only and does not activate runtime, does not enable live transactional traffic, does not enable real-money traffic, does not enable real-game launch, and does not allow provider mutation.
+- Gate 5 does not allow PM2 env edits, service restart for live mode, deposit, withdraw, withdraw-all, launch game, create user, DB write, Prisma schema change, migration, deploy, public live route exposure, external network calls, secret/auth value printing, or immediate live-enablement commands.
+- Gate 6 only may act as the actual controlled runtime enablement gate if Gate 5 passes. Gate 5 must stay separate from actual enablement.
 
 ## Required Future Evidence
 
