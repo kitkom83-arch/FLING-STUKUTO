@@ -31,6 +31,8 @@ This document records the current safe repository understanding for OroPlay API 
 - Withdraw-all cleanup completed with `amount=0`.
 - Balance history recorded the deposit order with sanitized metadata.
 - This evidence is transfer-side verification only; the Seamless Wallet callback workstream remains separate.
+- Live-readiness blocker remains open: `POST /auth/createtoken` on `https://bs.sxvwlkohlv.com/api/v2` is still returning HTTP 401 with an empty body from the VPS diagnostic.
+- Do not enable `OROPLAY_ENABLED=1` until the auth diagnostic returns 200 and the read-only balance smoke passes.
 - ORO-0 only records status and planning context before any mock, staging, callback, wallet, or provider runtime work.
 
 ## Risk Notes

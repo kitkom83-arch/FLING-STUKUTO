@@ -131,6 +131,8 @@ ORO-3C callback runtime wallet-ledger execution plan is current and remains exec
 - Withdraw-all cleanup returned `amount=0`.
 - Balance history recorded the deposit order with sanitized metadata.
 - Token, secret, and full launch URL values must remain redacted in docs.
+- Live readiness remains separate from the transfer evidence pack: the current diagnostic blocker is still `POST /auth/createtoken` returning HTTP 401 with an empty body on the VPS.
+- Do not enable `OROPLAY_ENABLED=1` until the auth diagnostic returns 200 and the read-only balance smoke passes.
 
 ## Required Future Evidence
 
