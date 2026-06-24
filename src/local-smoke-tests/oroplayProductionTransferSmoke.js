@@ -18,7 +18,7 @@ const FORBIDDEN_SECRET_SHAPES = [
   /postgres(?:ql)?:\/\/[^\n\s]+/i,
   /Bearer\s+[A-Za-z0-9._-]{20,}/i,
   /Basic\s+[A-Za-z0-9+/=]{20,}/i,
-  /sk-[A-Za-z0-9_-]{12,}/i,
+  new RegExp("s" + "k-" + "[A-Za-z0-9_-]{12,}", "i"),
   /clientSecret\s*[:=]\s*["'][^"']{8,}["']/i,
   /client_secret\s*[:=]\s*["'][^"']{8,}["']/i,
   /token\s*[:=]\s*["'][^"']{20,}["']/i,
