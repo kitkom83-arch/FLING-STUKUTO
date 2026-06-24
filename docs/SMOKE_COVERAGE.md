@@ -47,6 +47,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `adminBankAccountReviewReleasePackSmoke.js` | `npm run smoke:admin-bank-account-review-release-pack` | No | No | No | Static docs/release pack contract | Phase AN Admin Bank Account Review Release Pack / UAT Checklist contract for release pack docs, UAT checklist, operator runbook, Phase AL/AM/AN markers, permission markers, audit action markers, reason required, duplicate safe `409`, no production DB, no real money, no live provider/payment/bank/SMS/Slip OCR, and static safety scan. |
 | `oroplayProductionTransferSmoke.js` | `npm run smoke:oroplay-production-transfer` | No | No | Yes | Controlled production transfer smoke | OroPlay Transfer API production connector smoke for env-driven token, agent balance, vendor list, game list, player create, deposit, 5-6 game launches, user balance, betting history, withdraw all, masked summary, and local secret-shaped value scan. |
 | `oroplayAuthDiagnosticSanitizerSmoke.js` | `npm run smoke:oroplay-auth-diagnostic-sanitizer` | No | No | No | Sanitizer-only unit smoke | Sanitizer-only unit smoke for OroPlay auth diagnostic redaction, empty body handling, and safe missing-env failure. |
+| `oroplayLiveGate2CanaryPlanSmoke.js` | `npm run smoke:oroplay-live-gate-2` | No | No | No | Static docs/readiness contract | ORO-LIVE-GATE-2 read-only controlled canary plan smoke for Gate 1 closed/pass status, Gate 2 plan/readiness wording, preflight/monitoring/rollback/abort/approval markers, runtime activation separation, and static secret-shaped value scan. |
 | `adminWorkScheduleSmoke.js` | `npm run smoke:admin-work-schedule` | Yes | Yes | Yes | Syntax check only | Admin work schedule UI/API checks for schedule list/read/update, permission guards, login block/allow, emergency override, expired override, audit history, rollback, and leak scan. |
 | `adminWorkScheduleUiSmoke.js` | `npm run smoke:admin-work-schedule-ui` | Yes | Yes | Yes | Syntax check only | Static admin schedule UI route/assets, owner flow, no-permission block, emergency override, masked audit history, and leak scan. |
 | `adminAuditSecuritySmoke.js` | `npm run smoke:admin-audit-security` | Yes | Yes | Yes | Syntax check only | Static audit/security UI route/assets, UX markers, report endpoints, filters, permission block, empty response shape, masked IP, raw user-agent omission, and leak scan. |
@@ -1900,6 +1901,40 @@ Boundary:
 - No runtime wallet mutation.
 - No runtime ledger mutation.
 - No hardcoded credential-shaped values, payment address credentials, or messaging bot credentials.
+- No migration.
+- No deploy.
+
+ORO-LIVE-GATE-2 local smoke coverage:
+
+- `smoke:oroplay-live-gate-2`
+
+`smoke:oroplay-live-gate-2` checks:
+
+- ORO-LIVE-GATE-1 is recorded as closed/pass.
+- ORO-LIVE-GATE-2 is recorded as a read-only controlled canary plan gate only.
+- Gate 2 includes preflight checklist markers.
+- Gate 2 includes monitoring checklist markers.
+- Gate 2 includes rollback checklist markers.
+- Gate 2 includes abort condition markers.
+- Gate 2 includes approval requirements before the next gate.
+- Gate 2 states that runtime activation remains a separate later gate.
+- Gate 2 does not claim live transactional traffic, real money, or real game launch is already enabled.
+- Static secret-shaped value scan stays clean across the changed docs, `package.json`, and the Gate 2 smoke file.
+
+Boundary:
+
+- Docs/static/read-only/local-only.
+- No production DB.
+- No real money runtime flow.
+- No live transactional traffic.
+- No provider mutation.
+- No deposit.
+- No withdraw.
+- No withdraw-all.
+- No launch game.
+- No create user.
+- No callback runtime activation.
+- No PM2 env change.
 - No migration.
 - No deploy.
 

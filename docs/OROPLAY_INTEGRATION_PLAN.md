@@ -134,6 +134,17 @@ ORO-3C callback runtime wallet-ledger execution plan is current and remains exec
 - Live readiness remains separate from the transfer evidence pack: the current diagnostic blocker is still `POST /auth/createtoken` returning HTTP 401 with an empty body on the VPS.
 - Do not enable `OROPLAY_ENABLED=1` until the auth diagnostic returns 200 and the read-only balance smoke passes.
 
+## ORO-LIVE-GATE-2 Current
+
+ORO-LIVE-GATE-1 closed/pass. ORO-LIVE-GATE-2 current. ORO-LIVE-GATE-2 is a read-only controlled canary plan gate only.
+
+- Gate objective: document preflight, monitoring, rollback, abort conditions, and approval requirements before any separate runtime activation gate is considered.
+- Current verified state remains `OROPLAY_ENABLED=0` and `OROPLAY_MODE=production_disabled`.
+- Gate 2 allows sanitized auth diagnostic evidence and sanitized balance read-only evidence only.
+- Gate 2 does not enable live transactional traffic, real-money traffic, real-game launch, provider mutation, callback runtime activation, PM2 env edits, or service restart for live mode.
+- Gate 2 does not allow deposit, withdraw, withdraw-all, launch game, create user, DB write, Prisma schema change, migration, deploy, public live route exposure, or secret/token printing.
+- Runtime activation must remain a separate successor gate with explicit approval after Gate 2 readiness is accepted.
+
 ## Required Future Evidence
 
 - OroPlay callback credential type and rotation process.

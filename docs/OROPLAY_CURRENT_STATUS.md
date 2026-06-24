@@ -1,6 +1,6 @@
 # OroPlay Current Status
 
-ORO-0 status date: 2026-06-24.
+ORO-0 status date: 2026-06-25.
 
 This document records the current safe repository understanding for OroPlay API / Seamless Wallet integration. It is docs/static only and does not enable runtime integration.
 
@@ -33,6 +33,10 @@ This document records the current safe repository understanding for OroPlay API 
 - This evidence is transfer-side verification only; the Seamless Wallet callback workstream remains separate.
 - Live-readiness blocker remains open: `POST /auth/createtoken` on `https://bs.sxvwlkohlv.com/api/v2` is still returning HTTP 401 with an empty body from the VPS diagnostic.
 - Do not enable `OROPLAY_ENABLED=1` until the auth diagnostic returns 200 and the read-only balance smoke passes.
+- ORO-LIVE-GATE-1 is closed/pass based on the sanitized OroPlay auth diagnostic pass, sanitized balance read-only pass, clean VPS sync, clean VPS working tree, staging health pass, and PM2 online confirmation.
+- ORO-LIVE-GATE-2 is current as a read-only controlled canary plan/readiness gate only.
+- ORO-LIVE-GATE-2 does not enable runtime activation, real money, real game launch, provider mutation, deposit, withdraw, withdraw-all, or member creation.
+- Runtime activation must remain a separate successor gate after explicit approval.
 - ORO-0 only records status and planning context before any mock, staging, callback, wallet, or provider runtime work.
 
 ## Risk Notes
