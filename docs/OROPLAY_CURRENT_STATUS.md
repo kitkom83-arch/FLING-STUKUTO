@@ -35,9 +35,12 @@ This document records the current safe repository understanding for OroPlay API 
 - Do not enable `OROPLAY_ENABLED=1` until the auth diagnostic returns 200 and the read-only balance smoke passes.
 - ORO-LIVE-GATE-1 is closed/pass based on the sanitized OroPlay auth diagnostic pass, sanitized balance read-only pass, clean VPS sync, clean VPS working tree, staging health pass, and PM2 online confirmation.
 - ORO-LIVE-GATE-2 is closed/pass as the read-only controlled canary plan/readiness gate.
-- ORO-LIVE-GATE-3 is current as the runtime activation approval request gate only.
-- ORO-LIVE-GATE-3 does not enable runtime activation, real money, real game launch, provider mutation, deposit, withdraw, withdraw-all, or member creation.
-- Runtime activation is still pending approval and must remain a separate successor gate after Gate 3.
+- ORO-LIVE-GATE-3 is closed/pass as the runtime activation approval request gate.
+- ORO-LIVE-GATE-4 is current as the runtime activation decision gate only.
+- ORO-LIVE-GATE-4 records decision status, evidence, constraints, rollback readiness, monitoring readiness, and Go/No-Go criteria only.
+- ORO-LIVE-GATE-4 does not enable runtime activation, real money, real game launch, provider mutation, deposit, withdraw, withdraw-all, or member creation.
+- Live runtime activation is still pending decision and is not enabled.
+- Actual controlled activation must remain a separate Gate 5 after Gate 4 approval.
 - ORO-0 only records status and planning context before any mock, staging, callback, wallet, or provider runtime work.
 
 ## Risk Notes

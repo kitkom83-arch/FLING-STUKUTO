@@ -135,7 +135,7 @@ ORO-LIVE-GATE-3 is a runtime activation approval request gate only. It prepares 
 - PM2/env change authority is identified but not exercised in Gate 3.
 - Runtime change window, operator owner, rollback owner, and monitoring owner are identified.
 - Confirmation that no runtime activation, no public live route enablement, and no provider mutation occur inside Gate 3.
-- Confirmation that Gate 4 alone may decide runtime activation or controlled activation.
+- Confirmation that Gate 4 remains decision-only and Gate 5 stays separate for any actual controlled activation.
 
 ### Required Operator Sign-off
 
@@ -172,9 +172,105 @@ ORO-LIVE-GATE-3 is a runtime activation approval request gate only. It prepares 
 
 - ORO-LIVE-GATE-3 is approval request only.
 - Runtime activation remains pending approval.
-- Gate 4 must remain separate as the runtime activation decision or controlled activation gate.
+- Gate 4 must remain the runtime activation decision gate only, and Gate 5 must remain separate for any actual controlled activation.
 - Real money is still not enabled.
 - Real game launch is still not enabled.
+
+## ORO-LIVE-GATE-4 Runtime Activation Decision Gate
+
+ORO-LIVE-GATE-4 is a runtime activation decision gate only. It records the runtime activation decision, conditions, evidence, constraints, rollback options, and next-gate requirements, but it does not activate runtime.
+
+### Gate Prerequisites
+
+- ORO-LIVE-GATE-1 is closed/pass.
+- ORO-LIVE-GATE-2 is closed/pass.
+- ORO-LIVE-GATE-3 is closed/pass.
+- Safe CI latest result is PASS.
+- VPS is synced to commit `9e8f516`.
+- VPS working tree is clean.
+- OroPlay auth diagnostic passed in sanitized form.
+- OroPlay read-only balance diagnostic passed in sanitized form.
+- `OROPLAY_ENABLED=0` remains unchanged.
+- `OROPLAY_MODE=production_disabled` remains unchanged.
+- Live transactional traffic remains off.
+
+### Decision Record Template
+
+- Decision date:
+- Decision owner:
+- Decision status:
+- Evidence reviewed:
+- Constraints acknowledged:
+- Rollback owner:
+- Monitoring owner:
+- Next gate:
+- Notes:
+
+### Decision Options
+
+- Approve for controlled activation planning in Gate 5 only.
+- Reject runtime activation progression.
+- Defer pending scheduling or operator readiness.
+- Request more evidence before any Gate 5 review.
+
+### Required Evidence Checklist
+
+- Gate 1 auth diagnostic evidence remains valid in sanitized form.
+- Gate 2 read-only canary plan evidence remains valid.
+- Gate 3 approval request evidence remains valid.
+- Current runtime remains disabled with `OROPLAY_ENABLED=0`.
+- Current runtime remains disabled with `OROPLAY_MODE=production_disabled`.
+- Safe CI latest result is PASS.
+- VPS sync, clean working tree, staging health, and PM2 online confirmations remain current.
+- No provider mutation, no DB write, no external network call, and no runtime activation occurred during Gates 1-4 preparation.
+
+### Operator Sign-off Checklist
+
+- Decision owner signs off that Gate 4 is decision-only.
+- Operator owner signs off that no PM2 env change is performed in Gate 4.
+- Operator owner signs off that no service restart is performed for live mode in Gate 4.
+- Operator owner signs off that no deposit, withdraw, withdraw-all, launch game, or create user action is performed in Gate 4.
+- Operator owner signs off that actual controlled activation may occur only in a separate Gate 5 after explicit approval.
+
+### Rollback Readiness Checklist
+
+- Keep `OROPLAY_ENABLED=0`.
+- Keep `OROPLAY_MODE=production_disabled`.
+- Keep PM2 env unchanged.
+- Do not restart services to change runtime state.
+- Preserve the fail-closed position that runtime remains disabled unless a separate Gate 5 is explicitly approved.
+- Reject or revert any wording that implies live runtime, real money, or real game launch is already enabled.
+
+### Monitoring Readiness Checklist
+
+- Monitoring owner confirms staging `/api/health` remains healthy.
+- Monitoring owner confirms PM2 `pg77-api` remains online.
+- Monitoring owner confirms sanitized diagnostic evidence remains available without exposing secret, token, password, client secret, or launch URL.
+- Monitoring owner confirms no live transactional traffic, no provider mutation, no deposit, no withdraw, no launch game, and no member creation occurred during Gate 4.
+
+### Abort Conditions
+
+- Any step attempts `OROPLAY_ENABLED=1`.
+- Any step attempts PM2 env changes or service restart for live mode.
+- Any step attempts deposit, withdraw, withdraw-all, launch game, create user, provider mutation, DB write, Prisma schema change, or migration.
+- Any step attempts external network calls.
+- Any artifact introduces secret-shaped strings, raw auth values, JWT/API-key-looking strings, or database assignment literals.
+- Any wording claims runtime activation, live traffic, real money, or real game launch is already enabled.
+
+### Go/No-Go Criteria
+
+- Go only if Gate 1, Gate 2, and Gate 3 remain closed/pass with no contradictory evidence.
+- Go only if decision owner, operator owner, rollback owner, and monitoring owner are identified.
+- Go only if current runtime remains disabled and Gate 5 is explicitly reserved for actual controlled activation.
+- No-Go if any required evidence is stale, missing, contradictory, or implies runtime was changed outside this gate.
+
+### Gate Outcome
+
+- ORO-LIVE-GATE-4 is decision-only.
+- Runtime activation is still not enabled.
+- Real money is still not enabled.
+- Real game launch is still not enabled.
+- Gate 5 only may act as the actual controlled activation gate after Gate 4 approval.
 
 ## Diagnostic Script
 

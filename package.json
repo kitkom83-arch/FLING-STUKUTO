@@ -58,6 +58,7 @@
     "smoke:oroplay-auth-diagnostic-sanitizer": "node src/local-smoke-tests/oroplayAuthDiagnosticSanitizerSmoke.js",
     "smoke:oroplay-live-gate-2": "node src/local-smoke-tests/oroplayLiveGate2CanaryPlanSmoke.js",
     "smoke:oroplay-live-gate-3": "node src/local-smoke-tests/oroplayLiveGate3ActivationApprovalRequestSmoke.js",
+    "smoke:oroplay-live-gate-4": "node src/local-smoke-tests/oroplayLiveGate4ActivationDecisionSmoke.js",
     "smoke:oroplay-callback-boundary": "node src/local-smoke-tests/oroplayCallbackBoundarySmoke.js",
     "smoke:oroplay-callback-stub": "node src/local-smoke-tests/oroplayCallbackStubSmoke.js",
     "smoke:oroplay-callback-readiness": "node src/local-smoke-tests/oroplayCallbackReadinessSmoke.js",
