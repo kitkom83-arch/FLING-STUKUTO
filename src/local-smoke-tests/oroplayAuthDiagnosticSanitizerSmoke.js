@@ -11,17 +11,17 @@ const {
 
 function assertRedacted(value, message) {
   assert(!String(value).includes("abc123SECRET"), message);
-  assert(!String(value).includes("Bearer real-token-123456"), message);
+  assert(!String(value).includes("sensitive-fixture-token-123456"), message);
 }
 
 function testRedaction() {
   const input = JSON.stringify({
     token: "abc123SECRET",
-    accessToken: "Bearer real-token-123456",
-    bearer: "Bearer real-token-123456",
+    accessToken: "sensitive-fixture-token-123456",
+    bearer: "sensitive-fixture-token-123456",
     nested: {
-      authorization: "Bearer real-token-123456",
-      message: "Bearer real-token-123456",
+      authorization: "sensitive-fixture-token-123456",
+      message: "sensitive-fixture-token-123456",
     },
   });
 
@@ -63,16 +63,16 @@ function testMissingEnvFailsSafely() {
 function testSafeDiagnosticsShape() {
   const sanitized = redactDiagnosticValue({
     token: "abc123SECRET",
-    accessToken: "Bearer real-token-123456",
+    accessToken: "sensitive-fixture-token-123456",
     nested: {
-      authorization: "Bearer real-token-123456",
+      authorization: "sensitive-fixture-token-123456",
       body: "ok",
     },
   });
   const text = JSON.stringify(sanitized);
   assert(!text.includes("abc123SECRET"), "token should be redacted.");
   assert(!text.includes("real-token-123456"), "access token should be redacted.");
-  assert(!text.includes("Bearer real-token-123456"), "Bearer token should be redacted.");
+  assert(!text.includes("sensitive-fixture-token-123456"), "auth fixture token should be redacted.");
 }
 
 function main() {
