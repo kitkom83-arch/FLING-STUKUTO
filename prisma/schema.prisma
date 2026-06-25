@@ -42,6 +42,10 @@ model Site {
   wheelCampaigns      WheelCampaign[]
   wheelSpins          WheelSpin[]
   memberRewards       MemberReward[]
+  codeCampaigns       CodeCampaign[]
+  codeCenterCodes     CodeCenterCode[]
+  codeRedeemLogs      CodeRedeemLog[]
+  memberRewardWalletEntries MemberRewardWalletEntry[]
 
   @@map("sites")
 }
@@ -185,6 +189,8 @@ model User {
   gameBetHistoryMocks  GameBetHistoryMock[]
   wheelSpins           WheelSpin[]
   memberRewards        MemberReward[]
+  codeRedeemLogs       CodeRedeemLog[]
+  memberRewardWalletEntries MemberRewardWalletEntry[]
 
   @@unique([siteId, phone])
   @@unique([siteId, username])
@@ -637,4 +643,106 @@ model MemberReward {
   @@index([source])
   @@index([status])
   @@map("member_rewards")
+}
+
+model CodeCampaign {
+  id             String           @id @default(cuid())
+  siteId         String           @map("site_id")
+  siteCode       String?          @map("site_code")
+  name           String
+  status         String           @default("draft")
+  rewardType     String           @map("reward_type")
+  rewardPayload  Json             @map("reward_payload")
+  startsAt       DateTime?        @map("starts_at")
+  expiresAt      DateTime?        @map("expires_at")
+  maxRedemptions Int              @default(0) @map("max_redemptions")
+  perMemberLimit Int              @default(1) @map("per_member_limit")
+  createdBy      Json?            @map("created_by")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  site           Site             @relation(fields: [siteId], references: [id])
+  codes          CodeCenterCode[]
+  redeemLogs     CodeRedeemLog[]
+
+  @@index([siteId])
+  @@index([status])
+  @@index([rewardType])
+  @@map("code_campaigns")
+}
+
+model CodeCenterCode {
+  id             String          @id @default(cuid())
+  siteId         String          @map("site_id")
+  campaignId     String          @map("campaign_id")
+  code           String
+  status         String          @default("active")
+  maxRedemptions Int             @default(1) @map("max_redemptions")
+  redeemedCount  Int             @default(0) @map("redeemed_count")
+  createdBy      Json?           @map("created_by")
+  redeemedBy     String?         @map("redeemed_by")
+  redeemedAt     DateTime?       @map("redeemed_at")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+  site           Site            @relation(fields: [siteId], references: [id])
+  campaign       CodeCampaign    @relation(fields: [campaignId], references: [id])
+  redeemLogs     CodeRedeemLog[]
+
+  @@unique([siteId, code])
+  @@index([siteId])
+  @@index([campaignId])
+  @@index([status])
+  @@map("code_center_codes")
+}
+
+model CodeRedeemLog {
+  id              String                   @id @default(cuid())
+  siteId          String                   @map("site_id")
+  campaignId      String                   @map("campaign_id")
+  codeId          String                   @map("code_id")
+  code            String
+  memberId        String                   @map("member_id")
+  status          String
+  result          String
+  rewardType      String                   @map("reward_type")
+  rewardPayload   Json?                    @map("reward_payload")
+  rewardEntryId   String?                  @map("reward_entry_id")
+  createdAt       DateTime                 @default(now()) @map("created_at")
+  site            Site                     @relation(fields: [siteId], references: [id])
+  campaign        CodeCampaign             @relation(fields: [campaignId], references: [id])
+  codeRow         CodeCenterCode           @relation(fields: [codeId], references: [id])
+  member          User                     @relation(fields: [memberId], references: [id])
+  rewardEntry     MemberRewardWalletEntry? @relation(fields: [rewardEntryId], references: [id])
+
+  @@unique([codeId, memberId])
+  @@index([siteId])
+  @@index([campaignId])
+  @@index([memberId])
+  @@index([status])
+  @@map("code_redeem_logs")
+}
+
+model MemberRewardWalletEntry {
+  id           String          @id @default(cuid())
+  siteId       String          @map("site_id")
+  memberId     String          @map("member_id")
+  rewardType   String          @map("reward_type")
+  status       String          @default("available")
+  amount       Decimal         @default(0.00) @db.Decimal(18, 2)
+  label        String
+  payload      Json?
+  sourceType   String          @map("source_type")
+  sourceId     String          @map("source_id")
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+  site         Site            @relation(fields: [siteId], references: [id])
+  member       User            @relation(fields: [memberId], references: [id])
+  redeemLogs   CodeRedeemLog[]
+
+  @@unique([siteId, sourceType, sourceId])
+  @@index([siteId])
+  @@index([memberId])
+  @@index([rewardType])
+  @@index([status])
+  @@index([sourceType, sourceId])
+  @@map("member_reward_wallet_entries")
 }
