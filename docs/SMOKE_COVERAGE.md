@@ -51,6 +51,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `oroplayLiveGate3ActivationApprovalRequestSmoke.js` | `npm run smoke:oroplay-live-gate-3` | No | No | No | Static docs/approval-request contract | ORO-LIVE-GATE-3 runtime activation approval request smoke for Gate 2 closed/pass status, Gate 3 approval-request wording, prerequisites/approval checklist/operator sign-off/rollback/monitoring/abort markers, Gate 4 separation, and static secret-shaped value scan. |
 | `oroplayLiveGate4ActivationDecisionSmoke.js` | `npm run smoke:oroplay-live-gate-4` | No | No | No | Static docs/decision-gate contract | ORO-LIVE-GATE-4 runtime activation decision smoke for Gate 3 closed/pass status, Gate 4 decision-only wording, decision options/evidence/sign-off/rollback/monitoring/abort/Go-No-Go markers, Gate 5 separation, and static secret-shaped value scan. |
 | `oroplayLiveGate5PreActivationGuardSmoke.js` | `npm run smoke:oroplay-live-gate-5` | No | No | No | Static docs/pre-activation-guard contract | ORO-LIVE-GATE-5 controlled activation plan / pre-activation guard smoke for Gate 4 closed/pass status, Gate 5 plan-only wording, plan/guard/operator/window/rollback/monitoring/health/abort/approval markers, Gate 6 separation, and static secret-shaped value scan. |
+| `oroplayLiveGate6FinalPreflightAuthorizationSmoke.js` | `npm run smoke:oroplay-live-gate-6` | No | No | No | Static docs/final-preflight contract | ORO-LIVE-GATE-6 controlled runtime enablement authorization / final preflight smoke for Gate 5 closed/pass status, Gate 6 authorization-only wording, final authorization/preflight/sign-off/rollback proof/monitoring proof/health proof/abort/handoff markers, Gate 7 separation, and static secret-shaped value scan. |
 | `adminWorkScheduleSmoke.js` | `npm run smoke:admin-work-schedule` | Yes | Yes | Yes | Syntax check only | Admin work schedule UI/API checks for schedule list/read/update, permission guards, login block/allow, emergency override, expired override, audit history, rollback, and leak scan. |
 | `adminWorkScheduleUiSmoke.js` | `npm run smoke:admin-work-schedule-ui` | Yes | Yes | Yes | Syntax check only | Static admin schedule UI route/assets, owner flow, no-permission block, emergency override, masked audit history, and leak scan. |
 | `adminAuditSecuritySmoke.js` | `npm run smoke:admin-audit-security` | Yes | Yes | Yes | Syntax check only | Static audit/security UI route/assets, UX markers, report endpoints, filters, permission block, empty response shape, masked IP, raw user-agent omission, and leak scan. |
@@ -2045,6 +2046,49 @@ Boundary:
 - No external network.
 - No migration.
 - No deploy.
+
+ORO-LIVE-GATE-6 local smoke coverage:
+
+- `smoke:oroplay-live-gate-6`
+
+`smoke:oroplay-live-gate-6` checks:
+
+- ORO-LIVE-GATE-5 is recorded as closed/pass.
+- ORO-LIVE-GATE-6 is recorded as a controlled runtime enablement authorization / final preflight gate only.
+- Gate 6 includes prerequisites from Gate 1 through Gate 5.
+- Gate 6 includes final authorization record template markers.
+- Gate 6 includes final preflight checklist markers.
+- Gate 6 includes final operator sign-off checklist markers.
+- Gate 6 includes rollback proof checklist markers.
+- Gate 6 includes monitoring proof checklist markers.
+- Gate 6 includes health verification proof checklist markers.
+- Gate 6 includes emergency abort criteria markers.
+- Gate 6 includes exact Gate 7 handoff requirement markers.
+- Gate 6 includes Gate 7 manual execution constraint markers.
+- Gate 6 states Gate 7 only may act as the actual controlled runtime enablement gate.
+- Gate 6 does not claim live traffic, real money, or real game launch is already enabled.
+- Static secret-shaped value scan stays clean across the changed docs, `package.json`, and the Gate 6 smoke file.
+
+Boundary:
+
+- Docs/static/read-only/local-only.
+- Authorization-and-final-preflight-only.
+- No runtime activation.
+- No PM2 env change.
+- No migration.
+- No deploy.
+- No production DB.
+- No real money runtime flow.
+- No live transactional traffic.
+- No provider mutation.
+- No deposit.
+- No withdraw.
+- No withdraw-all.
+- No launch game.
+- No create user.
+- No callback runtime activation.
+- No external network.
+- No immediate live-enablement command.
 
 ## 59. ORO-2A OroPlay Callback Boundary Coverage
 

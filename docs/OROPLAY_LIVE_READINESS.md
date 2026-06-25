@@ -274,7 +274,7 @@ ORO-LIVE-GATE-4 is a runtime activation decision gate only. It records the runti
 
 ## ORO-LIVE-GATE-5 Controlled Activation Plan / Pre-Activation Guard Gate
 
-ORO-LIVE-GATE-5 is a controlled activation plan / pre-activation guard gate only. It prepares the controlled activation plan, guardrails, rollback template, monitoring readiness, verification checklists, and operator runbook for a later separate gate, but it does not activate runtime.
+ORO-LIVE-GATE-5 is closed/pass as the controlled activation plan / pre-activation guard gate only. It prepares the controlled activation plan, guardrails, rollback template, monitoring readiness, verification checklists, and operator runbook for a later separate gate, but it does not activate runtime.
 
 ### Gate Prerequisites
 
@@ -380,11 +380,123 @@ ORO-LIVE-GATE-5 is a controlled activation plan / pre-activation guard gate only
 
 ### Gate Outcome
 
-- ORO-LIVE-GATE-5 is plan-only and pre-activation-guard-only.
+- ORO-LIVE-GATE-5 is closed/pass and pre-activation-guard-only.
 - Runtime activation is still not enabled.
 - Real money is still not enabled.
 - Real game launch is still not enabled.
-- Gate 6 only may act as the actual controlled runtime enablement gate after Gate 5 approval.
+- Gate 6 only may act as the controlled runtime enablement authorization / final preflight gate after Gate 5 approval.
+
+## ORO-LIVE-GATE-6 Controlled Runtime Enablement Authorization / Final Preflight Gate
+
+ORO-LIVE-GATE-6 is a controlled runtime enablement authorization / final preflight gate only. It prepares the final authorization record, final preflight checklist, rollback proof, monitoring proof, health verification proof, operator sign-off checklist, emergency abort criteria, and exact Gate 7 handoff requirements, but it does not open live runtime.
+
+### Gate Prerequisites
+
+- ORO-LIVE-GATE-1 is closed/pass.
+- ORO-LIVE-GATE-2 is closed/pass.
+- ORO-LIVE-GATE-3 is closed/pass.
+- ORO-LIVE-GATE-4 is closed/pass.
+- ORO-LIVE-GATE-5 is closed/pass.
+- Safe CI latest result is PASS.
+- VPS is synced to the approved commit.
+- VPS working tree is clean.
+- OroPlay auth diagnostic passed in sanitized form.
+- OroPlay read-only balance diagnostic passed in sanitized form.
+- `OROPLAY_ENABLED=0` remains unchanged.
+- `OROPLAY_MODE=production_disabled` remains unchanged.
+- Live transactional traffic remains off.
+
+### Final Authorization Record Template
+
+- Gate name:
+- Authorization record ID:
+- Authorized by:
+- Reviewed by:
+- Reviewed at:
+- Evidence bundle reference:
+- Current runtime state:
+- Rollback owner:
+- Monitoring owner:
+- Health verification owner:
+- Gate 7 handoff confirmation:
+- Manual execution constraints acknowledged:
+- Decision:
+
+### Final Preflight Checklist
+
+- Confirm current runtime remains disabled with `OROPLAY_ENABLED=0`.
+- Confirm current runtime remains disabled with `OROPLAY_MODE=production_disabled`.
+- Confirm PM2 env remains unchanged.
+- Confirm no service restart is used to change runtime state during Gate 6.
+- Confirm no provider mutation, no DB write, no public live route enablement, and no external network call occur during Gate 6.
+- Confirm no deposit, withdraw, withdraw-all, launch game, or create user action is performed in Gate 6.
+- Confirm no immediate live-enablement command is embedded in Gate 6 artifacts.
+
+### Final Operator Sign-Off Checklist
+
+- Decision owner signs off on the final authorization record.
+- Operator owner signs off that Gate 6 remains authorization-only.
+- Rollback owner signs off on the rollback proof checklist.
+- Monitoring owner signs off on the monitoring proof checklist.
+- Health owner signs off on the health verification proof checklist.
+
+### Rollback Proof Checklist
+
+- Rollback owner is identified and available.
+- Rollback target state is documented as fail-closed.
+- Rollback communication path is documented.
+- Rollback verification steps are documented.
+- Rollback proof is captured before any later Gate 7 execution.
+
+### Monitoring Proof Checklist
+
+- Monitoring owner is identified and available.
+- Monitoring targets are documented.
+- Monitoring window is documented.
+- Monitoring log sources are sanitized.
+- Monitoring proof is captured before any later Gate 7 execution.
+
+### Health Verification Proof Checklist
+
+- Health verification owner is identified and available.
+- Health verification steps are documented.
+- Health verification evidence is sanitized.
+- Health verification passes only if runtime remains disabled at Gate 6.
+- Health proof is captured before any later Gate 7 execution.
+
+### Emergency Abort Criteria
+
+- Any step attempts `OROPLAY_ENABLED=1`.
+- Any step attempts PM2 env changes or service restart for live mode.
+- Any step attempts deposit, withdraw, withdraw-all, launch game, create user, provider mutation, DB write, Prisma schema change, or migration.
+- Any step attempts external network calls.
+- Any artifact introduces secret-shaped strings, raw auth values, JWT/API-key-looking strings, database assignment literals, or wording that acts like an immediate live-enablement command.
+- Any wording claims runtime activation, live traffic, real money, or real game launch is already enabled.
+
+### Gate 7 Handoff Requirements
+
+- Gate 1 through Gate 6 must be recorded closed/pass before Gate 7 begins.
+- Gate 7 receives the final authorization record and proof checklists from Gate 6.
+- Gate 7 receives rollback proof, monitoring proof, and health verification proof as separate evidence items.
+- Gate 7 must be treated as the actual controlled runtime enablement gate and not as a documentation-only review.
+- Gate 7 must preserve the fail-closed state until the operator executes the separate manual enablement boundary.
+
+### Gate 7 Manual Execution Constraints
+
+- Gate 7 must be executed manually by an authorized operator in the approved change window.
+- Gate 7 must not bundle any DB write, provider mutation, deposit, withdraw, withdraw-all, launch game, or create user action.
+- Gate 7 must not use any immediate live-enablement command in a doc, log, or script artifact.
+- Gate 7 must not print secret, token, password, client secret, or auth value material.
+- Gate 7 must keep the enablement boundary separate from rollout verification and separate from post-change monitoring evidence.
+- Gate 7 must remain the only gate allowed to perform actual controlled runtime enablement.
+
+### Gate Outcome
+
+- ORO-LIVE-GATE-6 is authorization-only and final-preflight-only.
+- Runtime activation is still not enabled.
+- Real money is still not enabled.
+- Real game launch is still not enabled.
+- Gate 7 only may act as the actual controlled runtime enablement gate after Gate 6 approval.
 
 ## Diagnostic Script
 

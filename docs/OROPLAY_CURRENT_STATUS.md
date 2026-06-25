@@ -37,11 +37,13 @@ This document records the current safe repository understanding for OroPlay API 
 - ORO-LIVE-GATE-2 is closed/pass as the read-only controlled canary plan/readiness gate.
 - ORO-LIVE-GATE-3 is closed/pass as the runtime activation approval request gate.
 - ORO-LIVE-GATE-4 is closed/pass as the runtime activation decision gate.
-- ORO-LIVE-GATE-5 is current as the controlled activation plan / pre-activation guard gate only.
+- ORO-LIVE-GATE-5 is closed/pass as the controlled activation plan / pre-activation guard gate only.
 - ORO-LIVE-GATE-5 records plan status, guardrails, rollback template, monitoring readiness, verification checklists, and operator runbook preparation only.
 - ORO-LIVE-GATE-5 does not enable runtime activation, real money, real game launch, provider mutation, deposit, withdraw, withdraw-all, or member creation.
-- Live runtime activation is still pending Gate 6 and is not enabled.
-- Actual controlled runtime enablement must remain a separate Gate 6 after Gate 5 approval.
+- ORO-LIVE-GATE-6 is current as the controlled runtime enablement authorization / final preflight gate only.
+- Gate 6 prepares final authorization, final preflight, rollback proof, monitoring proof, health proof, operator sign-off, and Gate 7 handoff evidence.
+- Live runtime activation is still pending Gate 7 and is not enabled.
+- Actual controlled runtime enablement must remain a separate Gate 7 after Gate 6 approval.
 - ORO-0 only records status and planning context before any mock, staging, callback, wallet, or provider runtime work.
 
 ## Risk Notes
