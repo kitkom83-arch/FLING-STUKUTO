@@ -55,6 +55,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `oroplayLiveGate7CommandReviewSmoke.js` | `npm run smoke:oroplay-live-gate-7` | No | No | No | Static docs/command-review contract | ORO-LIVE-GATE-7 controlled runtime enablement command review / manual execution packet smoke for Gate 6 closed/pass status, Gate 7 command-review/manual-packet-only wording, prerequisites/manual packet/hold point/pre-run/two-person/rollback/monitoring/post-run/abort/Gate 8 handoff markers, no actual activation wording, and static secret-shaped value scan. |
 | `oroplayLiveGate8ControlledRuntimeEnablementSmoke.js` | `npm run smoke:oroplay-live-gate-8` | No | No | No | Static docs/controlled-runtime-enablement contract | ORO-LIVE-GATE-8 controlled runtime enablement smoke for Gate 7 closed/pass prerequisite, human hold point, rollback, monitoring, post-enable verification, transaction-test separation, no deposit/withdraw/launch/create user wording, no uncontrolled live enablement commands, and static secret-shaped value scan. |
 | `oroplayLiveGate9FinalOperatorHoldSmoke.js` | `npm run smoke:oroplay-live-gate-9` | No | No | No | Static docs/final-operator-hold contract | ORO-LIVE-GATE-9 final runtime enablement operator hold / execution approval boundary smoke for Gate 7 and Gate 8 closed/pass prerequisites, go/no-go checklist, approval record, two-person confirmation, execution window, rollback/monitoring/evidence/post-execution verification, emergency abort, Gate 10 handoff, no live-open wording, no executable live command, and static secret-shaped value scan. |
+| `oroplayLiveGate10ACommandPacketDryRunSmoke.js` | `npm run smoke:oroplay-live-gate-10a` | No | No | No | Static docs/command-packet-dry-run contract | ORO-LIVE-GATE-10A final runtime enablement execution command packet dry-run smoke for Gate 7, Gate 8, and Gate 9 closed/pass prerequisites, final command packet review, dry-run/rehearsal, operator confirmation, rollback/monitoring command review, evidence capture, no-go, emergency abort, post-command expected evidence, Gate 10B handoff, no live-open wording, no executable live command, and static secret-shaped value scan. |
 | `adminWorkScheduleSmoke.js` | `npm run smoke:admin-work-schedule` | Yes | Yes | Yes | Syntax check only | Admin work schedule UI/API checks for schedule list/read/update, permission guards, login block/allow, emergency override, expired override, audit history, rollback, and leak scan. |
 | `adminWorkScheduleUiSmoke.js` | `npm run smoke:admin-work-schedule-ui` | Yes | Yes | Yes | Syntax check only | Static admin schedule UI route/assets, owner flow, no-permission block, emergency override, masked audit history, and leak scan. |
 | `adminAuditSecuritySmoke.js` | `npm run smoke:admin-audit-security` | Yes | Yes | Yes | Syntax check only | Static audit/security UI route/assets, UX markers, report endpoints, filters, permission block, empty response shape, masked IP, raw user-agent omission, and leak scan. |
@@ -2183,6 +2184,53 @@ Boundary:
 
 - Docs/static/read-only/local-only.
 - Final operator hold / execution approval boundary only.
+- No live enablement flag change.
+- No PM2/env change.
+- No service restart for live mode.
+- No deposit.
+- No withdraw.
+- No withdraw-all.
+- No launch game.
+- No create user.
+- No provider mutation.
+- No DB write.
+- No external network call.
+- No env secret read.
+- No secret/auth value printed.
+- No actual live enablement command.
+
+## ORO-LIVE-GATE-10A Command Packet Dry-Run Smoke Coverage
+
+ORO-LIVE-GATE-10A local smoke coverage:
+
+- `smoke:oroplay-live-gate-10a`
+
+`smoke:oroplay-live-gate-10a` checks:
+
+- ORO-LIVE-GATE-7 is recorded as closed/pass.
+- ORO-LIVE-GATE-8 is recorded as closed/pass.
+- ORO-LIVE-GATE-9 is recorded as closed/pass.
+- ORO-LIVE-GATE-10A is recorded as the final runtime enablement execution command packet dry-run gate.
+- Gate 10A is static/read-only coverage only.
+- Gate 10A includes final command packet review checklist markers.
+- Gate 10A includes dry-run/rehearsal checklist markers.
+- Gate 10A includes operator confirmation checklist markers.
+- Gate 10A includes rollback command review checklist markers.
+- Gate 10A includes monitoring command review checklist markers.
+- Gate 10A includes evidence capture checklist markers.
+- Gate 10A includes pre-execution no-go checklist markers.
+- Gate 10A includes emergency abort criteria markers.
+- Gate 10A includes post-command expected evidence checklist markers.
+- Gate 10A includes explicit Gate 10B handoff requirement markers.
+- Gate 10B is recorded as the only actual controlled runtime enablement execution gate after Gate 10A passes and receives separate explicit user approval.
+- Gate 10A states live runtime activation, live transactional traffic, real money, and real game launch remain not enabled.
+- Static safety scan covers secret-shaped values, token/password/clientSecret assignments, auth header literals, JWT/API-key-looking strings, database assignment literals, executable live enablement commands, process-restart/live-environment command snippets, provider mutation call markers, external network call markers, DB write markers, and env secret reads.
+
+Boundary:
+
+- Docs/static/read-only/local-only.
+- Final runtime enablement execution command packet dry-run gate only.
+- Non-executable placeholder packet only.
 - No live enablement flag change.
 - No PM2/env change.
 - No service restart for live mode.

@@ -880,6 +880,129 @@ ORO-LIVE-GATE-9 is the final runtime enablement operator hold / execution approv
 - Real game launch is still not enabled.
 - Gate 10 only may act as the actual controlled runtime enablement execution gate after Gate 9 approval.
 
+## ORO-LIVE-GATE-10A Final Runtime Enablement Execution Command Packet Dry-Run Gate
+
+ORO-LIVE-GATE-10A is the final runtime enablement execution command packet dry-run gate only. It prepares a non-executable command packet review, dry-run checklist, operator rehearsal checklist, rollback command review checklist, monitoring command review checklist, evidence capture checklist, pre-execution no-go checklist, post-command expected evidence checklist, emergency abort criteria, and Gate 10B handoff requirements. Gate 10A does not open live runtime, does not change PM2/env state, does not restart service for live mode, does not execute controlled runtime enablement, and does not include any copy-ready live enablement command.
+
+### Gate 10A Prerequisites
+
+- ORO-LIVE-GATE-7 is closed/pass.
+- ORO-LIVE-GATE-8 is closed/pass.
+- ORO-LIVE-GATE-9 is closed/pass.
+- Safe CI latest result is PASS.
+- VPS static validation is PASS.
+- Runtime activation remains pending Gate 10B and is not enabled.
+- Live transactional traffic remains off.
+- No PM2/env change, service restart for live mode, deposit, withdraw, withdraw-all, launch game, create user, DB write, external network call, or provider mutation call has occurred.
+
+### Final Command Packet Review Checklist
+
+- Command packet ID:
+- Primary operator:
+- Second reviewer:
+- Runtime enablement packet placeholder: `<OPERATOR_REVIEWS_RUNTIME_ENABLEMENT_COMMAND>`.
+- Rollback packet placeholder: `<ROLLBACK_COMMAND_REVIEW_PLACEHOLDER>`.
+- Monitoring packet placeholder: `<MONITORING_COMMAND_REVIEW_PLACEHOLDER>`.
+- Evidence packet placeholder: `<EVIDENCE_CAPTURE_REVIEW_PLACEHOLDER>`.
+- Confirm every packet entry is placeholder-only and not directly executable.
+- Confirm no packet entry contains secret/auth material, env values, provider endpoint values, tokens, passwords, client secret values, full launch URLs, or database connection values.
+- Confirm no packet entry can be copied into a shell to enable live runtime.
+
+### Dry-Run / Rehearsal Checklist
+
+- Primary operator reads the command packet placeholders aloud without executing any command.
+- Second reviewer confirms each placeholder maps to an out-of-repository runbook item.
+- Rollback owner rehearses rollback decision points without executing rollback.
+- Monitoring owner rehearses monitoring evidence capture without calling external services from local/CI.
+- Evidence owner rehearses evidence naming, storage, retention, and sanitization.
+- All participants confirm Gate 10A is rehearsal-only and does not perform actual controlled runtime enablement execution.
+
+### Operator Confirmation Checklist
+
+- Primary operator confirms Gate 10A is command packet dry-run only.
+- Second reviewer confirms Gate 10B requires separate explicit user approval before actual controlled runtime enablement execution.
+- Rollback owner confirms rollback command review is complete and placeholder-only.
+- Monitoring owner confirms monitoring command review is complete and placeholder-only.
+- Evidence owner confirms evidence capture locations are ready and contain no secret/auth values.
+- All reviewers confirm live runtime activation, live transactional traffic, real money, and real game launch remain not enabled.
+
+### Rollback Command Review Checklist
+
+- Rollback command review uses `<ROLLBACK_COMMAND_REVIEW_PLACEHOLDER>` only.
+- Rollback target state is documented in prose only.
+- Rollback owner and second reviewer are assigned.
+- Rollback evidence expectations are documented.
+- Rollback abort escalation path is documented.
+- Rollback review does not execute process-manager changes, env changes, DB writes, provider calls, or external network calls.
+
+### Monitoring Command Review Checklist
+
+- Monitoring command review uses `<MONITORING_COMMAND_REVIEW_PLACEHOLDER>` only.
+- Monitoring owner is assigned.
+- Monitoring window is documented.
+- Application health evidence expectation is documented in prose only.
+- Process state evidence expectation is documented in prose only.
+- Sanitized log review expectation is documented in prose only.
+- Monitoring review does not call provider endpoints, external services, DB, or env secret readers from local/CI.
+
+### Evidence Capture Checklist
+
+- Gate 10A command packet review evidence reference:
+- Gate 10A dry-run rehearsal evidence reference:
+- Gate 10A operator confirmation evidence reference:
+- Gate 10A rollback command review evidence reference:
+- Gate 10A monitoring command review evidence reference:
+- Gate 10A no-go review evidence reference:
+- Gate 10B handoff evidence reference:
+- Evidence capture must store sanitized references only and no secret/auth material.
+
+### Pre-Execution No-Go Checklist
+
+- No-Go if Gate 7, Gate 8, or Gate 9 is not closed/pass.
+- No-Go if any command packet item is executable instead of placeholder-only.
+- No-Go if any artifact contains a process-manager restart command, live env mutation command, env file load command, provider endpoint call, curl command, DB write command, Prisma schema change, Prisma migration, live public route addition, secret/auth value, token/password/client secret value, database assignment pattern, or JWT/API-key-looking value.
+- No-Go if any participant cannot confirm Gate 10A is dry-run/rehearsal-only.
+- No-Go if any wording implies live runtime activation, live transactional traffic, real money, or real game launch is already enabled.
+
+### Emergency Abort Criteria
+
+- Abort if any reviewer finds a copy-ready live enablement command.
+- Abort if any action attempts to change live enablement flag, PM2/env state, or service runtime state during Gate 10A.
+- Abort if any action attempts deposit, withdraw, withdraw-all, launch game, create user, provider mutation endpoint, DB write, Prisma schema change, Prisma migration, live public route addition, or external network call.
+- Abort if any artifact introduces secret-shaped strings, raw auth values, token/password/client secret values, database assignment patterns, or JWT/API-key-looking values.
+- Abort if any wording claims live runtime activation, live transactional traffic, real money, or real game launch is already enabled.
+
+### Post-Command Expected Evidence Checklist
+
+- Post-command expected evidence is reserved for Gate 10B actual controlled runtime enablement execution.
+- Gate 10A only reviews expected evidence names and owners.
+- Expected health evidence owner:
+- Expected process state evidence owner:
+- Expected sanitized log review owner:
+- Expected runtime state verification owner:
+- Expected rollback readiness re-confirmation owner:
+- Expected incident note owner:
+- No post-command evidence is captured from live execution during Gate 10A.
+
+### Gate 10B Handoff Requirements
+
+- Gate 10B must be opened as a separate gate after explicit user approval.
+- Gate 10B only may act as the actual controlled runtime enablement execution gate if Gate 10A passes.
+- Gate 10B must receive the reviewed command packet placeholders, dry-run/rehearsal evidence, operator confirmation evidence, rollback command review evidence, monitoring command review evidence, evidence capture checklist, no-go checklist, emergency abort criteria, and post-command expected evidence checklist.
+- Gate 10B must preserve secret/auth material outside repository artifacts.
+- Gate 10B must keep actual controlled runtime enablement execution separate from any live transaction test.
+- Any deposit, withdraw, withdraw-all, launch game, create user, or provider mutation test after runtime enablement requires separate explicit user approval and separate evidence.
+
+### Gate 10A Outcome
+
+- ORO-LIVE-GATE-10A is current as the final runtime enablement execution command packet dry-run gate.
+- Gate 10A is command packet review / dry-run / rehearsal only.
+- Live runtime activation is still not enabled.
+- Live transactional traffic is still not enabled.
+- Real money is still not enabled.
+- Real game launch is still not enabled.
+- Gate 10B only may act as the actual controlled runtime enablement execution gate after Gate 10A approval and separate explicit user approval.
+
 ## Diagnostic Script
 
 - `npm run oroplay:auth:diagnostic`

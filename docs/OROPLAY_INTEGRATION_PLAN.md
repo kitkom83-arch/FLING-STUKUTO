@@ -213,16 +213,28 @@ ORO-LIVE-GATE-1 closed/pass. ORO-LIVE-GATE-2 closed/pass. ORO-LIVE-GATE-3 closed
 - Any live transaction test after runtime enablement requires a separate explicit user approval and a separate evidence packet.
 - Live runtime enablement remains pending Gate 9 final operator hold and Gate 10 actual execution.
 
-## ORO-LIVE-GATE-9 Current
+## ORO-LIVE-GATE-9 Closed
 
-ORO-LIVE-GATE-1 closed/pass. ORO-LIVE-GATE-2 closed/pass. ORO-LIVE-GATE-3 closed/pass. ORO-LIVE-GATE-4 closed/pass. ORO-LIVE-GATE-5 closed/pass. ORO-LIVE-GATE-6 closed/pass. ORO-LIVE-GATE-7 closed/pass. ORO-LIVE-GATE-8 closed/pass. ORO-LIVE-GATE-9 current. ORO-LIVE-GATE-9 is the final runtime enablement operator hold / execution approval boundary.
+ORO-LIVE-GATE-1 closed/pass. ORO-LIVE-GATE-2 closed/pass. ORO-LIVE-GATE-3 closed/pass. ORO-LIVE-GATE-4 closed/pass. ORO-LIVE-GATE-5 closed/pass. ORO-LIVE-GATE-6 closed/pass. ORO-LIVE-GATE-7 closed/pass. ORO-LIVE-GATE-8 closed/pass. ORO-LIVE-GATE-9 closed/pass. ORO-LIVE-GATE-9 was the final runtime enablement operator hold / execution approval boundary.
 
 - Gate objective: prepare the final operator hold, go/no-go decision checklist, approval record template, operator role checklist, execution window checklist, rollback readiness checklist, monitoring readiness checklist, evidence capture checklist, post-execution verification checklist, emergency abort criteria, and exact Gate 10 handoff requirements.
 - Gate 9 depends on Gate 7 and Gate 8 already being closed/pass.
 - Gate 9 is an approval boundary only and is separate from actual controlled runtime enablement execution.
 - Gate 9 does not open live enablement flags, change PM2/env state, restart service for live mode, deposit, withdraw, withdraw-all, launch game, create user, call provider mutation endpoints, write DB state, change Prisma schema, run Prisma migration, add live public route, call external network, or print secret/auth values.
-- Gate 10 only may act as the actual controlled runtime enablement execution gate if Gate 9 passes and receives separate explicit approval.
+- Gate 10A only may act as the final runtime enablement execution command packet dry-run/rehearsal gate if Gate 9 passes.
 - Live transactional traffic and real-money/game behavior remain disabled in Gate 9.
+
+## ORO-LIVE-GATE-10A Current
+
+ORO-LIVE-GATE-7 closed/pass. ORO-LIVE-GATE-8 closed/pass. ORO-LIVE-GATE-9 closed/pass. ORO-LIVE-GATE-10A current. ORO-LIVE-GATE-10A is the final runtime enablement execution command packet dry-run gate only.
+
+- Gate objective: prepare the final non-executable command packet review, dry-run/rehearsal checklist, operator confirmation checklist, rollback command review checklist, monitoring command review checklist, evidence capture checklist, pre-execution no-go checklist, emergency abort criteria, post-command expected evidence checklist, and Gate 10B handoff requirements.
+- Gate 10A depends on Gate 7, Gate 8, and Gate 9 already being closed/pass.
+- Gate 10A is command packet dry-run/rehearsal only and is separate from actual controlled runtime enablement execution.
+- Gate 10A documentation may use placeholder-only packet entries such as `<OPERATOR_REVIEWS_RUNTIME_ENABLEMENT_COMMAND>`, `<ROLLBACK_COMMAND_REVIEW_PLACEHOLDER>`, and `<MONITORING_COMMAND_REVIEW_PLACEHOLDER>`.
+- Gate 10A does not open live enablement flags, change PM2/env state, restart service for live mode, deposit, withdraw, withdraw-all, launch game, create user, call provider mutation endpoints, write DB state, change Prisma schema, run Prisma migration, add live public route, call external network, or print secret/auth values.
+- Gate 10B only may act as the actual controlled runtime enablement execution gate if Gate 10A passes and receives separate explicit user approval.
+- Live runtime activation, live transactional traffic, and real-money/game behavior remain disabled in Gate 10A.
 
 ## Required Future Evidence
 
