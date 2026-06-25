@@ -80,6 +80,7 @@ const campaign = {
 };
 const spins = [];
 const memberRewards = [];
+const memberRewardWalletEntries = [];
 
 const prismaMock = {
   $transaction: async (callback) => callback(prismaMock),
@@ -151,6 +152,18 @@ const prismaMock = {
       return row;
     },
     findMany: async () => memberRewards,
+  },
+  memberRewardWalletEntry: {
+    create: async ({ data }) => {
+      const row = {
+        id: data.id || `reward_wallet_${memberRewardWalletEntries.length + 1}`,
+        createdAt: new Date("2026-01-01T00:00:00.000Z"),
+        updatedAt: new Date("2026-01-01T00:00:00.000Z"),
+        ...data,
+      };
+      memberRewardWalletEntries.push(row);
+      return row;
+    },
   },
   pointLedger: {
     create: async () => ({ id: "point_ledger_1" }),
@@ -280,6 +293,15 @@ async function main() {
   assert.strictEqual(typeof spin.payload.data.prizeIndex, "number", "member wheel spin must include prizeIndex");
   assert(spin.payload.data.reward, "member wheel spin must include reward");
   assert(Object.prototype.hasOwnProperty.call(spin.payload.data, "remainingSpinsToday"), "member wheel spin must include remainingSpinsToday");
+  const rewardWalletEntry = memberRewardWalletEntries.find((row) => row.sourceType === "wheel" && row.sourceId === spin.payload.data.spinId);
+  assert(rewardWalletEntry, "member wheel spin must create Reward Wallet entry");
+  assert.strictEqual(rewardWalletEntry.rewardType, "pending_reward", "member wheel Reward Wallet entry must be pending_reward");
+  assert.strictEqual(rewardWalletEntry.status, "pending", "member wheel Reward Wallet entry must be pending");
+  assert.strictEqual(
+    rewardWalletEntry.payload && rewardWalletEntry.payload.metadata && rewardWalletEntry.payload.metadata.sourceAction,
+    "spin",
+    "member wheel Reward Wallet entry must include spin metadata"
+  );
 
   await requestJson("/api/member/wheel/spin", {
     method: "POST",

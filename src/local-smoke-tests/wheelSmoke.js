@@ -411,6 +411,43 @@ async function createMember(prisma, siteId, points) {
   return { member, phone };
 }
 
+async function findWheelRewardWalletEntry(prisma, siteId, memberId, spinId) {
+  return prisma.memberRewardWalletEntry.findFirst({
+    where: {
+      siteId,
+      memberId,
+      sourceType: "wheel",
+      sourceId: spinId,
+    },
+  });
+}
+
+async function setOnlyRewardWeight(prisma, rewardId) {
+  await prisma.wheelReward.updateMany({
+    where: { campaignId: "wheel_main" },
+    data: { probabilityWeight: 0 },
+  });
+  await prisma.wheelReward.update({
+    where: { id: rewardId },
+    data: { probabilityWeight: 1000 },
+  });
+}
+
+async function restoreDefaultRewardWeights(prisma) {
+  await prisma.wheelReward.updateMany({
+    where: { campaignId: "wheel_main" },
+    data: { probabilityWeight: 0 },
+  });
+  await prisma.wheelReward.update({
+    where: { id: "wheel_reward_1" },
+    data: { probabilityWeight: 1000 },
+  });
+  await prisma.wheelReward.update({
+    where: { id: "wheel_reward_stock_zero_smoke" },
+    data: { probabilityWeight: 999999 },
+  });
+}
+
 async function loginAdmin(baseUrl) {
   const login = await apiRequest(baseUrl, "/admin/auth/login", {
     method: "POST",
@@ -452,7 +489,7 @@ async function main() {
     prisma = await ensureFixtures();
     const site = await prisma.site.findUnique({ where: { code: SITE_CODE } });
     const adminToken = await loginAdmin(baseUrl);
-    const { phone } = await createMember(prisma, site.id, "360.00");
+    const { member, phone } = await createMember(prisma, site.id, "360.00");
     const memberToken = await loginMember(baseUrl, phone);
 
     const config = await apiRequest(baseUrl, "/member/wheel/config", { token: memberToken, label: "wheel member config" });
@@ -523,6 +560,47 @@ async function main() {
       throw new Error("Wheel my-rewards did not include pending reward.");
     }
     console.log("Wheel my rewards: PASS");
+
+    const rewardWalletEntry = await findWheelRewardWalletEntry(prisma, site.id, member.id, spin.spinId);
+    if (!rewardWalletEntry) throw new Error("Wheel spin did not create Reward Wallet entry.");
+    if (rewardWalletEntry.rewardType !== "pending_reward" || rewardWalletEntry.status !== "pending") {
+      throw new Error("Wheel Reward Wallet entry must be pending_reward with pending status.");
+    }
+    if (
+      !rewardWalletEntry.payload ||
+      !rewardWalletEntry.payload.metadata ||
+      rewardWalletEntry.payload.metadata.module !== "wheel" ||
+      rewardWalletEntry.payload.metadata.sourceAction !== "spin" ||
+      rewardWalletEntry.payload.metadata.campaignId !== "wheel_main" ||
+      rewardWalletEntry.payload.metadata.spinId !== spin.spinId ||
+      rewardWalletEntry.payload.metadata.rewardId !== spin.rewardId ||
+      rewardWalletEntry.payload.metadata.prizeIndex !== spin.prizeIndex
+    ) {
+      throw new Error("Wheel Reward Wallet entry metadata is incomplete.");
+    }
+    console.log("Wheel Reward Wallet bridge: PASS");
+
+    await setOnlyRewardWeight(prisma, "wheel_reward_5");
+    try {
+      const noRewardFixture = await createMember(prisma, site.id, "100.00");
+      const noRewardToken = await loginMember(baseUrl, noRewardFixture.phone);
+      const noRewardSpin = await apiRequest(baseUrl, "/member/wheel/spin", {
+        method: "POST",
+        token: noRewardToken,
+        label: "wheel no reward spin",
+        body: { campaignId: "wheel_main" },
+      });
+      if (!noRewardSpin.spinId || noRewardSpin.rewardId !== "wheel_reward_5" || noRewardSpin.reward.type !== "no_reward") {
+        throw new Error("Wheel no_reward spin did not return backend-selected no_reward.");
+      }
+      const noRewardMemberReward = await prisma.memberReward.findUnique({ where: { sourceId: noRewardSpin.spinId } });
+      if (noRewardMemberReward) throw new Error("Wheel no_reward spin must not create member_rewards entry.");
+      const noRewardWalletEntry = await findWheelRewardWalletEntry(prisma, site.id, noRewardFixture.member.id, noRewardSpin.spinId);
+      if (noRewardWalletEntry) throw new Error("Wheel no_reward spin must not create Reward Wallet entry.");
+      console.log("Wheel no_reward wallet skip: PASS");
+    } finally {
+      await restoreDefaultRewardWeights(prisma);
+    }
 
     await apiRequest(baseUrl, "/member/wheel/spin", { method: "POST", token: memberToken, label: "wheel spin 2", body: { campaignId: "wheel_main" } });
     await apiRequest(baseUrl, "/member/wheel/spin", { method: "POST", token: memberToken, label: "wheel spin 3", body: { campaignId: "wheel_main" } });

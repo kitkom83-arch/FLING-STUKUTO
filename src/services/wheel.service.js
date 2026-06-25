@@ -5,6 +5,7 @@ const env = require("../config/env");
 const { toDecimal } = require("../utils/money");
 const { pagination } = require("../utils/query");
 const { logAdminAction, maskIp, sanitizeAdminLogData } = require("./adminLog.service");
+const memberRewardWallet = require("./memberRewardWallet.service");
 
 const DEFAULT_CAMPAIGN_ID = "wheel_main";
 const DEMO_TICKET_BALANCE = 5;
@@ -321,6 +322,55 @@ function resultSnapshot(reward) {
   });
 }
 
+function wheelRewardWalletInput({ siteId, memberId, campaign, reward, spinRow, prizeIndex, memberReward }) {
+  return memberRewardWallet.normalizeRewardInput({
+    siteId,
+    memberId,
+    type: "pending_reward",
+    amount: decimalNumber(reward.rewardValue),
+    label: reward.label,
+    source: "wheel",
+    sourceId: spinRow.id,
+    reference: spinRow.id,
+    metadata: {
+      module: "wheel",
+      source: "wheel",
+      sourceAction: "spin",
+      campaignId: campaign.id,
+      spinId: spinRow.id,
+      memberRewardId: memberReward.id,
+      rewardId: reward.id,
+      prizeIndex,
+      rewardLabel: reward.label,
+      rewardType: reward.rewardType === "item" ? "physical" : reward.rewardType,
+      rewardAmount: decimalString(reward.rewardValue),
+      displayValue: reward.displayValue,
+      noRealPayout: true,
+    },
+  });
+}
+
+async function createWheelRewardWalletEntry({ tx, siteId, memberId, campaign, reward, spinRow, prizeIndex, memberReward }) {
+  const walletEntry = wheelRewardWalletInput({ siteId, memberId, campaign, reward, spinRow, prizeIndex, memberReward });
+  await tx.memberRewardWalletEntry.create({
+    data: {
+      id: walletEntry.id,
+      siteId: walletEntry.siteId,
+      memberId: walletEntry.memberId,
+      rewardType: walletEntry.type,
+      amount: new Prisma.Decimal(walletEntry.amount),
+      label: walletEntry.label,
+      status: walletEntry.status,
+      sourceType: walletEntry.source,
+      sourceId: walletEntry.sourceId,
+      payload: {
+        reference: walletEntry.reference,
+        metadata: walletEntry.metadata,
+      },
+    },
+  });
+}
+
 function userAgentHash(req) {
   const value = req && req.headers ? req.headers["user-agent"] : null;
   if (!value) return null;
@@ -558,7 +608,7 @@ async function spin({ siteId, userId, body, req }) {
     await applySpinCost({ tx, user, campaign, spinId: spinRow.id });
 
     if (reward.rewardType !== "no_reward") {
-      await tx.memberReward.create({
+      const memberReward = await tx.memberReward.create({
         data: {
           siteId,
           memberId: user.id,
@@ -570,6 +620,7 @@ async function spin({ siteId, userId, body, req }) {
           status: "pending",
         },
       });
+      await createWheelRewardWalletEntry({ tx, siteId, memberId: user.id, campaign, reward, spinRow, prizeIndex, memberReward });
     }
 
     return {
