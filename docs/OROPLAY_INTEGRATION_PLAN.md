@@ -191,16 +191,27 @@ ORO-LIVE-GATE-1 closed/pass. ORO-LIVE-GATE-2 closed/pass. ORO-LIVE-GATE-3 closed
 - Gate 6 does not allow PM2 env edits, service restart for live mode, deposit, withdraw, withdraw-all, launch game, create user, DB write, Prisma schema change, migration, deploy, public live route exposure, external network calls, secret/auth value printing, or immediate live-enablement commands.
 - Gate 6 only prepares the handoff. Gate 7 only may act as the command review / manual execution packet gate if Gate 6 passes, and Gate 8 only may act as the actual controlled runtime enablement gate if Gate 7 passes.
 
-## ORO-LIVE-GATE-7 Current
+## ORO-LIVE-GATE-7 Closed
 
-ORO-LIVE-GATE-1 closed/pass. ORO-LIVE-GATE-2 closed/pass. ORO-LIVE-GATE-3 closed/pass. ORO-LIVE-GATE-4 closed/pass. ORO-LIVE-GATE-5 closed/pass. ORO-LIVE-GATE-6 closed/pass. ORO-LIVE-GATE-7 current. ORO-LIVE-GATE-7 is the controlled runtime enablement command review / manual execution packet gate only.
+ORO-LIVE-GATE-1 closed/pass. ORO-LIVE-GATE-2 closed/pass. ORO-LIVE-GATE-3 closed/pass. ORO-LIVE-GATE-4 closed/pass. ORO-LIVE-GATE-5 closed/pass. ORO-LIVE-GATE-6 closed/pass. ORO-LIVE-GATE-7 closed/pass. ORO-LIVE-GATE-7 was the controlled runtime enablement command review / manual execution packet gate only.
 
 - Gate objective: prepare non-executable command review notes, a manual execution packet template, pre-run checklist, final human hold point, rollback packet, monitoring packet, post-run verification packet for Gate 8, emergency abort criteria, and exact Gate 8 handoff requirements.
 - Gate 7 depends on Gate 1, Gate 2, Gate 3, Gate 4, Gate 5, and Gate 6 already being closed/pass.
 - Gate 7 keeps runtime activation pending Gate 8 and not enabled.
 - Gate 7 is command review / manual packet preparation only and does not activate runtime, does not enable live transactional traffic, does not enable real-money traffic, does not enable real-game launch, and does not allow provider mutation.
 - Gate 7 does not allow PM2 env edits, service restart for live mode, deposit, withdraw, withdraw-all, launch game, create user, DB write, Prisma schema change, migration, deploy, public live route exposure, external network calls, secret/auth value printing, or immediate live-enablement commands.
-- Gate 7 explicitly separates command review from actual execution. Gate 8 only may act as the actual controlled runtime enablement gate if Gate 7 passes and receives separate explicit approval.
+- Gate 7 explicitly separated command review from actual execution. Gate 8 only may act as the controlled runtime enablement gate if Gate 7 passes and receives separate explicit approval.
+
+## ORO-LIVE-GATE-8 Current
+
+ORO-LIVE-GATE-1 closed/pass. ORO-LIVE-GATE-2 closed/pass. ORO-LIVE-GATE-3 closed/pass. ORO-LIVE-GATE-4 closed/pass. ORO-LIVE-GATE-5 closed/pass. ORO-LIVE-GATE-6 closed/pass. ORO-LIVE-GATE-7 closed/pass. ORO-LIVE-GATE-8 current. ORO-LIVE-GATE-8 is the controlled runtime enablement gate.
+
+- Gate objective: record the controlled runtime enablement boundary, human hold point, manual operator execution requirement, rollback steps, monitoring steps, post-enable verification, and evidence requirements.
+- Gate 8 depends on Gate 1, Gate 2, Gate 3, Gate 4, Gate 5, Gate 6, and Gate 7 already being closed/pass.
+- Gate 8 is enablement-only and separates runtime enablement from any live transaction test.
+- Gate 8 does not authorize deposit, withdraw, withdraw-all, launch game, create user, provider mutation endpoint testing, DB write, Prisma migration, local/CI external network calls, or secret/auth value printing.
+- Any live transaction test after runtime enablement requires a separate explicit user approval and a separate evidence packet.
+- Live runtime enablement remains pending manual operator execution outside local/CI until the human hold point is satisfied.
 
 ## Required Future Evidence
 

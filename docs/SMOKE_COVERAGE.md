@@ -53,6 +53,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `oroplayLiveGate5PreActivationGuardSmoke.js` | `npm run smoke:oroplay-live-gate-5` | No | No | No | Static docs/pre-activation-guard contract | ORO-LIVE-GATE-5 controlled activation plan / pre-activation guard smoke for Gate 4 closed/pass status, Gate 5 plan-only wording, plan/guard/operator/window/rollback/monitoring/health/abort/approval markers, Gate 6 separation, and static secret-shaped value scan. |
 | `oroplayLiveGate6FinalPreflightAuthorizationSmoke.js` | `npm run smoke:oroplay-live-gate-6` | No | No | No | Static docs/final-preflight contract | ORO-LIVE-GATE-6 controlled runtime enablement authorization / final preflight smoke for Gate 5 closed/pass status, Gate 6 authorization-only wording, final authorization/preflight/sign-off/rollback proof/monitoring proof/health proof/abort/handoff markers, Gate 7 separation, and static secret-shaped value scan. |
 | `oroplayLiveGate7CommandReviewSmoke.js` | `npm run smoke:oroplay-live-gate-7` | No | No | No | Static docs/command-review contract | ORO-LIVE-GATE-7 controlled runtime enablement command review / manual execution packet smoke for Gate 6 closed/pass status, Gate 7 command-review/manual-packet-only wording, prerequisites/manual packet/hold point/pre-run/two-person/rollback/monitoring/post-run/abort/Gate 8 handoff markers, no actual activation wording, and static secret-shaped value scan. |
+| `oroplayLiveGate8ControlledRuntimeEnablementSmoke.js` | `npm run smoke:oroplay-live-gate-8` | No | No | No | Static docs/controlled-runtime-enablement contract | ORO-LIVE-GATE-8 controlled runtime enablement smoke for Gate 7 closed/pass prerequisite, human hold point, rollback, monitoring, post-enable verification, transaction-test separation, no deposit/withdraw/launch/create user wording, no uncontrolled live enablement commands, and static secret-shaped value scan. |
 | `adminWorkScheduleSmoke.js` | `npm run smoke:admin-work-schedule` | Yes | Yes | Yes | Syntax check only | Admin work schedule UI/API checks for schedule list/read/update, permission guards, login block/allow, emergency override, expired override, audit history, rollback, and leak scan. |
 | `adminWorkScheduleUiSmoke.js` | `npm run smoke:admin-work-schedule-ui` | Yes | Yes | Yes | Syntax check only | Static admin schedule UI route/assets, owner flow, no-permission block, emergency override, masked audit history, and leak scan. |
 | `adminAuditSecuritySmoke.js` | `npm run smoke:admin-audit-security` | Yes | Yes | Yes | Syntax check only | Static audit/security UI route/assets, UX markers, report endpoints, filters, permission block, empty response shape, masked IP, raw user-agent omission, and leak scan. |
@@ -1937,6 +1938,41 @@ Boundary:
 - No withdraw.
 - No withdraw-all.
 - No launch game.
+
+## ORO-LIVE-GATE-8 Controlled Runtime Enablement Smoke Coverage
+
+ORO-LIVE-GATE-8 local smoke coverage:
+
+- `smoke:oroplay-live-gate-8`
+
+`smoke:oroplay-live-gate-8` checks:
+
+- ORO-LIVE-GATE-7 is recorded as closed/pass.
+- ORO-LIVE-GATE-8 is recorded as a controlled runtime enablement gate.
+- Gate 8 is static/read-only/local-only smoke coverage.
+- Gate 8 includes a human hold point before any runtime command.
+- Gate 8 includes rollback steps.
+- Gate 8 includes monitoring steps.
+- Gate 8 includes post-enable verification.
+- Gate 8 separates runtime enablement from live transaction testing.
+- Gate 8 states no deposit, withdraw, withdraw-all, launch game, create user, provider mutation endpoint, DB write, local/CI external network call, Prisma migration, or secret/auth value printing is allowed in this phase.
+- Static safety scan covers secret-shaped values, token/password/clientSecret assignments, auth header literals, JWT/API-key-looking strings, executable live enablement commands, process-restart/live-environment command snippets, external network call markers, DB call markers, provider call markers, and env secret reads.
+
+Boundary:
+
+- Docs/static/read-only/local-only.
+- Controlled runtime enablement documentation only.
+- Manual operator execution pending outside local/CI.
+- No deposit.
+- No withdraw.
+- No withdraw-all.
+- No launch game.
+- No create user.
+- No provider mutation.
+- No DB write.
+- No external network call.
+- No env secret read.
+- No secret/auth value printed.
 - No create user.
 - No callback runtime activation.
 - No PM2 env change.

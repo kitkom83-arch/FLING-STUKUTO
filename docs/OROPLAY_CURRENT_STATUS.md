@@ -42,10 +42,12 @@ This document records the current safe repository understanding for OroPlay API 
 - ORO-LIVE-GATE-5 does not enable runtime activation, real money, real game launch, provider mutation, deposit, withdraw, withdraw-all, or member creation.
 - ORO-LIVE-GATE-6 is closed/pass as the controlled runtime enablement authorization / final preflight gate only.
 - Gate 6 prepared final authorization, final preflight, rollback proof, monitoring proof, health proof, operator sign-off, and Gate 7 handoff evidence.
-- ORO-LIVE-GATE-7 is current as the controlled runtime enablement command review / manual execution packet gate only.
-- Gate 7 prepares command review notes, manual execution packet template, pre-run checklist, final human hold point, rollback packet, monitoring packet, post-run verification packet, emergency abort criteria, and Gate 8 handoff evidence.
-- Live runtime activation is still pending Gate 8 and is not enabled.
-- Actual controlled runtime enablement must remain a separate Gate 8 after Gate 7 approval.
+- ORO-LIVE-GATE-7 is closed/pass as the controlled runtime enablement command review / manual execution packet gate only.
+- Gate 7 prepared command review notes, manual execution packet template, pre-run checklist, final human hold point, rollback packet, monitoring packet, post-run verification packet, emergency abort criteria, and Gate 8 handoff evidence.
+- ORO-LIVE-GATE-8 is current as the controlled runtime enablement gate.
+- Live runtime enablement is pending manual operator execution and is not enabled from local/CI.
+- Live transactional traffic remains off until a separate user approval is issued for a live transaction test.
+- Gate 8 must keep runtime enablement separate from deposit, withdraw, withdraw-all, launch game, create user, and provider mutation testing.
 - ORO-0 only records status and planning context before any mock, staging, callback, wallet, or provider runtime work.
 
 ## Risk Notes

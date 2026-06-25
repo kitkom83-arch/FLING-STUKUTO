@@ -632,6 +632,103 @@ ORO-LIVE-GATE-7 is a controlled runtime enablement command review / manual execu
 - Real game launch is still not enabled.
 - Gate 8 only may act as the actual controlled runtime enablement gate after Gate 7 approval.
 
+## ORO-LIVE-GATE-8 Controlled Runtime Enablement Gate
+
+ORO-LIVE-GATE-8 is the controlled runtime enablement gate. It records the controlled enablement boundary, required human hold point before runtime command, manual operator execution evidence, rollback steps, monitoring steps, post-enable verification, and explicit separation from live transaction testing. Gate 8 does not authorize deposit, withdraw, withdraw-all, launch game, create user, provider mutation endpoint testing, DB write, Prisma migration, local/CI external network calls, env secret reads, or secret/auth value printing.
+
+### Gate 8 Prerequisites
+
+- ORO-LIVE-GATE-1 is closed/pass.
+- ORO-LIVE-GATE-2 is closed/pass.
+- ORO-LIVE-GATE-3 is closed/pass.
+- ORO-LIVE-GATE-4 is closed/pass.
+- ORO-LIVE-GATE-5 is closed/pass.
+- ORO-LIVE-GATE-6 is closed/pass.
+- ORO-LIVE-GATE-7 is closed/pass.
+- Safe CI latest result is PASS.
+- Gate 7 manual execution packet, rollback packet, monitoring packet, and post-run verification packet are reviewed.
+- Live runtime enablement remains pending manual operator execution until the human hold point is released.
+- Live transactional traffic remains off unless a separate user approval is issued for a live transaction test.
+
+### Gate 8 Human Hold Point Before Runtime Command
+
+- Stop until the user gives explicit approval for Gate 8 controlled runtime enablement.
+- Stop until the primary operator and second reviewer confirm the reviewed Gate 7 packet is the only approved packet.
+- Stop until rollback owner confirms rollback readiness and evidence capture location.
+- Stop until monitoring owner confirms monitoring window, log sources, and escalation channel.
+- Stop if any required evidence is stale, missing, contradictory, or includes secret/auth material.
+- Stop if the proposed action includes deposit, withdraw, withdraw-all, launch game, create user, provider mutation endpoint testing, DB write, Prisma migration, or local/CI external network call.
+
+### Gate 8 Manual Operator Execution Boundary
+
+- Runtime enablement is pending manual operator execution outside local/CI.
+- Local and CI may only perform static/read-only validation for this gate.
+- Repository artifacts must describe the operator boundary in prose and must not include copy-ready process restart, live environment edit, or service restart command snippets.
+- Secret, token, password, client secret, auth value, and full launch URL material must remain outside repository artifacts and must not be printed.
+- The operator must capture sanitized evidence after each step without storing raw secrets.
+
+### Gate 8 Rollback Steps
+
+- Confirm fail-closed target state description before enablement.
+- Confirm rollback owner and second reviewer are available during the enablement window.
+- Confirm rollback evidence capture location before the hold point is released.
+- If runtime health, log review, or operator verification fails, return the runtime to the documented fail-closed state using the approved manual rollback packet outside local/CI.
+- After rollback, capture sanitized status evidence, sanitized log review, and monitoring window completion.
+- Escalate if rollback evidence is incomplete or if live transactional traffic was observed without separate approval.
+
+### Gate 8 Monitoring Steps
+
+- Start monitoring window before the manual operator action.
+- Observe application health, PM2 process state, sanitized application logs, sanitized Nginx logs, error rate, latency, and callback/provider error counters where available.
+- Record timestamps, operator initials, reviewer initials, and sanitized evidence references.
+- Do not call provider endpoints from local/CI during monitoring.
+- Do not run DB queries from local/CI during monitoring.
+- Abort if logs expose secret/auth material, show provider mutation, show transaction traffic, or show unexpected public route exposure.
+
+### Gate 8 Post-Enable Verification
+
+- Confirm post-change health evidence is captured.
+- Confirm post-change PM2 status evidence is captured by the manual operator.
+- Confirm sanitized application log review is captured.
+- Confirm runtime state verification is captured without printing secret/auth values.
+- Confirm rollback readiness remains available after enablement.
+- Confirm monitoring window completed without deposit, withdraw, withdraw-all, launch game, create user, provider mutation, DB write, or live transaction test evidence.
+- Confirm any unresolved incident notes are recorded before Gate 8 closeout.
+
+### Gate 8 Live Transaction Test Separation
+
+- Runtime enablement is separate from live transaction testing.
+- Gate 8 does not approve deposit.
+- Gate 8 does not approve withdraw.
+- Gate 8 does not approve withdraw-all.
+- Gate 8 does not approve launch game.
+- Gate 8 does not approve create user.
+- Gate 8 does not approve provider mutation endpoint testing.
+- Any live transaction test after runtime enablement requires separate explicit user approval, separate scope, separate operator packet, separate monitoring, and separate rollback evidence.
+
+### Gate 8 Prohibited Actions
+
+- No deposit.
+- No withdraw.
+- No withdraw-all.
+- No launch game.
+- No create user.
+- No provider mutation endpoint.
+- No DB write.
+- No Prisma migration.
+- No external network call from local/CI.
+- No env secret read from local/CI.
+- No secret/auth value printed.
+- No uncontrolled live enablement command in repository artifacts.
+
+### Gate 8 Outcome
+
+- ORO-LIVE-GATE-8 is current as the controlled runtime enablement gate.
+- Live runtime enablement is pending manual operator execution.
+- Local/CI validation remains static/read-only only.
+- Live transactional traffic remains off unless a separate live transaction test is explicitly approved by the user.
+- Gate 8 closeout requires rollback evidence, monitoring evidence, and post-enable verification evidence.
+
 ## Diagnostic Script
 
 - `npm run oroplay:auth:diagnostic`
