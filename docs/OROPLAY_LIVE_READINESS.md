@@ -36,7 +36,7 @@ This document records the current live-readiness diagnostic state for OroPlay wh
 
 ## Safety Rule
 
-- Do not enable `OROPLAY_ENABLED=1` until the auth diagnostic returns `200` and the balance read-only smoke passes.
+- Do not enable the live runtime flag until the auth diagnostic returns `200` and the balance read-only smoke passes.
 - Live transactional traffic remains blocked in this repository state.
 
 ## ORO-LIVE-GATE-2 Read-only Controlled Canary Plan Gate
@@ -85,7 +85,7 @@ ORO-LIVE-GATE-2 is a read-only controlled canary plan gate only. It does not ena
 - Auth diagnostic no longer passes in sanitized form.
 - Balance read-only verification no longer passes in sanitized form.
 - Staging health fails or PM2 `pg77-api` is not online.
-- Any proposed step requires `OROPLAY_ENABLED=1`, PM2 env changes, service restart for live mode, provider mutation, DB write, deposit, withdraw, withdraw-all, launch game, or create user.
+- Any proposed step requires the live runtime flag to be enabled, PM2 env changes, service restart for live mode, provider mutation, DB write, deposit, withdraw, withdraw-all, launch game, or create user.
 - Any artifact introduces secret-shaped strings, raw token material, auth header literals, or database assignment literals.
 - Any wording claims that live canary traffic, real-money traffic, or real-game traffic is already enabled.
 
@@ -161,7 +161,7 @@ ORO-LIVE-GATE-3 is a runtime activation approval request gate only. It prepares 
 
 ### Abort Conditions
 
-- Any step attempts `OROPLAY_ENABLED=1`.
+- Any step attempts to enable the live runtime flag.
 - Any step attempts PM2 env changes or service restart for live mode.
 - Any step attempts deposit, withdraw, withdraw-all, launch game, create user, provider mutation, DB write, Prisma schema change, migration, or public live route enablement.
 - Any step attempts external network calls.
@@ -250,7 +250,7 @@ ORO-LIVE-GATE-4 is a runtime activation decision gate only. It records the runti
 
 ### Abort Conditions
 
-- Any step attempts `OROPLAY_ENABLED=1`.
+- Any step attempts to enable the live runtime flag.
 - Any step attempts PM2 env changes or service restart for live mode.
 - Any step attempts deposit, withdraw, withdraw-all, launch game, create user, provider mutation, DB write, Prisma schema change, or migration.
 - Any step attempts external network calls.
@@ -364,7 +364,7 @@ ORO-LIVE-GATE-5 is closed/pass as the controlled activation plan / pre-activatio
 
 ### Abort Conditions
 
-- Any step attempts `OROPLAY_ENABLED=1`.
+- Any step attempts to enable the live runtime flag.
 - Any step attempts PM2 env changes or service restart for live mode.
 - Any step attempts deposit, withdraw, withdraw-all, launch game, create user, provider mutation, DB write, Prisma schema change, or migration.
 - Any step attempts external network calls.
@@ -466,7 +466,7 @@ ORO-LIVE-GATE-6 is a controlled runtime enablement authorization / final preflig
 
 ### Emergency Abort Criteria
 
-- Any step attempts `OROPLAY_ENABLED=1`.
+- Any step attempts to enable the live runtime flag.
 - Any step attempts PM2 env changes or service restart for live mode.
 - Any step attempts deposit, withdraw, withdraw-all, launch game, create user, provider mutation, DB write, Prisma schema change, or migration.
 - Any step attempts external network calls.
@@ -995,13 +995,176 @@ ORO-LIVE-GATE-10A is the final runtime enablement execution command packet dry-r
 
 ### Gate 10A Outcome
 
-- ORO-LIVE-GATE-10A is current as the final runtime enablement execution command packet dry-run gate.
+- ORO-LIVE-GATE-10A is closed/pass as the final runtime enablement execution command packet dry-run gate.
 - Gate 10A is command packet review / dry-run / rehearsal only.
 - Live runtime activation is still not enabled.
 - Live transactional traffic is still not enabled.
 - Real money is still not enabled.
 - Real game launch is still not enabled.
-- Gate 10B only may act as the actual controlled runtime enablement execution gate after Gate 10A approval and separate explicit user approval.
+- Gate 10B only may act as the actual runtime enablement execution approval + operator hold gate after Gate 10A approval; actual controlled runtime enablement execution must remain in the next gate and require separate explicit user approval.
+
+## ORO-LIVE-GATE-10B Actual Runtime Enablement Execution Approval + Operator Hold Gate
+
+ORO-LIVE-GATE-10B is the actual runtime enablement execution approval + operator hold gate only. It records the final approval decision boundary, final human/operator hold, go/no-go decision matrix, two-person confirmation requirement, operator identity and role checklist, execution window approval checklist, Gate 10A command packet acceptance, rollback readiness acceptance, monitoring readiness acceptance, emergency abort acceptance, evidence capture acceptance, post-execution verification acceptance, and next gate handoff requirements for actual execution only. Gate 10B does not open live runtime, does not change PM2/env state, does not restart service for live mode, does not execute controlled runtime enablement, and does not include any copy-ready live enablement command.
+
+### Gate 10B Prerequisites
+
+- ORO-LIVE-GATE-7 is closed/pass.
+- ORO-LIVE-GATE-8 is closed/pass.
+- ORO-LIVE-GATE-9 is closed/pass.
+- ORO-LIVE-GATE-10A is closed/pass.
+- Safe CI latest result is PASS.
+- VPS static validation is PASS.
+- Runtime activation remains pending the next actual execution gate and is not enabled.
+- Live transactional traffic remains off.
+- No PM2/env change, service restart for live mode, deposit, withdraw, withdraw-all, launch game, create user, DB write, external network call, or provider mutation call has occurred.
+
+### Final Approval Decision Record
+
+- Approval record placeholder: `<FINAL_OPERATOR_APPROVAL_RECORD>`.
+- Decision record placeholder: `<GO_NO_GO_DECISION_RECORD>`.
+- Decision owner:
+- Primary operator:
+- Second reviewer:
+- Rollback owner:
+- Monitoring owner:
+- Evidence owner:
+- Gate 10A command packet evidence reference:
+- Final decision: approve next gate / reject next gate / hold for missing evidence.
+- Decision timestamp:
+- Notes:
+
+### Go/No-Go Decision Matrix
+
+| Decision area | Go condition | No-Go condition |
+| --- | --- | --- |
+| Gate prerequisites | Gates 7, 8, 9, and 10A are closed/pass. | Any prerequisite gate is missing, reopened, or contradictory. |
+| Command packet | Gate 10A command packet review is accepted as placeholder-only. | Any packet item is executable or contains secret/auth material. |
+| Operator coverage | Primary operator and second reviewer are both available. | Any required operator/reviewer is unavailable. |
+| Rollback readiness | Rollback readiness acceptance is complete. | Rollback owner, target state, or evidence path is missing. |
+| Monitoring readiness | Monitoring readiness acceptance is complete. | Monitoring owner, window, or evidence expectation is missing. |
+| Evidence readiness | Evidence capture acceptance is complete. | Evidence storage, sanitization, or retention expectation is missing. |
+| Abort readiness | Emergency abort acceptance is complete. | Any abort criterion is unclear or disputed. |
+| Runtime status | Live runtime activation and live transactional traffic remain not enabled. | Any wording or evidence implies live runtime or traffic is already enabled. |
+
+### Two-Person Confirmation Requirement
+
+- Primary operator confirms Gate 10B is approval + operator hold only.
+- Second reviewer confirms the next gate requires separate explicit user approval before actual controlled runtime enablement execution.
+- Primary operator and second reviewer confirm no live enablement flag has changed.
+- Primary operator and second reviewer confirm no PM2/env change has occurred.
+- Primary operator and second reviewer confirm no service restart for live mode has occurred.
+- Primary operator and second reviewer confirm no deposit, withdraw, withdraw-all, launch game, create user, provider mutation, DB write, external network call, or secret/auth print occurred during Gate 10B.
+
+### Operator Identity / Role Checklist
+
+- Decision owner identity confirmed:
+- Primary operator identity confirmed:
+- Second reviewer identity confirmed:
+- Rollback owner identity confirmed:
+- Monitoring owner identity confirmed:
+- Evidence owner identity confirmed:
+- Communication channel owner confirmed:
+- Abort escalation owner confirmed:
+- All roles confirm they understand Gate 10B does not execute live runtime enablement.
+
+### Execution Window Approval Checklist
+
+- Execution window approval placeholder: `<EXECUTION_WINDOW_APPROVAL_PLACEHOLDER>`.
+- Proposed next-gate execution window ID:
+- Proposed start time:
+- Proposed end time:
+- Primary operator availability confirmed:
+- Second reviewer availability confirmed:
+- Rollback owner availability confirmed:
+- Monitoring owner availability confirmed:
+- Evidence owner availability confirmed:
+- Communication channel confirmed:
+- Abort escalation channel confirmed:
+- Next gate separate approval status:
+
+### Gate 10A Command Packet Acceptance Checklist
+
+- Gate 10A command packet review evidence is present.
+- Gate 10A dry-run/rehearsal evidence is present.
+- Gate 10A operator confirmation evidence is present.
+- Gate 10A rollback command review evidence is present.
+- Gate 10A monitoring command review evidence is present.
+- Gate 10A evidence capture checklist is present.
+- Gate 10A no-go checklist is present.
+- Gate 10A emergency abort criteria are present.
+- Gate 10A post-command expected evidence checklist is present.
+- Gate 10A packet placeholders remain non-executable and do not contain secret/auth material.
+
+### Rollback Readiness Acceptance Checklist
+
+- Rollback owner accepts the rollback readiness package.
+- Rollback target state is documented in prose only.
+- Rollback evidence expectation is accepted.
+- Rollback communication path is accepted.
+- Post-rollback monitoring expectation is accepted.
+- Rollback acceptance does not execute rollback or change runtime state.
+
+### Monitoring Readiness Acceptance Checklist
+
+- Monitoring owner accepts the monitoring readiness package.
+- Monitoring window is accepted.
+- Application health evidence expectation is accepted.
+- Process state evidence expectation is accepted in prose only.
+- Sanitized log review expectation is accepted.
+- Monitoring acceptance does not call provider endpoints, external services, DB, or env secret readers from local/CI.
+
+### Emergency Abort Acceptance Checklist
+
+- Abort owner accepts all emergency abort criteria.
+- Abort if any reviewer cannot confirm Gate 10B is approval/operator-hold-only.
+- Abort if any artifact includes a copy-ready live enablement command.
+- Abort if any action attempts to change live enablement flag, PM2/env state, or service runtime state during Gate 10B.
+- Abort if any action attempts deposit, withdraw, withdraw-all, launch game, create user, provider mutation endpoint, DB write, Prisma schema change, Prisma migration, live public route addition, or external network call.
+- Abort if any artifact introduces secret-shaped strings, raw auth values, token/password/client secret values, database assignment patterns, or JWT/API-key-looking values.
+- Abort if any wording claims live runtime activation, live transactional traffic, real money, or real game launch is already enabled.
+
+### Evidence Capture Acceptance Checklist
+
+- Gate 10B approval decision evidence reference:
+- Gate 10B go/no-go matrix evidence reference:
+- Gate 10B two-person confirmation evidence reference:
+- Gate 10B operator identity evidence reference:
+- Gate 10B execution window approval evidence reference:
+- Gate 10B readiness acceptance evidence reference:
+- Next gate handoff evidence reference:
+- Evidence capture acceptance must store sanitized references only and no secret/auth material.
+
+### Post-Execution Verification Acceptance Checklist
+
+- Post-execution verification belongs to the next actual execution gate, not Gate 10B.
+- Expected health verification owner accepted:
+- Expected process state verification owner accepted:
+- Expected sanitized log review owner accepted:
+- Expected runtime state verification owner accepted:
+- Expected rollback readiness re-confirmation owner accepted:
+- Expected incident note owner accepted:
+- No post-execution evidence is captured from live execution during Gate 10B.
+
+### Next Actual Execution Gate Handoff Requirements
+
+- Next gate handoff placeholder: `<GATE_NEXT_ACTUAL_EXECUTION_HANDOFF>`.
+- The next gate must be opened separately after explicit user approval.
+- The next gate only may act as the actual controlled runtime enablement execution gate if Gate 10B passes.
+- The next gate must receive the final approval decision record, go/no-go decision matrix, two-person confirmation evidence, operator identity/role checklist, execution window approval checklist, Gate 10A command packet acceptance, rollback readiness acceptance, monitoring readiness acceptance, emergency abort acceptance, evidence capture acceptance, and post-execution verification acceptance.
+- The next gate must preserve secret/auth material outside repository artifacts.
+- The next gate must keep actual controlled runtime enablement execution separate from any live transaction test.
+- Any deposit, withdraw, withdraw-all, launch game, create user, or provider mutation test after runtime enablement requires separate explicit user approval and separate evidence.
+
+### Gate 10B Outcome
+
+- ORO-LIVE-GATE-10B is current as the actual runtime enablement execution approval + operator hold gate.
+- Gate 10B is final approval boundary / operator hold only.
+- Live runtime activation is still not enabled.
+- Live transactional traffic is still not enabled.
+- Real money is still not enabled.
+- Real game launch is still not enabled.
+- The next gate only may act as the actual controlled runtime enablement execution gate after Gate 10B approval and separate explicit user approval.
 
 ## Diagnostic Script
 

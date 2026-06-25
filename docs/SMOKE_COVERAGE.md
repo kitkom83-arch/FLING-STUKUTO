@@ -56,6 +56,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `oroplayLiveGate8ControlledRuntimeEnablementSmoke.js` | `npm run smoke:oroplay-live-gate-8` | No | No | No | Static docs/controlled-runtime-enablement contract | ORO-LIVE-GATE-8 controlled runtime enablement smoke for Gate 7 closed/pass prerequisite, human hold point, rollback, monitoring, post-enable verification, transaction-test separation, no deposit/withdraw/launch/create user wording, no uncontrolled live enablement commands, and static secret-shaped value scan. |
 | `oroplayLiveGate9FinalOperatorHoldSmoke.js` | `npm run smoke:oroplay-live-gate-9` | No | No | No | Static docs/final-operator-hold contract | ORO-LIVE-GATE-9 final runtime enablement operator hold / execution approval boundary smoke for Gate 7 and Gate 8 closed/pass prerequisites, go/no-go checklist, approval record, two-person confirmation, execution window, rollback/monitoring/evidence/post-execution verification, emergency abort, Gate 10 handoff, no live-open wording, no executable live command, and static secret-shaped value scan. |
 | `oroplayLiveGate10ACommandPacketDryRunSmoke.js` | `npm run smoke:oroplay-live-gate-10a` | No | No | No | Static docs/command-packet-dry-run contract | ORO-LIVE-GATE-10A final runtime enablement execution command packet dry-run smoke for Gate 7, Gate 8, and Gate 9 closed/pass prerequisites, final command packet review, dry-run/rehearsal, operator confirmation, rollback/monitoring command review, evidence capture, no-go, emergency abort, post-command expected evidence, Gate 10B handoff, no live-open wording, no executable live command, and static secret-shaped value scan. |
+| `oroplayLiveGate10BExecutionApprovalHoldSmoke.js` | `npm run smoke:oroplay-live-gate-10b` | No | No | No | Static docs/execution-approval-hold contract | ORO-LIVE-GATE-10B actual runtime enablement execution approval + operator hold smoke for Gate 7, Gate 8, Gate 9, and Gate 10A closed/pass prerequisites, final approval decision record, go/no-go decision matrix, two-person confirmation, operator identity/role checklist, execution window approval, Gate 10A command packet acceptance, rollback/monitoring/emergency abort/evidence/post-execution verification acceptance, next gate handoff, no live-open wording, no executable live command, and static secret-shaped value scan. |
 | `adminWorkScheduleSmoke.js` | `npm run smoke:admin-work-schedule` | Yes | Yes | Yes | Syntax check only | Admin work schedule UI/API checks for schedule list/read/update, permission guards, login block/allow, emergency override, expired override, audit history, rollback, and leak scan. |
 | `adminWorkScheduleUiSmoke.js` | `npm run smoke:admin-work-schedule-ui` | Yes | Yes | Yes | Syntax check only | Static admin schedule UI route/assets, owner flow, no-permission block, emergency override, masked audit history, and leak scan. |
 | `adminAuditSecuritySmoke.js` | `npm run smoke:admin-audit-security` | Yes | Yes | Yes | Syntax check only | Static audit/security UI route/assets, UX markers, report endpoints, filters, permission block, empty response shape, masked IP, raw user-agent omission, and leak scan. |
@@ -2231,6 +2232,56 @@ Boundary:
 - Docs/static/read-only/local-only.
 - Final runtime enablement execution command packet dry-run gate only.
 - Non-executable placeholder packet only.
+- No live enablement flag change.
+- No PM2/env change.
+- No service restart for live mode.
+- No deposit.
+- No withdraw.
+- No withdraw-all.
+- No launch game.
+- No create user.
+- No provider mutation.
+- No DB write.
+- No external network call.
+- No env secret read.
+- No secret/auth value printed.
+- No actual live enablement command.
+
+## ORO-LIVE-GATE-10B Execution Approval + Operator Hold Smoke Coverage
+
+ORO-LIVE-GATE-10B local smoke coverage:
+
+- `smoke:oroplay-live-gate-10b`
+
+`smoke:oroplay-live-gate-10b` checks:
+
+- ORO-LIVE-GATE-7 is recorded as closed/pass.
+- ORO-LIVE-GATE-8 is recorded as closed/pass.
+- ORO-LIVE-GATE-9 is recorded as closed/pass.
+- ORO-LIVE-GATE-10A is recorded as closed/pass.
+- ORO-LIVE-GATE-10B is recorded as the actual runtime enablement execution approval + operator hold gate.
+- Gate 10B is static/read-only coverage only.
+- Gate 10B includes final approval decision record markers.
+- Gate 10B includes go/no-go decision matrix markers.
+- Gate 10B includes two-person confirmation markers.
+- Gate 10B includes operator identity/role checklist markers.
+- Gate 10B includes execution window approval checklist markers.
+- Gate 10B includes Gate 10A command packet acceptance checklist markers.
+- Gate 10B includes rollback readiness acceptance checklist markers.
+- Gate 10B includes monitoring readiness acceptance checklist markers.
+- Gate 10B includes emergency abort acceptance checklist markers.
+- Gate 10B includes evidence capture acceptance checklist markers.
+- Gate 10B includes post-execution verification acceptance checklist markers.
+- Gate 10B includes explicit next gate handoff requirement markers for actual execution only.
+- The next gate is recorded as the only actual controlled runtime enablement execution gate after Gate 10B passes and receives separate explicit user approval.
+- Gate 10B states live runtime activation, live transactional traffic, real money, and real game launch remain not enabled.
+- Static safety scan covers secret-shaped values, token/password/clientSecret assignments, auth header literals, JWT/API-key-looking strings, database assignment literals, executable live enablement commands, process-restart/live-environment command snippets, provider mutation call markers, external network call markers, DB write markers, and env secret reads.
+
+Boundary:
+
+- Docs/static/read-only/local-only.
+- Actual runtime enablement execution approval + operator hold gate only.
+- Approval/checklist/record/handoff wording only.
 - No live enablement flag change.
 - No PM2/env change.
 - No service restart for live mode.

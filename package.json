@@ -65,6 +65,7 @@
     "smoke:oroplay-live-gate-8": "node src/local-smoke-tests/oroplayLiveGate8ControlledRuntimeEnablementSmoke.js",
     "smoke:oroplay-live-gate-9": "node src/local-smoke-tests/oroplayLiveGate9FinalOperatorHoldSmoke.js",
     "smoke:oroplay-live-gate-10a": "node src/local-smoke-tests/oroplayLiveGate10ACommandPacketDryRunSmoke.js",
+    "smoke:oroplay-live-gate-10b": "node src/local-smoke-tests/oroplayLiveGate10BExecutionApprovalHoldSmoke.js",
     "smoke:oroplay-callback-boundary": "node src/local-smoke-tests/oroplayCallbackBoundarySmoke.js",
     "smoke:oroplay-callback-stub": "node src/local-smoke-tests/oroplayCallbackStubSmoke.js",
     "smoke:oroplay-callback-readiness": "node src/local-smoke-tests/oroplayCallbackReadinessSmoke.js",

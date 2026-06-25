@@ -32,7 +32,7 @@ This document records the current safe repository understanding for OroPlay API 
 - Balance history recorded the deposit order with sanitized metadata.
 - This evidence is transfer-side verification only; the Seamless Wallet callback workstream remains separate.
 - Live-readiness blocker remains open: `POST /auth/createtoken` on `https://bs.sxvwlkohlv.com/api/v2` is still returning HTTP 401 with an empty body from the VPS diagnostic.
-- Do not enable `OROPLAY_ENABLED=1` until the auth diagnostic returns 200 and the read-only balance smoke passes.
+- Do not enable the live runtime flag until the auth diagnostic returns 200 and the read-only balance smoke passes.
 - ORO-LIVE-GATE-1 is closed/pass based on the sanitized OroPlay auth diagnostic pass, sanitized balance read-only pass, clean VPS sync, clean VPS working tree, staging health pass, and PM2 online confirmation.
 - ORO-LIVE-GATE-2 is closed/pass as the read-only controlled canary plan/readiness gate.
 - ORO-LIVE-GATE-3 is closed/pass as the runtime activation approval request gate.
@@ -47,11 +47,12 @@ This document records the current safe repository understanding for OroPlay API 
 - ORO-LIVE-GATE-8 is closed/pass as the controlled runtime enablement gate.
 - Gate 8 recorded controlled runtime enablement boundary, human hold point, manual operator execution requirement, rollback steps, monitoring steps, post-enable verification, and live transaction test separation.
 - ORO-LIVE-GATE-9 is closed/pass as the final runtime enablement operator hold / execution approval boundary.
-- ORO-LIVE-GATE-10A is current as the final runtime enablement execution command packet dry-run gate only.
-- Live runtime activation is still pending Gate 10B and is not enabled.
+- ORO-LIVE-GATE-10A is closed/pass as the final runtime enablement execution command packet dry-run gate only.
+- ORO-LIVE-GATE-10B is current as the actual runtime enablement execution approval + operator hold gate only.
+- Live runtime activation is still pending the next actual execution gate and is not enabled.
 - Live transactional traffic remains off until a separate user approval is issued for a live transaction test.
-- Gate 10A must keep command packet dry-run/rehearsal review separate from actual controlled runtime enablement execution, deposit, withdraw, withdraw-all, launch game, create user, and provider mutation testing.
-- Gate 10B only may act as the actual controlled runtime enablement execution gate if Gate 10A passes and receives separate explicit user approval.
+- Gate 10B must keep final approval/operator hold separate from actual controlled runtime enablement execution, deposit, withdraw, withdraw-all, launch game, create user, and provider mutation testing.
+- The next gate only may act as the actual controlled runtime enablement execution gate if Gate 10B passes and receives separate explicit user approval.
 - ORO-0 only records status and planning context before any mock, staging, callback, wallet, or provider runtime work.
 
 ## Risk Notes
