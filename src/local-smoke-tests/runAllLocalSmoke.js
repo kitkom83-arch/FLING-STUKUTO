@@ -32,6 +32,8 @@ const RELATED_FILES = [
   "src/local-smoke-tests/adminGuardedBankAccountReviewSmoke.js",
   "src/local-smoke-tests/adminOperatorHandoffSmoke.js",
   "src/local-smoke-tests/adminBankAccountReviewReleasePackSmoke.js",
+  "src/services/codeCenterRuntimeStore.js",
+  "src/local-smoke-tests/codeCenterRewardWalletRuntimeSmoke.js",
   "src/payment-provider-mock/paymentProviderContract.js",
   "src/payment-provider-mock/paymentProviderMockHarness.js",
   "src/local-smoke-tests/paymentProviderContractSmoke.js",
@@ -2081,6 +2083,7 @@ const summary = [
   { key: "adminGuardedBankAccountReview", label: "admin-guarded-bank-account-review", status: "PENDING" },
   { key: "adminOperatorHandoff", label: "admin-operator-handoff", status: "PENDING" },
   { key: "adminBankAccountReviewReleasePack", label: "admin-bank-account-review-release-pack", status: "PENDING" },
+  { key: "codeCenterRewardWalletRuntime", label: "code-center-reward-wallet-runtime", status: "PENDING" },
   { key: "paymentProviderContract", label: "payment-provider-contract", status: "PENDING" },
   { key: "oroplaySeamlessContract", label: "oroplay-seamless-contract", status: "PENDING" },
   { key: "oroplayCallbackBoundary", label: "oroplay-callback-boundary", status: "PENDING" },
@@ -2559,6 +2562,18 @@ const steps = [
     name: "node --check adminBankAccountReviewReleasePackSmoke",
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/adminBankAccountReviewReleasePackSmoke.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check codeCenterRuntimeStore",
+    command: nodeCommand,
+    args: ["--check", "src/services/codeCenterRuntimeStore.js"],
+    summaryKey: "syntax",
+  },
+  {
+    name: "node --check codeCenterRewardWalletRuntimeSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/codeCenterRewardWalletRuntimeSmoke.js"],
     summaryKey: "syntax",
   },
   {
@@ -4909,6 +4924,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:admin-bank-account-review-release-pack"]),
     summaryKey: "adminBankAccountReviewReleasePack",
+  },
+  {
+    name: "npm run smoke:code-center-reward-wallet:runtime",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:code-center-reward-wallet:runtime"]),
+    summaryKey: "codeCenterRewardWalletRuntime",
   },
   {
     name: "npm run smoke:payment-provider-contract",

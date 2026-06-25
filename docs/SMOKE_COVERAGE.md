@@ -9617,3 +9617,13 @@ Coverage confirms ORO-9X is docs/static contract/mock helper/fixtures/local smok
   - re-instantiates the service stores and verifies reward summary/history plus redeem logs are read back from persisted records
   - verifies non-cash rewards do not mutate cash wallet behavior and `cash_credit` remains blocked
   - performs scoped cleanup for the smoke site and does not create a Prisma migration, call providers, deploy, or touch production DB
+
+## CODE-CENTER-REWARD-WALLET-RUNTIME-3
+
+- `npm run smoke:code-center-reward-wallet:runtime`
+  - exercises the Code Center and Member Reward Wallet controllers through the runtime storage selector
+  - requires guarded Prisma mode with a local/staging/test PostgreSQL target only and never prints `DATABASE_URL`
+  - creates a local-safe smoke site/member, campaign, generated code, redeem log, and reward wallet entry through controller handlers
+  - disconnects and reinitializes runtime stores, then verifies summary, history, and member redeem logs read back persisted records
+  - verifies duplicate redeem fails, `cash_credit` remains blocked, and every response keeps `cashWalletMutation: false`
+  - scans controller responses/errors for secret-shaped values and performs scoped cleanup for the smoke site

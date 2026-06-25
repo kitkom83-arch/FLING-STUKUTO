@@ -34,6 +34,8 @@ router.use(withdrawRoutes);
 router.use(promotionRoutes);
 router.use(gameRoutes);
 router.use(wheelRoutes);
+router.use(codeCenterRoutes);
+router.use(memberRewardRoutes);
 router.use("/admin", adminRoutes);
 
 module.exports = router;

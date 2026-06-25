@@ -446,7 +446,8 @@
     "oroplay:auth:diagnostic": "node src/staging-scripts/oroplayAuthDiagnostic.js",
     "smoke:all-local": "node src/local-smoke-tests/runAllLocalSmoke.js",
     "smoke:code-center-reward-wallet": "node src/local-smoke-tests/codeCenterRewardWalletSmoke.js",
-    "smoke:code-center-reward-wallet:persistence": "node src/local-smoke-tests/codeCenterRewardWalletPersistenceSmoke.js"
+    "smoke:code-center-reward-wallet:persistence": "node src/local-smoke-tests/codeCenterRewardWalletPersistenceSmoke.js",
+    "smoke:code-center-reward-wallet:runtime": "node src/local-smoke-tests/codeCenterRewardWalletRuntimeSmoke.js"
   },
   "prisma": {
     "seed": "node prisma/seed.js"

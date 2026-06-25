@@ -1,11 +1,14 @@
 const { success } = require("../utils/response");
 const codeCenterService = require("../services/codeCenter.service");
+const { ensureRuntimeStores } = require("../services/codeCenterRuntimeStore");
 
 async function adminListCampaigns(req, res) {
+  ensureRuntimeStores();
   return success(res, await codeCenterService.listCampaigns({ siteId: req.siteId, query: req.query }));
 }
 
 async function adminCreateCampaign(req, res) {
+  ensureRuntimeStores();
   return success(
     res,
     await codeCenterService.createCampaign({
@@ -19,6 +22,7 @@ async function adminCreateCampaign(req, res) {
 }
 
 async function adminGenerateCodes(req, res) {
+  ensureRuntimeStores();
   return success(
     res,
     await codeCenterService.generateCodes({
@@ -32,10 +36,12 @@ async function adminGenerateCodes(req, res) {
 }
 
 async function adminRedeemLogs(req, res) {
+  ensureRuntimeStores();
   return success(res, await codeCenterService.listRedeemLogs({ siteId: req.siteId, query: req.query }));
 }
 
 async function redeem(req, res) {
+  ensureRuntimeStores();
   return success(
     res,
     await codeCenterService.redeemCode({
@@ -48,6 +54,7 @@ async function redeem(req, res) {
 }
 
 async function myRedeemLogs(req, res) {
+  ensureRuntimeStores();
   return success(
     res,
     await codeCenterService.listRedeemLogs({
