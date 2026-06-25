@@ -52,6 +52,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `oroplayLiveGate4ActivationDecisionSmoke.js` | `npm run smoke:oroplay-live-gate-4` | No | No | No | Static docs/decision-gate contract | ORO-LIVE-GATE-4 runtime activation decision smoke for Gate 3 closed/pass status, Gate 4 decision-only wording, decision options/evidence/sign-off/rollback/monitoring/abort/Go-No-Go markers, Gate 5 separation, and static secret-shaped value scan. |
 | `oroplayLiveGate5PreActivationGuardSmoke.js` | `npm run smoke:oroplay-live-gate-5` | No | No | No | Static docs/pre-activation-guard contract | ORO-LIVE-GATE-5 controlled activation plan / pre-activation guard smoke for Gate 4 closed/pass status, Gate 5 plan-only wording, plan/guard/operator/window/rollback/monitoring/health/abort/approval markers, Gate 6 separation, and static secret-shaped value scan. |
 | `oroplayLiveGate6FinalPreflightAuthorizationSmoke.js` | `npm run smoke:oroplay-live-gate-6` | No | No | No | Static docs/final-preflight contract | ORO-LIVE-GATE-6 controlled runtime enablement authorization / final preflight smoke for Gate 5 closed/pass status, Gate 6 authorization-only wording, final authorization/preflight/sign-off/rollback proof/monitoring proof/health proof/abort/handoff markers, Gate 7 separation, and static secret-shaped value scan. |
+| `oroplayLiveGate7CommandReviewSmoke.js` | `npm run smoke:oroplay-live-gate-7` | No | No | No | Static docs/command-review contract | ORO-LIVE-GATE-7 controlled runtime enablement command review / manual execution packet smoke for Gate 6 closed/pass status, Gate 7 command-review/manual-packet-only wording, prerequisites/manual packet/hold point/pre-run/two-person/rollback/monitoring/post-run/abort/Gate 8 handoff markers, no actual activation wording, and static secret-shaped value scan. |
 | `adminWorkScheduleSmoke.js` | `npm run smoke:admin-work-schedule` | Yes | Yes | Yes | Syntax check only | Admin work schedule UI/API checks for schedule list/read/update, permission guards, login block/allow, emergency override, expired override, audit history, rollback, and leak scan. |
 | `adminWorkScheduleUiSmoke.js` | `npm run smoke:admin-work-schedule-ui` | Yes | Yes | Yes | Syntax check only | Static admin schedule UI route/assets, owner flow, no-permission block, emergency override, masked audit history, and leak scan. |
 | `adminAuditSecuritySmoke.js` | `npm run smoke:admin-audit-security` | Yes | Yes | Yes | Syntax check only | Static audit/security UI route/assets, UX markers, report endpoints, filters, permission block, empty response shape, masked IP, raw user-agent omission, and leak scan. |
@@ -2065,7 +2066,32 @@ ORO-LIVE-GATE-6 local smoke coverage:
 - Gate 6 includes emergency abort criteria markers.
 - Gate 6 includes exact Gate 7 handoff requirement markers.
 - Gate 6 includes Gate 7 manual execution constraint markers.
-- Gate 6 states Gate 7 only may act as the actual controlled runtime enablement gate.
+- Gate 6 states Gate 7 is separated from runtime activation and Gate 8 is reserved for actual controlled runtime enablement after Gate 7 approval.
+
+## ORO-LIVE-GATE-7 Command Review / Manual Execution Packet Smoke Coverage
+
+ORO-LIVE-GATE-7 local smoke coverage:
+
+- `smoke:oroplay-live-gate-7`
+
+`smoke:oroplay-live-gate-7` checks:
+
+- ORO-LIVE-GATE-6 is recorded as closed/pass.
+- ORO-LIVE-GATE-7 is recorded as a controlled runtime enablement command review / manual execution packet gate only.
+- Gate 7 is static/read-only coverage only.
+- Gate 7 includes prerequisites for Gate 1 through Gate 6 closed/pass.
+- Gate 7 includes manual execution packet template markers.
+- Gate 7 includes final human hold point markers.
+- Gate 7 includes pre-run checklist markers.
+- Gate 7 includes operator two-person review checklist markers.
+- Gate 7 includes rollback packet template markers.
+- Gate 7 includes monitoring packet template markers.
+- Gate 7 includes post-run verification packet markers for Gate 8.
+- Gate 7 includes emergency abort criteria markers.
+- Gate 7 includes explicit Gate 8 handoff requirement markers.
+- Gate 8 is recorded as the only actual controlled runtime enablement successor gate after separate approval.
+- Runtime activation, live transactional traffic, real money, and real game launch remain not enabled in Gate 7.
+- Static safety scan covers secret-shaped values, auth header literals, JWT/API-key-looking strings, database assignment literals, and immediate live-enablement command markers.
 - Gate 6 does not claim live traffic, real money, or real game launch is already enabled.
 - Static secret-shaped value scan stays clean across the changed docs, `package.json`, and the Gate 6 smoke file.
 

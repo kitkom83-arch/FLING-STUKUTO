@@ -388,7 +388,7 @@ ORO-LIVE-GATE-5 is closed/pass as the controlled activation plan / pre-activatio
 
 ## ORO-LIVE-GATE-6 Controlled Runtime Enablement Authorization / Final Preflight Gate
 
-ORO-LIVE-GATE-6 is a controlled runtime enablement authorization / final preflight gate only. It prepares the final authorization record, final preflight checklist, rollback proof, monitoring proof, health verification proof, operator sign-off checklist, emergency abort criteria, and exact Gate 7 handoff requirements, but it does not open live runtime.
+ORO-LIVE-GATE-6 is a controlled runtime enablement authorization / final preflight gate only. It prepares the final authorization record, final preflight checklist, rollback proof, monitoring proof, health verification proof, operator sign-off checklist, emergency abort criteria, and exact Gate 7 handoff requirements for command review / manual execution packet preparation, but it does not open live runtime.
 
 ### Gate Prerequisites
 
@@ -418,7 +418,7 @@ ORO-LIVE-GATE-6 is a controlled runtime enablement authorization / final preflig
 - Rollback owner:
 - Monitoring owner:
 - Health verification owner:
-- Gate 7 handoff confirmation:
+- Gate 7 command review handoff confirmation:
 - Manual execution constraints acknowledged:
 - Decision:
 
@@ -446,7 +446,7 @@ ORO-LIVE-GATE-6 is a controlled runtime enablement authorization / final preflig
 - Rollback target state is documented as fail-closed.
 - Rollback communication path is documented.
 - Rollback verification steps are documented.
-- Rollback proof is captured before any later Gate 7 execution.
+- Rollback proof is captured before any later Gate 7 command review and Gate 8 execution.
 
 ### Monitoring Proof Checklist
 
@@ -454,7 +454,7 @@ ORO-LIVE-GATE-6 is a controlled runtime enablement authorization / final preflig
 - Monitoring targets are documented.
 - Monitoring window is documented.
 - Monitoring log sources are sanitized.
-- Monitoring proof is captured before any later Gate 7 execution.
+- Monitoring proof is captured before any later Gate 7 command review and Gate 8 execution.
 
 ### Health Verification Proof Checklist
 
@@ -462,7 +462,7 @@ ORO-LIVE-GATE-6 is a controlled runtime enablement authorization / final preflig
 - Health verification steps are documented.
 - Health verification evidence is sanitized.
 - Health verification passes only if runtime remains disabled at Gate 6.
-- Health proof is captured before any later Gate 7 execution.
+- Health proof is captured before any later Gate 7 command review and Gate 8 execution.
 
 ### Emergency Abort Criteria
 
@@ -478,17 +478,17 @@ ORO-LIVE-GATE-6 is a controlled runtime enablement authorization / final preflig
 - Gate 1 through Gate 6 must be recorded closed/pass before Gate 7 begins.
 - Gate 7 receives the final authorization record and proof checklists from Gate 6.
 - Gate 7 receives rollback proof, monitoring proof, and health verification proof as separate evidence items.
-- Gate 7 must be treated as the actual controlled runtime enablement gate and not as a documentation-only review.
-- Gate 7 must preserve the fail-closed state until the operator executes the separate manual enablement boundary.
+- Gate 7 must be treated as command review / manual execution packet preparation only, not as actual controlled runtime enablement.
+- Gate 7 must preserve the fail-closed state and hand off any actual controlled runtime enablement only to a separately approved Gate 8.
 
-### Gate 7 Manual Execution Constraints
+### Gate 7 Manual Packet Constraints
 
-- Gate 7 must be executed manually by an authorized operator in the approved change window.
+- Gate 7 must prepare the manual execution packet for authorized operator review only.
 - Gate 7 must not bundle any DB write, provider mutation, deposit, withdraw, withdraw-all, launch game, or create user action.
 - Gate 7 must not use any immediate live-enablement command in a doc, log, or script artifact.
 - Gate 7 must not print secret, token, password, client secret, or auth value material.
-- Gate 7 must keep the enablement boundary separate from rollout verification and separate from post-change monitoring evidence.
-- Gate 7 must remain the only gate allowed to perform actual controlled runtime enablement.
+- Gate 7 must keep command review separate from actual execution, rollout verification, and post-change monitoring evidence.
+- Gate 8 must remain the only next gate allowed to perform actual controlled runtime enablement after separate explicit approval.
 
 ### Gate Outcome
 
@@ -496,7 +496,141 @@ ORO-LIVE-GATE-6 is a controlled runtime enablement authorization / final preflig
 - Runtime activation is still not enabled.
 - Real money is still not enabled.
 - Real game launch is still not enabled.
-- Gate 7 only may act as the actual controlled runtime enablement gate after Gate 6 approval.
+- Gate 7 only may act as the command review / manual execution packet gate after Gate 6 approval; Gate 8 only may act as the actual controlled runtime enablement gate after Gate 7 approval.
+
+## ORO-LIVE-GATE-7 Controlled Runtime Enablement Command Review / Manual Execution Packet Gate
+
+ORO-LIVE-GATE-7 is a controlled runtime enablement command review / manual execution packet gate only. It prepares non-executable command review notes, a manual execution packet template, a pre-run checklist, a final human hold point, rollback and monitoring packet templates, post-run verification packet requirements for Gate 8, emergency abort criteria, and exact Gate 8 handoff requirements. Gate 7 does not open live runtime, does not execute any command, and does not place an immediately executable live-enablement command in repository artifacts.
+
+### Gate Prerequisites
+
+- ORO-LIVE-GATE-1 is closed/pass.
+- ORO-LIVE-GATE-2 is closed/pass.
+- ORO-LIVE-GATE-3 is closed/pass.
+- ORO-LIVE-GATE-4 is closed/pass.
+- ORO-LIVE-GATE-5 is closed/pass.
+- ORO-LIVE-GATE-6 is closed/pass.
+- Safe CI latest result is PASS.
+- VPS is synced to commit `47161b2`.
+- VPS working tree is clean.
+- OroPlay auth diagnostic passed in sanitized form.
+- OroPlay read-only balance diagnostic passed in sanitized form.
+- Runtime activation remains pending Gate 8 and is not enabled.
+- Live transactional traffic remains off.
+
+### Manual Execution Packet Template Non-Executable
+
+- Packet ID:
+- Requested change window:
+- Decision owner:
+- Operator owner:
+- Second reviewer:
+- Rollback owner:
+- Monitoring owner:
+- Health verification owner:
+- Runtime target state description:
+- Manual command summary in prose only:
+- Required secret source location outside repository:
+- Evidence bundle reference:
+- Rollback packet reference:
+- Monitoring packet reference:
+- Post-run verification packet reference:
+- Final hold point result:
+
+### Pre-Run Checklist
+
+- Confirm Gate 1 through Gate 6 remain closed/pass.
+- Confirm the latest safe CI result remains PASS.
+- Confirm VPS sync and clean working tree evidence remains current.
+- Confirm sanitized auth diagnostic and read-only balance diagnostic evidence remains valid.
+- Confirm no PM2 env change, service restart, DB write, provider mutation, deposit, withdraw, withdraw-all, launch game, or create user action has occurred during Gate 7.
+- Confirm the manual execution packet is prose/template only and contains no immediately executable live-enablement command.
+- Confirm runtime activation, live transactional traffic, real money, and real game launch remain disabled before Gate 8.
+
+### Operator Two-Person Review Checklist
+
+- Primary operator confirms Gate 7 is command review / manual packet preparation only.
+- Second reviewer confirms the packet contains no secret, token, password, client secret, auth value, or launch URL material.
+- Second reviewer confirms the packet contains no immediately executable command that could open live runtime.
+- Rollback owner confirms rollback packet readiness without executing rollback or runtime commands.
+- Monitoring owner confirms monitoring packet readiness without calling external services.
+- Decision owner confirms Gate 8 must receive separate explicit approval before any actual controlled runtime enablement.
+
+### Final Human Hold Point
+
+- Stop before Gate 8 until the user gives explicit approval for a separate actual controlled runtime enablement gate.
+- Stop if any reviewer cannot confirm the packet is non-executable.
+- Stop if runtime state evidence is stale, missing, contradictory, or implies live traffic already opened.
+- Stop if any secret/auth material would need to be copied into repository artifacts.
+- Stop if any operator proposes executing runtime changes inside Gate 7.
+
+### Rollback Packet Template
+
+- Rollback packet ID:
+- Rollback decision owner:
+- Rollback operator owner:
+- Fail-closed target state description:
+- Rollback communication channel:
+- Verification owner:
+- Evidence capture location:
+- Abort trigger mapping:
+- Post-rollback monitoring window:
+- Notes:
+
+### Monitoring Packet Template
+
+- Monitoring packet ID:
+- Monitoring owner:
+- Observation window:
+- Health target list:
+- PM2 process target:
+- Sanitized application log source:
+- Sanitized Nginx log source:
+- Error-rate threshold:
+- Latency threshold:
+- Manual escalation contact:
+- Evidence capture location:
+
+### Post-Run Verification Packet For Gate 8
+
+- Gate 8 approval reference:
+- Gate 8 operator owner:
+- Gate 8 second reviewer:
+- Post-change health evidence:
+- Post-change PM2 status evidence:
+- Post-change sanitized log review:
+- Runtime state verification:
+- Rollback readiness re-confirmation:
+- Monitoring window completion:
+- Incident notes reference:
+
+### Emergency Abort Criteria
+
+- Any step attempts to open the live enablement flag during Gate 7.
+- Any step attempts PM2 env changes or service restart for live mode during Gate 7.
+- Any step attempts deposit, withdraw, withdraw-all, launch game, create user, provider mutation, DB write, Prisma schema change, or migration.
+- Any step attempts external network calls.
+- Any artifact introduces secret-shaped strings, raw auth values, JWT/API-key-looking strings, database assignment literals, or wording that acts like an immediate live-enablement command.
+- Any wording claims runtime activation, live transactional traffic, real money, or real game launch is already enabled.
+- Any reviewer cannot confirm that Gate 7 is command review / manual execution packet preparation only.
+
+### Gate 8 Handoff Requirements
+
+- Gate 8 must be opened as a separate gate after explicit user approval.
+- Gate 8 only may act as the actual controlled runtime enablement gate if Gate 7 passes.
+- Gate 8 must receive the reviewed manual execution packet, rollback packet, monitoring packet, and post-run verification packet.
+- Gate 8 must confirm two-person review before any actual controlled runtime enablement.
+- Gate 8 must preserve secret/auth material outside repository artifacts.
+- Gate 8 must keep actual execution, rollback verification, monitoring evidence, and post-run verification as separately recorded steps.
+
+### Gate Outcome
+
+- ORO-LIVE-GATE-7 is command-review-only and manual-execution-packet-only.
+- Runtime activation is still not enabled.
+- Live transactional traffic is still not enabled.
+- Real money is still not enabled.
+- Real game launch is still not enabled.
+- Gate 8 only may act as the actual controlled runtime enablement gate after Gate 7 approval.
 
 ## Diagnostic Script
 

@@ -61,6 +61,7 @@
     "smoke:oroplay-live-gate-4": "node src/local-smoke-tests/oroplayLiveGate4ActivationDecisionSmoke.js",
     "smoke:oroplay-live-gate-5": "node src/local-smoke-tests/oroplayLiveGate5PreActivationGuardSmoke.js",
     "smoke:oroplay-live-gate-6": "node src/local-smoke-tests/oroplayLiveGate6FinalPreflightAuthorizationSmoke.js",
+    "smoke:oroplay-live-gate-7": "node src/local-smoke-tests/oroplayLiveGate7CommandReviewSmoke.js",
     "smoke:oroplay-callback-boundary": "node src/local-smoke-tests/oroplayCallbackBoundarySmoke.js",
     "smoke:oroplay-callback-stub": "node src/local-smoke-tests/oroplayCallbackStubSmoke.js",
     "smoke:oroplay-callback-readiness": "node src/local-smoke-tests/oroplayCallbackReadinessSmoke.js",
