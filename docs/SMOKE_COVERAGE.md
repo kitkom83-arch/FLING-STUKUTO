@@ -54,6 +54,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `oroplayLiveGate6FinalPreflightAuthorizationSmoke.js` | `npm run smoke:oroplay-live-gate-6` | No | No | No | Static docs/final-preflight contract | ORO-LIVE-GATE-6 controlled runtime enablement authorization / final preflight smoke for Gate 5 closed/pass status, Gate 6 authorization-only wording, final authorization/preflight/sign-off/rollback proof/monitoring proof/health proof/abort/handoff markers, Gate 7 separation, and static secret-shaped value scan. |
 | `oroplayLiveGate7CommandReviewSmoke.js` | `npm run smoke:oroplay-live-gate-7` | No | No | No | Static docs/command-review contract | ORO-LIVE-GATE-7 controlled runtime enablement command review / manual execution packet smoke for Gate 6 closed/pass status, Gate 7 command-review/manual-packet-only wording, prerequisites/manual packet/hold point/pre-run/two-person/rollback/monitoring/post-run/abort/Gate 8 handoff markers, no actual activation wording, and static secret-shaped value scan. |
 | `oroplayLiveGate8ControlledRuntimeEnablementSmoke.js` | `npm run smoke:oroplay-live-gate-8` | No | No | No | Static docs/controlled-runtime-enablement contract | ORO-LIVE-GATE-8 controlled runtime enablement smoke for Gate 7 closed/pass prerequisite, human hold point, rollback, monitoring, post-enable verification, transaction-test separation, no deposit/withdraw/launch/create user wording, no uncontrolled live enablement commands, and static secret-shaped value scan. |
+| `oroplayLiveGate9FinalOperatorHoldSmoke.js` | `npm run smoke:oroplay-live-gate-9` | No | No | No | Static docs/final-operator-hold contract | ORO-LIVE-GATE-9 final runtime enablement operator hold / execution approval boundary smoke for Gate 7 and Gate 8 closed/pass prerequisites, go/no-go checklist, approval record, two-person confirmation, execution window, rollback/monitoring/evidence/post-execution verification, emergency abort, Gate 10 handoff, no live-open wording, no executable live command, and static secret-shaped value scan. |
 | `adminWorkScheduleSmoke.js` | `npm run smoke:admin-work-schedule` | Yes | Yes | Yes | Syntax check only | Admin work schedule UI/API checks for schedule list/read/update, permission guards, login block/allow, emergency override, expired override, audit history, rollback, and leak scan. |
 | `adminWorkScheduleUiSmoke.js` | `npm run smoke:admin-work-schedule-ui` | Yes | Yes | Yes | Syntax check only | Static admin schedule UI route/assets, owner flow, no-permission block, emergency override, masked audit history, and leak scan. |
 | `adminAuditSecuritySmoke.js` | `npm run smoke:admin-audit-security` | Yes | Yes | Yes | Syntax check only | Static audit/security UI route/assets, UX markers, report endpoints, filters, permission block, empty response shape, masked IP, raw user-agent omission, and leak scan. |
@@ -2151,6 +2152,51 @@ Boundary:
 - No callback runtime activation.
 - No external network.
 - No immediate live-enablement command.
+
+## ORO-LIVE-GATE-9 Final Operator Hold / Execution Approval Boundary Smoke Coverage
+
+ORO-LIVE-GATE-9 local smoke coverage:
+
+- `smoke:oroplay-live-gate-9`
+
+`smoke:oroplay-live-gate-9` checks:
+
+- ORO-LIVE-GATE-7 is recorded as closed/pass.
+- ORO-LIVE-GATE-8 is recorded as closed/pass.
+- ORO-LIVE-GATE-9 is recorded as the final runtime enablement operator hold / execution approval boundary.
+- Gate 9 is static/read-only coverage only.
+- Gate 9 includes final go/no-go checklist markers.
+- Gate 9 includes human approval record template markers.
+- Gate 9 includes operator two-person confirmation checklist markers.
+- Gate 9 includes execution window checklist markers.
+- Gate 9 includes rollback readiness checklist markers.
+- Gate 9 includes monitoring readiness checklist markers.
+- Gate 9 includes evidence capture checklist markers.
+- Gate 9 includes post-execution verification checklist markers.
+- Gate 9 includes emergency abort criteria markers.
+- Gate 9 includes explicit Gate 10 handoff requirement markers.
+- Gate 10 is recorded as the only actual controlled runtime enablement execution gate after separate approval.
+- Gate 9 states live runtime activation, live transactional traffic, real money, and real game launch remain not enabled.
+- Static safety scan covers secret-shaped values, token/password/clientSecret assignments, auth header literals, JWT/API-key-looking strings, database assignment literals, executable live enablement commands, process-restart/live-environment command snippets, provider mutation call markers, external network call markers, DB write markers, and env secret reads.
+
+Boundary:
+
+- Docs/static/read-only/local-only.
+- Final operator hold / execution approval boundary only.
+- No live enablement flag change.
+- No PM2/env change.
+- No service restart for live mode.
+- No deposit.
+- No withdraw.
+- No withdraw-all.
+- No launch game.
+- No create user.
+- No provider mutation.
+- No DB write.
+- No external network call.
+- No env secret read.
+- No secret/auth value printed.
+- No actual live enablement command.
 
 ## 59. ORO-2A OroPlay Callback Boundary Coverage
 

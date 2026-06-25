@@ -729,6 +729,157 @@ ORO-LIVE-GATE-8 is the controlled runtime enablement gate. It records the contro
 - Live transactional traffic remains off unless a separate live transaction test is explicitly approved by the user.
 - Gate 8 closeout requires rollback evidence, monitoring evidence, and post-enable verification evidence.
 
+## ORO-LIVE-GATE-9 Final Runtime Enablement Operator Hold / Execution Approval Boundary
+
+ORO-LIVE-GATE-9 is the final runtime enablement operator hold / execution approval boundary only. It prepares the final operator hold, go/no-go decision checklist, human approval record template, operator role checklist, execution window checklist, rollback readiness checklist, monitoring readiness checklist, evidence capture checklist, post-execution verification checklist, emergency abort criteria, and exact Gate 10 handoff requirements. Gate 9 does not open live runtime, does not change PM2/env state, does not restart service for live mode, and does not execute controlled runtime enablement.
+
+### Gate 9 Prerequisites
+
+- ORO-LIVE-GATE-1 is closed/pass.
+- ORO-LIVE-GATE-2 is closed/pass.
+- ORO-LIVE-GATE-3 is closed/pass.
+- ORO-LIVE-GATE-4 is closed/pass.
+- ORO-LIVE-GATE-5 is closed/pass.
+- ORO-LIVE-GATE-6 is closed/pass.
+- ORO-LIVE-GATE-7 is closed/pass.
+- ORO-LIVE-GATE-8 is closed/pass.
+- Safe CI latest result is PASS.
+- VPS static validation is PASS.
+- Runtime activation remains pending Gate 10 and is not enabled.
+- Live transactional traffic remains off.
+- No PM2/env change, service restart for live mode, deposit, withdraw, withdraw-all, launch game, create user, or provider mutation call has occurred.
+
+### Final Go/No-Go Checklist
+
+- Go only if Gate 7 and Gate 8 are confirmed closed/pass.
+- Go only if Safe CI and VPS static validation remain PASS.
+- Go only if the operator owner, second reviewer, rollback owner, monitoring owner, and evidence owner are available.
+- Go only if rollback readiness, monitoring readiness, evidence capture, and post-execution verification checklists are complete.
+- No-Go if any runtime state evidence is stale, missing, contradictory, or implies live traffic already opened.
+- No-Go if any action would include deposit, withdraw, withdraw-all, launch game, create user, provider mutation endpoint testing, DB write, Prisma schema change, Prisma migration, live public route addition, external network call from local/CI, or secret/auth value printing.
+- No-Go if any repository artifact contains a copy-ready live enablement command.
+
+### Human Approval Record Template
+
+- Approval record ID:
+- Gate 9 decision owner:
+- Operator owner:
+- Second reviewer:
+- Rollback owner:
+- Monitoring owner:
+- Evidence owner:
+- Requested execution window:
+- Gate 7 evidence reference:
+- Gate 8 evidence reference:
+- Go/No-Go decision:
+- Gate 10 handoff approved:
+- Approval timestamp:
+- Notes:
+
+### Operator Role Checklist
+
+- Decision owner confirms Gate 9 is approval-boundary-only.
+- Operator owner confirms no runtime command is executed in Gate 9.
+- Second reviewer confirms no secret, token, password, client secret, auth value, env value, or full launch URL is present in repository artifacts.
+- Rollback owner confirms rollback readiness without executing rollback.
+- Monitoring owner confirms monitoring readiness without calling external services from local/CI.
+- Evidence owner confirms sanitized evidence capture locations and retention expectations.
+
+### Operator Two-Person Confirmation Checklist
+
+- Primary operator confirms the final operator hold remains active.
+- Second reviewer confirms Gate 10 requires separate explicit approval before actual controlled runtime enablement execution.
+- Primary operator and second reviewer confirm no live enablement flag has changed.
+- Primary operator and second reviewer confirm no PM2/env change has occurred.
+- Primary operator and second reviewer confirm no service restart for live mode has occurred.
+- Primary operator and second reviewer confirm no deposit, withdraw, withdraw-all, launch game, create user, provider mutation, DB write, external network call, or secret/auth print occurred during Gate 9.
+
+### Execution Window Checklist
+
+- Execution window ID:
+- Proposed Gate 10 start time:
+- Proposed Gate 10 end time:
+- Operator availability confirmed:
+- Second reviewer availability confirmed:
+- Rollback owner availability confirmed:
+- Monitoring owner availability confirmed:
+- Evidence owner availability confirmed:
+- Communication channel confirmed:
+- Abort escalation channel confirmed:
+- Gate 10 separate approval status:
+
+### Rollback Readiness Checklist
+
+- Fail-closed target state description is reviewed.
+- Rollback owner is assigned.
+- Second reviewer is assigned.
+- Rollback evidence location is confirmed.
+- Rollback communication channel is confirmed.
+- Post-rollback monitoring window is confirmed.
+- Rollback must remain manual/operator-controlled and outside local/CI.
+
+### Monitoring Readiness Checklist
+
+- Monitoring owner is assigned.
+- Monitoring window is defined.
+- Application health target is listed.
+- Process state target is listed in prose only.
+- Sanitized application log source is listed.
+- Sanitized Nginx log source is listed.
+- Error-rate threshold is defined.
+- Latency threshold is defined.
+- Escalation contact is confirmed.
+- Monitoring must not call provider endpoints, external services, or DB from local/CI.
+
+### Evidence Capture Checklist
+
+- Gate 9 approval record reference is reserved.
+- Gate 10 handoff reference is reserved.
+- Sanitized pre-execution state evidence is reserved.
+- Sanitized post-execution state evidence is reserved for Gate 10.
+- Sanitized log review evidence is reserved.
+- Rollback readiness evidence is reserved.
+- Monitoring evidence is reserved.
+- Incident note evidence is reserved.
+- Evidence capture must not store secret/auth material.
+
+### Post-Execution Verification Checklist
+
+- Post-execution verification belongs to Gate 10, not Gate 9 execution.
+- Confirm post-change health evidence will be captured in Gate 10.
+- Confirm post-change process state evidence will be captured in Gate 10.
+- Confirm sanitized log review will be captured in Gate 10.
+- Confirm runtime state verification will be captured in Gate 10 without printing secret/auth values.
+- Confirm rollback readiness will be re-confirmed after Gate 10 execution.
+- Confirm live transactional traffic remains off unless a separate live transaction test is explicitly approved.
+
+### Emergency Abort Criteria
+
+- Abort if any reviewer cannot confirm Gate 9 is final operator hold / execution approval boundary only.
+- Abort if any artifact includes a copy-ready live enablement command.
+- Abort if any action attempts to change live enablement flag, PM2/env state, or restart service for live mode during Gate 9.
+- Abort if any action attempts deposit, withdraw, withdraw-all, launch game, create user, provider mutation endpoint, DB write, Prisma schema change, Prisma migration, live public route addition, or external network call.
+- Abort if any artifact introduces secret-shaped strings, raw auth values, token/password/client secret values, database assignment patterns, or JWT/API-key-looking values.
+- Abort if any wording claims live runtime activation, live transactional traffic, real money, or real game launch is already enabled.
+
+### Gate 10 Handoff Requirements
+
+- Gate 10 must be opened as a separate gate after explicit user approval.
+- Gate 10 only may act as the actual controlled runtime enablement execution gate if Gate 9 passes.
+- Gate 10 must receive the final approval record, operator role checklist, execution window checklist, rollback readiness checklist, monitoring readiness checklist, evidence capture checklist, and post-execution verification checklist.
+- Gate 10 must preserve secret/auth material outside repository artifacts.
+- Gate 10 must keep actual controlled runtime enablement execution separate from any live transaction test.
+- Any deposit, withdraw, withdraw-all, launch game, create user, or provider mutation test after runtime enablement requires separate explicit user approval and separate evidence.
+
+### Gate 9 Outcome
+
+- ORO-LIVE-GATE-9 is current as the final runtime enablement operator hold / execution approval boundary.
+- Live runtime activation is still not enabled.
+- Live transactional traffic is still not enabled.
+- Real money is still not enabled.
+- Real game launch is still not enabled.
+- Gate 10 only may act as the actual controlled runtime enablement execution gate after Gate 9 approval.
+
 ## Diagnostic Script
 
 - `npm run oroplay:auth:diagnostic`
