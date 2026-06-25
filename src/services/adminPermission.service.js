@@ -59,6 +59,9 @@ const PERMISSIONS = [
   "wheel.claims.view",
   "wheel.claims.status.update",
   "wheel.audit.view",
+  "code_center.view",
+  "code_center.manage",
+  "member_rewards.view",
 ];
 
 const ROLE_PERMISSIONS = {
@@ -81,6 +84,9 @@ const ROLE_PERMISSIONS = {
     "wheel.reports.view",
     "wheel.report.view",
     "wheel.claims.view",
+    "code_center.view",
+    "code_center.manage",
+    "member_rewards.view",
   ],
   support: [
     "members.view",
@@ -168,6 +174,9 @@ const PERMISSION_DETAILS = [
   ["Lucky Wheel", "wheel.claims.view", "View reward claims", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/wheel/member-rewards"],
   ["Lucky Wheel", "wheel.claims.status.update", "Update reward claim status", "write", true, true, "/admin/lucky-wheel", "PATCH /api/admin/wheel/member-rewards/:id/status"],
   ["Lucky Wheel", "wheel.audit.view", "View wheel audit history", "read", false, false, "/admin/lucky-wheel", "GET /api/admin/audit-logs"],
+  ["Code Center", "code_center.view", "View Code Center campaigns and redeem logs", "read", false, false, "/admin/code-center", "GET /api/admin/code-center/campaigns"],
+  ["Code Center", "code_center.manage", "Create Code Center campaigns and codes", "write", true, true, "/admin/code-center", "POST /api/admin/code-center/campaigns"],
+  ["Code Center", "member_rewards.view", "View member reward wallet entries", "read", false, false, "/admin/code-center", "GET /api/admin/code-center/redeem-logs"],
   ["Admin/Audit", "admin.audit.view", "View admin audit logs", "read", false, false, "/admin/audit-security", "GET /api/admin/audit-logs"],
   ["Admin/Audit", "admin.security.view", "View security events", "read", false, false, "/admin/audit-security", "GET /api/admin/security-events"],
   ["Admin/Audit", "admin.roles.view", "View role management", "read", false, false, "/admin/roles", "GET /api/admin/roles"],

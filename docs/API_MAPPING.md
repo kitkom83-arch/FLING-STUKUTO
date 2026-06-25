@@ -7377,3 +7377,16 @@ ORO-9X records finalization review approval record finalization review approval 
 - detailed smoke: src/local-smoke-tests/oro11wSeparateSuccessorPhaseRuntimeImplementationReadinessReviewGateSmoke.js
 - wrapper smoke: src/local-smoke-tests/oro11wSmoke.js
 - package smoke aliases: smoke:oro-11w, smoke:oro-11w:detailed.
+
+## Code Center / Member Reward Wallet Core
+
+Status: CODE-CENTER-REWARD-WALLET-CORE-1 adds local-safe backend routes with an in-memory service adapter, designed to map to future Prisma tables without creating a production migration in this phase. It does not call providers, does not mutate cash wallet for non-cash rewards, and keeps `cash_credit` blocked until an explicit ledger guard exists.
+
+| Module | Screen | Action | Method | Endpoint | Request summary | Response summary | Permission | Audit action | Current status | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Code Center | Campaigns | List campaigns | GET | `/api/admin/code-center/campaigns` | filters | sanitized campaign rows and code counts | `code_center.view` | none | local-safe implemented | In-memory adapter; future DB mapping required. |
+| Code Center | Campaigns | Create campaign | POST | `/api/admin/code-center/campaigns` | name, status, reward type/amount, dates | sanitized campaign | `code_center.manage` | future `code_center.campaign.create` | local-safe implemented | Supports `coupon`, `box`, `diamond`, `pending_reward`; rejects `cash_credit` without ledger guard. |
+| Code Center | Codes | Generate codes | POST | `/api/admin/code-center/campaigns/:id/codes` | count, prefix | sanitized code rows | `code_center.manage` | future `code_center.codes.generate` | local-safe implemented | One-time redeem guard enforced. |
+| Code Center | Redeem logs | List redeem logs | GET | `/api/admin/code-center/redeem-logs` | filters | sanitized redeem log rows | `code_center.view` | none | local-safe implemented | No secret-shaped values returned. |
+| Member Code Center | Redeem | Redeem code | POST | `/api/code-center/redeem` | member JWT, code | reward wallet entry and redeem result | member self | future `code_center.redeem` | local-safe implemented | Duplicate redeem returns safe failure. |
+| Member Reward Wallet | Rewards | List/summary/history | GET | `/api/member/rewards`, `/api/member/rewards/summary`, `/api/member/rewards/history` | member JWT, filters | member-owned reward wallet views | member self | none | local-safe implemented | Non-cash rewards do not mutate cash wallet/ledger. |

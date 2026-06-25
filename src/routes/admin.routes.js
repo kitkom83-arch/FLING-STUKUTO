@@ -11,6 +11,7 @@ const bankMockController = require("../controllers/bankMock.controller");
 const depositController = require("../controllers/deposit.controller");
 const withdrawController = require("../controllers/withdraw.controller");
 const wheelController = require("../controllers/wheel.controller");
+const codeCenterController = require("../controllers/codeCenter.controller");
 const { adminHasPermission } = require("../services/adminPermission.service");
 const { asyncHandler } = require("../middleware/errorHandler");
 const { fail } = require("../utils/response");
@@ -209,5 +210,10 @@ router.get("/reports/summary", protectedSite, can("reports.view"), asyncHandler(
 router.get("/reports/deposits", protectedSite, can("reports.view"), asyncHandler(adminController.reportDeposits));
 router.get("/reports/withdrawals", protectedSite, can("reports.view"), asyncHandler(adminController.reportWithdrawals));
 router.get("/reports/wallet-ledger", protectedSite, can("reports.view"), asyncHandler(adminController.reportWalletLedger));
+
+router.get("/code-center/campaigns", protectedSite, can("code_center.view"), asyncHandler(codeCenterController.adminListCampaigns));
+router.post("/code-center/campaigns", protectedSite, can("code_center.manage"), asyncHandler(codeCenterController.adminCreateCampaign));
+router.post("/code-center/campaigns/:id/codes", protectedSite, can("code_center.manage"), asyncHandler(codeCenterController.adminGenerateCodes));
+router.get("/code-center/redeem-logs", protectedSite, can("code_center.view"), asyncHandler(codeCenterController.adminRedeemLogs));
 
 module.exports = router;

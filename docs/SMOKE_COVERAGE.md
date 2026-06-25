@@ -9596,3 +9596,14 @@ Coverage confirms ORO-9X is docs/static contract/mock helper/fixtures/local smok
 - Safety markers: no_api_balance, no_api_transaction, no_live_oroplay_api_call, no_external_network, no_wallet_mutation, no_ledger_mutation, no_prisma_write, no_migration, no_deploy, no_production_db, no_real_money, no_secret_token_password_clientSecret.
 - Validate with smoke:oro-11w and smoke:oro-11w:detailed.
 - Next phase requires separate gate.
+
+## CODE-CENTER-REWARD-WALLET-CORE-1
+
+- `npm run smoke:code-center-reward-wallet`
+  - creates local-safe Code Center campaigns and codes
+  - redeems coupon, diamond, box, and pending reward codes once
+  - verifies duplicate redeem fails
+  - verifies non-cash rewards land in Member Reward Wallet without cash wallet mutation
+  - verifies `cash_credit` is blocked until an explicit guarded ledger rule exists
+  - verifies admin permission guard blocks unauthorized access
+  - scans smoke responses for secret-shaped values
