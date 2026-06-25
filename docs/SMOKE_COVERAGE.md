@@ -63,6 +63,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `adminWheelUiSmoke.js` | `npm run smoke:admin-wheel-ui` | No | No | No | Syntax check plus static contract | Static Admin Lucky Wheel UI source contract for `/admin-wheel` and `/admin/lucky-wheel/`, exact five Phase Y tabs, permission summary panel, access-denied state, disabled write-action copy, campaign summary, reward modal/table fields, Reward Claims queue fields/actions, detail/status/claim modal selectors, spin empty state, reports/audit fields, endpoint usage, reason validation, 401/403 safe handling, audit reason/metadata.reason wiring, safe number/percent formatting, rendered-copy placeholder checks, static leak-shape checks, masked IP handling, singular and plural wheel permission aliases, no member spin endpoint call, no frontend reward selection, and no force reward/spin controls. |
 | `adminWheelRuntimeSmoke.js` | `npm run smoke:admin-wheel-runtime` | Yes | Yes | Yes | Syntax check only | Phase Y Admin Lucky Wheel runtime E2E: route/assets, unauth `401`, no-permission `403`, admin config campaign/reward reads, campaign/reward writes with unique reason, audit read bounded by `dateFrom`/`dateTo` with `metadata.reason`, member config/spin/history/my-rewards checks, backend-selected spin response, latest admin spin history lookup, finite report summary inputs, claim/cancel reason validation, write audit creation, audit read sanitization, and leak scan. Skips safely when local admin/member env is not configured. |
 | `wheelSmoke.js` | `npm run smoke:wheel` | Yes | Yes | Yes | Syntax check only | Lucky Wheel mock config/spin/history/rewards, Reward Wallet bridge entry, no-reward wallet skip, missing auth, invalid campaign, backend result selection, admin reason/audit checks, stock-zero exclusion, fail-safe guards, and leak scan. Skips safely when local runtime env is missing; blocks unsafe targets. |
+| `wheelFrontendApiConnectSmoke.js` | `npm run smoke:wheel-frontend-api-connect` | No | No | No | Runs static contract | Lucky Wheel standalone frontend API connect runbook smoke for `docs/WHEEL_GAME_V1_FRONTEND_API_CONNECT.md`, local Vite env, PG77 member wheel paths, backend result authority, forbidden frontend result fields, response mapper compatibility notes, reward wallet bridge proof through `smoke:wheel`, and safety boundaries. It does not use network, does not use DB, and does not call live API. |
 | `projectCloseoutSmoke.js` | `npm run smoke:project-closeout` | No | No | No | Runs static contract | Project Closeout Smoke checks final closeout docs, Lucky Wheel final UAT, admin operator handoff, safety boundaries, static secret scan, and unsafe rendered placeholder copy scan. It does not call API, connect DB, require a server, read env secrets, deploy, migrate, or seed. |
 | `stagingPreflight.js` | `npm run staging:preflight` | No local Prisma access | Optional | No | Runs local-test dry run | Staging readiness guard for env boundary, database/API target labels, external modes, health contract, and response leak scan. |
 | `stagingSmoke.js` | `npm run smoke:staging` | No local Prisma access | Yes | No | Syntax check only | Hosted staging health contract, safe external mode labels, admin auth negative leak check, and response leak scan. |
@@ -463,6 +464,21 @@ The Admin Wheel runtime smoke uses only local/staging/test PostgreSQL fixtures. 
 - Response leak scan checks DB URL markers, auth values, password/token/secret markers, JWT-like values, credential-shaped PostgreSQL URLs, credential header scheme markers, and raw internal stack traces.
 
 Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not call real provider, payment, bank, SMS, or Slip OCR services, does not run real-money UAT, and does not create real payout.
+
+## 18A. smoke:wheel-frontend-api-connect Coverage
+
+`npm run smoke:wheel-frontend-api-connect` is a docs/static contract smoke:
+
+- Reads `docs/WHEEL_GAME_V1_FRONTEND_API_CONNECT.md`.
+- Confirms the required local frontend env markers, including `VITE_WHEEL_API_BASE_URL=http://127.0.0.1:4000/api`.
+- Confirms the PG77 member Lucky Wheel paths for config, spin, history, and my rewards.
+- Confirms the contract says frontend spin sends only `campaignId` and must not submit frontend-selected reward result fields.
+- Confirms response mapper coverage notes include `success/data`, `remainingSpinsToday`, `remainingSpins`, `memberBalance`, `balanceAfter`, `rewards`, `prizeIndex`, `rewardId`, `reward.label/type/amount/displayValue`, history, and my-rewards records.
+- Confirms the runbook points reward-wallet proof to the existing backend `npm run smoke:wheel`.
+- Confirms safety terms for no production DB, no real money, no live API, no live provider/payment/bank/SMS/Slip OCR, no migration/schema change, and no `lucky-wheel-game.zip`/`node_modules`/`dist` committed.
+- Performs a static secret-shaped value scan.
+
+This smoke does not use network, does not use DB, and does not call live API.
 
 ## 19. staging:preflight Coverage
 

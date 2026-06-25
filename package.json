@@ -418,6 +418,7 @@
     "smoke:sandbox-integration-readiness": "node src/local-smoke-tests/sandboxIntegrationReadinessSmoke.js",
     "smoke:master-spec-mapping": "node src/local-smoke-tests/masterSpecMappingSmoke.js",
     "smoke:wheel": "node src/local-smoke-tests/wheelSmoke.js",
+    "smoke:wheel-frontend-api-connect": "node src/local-smoke-tests/wheelFrontendApiConnectSmoke.js",
     "smoke:project-closeout": "node src/local-smoke-tests/projectCloseoutSmoke.js",
     "staging:preflight": "node src/local-smoke-tests/stagingPreflight.js",
     "smoke:staging": "node src/local-smoke-tests/stagingSmoke.js",
