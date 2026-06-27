@@ -20,7 +20,7 @@
   const ADMIN_CODE_REWARD_ROUTE_NOTE =
     "Backend-connected read-only code/reward visibility uses GET /api/admin/code-center/campaigns and GET /api/admin/code-center/redeem-logs, while Lucky Wheel claim visibility remains on GET /api/admin/wheel/member-rewards.";
   const PROMOTION_BONUS_ROUTE_NOTE =
-    "Backend-connected promotion/bonus visibility uses GET /api/promotions plus read-only ledger/report relationship markers; POST /api/promotions/:id/claim is held out of this UI because it can create promotion_bonus ledger rows and turnover requirements.";
+    "Backend-connected promotion/bonus visibility uses GET /api/promotions plus read-only ledger/report relationship markers; POST /api/promotions/:id/claim is on promotion claim guard, local-safe preflight only, guarded hold, and fail-closed because it can create promotion_bonus ledger rows and turnover requirements.";
 
   const page = document.body && document.body.dataset ? document.body.dataset.page : "";
 
@@ -564,6 +564,22 @@
       return `${maxBonus}; ${endAt}`;
     }
 
+    function createPromotionClaimGuardCell(tr) {
+      const td = document.createElement("td");
+      const button = document.createElement("button");
+      button.type = "button";
+      button.disabled = true;
+      button.className = "secondary";
+      button.textContent = "Claim locked";
+      button.setAttribute("aria-label", "Promotion claim action locked on guarded hold");
+      td.appendChild(button);
+      const note = document.createElement("p");
+      note.className = "status-note";
+      note.textContent = "local-safe preflight only";
+      td.appendChild(note);
+      tr.appendChild(td);
+    }
+
     function renderPromotions() {
       renderEmptyState(els.promotionRows, els.promotionEmpty, state.promotions);
       state.promotions.forEach(function (row) {
@@ -573,7 +589,8 @@
         createCell(tr, formatMoney(row.minDeposit));
         createCell(tr, `${formatMoney(row.turnoverMultiplier)}x`);
         createCell(tr, promotionWithdrawCondition(row));
-        createCell(tr, "read_only_hold", "status-pending");
+        createCell(tr, "guarded_hold_fail_closed", "status-pending");
+        createPromotionClaimGuardCell(tr);
         els.promotionRows.appendChild(tr);
       });
     }
@@ -1275,6 +1292,7 @@
         createCell(tr, adminPromotionBonusText(row));
         createCell(tr, `${formatMoney(row.turnoverMultiplier)}x`);
         createCell(tr, adminPromotionWithdrawCondition(row));
+        createCell(tr, "guarded_hold_fail_closed", "status-pending");
         els.promotionRows.appendChild(tr);
       });
     }

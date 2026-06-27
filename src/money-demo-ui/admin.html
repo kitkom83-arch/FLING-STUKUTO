@@ -125,7 +125,11 @@
         </section>
       </section>
 
-      <section class="panel" data-backoffice-promotion-bonus-connect-marker="backend_connected_promotion_bonus_read_only_local_safe">
+      <section
+        class="panel"
+        data-backoffice-promotion-bonus-connect-marker="backend_connected_promotion_bonus_read_only_local_safe"
+        data-promotion-claim-guard-marker="promotion claim guard local-safe preflight only guarded hold fail-closed"
+      >
         <div class="panel-heading">
           <div>
             <h2>Promotion / Bonus Read-only Bridge</h2>
@@ -137,6 +141,7 @@
           <p>Member-visible promotion campaign list: GET /api/promotions.</p>
           <p>Promotion claim route exists: POST /api/promotions/:id/claim, but admin UI does not call it because it can create promotion_bonus ledger rows and turnover requirements.</p>
           <p>Bonus/free-credit relationship visibility: GET /api/admin/reports/summary and GET /api/admin/reports/wallet-ledger.</p>
+          <p>Promotion claim guard: admin sees guarded hold/fail-closed status only; claim must pass a future approved backend guard and cannot be triggered by frontend direct POST.</p>
           <p>Code Center / Reward Wallet relationship remains local-safe/read-only through GET /api/admin/code-center/campaigns, GET /api/admin/code-center/redeem-logs, and GET /api/admin/wheel/member-rewards.</p>
           <p>Admin promotion CRUD/config backend is MISSING_BACKEND; New project.zip remains a UI/mock reference only.</p>
           <p>No production DB. No deploy. No live provider/payment/bank/SMS/slip OCR. No real credit/debit runtime action.</p>
@@ -158,6 +163,10 @@
           <article class="status-card">
             <span>Admin CRUD</span>
             <strong id="admin-promotion-crud-status">missing_backend</strong>
+          </article>
+          <article class="status-card">
+            <span>Claim Action</span>
+            <strong>guarded_hold</strong>
           </article>
         </section>
       </section>
@@ -230,6 +239,7 @@
                   <th>Bonus</th>
                   <th>Turnover</th>
                   <th>Withdraw Condition</th>
+                  <th>Claim Guard</th>
                 </tr>
               </thead>
               <tbody id="admin-promotion-rows"></tbody>

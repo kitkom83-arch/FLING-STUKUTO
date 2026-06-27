@@ -163,7 +163,11 @@
         </article>
       </section>
 
-      <section class="panel" data-backoffice-promotion-bonus-connect-marker="backend_connected_promotion_bonus_local_safe">
+      <section
+        class="panel"
+        data-backoffice-promotion-bonus-connect-marker="backend_connected_promotion_bonus_local_safe"
+        data-promotion-claim-guard-marker="promotion claim guard local-safe preflight only guarded hold fail-closed"
+      >
         <div class="panel-heading">
           <div>
             <h2>Promotion / Bonus Visibility</h2>
@@ -175,10 +179,28 @@
           <p>Promotion campaign visibility: GET /api/promotions.</p>
           <p>Claim route exists as POST /api/promotions/:id/claim, but this UI does not call it because it can create promotion_bonus ledger rows and turnover requirements.</p>
           <p>Claim status and turnover/withdraw condition visibility are read through local-safe wallet ledger, deposits, and reward wallet relationship surfaces.</p>
+          <p>Promotion claim guard: claim action locked, guarded hold, fail-closed, and local-safe preflight only until a separate runtime approval opens the action.</p>
           <p>Relationship markers: Code Center / Reward Wallet / Ledger stay local-safe/read-only or guarded-safe only.</p>
           <p>No production DB. No deploy. No live provider/payment/bank/SMS/slip OCR. No real credit/debit runtime action.</p>
         </div>
         <div id="member-promotion-state" class="notice">Login a member first to read backend-connected promotion and bonus visibility.</div>
+      </section>
+
+      <section class="panel" data-promotion-claim-preflight-marker="local-safe preflight only guarded hold fail-closed">
+        <div class="panel-heading">
+          <div>
+            <h2>Promotion Claim Guard</h2>
+            <p>Read-only preflight for the existing claim route. The member UI shows conditions but keeps claim execution locked.</p>
+          </div>
+          <span class="mode-pill">guarded_hold</span>
+        </div>
+        <div class="marker-list">
+          <p>Route marker: GET /api/promotions is connected for campaign and condition visibility.</p>
+          <p>Route marker: POST /api/promotions/:id/claim exists, requires member auth, and remains on guarded hold in this UI.</p>
+          <p>Preflight visibility: min deposit, bonus/free credit amount, turnover multiplier, withdraw condition, status, and ledger relationship are visible before any future claim action.</p>
+          <p>Fail-closed behavior: no claim button posts to the backend; disabled controls are labels for operator review only.</p>
+          <p>Local-safe preflight only: bonus ledger and turnover requirement creation remain visibility only and out of scope for frontend runtime.</p>
+        </div>
       </section>
 
       <section class="status-grid compact-grid" aria-label="Member promotion bonus summary">
@@ -218,6 +240,7 @@
                 <th>Turnover</th>
                 <th>Withdraw Condition</th>
                 <th>Claim Status</th>
+                <th>Claim Guard</th>
               </tr>
             </thead>
             <tbody id="member-promotion-rows"></tbody>
