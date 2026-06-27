@@ -11,6 +11,10 @@
   const WHEEL_AUDIT_ACTIONS = ["wheel.campaign.update", "wheel.reward.create", "wheel.reward.update", "wheel.reward.enable", "wheel.reward.disable", "wheel.memberReward.status.update"];
   const DENIED_ACTION_MESSAGE = "ไม่มีสิทธิ์ดำเนินการนี้";
   const DENIED_VIEW_MESSAGE = "ไม่มีสิทธิ์เข้าถึง";
+  const ADMIN_SOURCE_OF_TRUTH_MARKER = "Backend/admin source only";
+  const ADMIN_PRIZE_LIST_MARKER = "Prize list from GET /api/admin/wheel/config";
+  const MEMBER_SOURCE_LINK_MARKER = "Same backend source used by member config and member spin flow.";
+  const LOCAL_SAFE_CONFIG_MARKER = "local/mock-safe config";
   const DB_CONNECTION_KEY_PATTERN = ["data", "base", "[_-]?url"].join("");
   const SENSITIVE_KEY_PATTERN = new RegExp(`(pass(word|code)?|token|secret|api[_-]?key|authorization|session|cookie|${DB_CONNECTION_KEY_PATTERN}|refresh|headers?)`, "i");
   const SENSITIVE_DISPLAY_PATTERN = new RegExp(`\\b(password|token|secret|authorization|${["data", "base", "_url"].join("")})\\b`, "i");
@@ -43,6 +47,8 @@
     sessionState: document.getElementById("session-state"),
     globalError: document.getElementById("global-error"),
     toast: document.getElementById("toast"),
+    safeBoundary: document.querySelector(".safe-boundary"),
+    leakBoundary: document.querySelector(".leak-boundary"),
     tabButtons: Array.from(document.querySelectorAll("[data-tab]")),
     tabPanels: Array.from(document.querySelectorAll(".tab-panel")),
     consoleStatusBadge: document.getElementById("console-status-badge"),
@@ -536,6 +542,29 @@
     return state.config && Array.isArray(state.config.rewards) ? state.config.rewards : [];
   }
 
+  function configModeValue() {
+    const summary = state.config && state.config.summary && typeof state.config.summary === "object" ? state.config.summary : {};
+    return summary.mode ? safeText(summary.mode) : "backend_db_config";
+  }
+
+  function configModeLabel() {
+    return configModeValue() === "staging_mock_only" ? LOCAL_SAFE_CONFIG_MARKER : "backend database config";
+  }
+
+  function renderSourceVisibility() {
+    const row = campaign();
+    const rewardCount = rewards().length;
+    const activeCampaignId = safeText(row.id || "wheel_main");
+    const activeStatus = safeText(row.status || "inactive");
+    const sourceSummary = `${ADMIN_SOURCE_OF_TRUTH_MARKER}. Active campaign ${activeCampaignId} (${activeStatus}). ${ADMIN_PRIZE_LIST_MARKER}: ${rewardCount} rows. ${MEMBER_SOURCE_LINK_MARKER}. Local/mock-safe config. No real money. No live provider. Mode ${configModeLabel()}.`;
+    if (els.safeBoundary) {
+      els.safeBoundary.textContent = sourceSummary;
+    }
+    if (els.leakBoundary) {
+      els.leakBoundary.textContent = `Response leak warning: sanitized UI only. Raw credentials, connection strings, request headers, and sign-in state values are not rendered. ${MEMBER_SOURCE_LINK_MARKER}.`;
+    }
+  }
+
   function normalizeCampaign(row) {
     const source = row && typeof row === "object" ? row : {};
     return {
@@ -712,6 +741,7 @@
     els.campaignRules.value = row.rulesText || "";
     els.campaignReason.value = "";
     renderCampaignSummary(row);
+    renderSourceVisibility();
   }
 
   function renderCampaignSummary(row) {
@@ -722,12 +752,13 @@
     els.consoleStatusBadge.className = `summary-status ${status === "active" ? "ok" : ""}`.trim();
     els.consoleSiteCode.textContent = SITE_CODE;
     els.consoleLastUpdated.textContent = formatDate(row.updatedAt);
-    els.campaignSummaryName.textContent = safeText(row.name || "-");
+    els.campaignId.title = MEMBER_SOURCE_LINK_MARKER;
+    els.campaignSummaryName.textContent = `${safeText(row.name || "-")} (${safeText(row.id || "wheel_main")})`;
     els.campaignSummaryCost.textContent = `${formatNumber(row.costAmount)} ${safeText(row.costType || "point")}`;
     els.campaignSummaryDaily.textContent = formatNumber(row.dailySpinLimit || 0);
     const start = row.startAt ? formatDate(row.startAt) : "-";
     const end = row.endAt ? formatDate(row.endAt) : "-";
-    els.campaignSummaryWindow.textContent = `${start} / ${end}`;
+    els.campaignSummaryWindow.textContent = `${start} / ${end} / ${configModeLabel()}`;
   }
 
   function validateReason(input, errorEl) {
@@ -848,11 +879,26 @@
     updateAccessStates();
     const rows = rewards();
     els.rewardRows.innerHTML = "";
+    renderSourceVisibility();
+    els.rewardsEmpty.textContent = `${ADMIN_PRIZE_LIST_MARKER}: no rewards available for the active campaign.`;
     els.rewardsEmpty.classList.toggle("hidden", rows.length > 0);
     rows.forEach((reward, index) => {
       const tr = document.createElement("tr");
       tr.appendChild(createCell(reward.sortOrder || index + 1));
-      tr.appendChild(createCell(reward.label));
+      const label = document.createElement("td");
+      const labelStack = document.createElement("div");
+      labelStack.className = "stack";
+      const labelTitle = document.createElement("strong");
+      labelTitle.textContent = safeText(reward.label);
+      const labelMeta = document.createElement("span");
+      labelMeta.textContent = `reward id ${safeText(reward.id)} / campaign ${safeText(reward.campaignId)}`;
+      const labelSource = document.createElement("span");
+      labelSource.textContent = ADMIN_SOURCE_OF_TRUTH_MARKER;
+      labelStack.appendChild(labelTitle);
+      labelStack.appendChild(labelMeta);
+      labelStack.appendChild(labelSource);
+      label.appendChild(labelStack);
+      tr.appendChild(label);
       tr.appendChild(createCell(rewardTypeLabel(reward.rewardType)));
       tr.appendChild(createCell(reward.rewardValue));
       tr.appendChild(createCell(reward.probabilityWeight));
@@ -1706,7 +1752,7 @@
     state.statusReward = null;
     state.memberRewardStatus = null;
     els.credential.value = "";
-    els.sessionState.textContent = "No session loaded";
+    els.sessionState.textContent = "No sign-in state loaded";
     setGlobalError("");
     els.rewardsLoading.classList.add("hidden");
     els.spinsLoading.classList.add("hidden");
@@ -1714,6 +1760,7 @@
     els.auditLoading.classList.add("hidden");
     renderCampaign();
     renderRewards();
+    renderSourceVisibility();
     renderSpins();
     renderMemberRewards();
     renderReports();
@@ -1730,7 +1777,7 @@
       return;
     }
     state.credential = credential;
-    els.sessionState.textContent = "Session loaded for PG77";
+    els.sessionState.textContent = "Sign-in state loaded for PG77";
     try {
       await loadAll();
       setToast("Loaded Lucky Wheel console");
