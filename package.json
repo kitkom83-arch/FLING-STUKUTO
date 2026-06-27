@@ -60,6 +60,7 @@
     "smoke:backoffice-promotion-admin-write-readiness": "node src/local-smoke-tests/backofficePromotionAdminWriteReadinessSmoke.js",
     "smoke:backoffice-promotion-admin-write-dry-run": "node src/local-smoke-tests/backofficePromotionAdminWriteDryRunSmoke.js",
     "smoke:backoffice-promotion-admin-write-validator": "node src/local-smoke-tests/backofficePromotionAdminWriteValidatorSmoke.js",
+    "smoke:backoffice-promotion-admin-dry-run-api-contract": "node src/local-smoke-tests/backofficePromotionAdminDryRunApiContractSmoke.js",
     "smoke:admin-browser-routes": "node src/local-smoke-tests/adminBrowserRoutesSmoke.js",
     "smoke:admin-member-history-read-only": "node src/local-smoke-tests/adminMemberHistoryReadOnlySmoke.js",
     "smoke:admin-backoffice-read-only-integration": "node src/local-smoke-tests/adminBackofficeReadOnlyIntegrationSmoke.js",

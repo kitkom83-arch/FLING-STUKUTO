@@ -13,6 +13,8 @@
     "promotion admin write readiness stays write locked and local-safe preflight only; future permission boundary requires settings.promotion.write or settings.promotion.manage, audit reason required, before/after diff required, status transition guard, bonus/turnover risk acknowledgement, no runtime credit action, and claim guarded hold.";
   const PROMOTION_ADMIN_WRITE_VALIDATOR_NOTE =
     "promotion admin write validator is pure validator, validate-only, write locked, no DB write, no runtime credit action, no ledger creation, and no turnover creation.";
+  const PROMOTION_ADMIN_DRY_RUN_API_CONTRACT_NOTE =
+    "promotion admin dry-run API contract is contract-only, not mounted, validate-only, write locked, and no DB write.";
   const PROMOTION_ADMIN_WRITE_DRY_RUN_NOTE =
     "promotion admin write dry-run is validate-only for future payloads: title/type/status, minDeposit/maxDeposit, bonusType/bonusValue, turnoverMultiplier, maxWithdraw, startAt/endAt, auditReason, and riskAcknowledgement; audit reason required, before/after diff required, risk acknowledgement required when bonus/turnover/maxWithdraw changes, status transition must be explicit, numeric fields must be non-negative, startAt <= endAt when both set, no DB write, no runtime credit action, no ledger creation, no turnover creation, dry-run before runtime, write locked, and future permission boundary.";
   const DAYS = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];

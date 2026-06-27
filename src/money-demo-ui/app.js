@@ -27,6 +27,8 @@
     "Promotion admin write readiness is write locked and local-safe preflight only: future settings.promotion.write or settings.promotion.manage permission, audit reason required, before/after diff required, status transition guard, bonus/turnover risk acknowledgement, local-safe dry-run before runtime, no runtime credit action, and claim guarded hold.";
   const ADMIN_PROMOTION_WRITE_VALIDATOR_NOTE =
     "Promotion admin write validator is a pure validator, validate-only, write locked, no DB write, no runtime credit action, no ledger creation, and no turnover creation.";
+  const ADMIN_PROMOTION_DRY_RUN_API_CONTRACT_NOTE =
+    "Promotion admin dry-run API contract is contract-only, not mounted, validate-only, write locked, and no DB write.";
   const PROMOTION_ADMIN_WRITE_DRY_RUN_CONTRACT = {
     phase: "BACKOFFICE-PROMOTION-ADMIN-WRITE-DRY-RUN-28",
     mode: "promotion admin write dry-run validate-only no DB write no runtime credit action no ledger creation no turnover creation dry-run before runtime write locked future permission boundary",

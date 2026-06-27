@@ -274,6 +274,24 @@
         </div>
       </section>
 
+      <section class="panel" data-promotion-admin-dry-run-api-contract-marker="BACKOFFICE-PROMOTION-ADMIN-DRY-RUN-API-CONTRACT-30">
+        <div class="panel-heading">
+          <div>
+            <h2>Promotion Admin Dry-run API Contract</h2>
+            <p>Contract-only preview for a future dry-run API. Not mounted, validate-only, and still write locked.</p>
+          </div>
+          <span class="mode-pill">contract_only_not_mounted</span>
+        </div>
+        <div class="marker-list">
+          <p>promotion admin dry-run API contract: contract-only, not mounted, validate-only, write locked.</p>
+          <p>Proposed endpoint: POST /api/admin/promotions/:id/dry-run.</p>
+          <p>Permission boundary: current read permission settings.promotion.view; future dry-run permission settings.promotion.write or settings.promotion.manage.</p>
+          <p>Request shape: before, after, auditReason, riskAcknowledgement, and the promotion fields title/type/status, minDeposit/maxDeposit, bonusType/bonusValue, turnoverMultiplier, maxWithdraw, startAt/endAt.</p>
+          <p>Response shape: ok, mode, writeLocked, validator, diff, riskSummary, warnings, errors, and audit.</p>
+          <p>No DB write. No runtime credit action. No ledger creation. No turnover creation. No claim execution.</p>
+        </div>
+      </section>
+
       <section class="panel">
         <div class="panel-heading">
           <div>
