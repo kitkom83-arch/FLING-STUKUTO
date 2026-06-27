@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
+    "build:member-lucky-wheel": "npm run build --prefix apps/lucky-wheel-game",
     "prisma:validate": "prisma validate",
     "prisma:migrate": "prisma migrate dev --name init",
     "db:migrate:staging": "node src/db-safety-tests/dbSafetyGuard.js && prisma migrate deploy",
@@ -418,6 +419,7 @@
     "smoke:sandbox-integration-readiness": "node src/local-smoke-tests/sandboxIntegrationReadinessSmoke.js",
     "smoke:master-spec-mapping": "node src/local-smoke-tests/masterSpecMappingSmoke.js",
     "smoke:wheel": "node src/local-smoke-tests/wheelSmoke.js",
+    "smoke:member-wheel-entry": "node src/local-smoke-tests/memberLuckyWheelEntrySmoke.js",
     "smoke:wheel-frontend-api-connect": "node src/local-smoke-tests/wheelFrontendApiConnectSmoke.js",
     "smoke:wheel-source-import": "node src/local-smoke-tests/luckyWheelGameSourceImportSmoke.js",
     "smoke:project-closeout": "node src/local-smoke-tests/projectCloseoutSmoke.js",

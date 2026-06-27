@@ -406,6 +406,35 @@ button:focus-visible {
   text-shadow: 0 0 14px rgba(255, 203, 84, 0.28);
 }
 
+.member-demo-link-row {
+  pointer-events: auto;
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 98px;
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  text-align: center;
+  color: rgba(255, 232, 196, 0.78);
+  font-size: 11px;
+  z-index: 4;
+}
+
+.member-demo-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 11rem;
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 215, 148, 0.34);
+  background: rgba(77, 8, 10, 0.72);
+  color: #fff1ce;
+  text-decoration: none;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.16);
+}
+
 .safe-message {
   pointer-events: auto;
   position: absolute;
@@ -899,6 +928,7 @@ button:focus-visible {
   .bottom-nav button:hover,
   .result-modal button:hover,
   .icon-button:hover,
+  .member-demo-link:hover,
   .reward-row:hover,
   .history-row:hover {
     filter: brightness(1.06) saturate(1.04);

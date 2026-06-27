@@ -9,6 +9,7 @@
     "preview": "vite preview --host 127.0.0.1"
   },
   "dependencies": {
+    "pg77-real-core-backend": "file:../..",
     "phaser": "^3.90.0"
   },
   "devDependencies": {

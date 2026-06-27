@@ -4,6 +4,8 @@
   const SITE_CODE = "PG77";
   const API_BASE = "/api";
   const STORAGE_PREFIX = "pg77-money-demo";
+  const WHEEL_MEMBER_ROUTE = "/member/lucky-wheel/";
+  const WHEEL_AUTH_STORAGE_KEY = "pg77_member_token";
   const DEFAULT_MEMBER_PASSWORD = "localSmokeMember123";
   const DEFAULT_ADMIN_USERNAME = "local_money_flow_admin";
   const DEFAULT_ADMIN_PASSWORD = "local-demo-admin-code-not-real";
@@ -66,6 +68,23 @@
     } catch (_error) {
       // Best effort for local demo only.
     }
+  }
+
+  function writeRawStorage(key, value) {
+    try {
+      if (!key) return;
+      if (value === null || value === undefined || value === "") {
+        window.localStorage.removeItem(key);
+        return;
+      }
+      window.localStorage.setItem(key, String(value));
+    } catch (_error) {
+      // Best effort for local demo only.
+    }
+  }
+
+  function syncLuckyWheelMemberToken(token) {
+    writeRawStorage(WHEEL_AUTH_STORAGE_KEY, token || "");
   }
 
   function apiRequest(path, options) {
@@ -160,6 +179,7 @@
       refresh: document.getElementById("member-refresh"),
       login: document.getElementById("member-login"),
       clear: document.getElementById("member-clear-session"),
+      openLuckyWheel: document.getElementById("open-member-lucky-wheel"),
       phone: document.getElementById("member-phone"),
       password: document.getElementById("member-password"),
       username: document.getElementById("member-username"),
@@ -212,6 +232,7 @@
         els.refresh,
         els.login,
         els.clear,
+        els.openLuckyWheel,
         els.createDeposit,
         els.createWithdrawal,
       ].forEach(function (button) {
@@ -253,6 +274,7 @@
       }
       setMemberSessionState("not_ready");
       persistMemberSession({ token: null, profile: null });
+      syncLuckyWheelMemberToken(null);
     }
 
     function describeError(error, fallback) {
@@ -438,6 +460,7 @@
         token: state.token,
           profile: state.profile,
         });
+      syncLuckyWheelMemberToken(state.token);
     }
 
     async function probeMemberToken() {
@@ -446,7 +469,19 @@
       state.tokenVerified = true;
       setMemberSessionState("ready");
       persistMemberSession({ token: state.token, profile: state.profile });
+      syncLuckyWheelMemberToken(state.token);
       return true;
+    }
+
+    function openLuckyWheel() {
+      const savedSession = readSavedMember();
+      const token = safeText(state.token || (savedSession && savedSession.token), "");
+      if (!token) {
+        els.statusText.textContent = "Login a member first before opening Lucky Wheel.";
+        return;
+      }
+      syncLuckyWheelMemberToken(token);
+      window.location.assign(WHEEL_MEMBER_ROUTE);
     }
 
     async function loginWithSession(session) {
@@ -718,9 +753,13 @@
       state.tokenVerified = false;
       state.profile = savedSession.profile || null;
       setMemberSessionState(state.token ? "restoring" : "not_ready");
+      if (state.token) {
+        syncLuckyWheelMemberToken(state.token);
+      }
     } else {
       ensureMemberDraft();
       setMemberSessionState("not_ready");
+      syncLuckyWheelMemberToken(null);
     }
 
     els.bootstrap.addEventListener("click", function () {
@@ -733,6 +772,9 @@
       loginDemoMember().catch(function () {});
     });
     els.clear.addEventListener("click", clearMemberSession);
+    if (els.openLuckyWheel) {
+      els.openLuckyWheel.addEventListener("click", openLuckyWheel);
+    }
     els.createDeposit.addEventListener("click", function () {
       createDeposit().catch(function () {});
     });

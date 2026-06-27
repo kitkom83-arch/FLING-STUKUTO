@@ -1,3 +1,4 @@
+const fs = require("fs");
 const express = require("express");
 const path = require("path");
 const cors = require("cors");
@@ -21,6 +22,7 @@ const adminWheelUiDir = path.join(__dirname, "admin-wheel-ui");
 const adminAuditUiDir = path.join(__dirname, "admin-audit-ui");
 const memberWheelDemoUiDir = path.join(__dirname, "wheel-demo-ui");
 const moneyDemoUiDir = path.join(__dirname, "money-demo-ui");
+const memberLuckyWheelUiDir = path.join(__dirname, "..", "apps", "lucky-wheel-game", "dist");
 
 function corsOrigin(origin, callback) {
   if (!origin && env.nodeEnv === "development") return callback(null, true);
@@ -62,6 +64,15 @@ function sendMemberMoneyDemoUi(_req, res) {
   res.sendFile(path.join(moneyDemoUiDir, "member.html"));
 }
 
+function sendMemberLuckyWheelUi(_req, res) {
+  const indexPath = path.join(memberLuckyWheelUiDir, "index.html");
+  if (!fs.existsSync(indexPath)) {
+    res.status(503).type("text/plain").send("Lucky Wheel build is unavailable. Run npm run build --prefix apps/lucky-wheel-game.");
+    return;
+  }
+  res.sendFile(indexPath);
+}
+
 function sendAdminMoneyDemoUi(_req, res) {
   res.sendFile(path.join(moneyDemoUiDir, "admin.html"));
 }
@@ -92,6 +103,7 @@ app.get(["/admin/audit-security", "/admin/audit-security/"], sendAdminAuditUi);
 app.get(["/admin-wheel", "/admin-wheel/", "/admin/lucky-wheel", "/admin/lucky-wheel/"], sendAdminWheelUi);
 app.get(["/wheel-demo", "/wheel-demo/", "/member/wheel-demo", "/member/wheel-demo/"], sendMemberWheelDemoUi);
 app.get(["/member-money-demo", "/member-money-demo/"], sendMemberMoneyDemoUi);
+app.get(["/member/lucky-wheel", "/member/lucky-wheel/"], sendMemberLuckyWheelUi);
 app.get(["/admin-money-demo", "/admin-money-demo/"], sendAdminMoneyDemoUi);
 app.get(["/oroplay-demo", "/oroplay-demo/"], sendOroplayDemoUi);
 staticGetHead("/admin/work-schedules", adminUiDir, { index: "index.html" });
@@ -102,6 +114,7 @@ staticGetHead("/admin/lucky-wheel", adminWheelUiDir, { index: "index.html" });
 staticGetHead("/wheel-demo", memberWheelDemoUiDir, { index: "index.html" });
 staticGetHead("/member/wheel-demo", memberWheelDemoUiDir, { index: "index.html" });
 staticGetHead("/member-money-demo", moneyDemoUiDir, { index: "member.html" });
+staticGetHead("/member/lucky-wheel", memberLuckyWheelUiDir, { index: "index.html" });
 staticGetHead("/admin-money-demo", moneyDemoUiDir, { index: "admin.html" });
 staticGetHead("/oroplay-demo", moneyDemoUiDir, { index: "oroplay.html" });
 // ORO-5N: internal fail-closed OroPlay callback staging mount only.

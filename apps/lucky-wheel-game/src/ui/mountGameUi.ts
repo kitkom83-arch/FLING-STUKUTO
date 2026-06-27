@@ -75,6 +75,10 @@ function renderMainControls(state: LuckyWheelState): string {
       <button type="button" data-screen="history"><span class="nav-glyph history"></span><span>History</span></button>
     </nav>
     <div class="spin-helper">${state.isSpinning ? 'Backend result received - wheel resolving' : `Tap SPIN to request a ${modeLabel} result`}</div>
+    <div class="member-demo-link-row">
+      <a class="member-demo-link" href="/member-money-demo/">Back to Member Demo</a>
+      <span>Return and tap Refresh Data after a spin to refresh the wallet view.</span>
+    </div>
   `;
 }
 

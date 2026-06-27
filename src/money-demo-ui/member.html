@@ -26,16 +26,29 @@
         <div class="panel-heading">
           <div>
             <h2>Play Games / เล่นเกม</h2>
-            <p>Open the local OroPlay launcher demo without touching the real member wallet flow.</p>
+            <p>Choose a local-safe launcher. Lucky Wheel reuses the current member session and keeps backend-selected results.</p>
           </div>
-          <span class="mode-pill">local_demo_only</span>
+          <span class="mode-pill">member_game_entry</span>
         </div>
-        <div class="game-entry-copy">
-          <p class="game-entry-note">Local OroPlay demo only</p>
-          <p class="game-entry-note">Test balance/session is separate from real member wallet</p>
-        </div>
-        <div class="button-row">
-          <a class="game-entry-link" href="/oroplay-demo" target="_blank" rel="noreferrer noopener">Open OroPlay Demo</a>
+        <div class="game-entry-grid">
+          <article class="game-entry-tile">
+            <div class="game-entry-copy">
+              <p class="game-entry-note">Lucky Wheel V1</p>
+              <p class="game-entry-note">Uses the current member session and opens the standalone wheel at /member/lucky-wheel/</p>
+            </div>
+            <div class="button-row">
+              <button id="open-member-lucky-wheel" type="button">เล่นกงล้อ</button>
+            </div>
+          </article>
+          <article class="game-entry-tile">
+            <div class="game-entry-copy">
+              <p class="game-entry-note">Local OroPlay demo only</p>
+              <p class="game-entry-note">Test balance and launcher session stay separate from the member wallet</p>
+            </div>
+            <div class="button-row">
+              <a class="game-entry-link secondary-link" href="/oroplay-demo" target="_blank" rel="noreferrer noopener">Open OroPlay Demo</a>
+            </div>
+          </article>
         </div>
       </section>
 

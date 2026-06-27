@@ -377,10 +377,24 @@ th {
   margin-bottom: 1rem;
 }
 
+.game-entry-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.game-entry-tile {
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.38);
+  display: grid;
+  gap: 0.9rem;
+}
+
 .game-entry-copy {
   display: grid;
   gap: 0.35rem;
-  margin-bottom: 0.9rem;
 }
 
 .game-entry-note {
@@ -402,6 +416,12 @@ th {
 
 .game-entry-link:hover {
   filter: brightness(1.04);
+}
+
+.game-entry-link.secondary-link {
+  background: #fff;
+  color: var(--ink);
+  border: 1px solid var(--line);
 }
 
 .launch-form {
@@ -433,6 +453,10 @@ th {
   }
 
   .game-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .game-entry-grid {
     grid-template-columns: 1fr;
   }
 
