@@ -186,6 +186,7 @@
         </div>
         <div class="marker-list">
           <p>promotion admin write readiness: admin promotion write locked; local-safe preflight only; no runtime credit action; claim guarded hold.</p>
+          <p>promotion admin write validator: pure validator boundary, validate-only, write locked, no DB write, no runtime credit action.</p>
           <p>No create/update/delete button is rendered for admin promotions, and no backend create/update/delete promotion route is called from this UI.</p>
           <p>Future permission boundary: require settings.promotion.write or settings.promotion.manage in addition to the current settings.promotion.view read guard.</p>
           <p>Future guard checklist: audit reason required, before/after diff required, status transition guard, bonus/turnover risk acknowledgement, and local-safe dry-run before runtime.</p>
@@ -230,6 +231,7 @@
         </div>
         <div class="marker-list">
           <p>promotion admin write dry-run: validate-only, no DB write, no runtime credit action, no ledger creation, no turnover creation.</p>
+          <p>promotion admin write validator: pure validator, validate-only, write locked, no DB write, no ledger creation, no turnover creation.</p>
           <p>Dry-run before runtime: admin promotion write locked; no backend POST/PATCH/PUT/DELETE route is called from this UI.</p>
           <p>Future permission boundary: settings.promotion.write or settings.promotion.manage must be approved before any runtime write route exists.</p>
           <p>Validation rules: audit reason required, before/after diff required, status transition must be explicit, numeric fields must be non-negative, and startAt &lt;= endAt when both are set.</p>
