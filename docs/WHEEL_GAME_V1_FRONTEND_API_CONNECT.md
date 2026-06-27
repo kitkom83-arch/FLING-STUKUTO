@@ -70,6 +70,14 @@ No backend compatibility change is required for this phase.
 
 ## Safe Placement
 
+Source custody path after `WHEEL-GAME-V1-SOURCE-IMPORT-11`:
+
+```text
+apps/lucky-wheel-game/
+```
+
+Local frontend development can run from this path. Create `apps/lucky-wheel-game/.env.local` yourself from `apps/lucky-wheel-game/.env.example`; do not commit `.env.local`.
+
 Keep `lucky-wheel-game.zip` outside PG77-real-core, for example:
 
 ```text
