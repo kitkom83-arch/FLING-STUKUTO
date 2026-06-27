@@ -49,6 +49,7 @@
     "smoke:admin-wheel-runtime": "node src/local-smoke-tests/adminWheelRuntimeSmoke.js",
     "smoke:admin-wheel-campaign-connect": "node src/local-smoke-tests/adminWheelCampaignConnectSmoke.js",
     "smoke:admin-wheel-campaign-edit": "node src/local-smoke-tests/adminWheelCampaignEditSmoke.js",
+    "smoke:backoffice-demo-api-mapping": "node src/local-smoke-tests/backofficeDemoApiMappingSmoke.js",
     "smoke:admin-browser-routes": "node src/local-smoke-tests/adminBrowserRoutesSmoke.js",
     "smoke:admin-member-history-read-only": "node src/local-smoke-tests/adminMemberHistoryReadOnlySmoke.js",
     "smoke:admin-backoffice-read-only-integration": "node src/local-smoke-tests/adminBackofficeReadOnlyIntegrationSmoke.js",
