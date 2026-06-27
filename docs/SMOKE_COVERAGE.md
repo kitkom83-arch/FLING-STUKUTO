@@ -498,6 +498,7 @@ Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not 
 - Confirms the repo-served member entry uses `pg77_member_token` handoff and the Lucky Wheel frontend reads only that storage key for member auth.
 - Confirms frontend API markers still reference `GET /api/member/wheel/config`, `POST /api/member/wheel/spin`, `GET /api/member/wheel/history`, and `GET /api/member/wheel/my-rewards`.
 - Confirms spin request payload remains `{ campaignId }` only and frontend-selected reward fields are not submitted.
+- Confirms Lucky Wheel UX state markers cover config loading, auth-missing, backend/network error states, spin-result details, and backend-backed empty/list states for `My Rewards` and `History`.
 - Confirms missing token handling stays fail-closed with `Member session unavailable. Please sign in again.` instead of silent demo fallback for `/member/lucky-wheel/`.
 - Confirms no token logging or token rendering markers are introduced in the checked member-entry and Lucky Wheel frontend files.
 - Confirms package scripts include `smoke:member-wheel-spin-e2e` and smoke coverage documents the new check.

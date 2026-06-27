@@ -86,6 +86,7 @@ function assertFrontendContract() {
   const wheelApi = readRequired("apps/lucky-wheel-game/src/game/services/wheelApi.ts");
   const scene = readRequired("apps/lucky-wheel-game/src/phaser/scenes/LuckyWheelScene.ts");
   const main = readRequired("apps/lucky-wheel-game/src/main.ts");
+  const ui = readRequired("apps/lucky-wheel-game/src/ui/mountGameUi.ts");
   const memberApp = readRequired("src/money-demo-ui/app.js");
   const memberHtml = readRequired("src/money-demo-ui/member.html");
 
@@ -131,6 +132,19 @@ function assertFrontendContract() {
     "const [history, rewards] = await Promise.all([getWheelHistory(), getMyRewards()]);",
     "luckyWheelStore.replaceHistory(history);",
     "luckyWheelStore.replaceRewards(rewards);",
+  ]);
+  assertIncludes("Lucky Wheel UX state markers", ui, [
+    "const CONFIG_LOADING_MARKER = 'config-loading';",
+    'data-wheel-state="rewards-empty-state"',
+    'data-wheel-state="history-empty-state"',
+    'data-wheel-state="rewards-backend-list"',
+    'data-wheel-state="history-backend-list"',
+    'data-wheel-state="spin-result-details"',
+    "const AUTH_MISSING_MARKER = 'auth-missing';",
+    "const BACKEND_ERROR_MARKER = 'backend-error';",
+    "const NETWORK_ERROR_MARKER = 'network-error';",
+    "SPIN sends only the campaign ID and waits for the backend-selected result.",
+    "My Rewards and History refresh from backend endpoints after a successful spin.",
   ]);
 }
 
