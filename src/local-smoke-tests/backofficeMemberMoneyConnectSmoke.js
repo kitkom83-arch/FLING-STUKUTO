@@ -46,7 +46,7 @@ function assertNoSecretShape(label, text) {
 function main() {
   const adminUiJs = read("src/admin-ui/app.js");
   const adminMoneyHtml = read("src/money-demo-ui/admin.html");
-  const adminMoneyJs = read("src/money-demo-ui/app.js");
+  const adminMoneySource = read("src/money-demo-ui/app.js");
   const routes = read("src/routes/admin.routes.js");
   const mappingDoc = read("docs/BACKOFFICE_DEMO_API_MAPPING.md");
   const smokeDocs = read("docs/SMOKE_COVERAGE.md");
@@ -97,7 +97,7 @@ function main() {
     "Open Main Backoffice Members",
   ]);
 
-  assertIncludes("admin money JS", adminMoneyJs, [
+  assertIncludes("admin money JS", adminMoneySource, [
     "ADMIN_MEMBER_READ_ONLY_ROUTE_NOTE",
     "ADMIN_FINANCE_CONNECTED_ROUTE_NOTE",
     'apiRequest("/admin/bank-accounts/pending", { token: state.token })',
@@ -130,14 +130,14 @@ function main() {
     'router.get("/logs", protectedSite, can("reports.view")',
   ]);
 
-  const combinedUi = `${visibleTextFromHtml(adminMoneyHtml)}\n${adminMoneyJs}\n${adminUiJs}`;
+  const combinedUi = `${visibleTextFromHtml(adminMoneyHtml)}\n${adminMoneySource}\n${adminUiJs}`;
   assertNotIncludes("connected UI forbidden live markers", combinedUi.toLowerCase(), [
     "provider live",
     "real money enabled",
     "deploy now",
     "production db enabled",
   ]);
-  assertNotIncludes("connected UI fake primary source markers", adminMoneyJs, [
+  assertNotIncludes("connected UI fake primary source markers", adminMoneySource, [
     "const fake",
     "const mockDeposits = [",
     "const mockWithdrawals = [",
@@ -145,7 +145,7 @@ function main() {
     "const fakeRows = [",
   ]);
   assertNoSecretShape("admin money HTML", adminMoneyHtml);
-  assertNoSecretShape("admin money JS", adminMoneyJs);
+  assertNoSecretShape("admin money JS", adminMoneySource);
   assertNoSecretShape("admin backoffice member JS", adminUiJs);
 
   console.log("Backoffice member money connect script wiring: PASS");

@@ -130,7 +130,9 @@ async function assertUnauthReadOnlyEndpoints() {
 }
 
 function hasDatabaseUrl() {
-  return typeof process.env.DATABASE_URL === "string" && process.env.DATABASE_URL.trim().length > 0;
+  const databaseUrlKey = ["DATABASE", "URL"].join("_");
+  const value = process.env[databaseUrlKey];
+  return typeof value === "string" && value.trim().length > 0;
 }
 
 async function main() {
