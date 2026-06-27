@@ -308,6 +308,44 @@
         </div>
       </section>
 
+      <section class="panel" data-promotion-admin-dry-run-ui-preview-marker="BACKOFFICE-PROMOTION-ADMIN-DRY-RUN-UI-PREVIEW-32">
+        <div class="panel-heading">
+          <div>
+            <h2>Promotion Admin Dry-run UI Preview</h2>
+            <p>UI preview only. No API call, not mounted, validate-only, and write locked.</p>
+          </div>
+          <span class="mode-pill">ui_preview_only</span>
+        </div>
+        <div class="marker-list">
+          <p>promotion admin dry-run UI preview: ui preview only, no API call, not mounted, validate-only, write locked.</p>
+          <p>Preview samples show diff preview, risk summary, errors and warnings preview, audit preview, and safety flags.</p>
+          <p>No DB write. No runtime credit action. No ledger creation. No turnover creation. No claim execution.</p>
+          <p>The preview helper consumes the pure dry-run API stub locally and never opens a network call.</p>
+        </div>
+        <div class="readiness-grid" aria-label="Promotion admin dry-run UI preview sections">
+          <article class="field-card">
+            <h3>diff preview</h3>
+            <p>Shows before/after promotion field changes for the previewed payload.</p>
+          </article>
+          <article class="field-card">
+            <h3>risk summary</h3>
+            <p>Highlights bonus, turnover, withdraw, eligibility, and status risk signals.</p>
+          </article>
+          <article class="field-card">
+            <h3>errors and warnings</h3>
+            <p>Surfaces validation failures and warning markers from the pure stub response.</p>
+          </article>
+          <article class="field-card">
+            <h3>audit preview</h3>
+            <p>Confirms the previewed audit requirement and actor context without runtime effect.</p>
+          </article>
+          <article class="field-card">
+            <h3>safety flags</h3>
+            <p>Reinforces no API call, no DB write, no ledger creation, and no turnover creation.</p>
+          </article>
+        </div>
+      </section>
+
       <section class="panel">
         <div class="panel-heading">
           <div>

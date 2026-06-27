@@ -17,6 +17,8 @@
     "promotion admin dry-run API contract is contract-only, not mounted, validate-only, write locked, and no DB write.";
   const PROMOTION_ADMIN_DRY_RUN_API_STUB_NOTE =
     "promotion admin dry-run API stub is pure stub, contract-only, not mounted, validate-only, no DB write, no runtime credit action, no ledger creation, no turnover creation, and write locked.";
+  const PROMOTION_ADMIN_DRY_RUN_UI_PREVIEW_NOTE =
+    "promotion admin dry-run UI preview is ui preview only, no API call, not mounted, validate-only, write locked, no DB write, no runtime credit action, no ledger creation, no turnover creation, and no claim execution.";
   const PROMOTION_ADMIN_WRITE_DRY_RUN_NOTE =
     "promotion admin write dry-run is validate-only for future payloads: title/type/status, minDeposit/maxDeposit, bonusType/bonusValue, turnoverMultiplier, maxWithdraw, startAt/endAt, auditReason, and riskAcknowledgement; audit reason required, before/after diff required, risk acknowledgement required when bonus/turnover/maxWithdraw changes, status transition must be explicit, numeric fields must be non-negative, startAt <= endAt when both set, no DB write, no runtime credit action, no ledger creation, no turnover creation, dry-run before runtime, write locked, and future permission boundary.";
   const DAYS = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
