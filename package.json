@@ -63,6 +63,7 @@
     "smoke:backoffice-promotion-admin-dry-run-api-contract": "node src/local-smoke-tests/backofficePromotionAdminDryRunApiContractSmoke.js",
     "smoke:backoffice-promotion-admin-dry-run-api-stub": "node src/local-smoke-tests/backofficePromotionAdminDryRunApiStubSmoke.js",
     "smoke:backoffice-promotion-admin-dry-run-ui-preview": "node src/local-smoke-tests/backofficePromotionAdminDryRunUiPreviewSmoke.js",
+    "smoke:backoffice-promotion-admin-dry-run-route-readiness": "node src/local-smoke-tests/backofficePromotionAdminDryRunRouteReadinessSmoke.js",
     "smoke:admin-browser-routes": "node src/local-smoke-tests/adminBrowserRoutesSmoke.js",
     "smoke:admin-member-history-read-only": "node src/local-smoke-tests/adminMemberHistoryReadOnlySmoke.js",
     "smoke:admin-backoffice-read-only-integration": "node src/local-smoke-tests/adminBackofficeReadOnlyIntegrationSmoke.js",

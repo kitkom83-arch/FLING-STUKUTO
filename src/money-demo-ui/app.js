@@ -33,6 +33,8 @@
     "Promotion admin dry-run API stub is a pure stub, contract-only, not mounted, validate-only, no DB write, no runtime credit action, no ledger creation, no turnover creation, and write locked.";
   const ADMIN_PROMOTION_DRY_RUN_UI_PREVIEW_NOTE =
     "Promotion admin dry-run UI preview is ui preview only, no API call, not mounted, validate-only, write locked, no DB write, no runtime credit action, no ledger creation, no turnover creation, and no claim execution.";
+  const ADMIN_PROMOTION_DRY_RUN_ROUTE_READINESS_NOTE =
+    "Promotion admin dry-run route readiness is readiness only, not mounted, no Express mount, no API call, validate-only, write locked, no DB write, no runtime credit action, no ledger creation, no turnover creation, and no claim execution.";
   const PROMOTION_ADMIN_WRITE_DRY_RUN_CONTRACT = {
     phase: "BACKOFFICE-PROMOTION-ADMIN-WRITE-DRY-RUN-28",
     mode: "promotion admin write dry-run validate-only no DB write no runtime credit action no ledger creation no turnover creation dry-run before runtime write locked future permission boundary",

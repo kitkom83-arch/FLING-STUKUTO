@@ -346,6 +346,36 @@
         </div>
       </section>
 
+      <section class="panel" data-promotion-admin-dry-run-route-readiness-marker="BACKOFFICE-PROMOTION-ADMIN-DRY-RUN-ROUTE-READINESS-33">
+        <div class="panel-heading">
+          <div>
+            <h2>Promotion Admin Dry-run Route Readiness</h2>
+            <p>Readiness only. Not mounted, no Express mount, no API call, and write locked.</p>
+          </div>
+          <span class="mode-pill">readiness_only</span>
+        </div>
+        <div class="marker-list">
+          <p>promotion admin dry-run route readiness: readiness only, not mounted, no Express mount, no API call, validate-only, and write locked.</p>
+          <p>Required guards preview: adminAuth, siteAccess, settings.promotion.write or settings.promotion.manage, auditReason required, and riskAcknowledgement required when risky fields change.</p>
+          <p>Status mapping preview: readiness_only_not_mounted, 200 for valid POST, 400 missing id, 403 missing permission, 404 wrong path, 405 wrong method, and 422 validator failure.</p>
+          <p>No DB write. No runtime credit action. No ledger creation. No turnover creation. No claim execution.</p>
+        </div>
+        <div class="readiness-grid" aria-label="Promotion admin dry-run route readiness sections">
+          <article class="field-card">
+            <h3>required guards preview</h3>
+            <p>Shows adminAuth, siteAccess, permission, auditReason, and risk acknowledgement readiness markers.</p>
+          </article>
+          <article class="field-card">
+            <h3>status mapping preview</h3>
+            <p>Maps readiness-only simulation responses to 200, 400, 403, 404, 405, and 422 outcomes.</p>
+          </article>
+          <article class="field-card">
+            <h3>safety flags</h3>
+            <p>Confirms no DB write, no ledger creation, no turnover creation, no claim execution, and no runtime credit action.</p>
+          </article>
+        </div>
+      </section>
+
       <section class="panel">
         <div class="panel-heading">
           <div>
