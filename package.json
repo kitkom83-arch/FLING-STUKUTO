@@ -420,6 +420,7 @@
     "smoke:master-spec-mapping": "node src/local-smoke-tests/masterSpecMappingSmoke.js",
     "smoke:wheel": "node src/local-smoke-tests/wheelSmoke.js",
     "smoke:member-wheel-entry": "node src/local-smoke-tests/memberLuckyWheelEntrySmoke.js",
+    "smoke:member-wheel-spin-e2e": "node src/local-smoke-tests/memberLuckyWheelSpinE2eSmoke.js",
     "smoke:wheel-frontend-api-connect": "node src/local-smoke-tests/wheelFrontendApiConnectSmoke.js",
     "smoke:wheel-source-import": "node src/local-smoke-tests/luckyWheelGameSourceImportSmoke.js",
     "smoke:project-closeout": "node src/local-smoke-tests/projectCloseoutSmoke.js",

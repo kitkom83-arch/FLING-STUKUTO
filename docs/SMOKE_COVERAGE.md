@@ -64,6 +64,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `adminWheelRuntimeSmoke.js` | `npm run smoke:admin-wheel-runtime` | Yes | Yes | Yes | Syntax check only | Phase Y Admin Lucky Wheel runtime E2E: route/assets, unauth `401`, no-permission `403`, admin config campaign/reward reads, campaign/reward writes with unique reason, audit read bounded by `dateFrom`/`dateTo` with `metadata.reason`, member config/spin/history/my-rewards checks, backend-selected spin response, latest admin spin history lookup, finite report summary inputs, claim/cancel reason validation, write audit creation, audit read sanitization, and leak scan. Skips safely when local admin/member env is not configured. |
 | `wheelSmoke.js` | `npm run smoke:wheel` | Yes | Yes | Yes | Syntax check only | Lucky Wheel mock config/spin/history/rewards, Reward Wallet bridge entry, no-reward wallet skip, missing auth, invalid campaign, backend result selection, admin reason/audit checks, stock-zero exclusion, fail-safe guards, and leak scan. Skips safely when local runtime env is missing; blocks unsafe targets. |
 | `memberLuckyWheelEntrySmoke.js` | `npm run smoke:member-wheel-entry` | No | No | No | Runs static contract | Member Lucky Wheel entry integration smoke for `/member-money-demo/`, `/member/lucky-wheel/`, backend static build serving from `apps/lucky-wheel-game/dist`, real member token handoff into `pg77_member_token`, Vite build base, member return link, package scripts, and runbook coverage. It does not use network, does not use DB, and does not call live API. |
+| `memberLuckyWheelSpinE2eSmoke.js` | `npm run smoke:member-wheel-spin-e2e` | No | No | No | Runs static contract | Member Lucky Wheel spin E2E contract smoke for the repo-served member handoff, backend member wheel endpoints, spin payload `{ campaignId }` only, forbidden frontend-selected reward fields, no token logging/rendering, no silent demo fallback for `/member/lucky-wheel/`, backend-selected reward wording, history and my-rewards refresh markers, package script wiring, and runbook/manual-check coverage. It does not use network, does not use DB, and does not call live API. |
 | `wheelFrontendApiConnectSmoke.js` | `npm run smoke:wheel-frontend-api-connect` | No | No | No | Runs static contract | Lucky Wheel standalone frontend API connect runbook smoke for `docs/WHEEL_GAME_V1_FRONTEND_API_CONNECT.md`, local Vite env, PG77 member wheel paths, backend result authority, forbidden frontend result fields, response mapper compatibility notes, reward wallet bridge proof through `smoke:wheel`, and safety boundaries. It does not use network, does not use DB, and does not call live API. |
 | `projectCloseoutSmoke.js` | `npm run smoke:project-closeout` | No | No | No | Runs static contract | Project Closeout Smoke checks final closeout docs, Lucky Wheel final UAT, admin operator handoff, safety boundaries, static secret scan, and unsafe rendered placeholder copy scan. It does not call API, connect DB, require a server, read env secrets, deploy, migrate, or seed. |
 | `stagingPreflight.js` | `npm run staging:preflight` | No local Prisma access | Optional | No | Runs local-test dry run | Staging readiness guard for env boundary, database/API target labels, external modes, health contract, and response leak scan. |
@@ -485,6 +486,22 @@ Lucky Wheel smoke uses only local/staging/test PostgreSQL fixtures. It does not 
 - Confirms package scripts include `build:member-lucky-wheel` and `smoke:member-wheel-entry`.
 - It does not use network, does not use DB, and does not call live API.
 - Confirms the required local frontend env markers, including `VITE_WHEEL_API_BASE_URL=http://127.0.0.1:4000/api`.
+
+## 18C. smoke:member-wheel-spin-e2e Coverage
+
+`npm run smoke:member-wheel-spin-e2e` is a docs/source contract smoke:
+
+- Reads `docs/WHEEL_GAME_V1_MEMBER_ENTRY_RUNBOOK.md`.
+- Confirms the runbook records the browser manual result and the nine-step manual check for `/member-money-demo/`, `เล่นกงล้อ`, `SPIN`, `My Rewards`, `History`, `Back to Member Demo`, and Console no red error.
+- Confirms the runbook documents safe local server startup, required local env, local PostgreSQL note, and known non-blockers.
+- Reads `apps/lucky-wheel-game/src/game/services/wheelApi.ts`, `apps/lucky-wheel-game/src/phaser/scenes/LuckyWheelScene.ts`, `apps/lucky-wheel-game/src/main.ts`, and `src/money-demo-ui/app.js`.
+- Confirms the repo-served member entry uses `pg77_member_token` handoff and the Lucky Wheel frontend reads only that storage key for member auth.
+- Confirms frontend API markers still reference `GET /api/member/wheel/config`, `POST /api/member/wheel/spin`, `GET /api/member/wheel/history`, and `GET /api/member/wheel/my-rewards`.
+- Confirms spin request payload remains `{ campaignId }` only and frontend-selected reward fields are not submitted.
+- Confirms missing token handling stays fail-closed with `Member session unavailable. Please sign in again.` instead of silent demo fallback for `/member/lucky-wheel/`.
+- Confirms no token logging or token rendering markers are introduced in the checked member-entry and Lucky Wheel frontend files.
+- Confirms package scripts include `smoke:member-wheel-spin-e2e` and smoke coverage documents the new check.
+- It does not use network, does not use DB, and does not call live API.
 - Confirms the PG77 member Lucky Wheel paths for config, spin, history, and my rewards.
 - Confirms the contract says frontend spin sends only `campaignId` and must not submit frontend-selected reward result fields.
 - Confirms response mapper coverage notes include `success/data`, `remainingSpinsToday`, `remainingSpins`, `memberBalance`, `balanceAfter`, `rewards`, `prizeIndex`, `rewardId`, `reward.label/type/amount/displayValue`, history, and my-rewards records.
