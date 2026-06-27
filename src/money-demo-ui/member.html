@@ -163,6 +163,68 @@
         </article>
       </section>
 
+      <section class="panel" data-backoffice-promotion-bonus-connect-marker="backend_connected_promotion_bonus_local_safe">
+        <div class="panel-heading">
+          <div>
+            <h2>Promotion / Bonus Visibility</h2>
+            <p>Backend-connected local-safe promotion list and bonus condition visibility for the current site.</p>
+          </div>
+          <span class="mode-pill">promotion_bonus_read_only</span>
+        </div>
+        <div class="marker-list">
+          <p>Promotion campaign visibility: GET /api/promotions.</p>
+          <p>Claim route exists as POST /api/promotions/:id/claim, but this UI does not call it because it can create promotion_bonus ledger rows and turnover requirements.</p>
+          <p>Claim status and turnover/withdraw condition visibility are read through local-safe wallet ledger, deposits, and reward wallet relationship surfaces.</p>
+          <p>Relationship markers: Code Center / Reward Wallet / Ledger stay local-safe/read-only or guarded-safe only.</p>
+          <p>No production DB. No deploy. No live provider/payment/bank/SMS/slip OCR. No real credit/debit runtime action.</p>
+        </div>
+        <div id="member-promotion-state" class="notice">Login a member first to read backend-connected promotion and bonus visibility.</div>
+      </section>
+
+      <section class="status-grid compact-grid" aria-label="Member promotion bonus summary">
+        <article class="status-card">
+          <span>Promotions</span>
+          <strong id="member-promotion-count">-</strong>
+        </article>
+        <article class="status-card">
+          <span>Active Campaigns</span>
+          <strong id="member-promotion-active-count">-</strong>
+        </article>
+        <article class="status-card">
+          <span>Claim Route</span>
+          <strong id="member-promotion-claim-status">read_only_hold</strong>
+        </article>
+        <article class="status-card">
+          <span>Bonus Ledger Rows</span>
+          <strong id="member-promotion-ledger-count">-</strong>
+        </article>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Promotion Campaigns</h2>
+            <p>Current active promotions from GET /api/promotions. Claim action remains out of scope for this local-safe UI.</p>
+          </div>
+        </div>
+        <div id="member-promotion-empty" class="empty-state">No backend promotions available for this site.</div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Promotion</th>
+                <th>Bonus</th>
+                <th>Min Deposit</th>
+                <th>Turnover</th>
+                <th>Withdraw Condition</th>
+                <th>Claim Status</th>
+              </tr>
+            </thead>
+            <tbody id="member-promotion-rows"></tbody>
+          </table>
+        </div>
+      </section>
+
       <section class="panel">
         <div class="panel-heading">
           <div>

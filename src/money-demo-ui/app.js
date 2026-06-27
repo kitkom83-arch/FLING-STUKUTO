@@ -19,6 +19,8 @@
     "Backend-connected read-only dashboard/report cards use GET /api/admin/reports/summary and the main /admin/ surface keeps GET /api/admin/reports/deposits, GET /api/admin/reports/withdrawals, GET /api/admin/reports/wallet-ledger, GET /api/admin/logs, and GET /api/admin/members local-safe.";
   const ADMIN_CODE_REWARD_ROUTE_NOTE =
     "Backend-connected read-only code/reward visibility uses GET /api/admin/code-center/campaigns and GET /api/admin/code-center/redeem-logs, while Lucky Wheel claim visibility remains on GET /api/admin/wheel/member-rewards.";
+  const PROMOTION_BONUS_ROUTE_NOTE =
+    "Backend-connected promotion/bonus visibility uses GET /api/promotions plus read-only ledger/report relationship markers; POST /api/promotions/:id/claim is held out of this UI because it can create promotion_bonus ledger rows and turnover requirements.";
 
   const page = document.body && document.body.dataset ? document.body.dataset.page : "";
 
@@ -209,6 +211,13 @@
       rewardPendingCount: document.getElementById("member-reward-pending-count"),
       redeemLogCount: document.getElementById("member-redeem-log-count"),
       wheelRewardCount: document.getElementById("member-wheel-reward-count"),
+      promotionState: document.getElementById("member-promotion-state"),
+      promotionCount: document.getElementById("member-promotion-count"),
+      promotionActiveCount: document.getElementById("member-promotion-active-count"),
+      promotionClaimStatus: document.getElementById("member-promotion-claim-status"),
+      promotionLedgerCount: document.getElementById("member-promotion-ledger-count"),
+      promotionEmpty: document.getElementById("member-promotion-empty"),
+      promotionRows: document.getElementById("member-promotion-rows"),
       redeemCode: document.getElementById("member-redeem-code"),
       redeemSubmit: document.getElementById("member-redeem-submit"),
       rewardEmpty: document.getElementById("member-reward-empty"),
@@ -256,6 +265,7 @@
       rewardHistory: [],
       redeemLogs: [],
       wheelRewards: [],
+      promotions: [],
     };
 
     function setBusy(nextBusy) {
@@ -310,6 +320,7 @@
         state.rewardHistory = [];
         state.redeemLogs = [];
         state.wheelRewards = [];
+        state.promotions = [];
       }
       setMemberSessionState("not_ready");
       persistMemberSession({ token: null, profile: null });
@@ -419,6 +430,20 @@
       setStatus(els.rewardPendingCount, state.rewardSummary ? safeNumber(state.rewardSummary.pendingRewardCount, 0) : "-");
       setStatus(els.redeemLogCount, state.redeemLogs.length);
       setStatus(els.wheelRewardCount, state.wheelRewards.length);
+      setStatus(els.promotionCount, state.promotions.length);
+      setStatus(
+        els.promotionActiveCount,
+        state.promotions.filter(function (item) {
+          return String(item.status || "").toLowerCase() === "active";
+        }).length
+      );
+      setStatus(els.promotionClaimStatus, "read_only_hold");
+      setStatus(
+        els.promotionLedgerCount,
+        state.ledger.filter(function (item) {
+          return /promotion_bonus|bonus/i.test(String(item.type || item.referenceType || ""));
+        }).length
+      );
       if (els.rewardEmpty) {
         els.rewardEmpty.style.display = state.rewardSummary ? "none" : "block";
       }
@@ -527,6 +552,32 @@
       });
     }
 
+    function promotionBonusText(row) {
+      const type = safeText(row && row.bonusType, "bonus");
+      const value = row && row.bonusValue !== undefined ? row.bonusValue : 0;
+      return `${type} ${formatMoney(value)}`;
+    }
+
+    function promotionWithdrawCondition(row) {
+      const maxBonus = row && row.maxBonus !== null && row.maxBonus !== undefined ? `max bonus ${formatMoney(row.maxBonus)}` : "no max bonus";
+      const endAt = row && row.endAt ? `ends ${formatDate(row.endAt)}` : "no end date";
+      return `${maxBonus}; ${endAt}`;
+    }
+
+    function renderPromotions() {
+      renderEmptyState(els.promotionRows, els.promotionEmpty, state.promotions);
+      state.promotions.forEach(function (row) {
+        const tr = document.createElement("tr");
+        createCell(tr, safeText(row.title || row.name || row.id));
+        createCell(tr, promotionBonusText(row));
+        createCell(tr, formatMoney(row.minDeposit));
+        createCell(tr, `${formatMoney(row.turnoverMultiplier)}x`);
+        createCell(tr, promotionWithdrawCondition(row));
+        createCell(tr, "read_only_hold", "status-pending");
+        els.promotionRows.appendChild(tr);
+      });
+    }
+
     function renderAll() {
       renderSummary();
       renderBankAccounts();
@@ -537,6 +588,7 @@
       renderRewardHistory();
       renderRedeemLogs();
       renderWheelRewards();
+      renderPromotions();
       populateBankSelects();
     }
 
@@ -659,9 +711,12 @@
       if (els.rewardState) {
         els.rewardState.textContent = `Loading backend-connected reward wallet and redeem data... ${MEMBER_CODE_REWARD_ROUTE_NOTE}`;
       }
+      if (els.promotionState) {
+        els.promotionState.textContent = `Loading backend-connected promotion/bonus visibility... ${PROMOTION_BONUS_ROUTE_NOTE}`;
+      }
 
       try {
-        const [wallet, ledger, bankAccounts, deposits, withdrawals, rewardSummary, rewardWallet, rewardHistory, redeemLogs, wheelRewards] = await Promise.all([
+        const [wallet, ledger, bankAccounts, deposits, withdrawals, rewardSummary, rewardWallet, rewardHistory, redeemLogs, wheelRewards, promotions] = await Promise.all([
           apiRequest("/wallet", { token: state.token }),
           apiRequest("/wallet/ledger?limit=20", { token: state.token }),
           apiRequest("/bank-accounts", { token: state.token }),
@@ -672,6 +727,7 @@
           apiRequest("/member/rewards/history?limit=50", { token: state.token }),
           apiRequest("/code-center/redeem-logs?limit=50", { token: state.token }),
           apiRequest("/member/wheel/my-rewards?limit=20", { token: state.token }),
+          apiRequest("/promotions", { token: state.token }),
         ]);
         state.wallet = wallet || null;
         state.ledger = Array.isArray(ledger) ? ledger : [];
@@ -683,12 +739,16 @@
         state.rewardHistory = Array.isArray(rewardHistory && rewardHistory.history) ? rewardHistory.history : [];
         state.redeemLogs = Array.isArray(redeemLogs && redeemLogs.redeemLogs) ? redeemLogs.redeemLogs : [];
         state.wheelRewards = Array.isArray(wheelRewards) ? wheelRewards : [];
+        state.promotions = Array.isArray(promotions) ? promotions : [];
         state.tokenVerified = true;
         setMemberSessionState("ready");
         persistMemberSession({ token: state.token, profile: state.profile });
         renderAll();
         if (els.rewardState) {
           els.rewardState.textContent = `Reward wallet and redeem data refreshed. ${MEMBER_CODE_REWARD_ROUTE_NOTE}`;
+        }
+        if (els.promotionState) {
+          els.promotionState.textContent = `Promotion/bonus visibility refreshed. ${PROMOTION_BONUS_ROUTE_NOTE}`;
         }
         if (!opts.silentRestore) {
           els.statusText.textContent = "Member money demo data refreshed.";
@@ -705,6 +765,9 @@
         renderAll();
         if (els.rewardState) {
           els.rewardState.textContent = `${describeError(error, "Reward wallet refresh failed.")} ${MEMBER_CODE_REWARD_ROUTE_NOTE}`;
+        }
+        if (els.promotionState) {
+          els.promotionState.textContent = `${describeError(error, "Promotion/bonus visibility refresh failed.")} ${PROMOTION_BONUS_ROUTE_NOTE}`;
         }
         els.statusText.textContent = describeError(error, "Member money demo refresh failed.");
       } finally {
@@ -800,6 +863,9 @@
       renderAll();
       if (els.rewardState) {
         els.rewardState.textContent = "Local member session cleared. Reward wallet and code center remain local-safe only.";
+      }
+      if (els.promotionState) {
+        els.promotionState.textContent = "Local member session cleared. Promotion/bonus visibility remains read-only local-safe.";
       }
       els.statusText.textContent = "Local member session cleared.";
     }
@@ -959,6 +1025,9 @@
     if (els.rewardState) {
       els.rewardState.textContent = "Login a member first to read backend-connected reward wallet and redeem data.";
     }
+    if (els.promotionState) {
+      els.promotionState.textContent = "Login a member first to read backend-connected promotion and bonus visibility.";
+    }
     if (state.token) {
       refreshMemberData({ silentRestore: true }).catch(function () {});
       els.statusText.textContent = "Restoring local member money session...";
@@ -996,6 +1065,13 @@
       withdrawRows: document.getElementById("admin-withdraw-rows"),
       ledgerEmpty: document.getElementById("admin-ledger-empty"),
       ledgerRows: document.getElementById("admin-ledger-rows"),
+      promotionState: document.getElementById("admin-promotion-state"),
+      promotionCount: document.getElementById("admin-promotion-count"),
+      promotionTotalBonus: document.getElementById("admin-promotion-total-bonus"),
+      promotionLedgerCount: document.getElementById("admin-promotion-ledger-count"),
+      promotionCrudStatus: document.getElementById("admin-promotion-crud-status"),
+      promotionEmpty: document.getElementById("admin-promotion-empty"),
+      promotionRows: document.getElementById("admin-promotion-rows"),
       codeRewardState: document.getElementById("admin-code-reward-state"),
       codeCampaignCount: document.getElementById("admin-code-campaign-count"),
       codeRedeemCount: document.getElementById("admin-code-redeem-count"),
@@ -1018,6 +1094,7 @@
       pendingDeposits: [],
       pendingWithdrawals: [],
       ledger: [],
+      promotions: [],
       codeCampaigns: [],
       codeRedeemLogs: [],
       audit: [],
@@ -1070,6 +1147,15 @@
       setStatus(els.depositCount, state.pendingDeposits.length);
       setStatus(els.withdrawCount, state.pendingWithdrawals.length);
       setStatus(els.ledgerCount, state.ledger.length);
+      setStatus(els.promotionCount, state.promotions.length);
+      setStatus(els.promotionTotalBonus, summary ? formatMoney(summary.total_bonus) : "-");
+      setStatus(
+        els.promotionLedgerCount,
+        state.ledger.filter(function (item) {
+          return /promotion_bonus|bonus/i.test(String(item.type || item.referenceType || ""));
+        }).length
+      );
+      setStatus(els.promotionCrudStatus, "missing_backend");
       setStatus(els.codeCampaignCount, state.codeCampaigns.length);
       setStatus(els.codeRedeemCount, state.codeRedeemLogs.length);
       setStatus(
@@ -1168,6 +1254,31 @@
       });
     }
 
+    function adminPromotionBonusText(row) {
+      const type = safeText(row && row.bonusType, "bonus");
+      const value = row && row.bonusValue !== undefined ? row.bonusValue : 0;
+      return `${type} ${formatMoney(value)}`;
+    }
+
+    function adminPromotionWithdrawCondition(row) {
+      const minDeposit = row && row.minDeposit !== null && row.minDeposit !== undefined ? `min deposit ${formatMoney(row.minDeposit)}` : "no min deposit";
+      const maxBonus = row && row.maxBonus !== null && row.maxBonus !== undefined ? `max bonus ${formatMoney(row.maxBonus)}` : "no max bonus";
+      return `${minDeposit}; ${maxBonus}`;
+    }
+
+    function renderPromotions() {
+      renderEmptyState(els.promotionRows, els.promotionEmpty, state.promotions);
+      state.promotions.forEach(function (row) {
+        const tr = document.createElement("tr");
+        createCell(tr, safeText(row.title || row.name || row.id));
+        createCell(tr, safeText(row.status), statusClass(row.status));
+        createCell(tr, adminPromotionBonusText(row));
+        createCell(tr, `${formatMoney(row.turnoverMultiplier)}x`);
+        createCell(tr, adminPromotionWithdrawCondition(row));
+        els.promotionRows.appendChild(tr);
+      });
+    }
+
     function renderCodeRedeemLogs() {
       renderEmptyState(els.codeRedeemRows, els.codeRedeemEmpty, state.codeRedeemLogs);
       state.codeRedeemLogs.forEach(function (row) {
@@ -1200,6 +1311,7 @@
       renderDeposits();
       renderWithdrawals();
       renderLedger();
+      renderPromotions();
       renderCodeCampaigns();
       renderCodeRedeemLogs();
       renderAudit();
@@ -1224,6 +1336,7 @@
     async function refreshAdminData() {
       if (!state.token) {
         state.summary = null;
+        state.promotions = [];
         state.codeCampaigns = [];
         state.codeRedeemLogs = [];
         renderAll();
@@ -1232,6 +1345,9 @@
         }
         if (els.codeRewardState) {
           els.codeRewardState.textContent = "Login an admin first to read backend-connected code center and reward visibility.";
+        }
+        if (els.promotionState) {
+          els.promotionState.textContent = "Login an admin first to read backend-connected promotion/bonus relationship data.";
         }
         els.statusText.textContent = "Login an admin first. " + ADMIN_MEMBER_READ_ONLY_ROUTE_NOTE;
         return;
@@ -1244,14 +1360,18 @@
       if (els.codeRewardState) {
         els.codeRewardState.textContent = `Loading backend-connected code center and reward visibility... ${ADMIN_CODE_REWARD_ROUTE_NOTE}`;
       }
+      if (els.promotionState) {
+        els.promotionState.textContent = `Loading backend-connected promotion/bonus relationship data... ${PROMOTION_BONUS_ROUTE_NOTE}`;
+      }
       els.statusText.textContent = `Refreshing admin finance queues... ${ADMIN_FINANCE_CONNECTED_ROUTE_NOTE}`;
       try {
-        const [summary, pendingBanks, pendingDeposits, pendingWithdrawals, ledger, codeCampaigns, codeRedeemLogs, audit] = await Promise.all([
+        const [summary, pendingBanks, pendingDeposits, pendingWithdrawals, ledger, promotions, codeCampaigns, codeRedeemLogs, audit] = await Promise.all([
           apiRequest("/admin/reports/summary", { token: state.token }),
           apiRequest("/admin/bank-accounts/pending", { token: state.token }),
           apiRequest("/admin/deposits?status=pending&limit=50", { token: state.token }),
           apiRequest("/admin/withdrawals?status=pending&limit=50", { token: state.token }),
           apiRequest("/admin/reports/wallet-ledger?limit=20", { token: state.token }),
+          apiRequest("/promotions", { token: state.token }),
           apiRequest("/admin/code-center/campaigns", { token: state.token }),
           apiRequest("/admin/code-center/redeem-logs?limit=50", { token: state.token }),
           apiRequest("/admin/logs?limit=20", { token: state.token }),
@@ -1262,6 +1382,7 @@
         state.pendingDeposits = Array.isArray(pendingDeposits) ? pendingDeposits : [];
         state.pendingWithdrawals = Array.isArray(pendingWithdrawals) ? pendingWithdrawals : [];
         state.ledger = Array.isArray(ledger) ? ledger : [];
+        state.promotions = Array.isArray(promotions) ? promotions : [];
         state.codeCampaigns = Array.isArray(codeCampaigns && codeCampaigns.campaigns) ? codeCampaigns.campaigns : [];
         state.codeRedeemLogs = Array.isArray(codeRedeemLogs && codeRedeemLogs.redeemLogs) ? codeRedeemLogs.redeemLogs : [];
         state.audit = Array.isArray(audit) ? audit : [];
@@ -1272,9 +1393,13 @@
         if (els.codeRewardState) {
           els.codeRewardState.textContent = `Code center and reward visibility refreshed. ${ADMIN_CODE_REWARD_ROUTE_NOTE}`;
         }
+        if (els.promotionState) {
+          els.promotionState.textContent = `Promotion/bonus relationship data refreshed. ${PROMOTION_BONUS_ROUTE_NOTE}`;
+        }
         els.statusText.textContent = `Admin finance queues refreshed. ${ADMIN_FINANCE_CONNECTED_ROUTE_NOTE}`;
       } catch (error) {
         state.summary = null;
+        state.promotions = [];
         state.codeCampaigns = [];
         state.codeRedeemLogs = [];
         renderAll();
@@ -1283,6 +1408,9 @@
         }
         if (els.codeRewardState) {
           els.codeRewardState.textContent = `${safeText(error.message, "Code center visibility refresh failed.")} ${ADMIN_CODE_REWARD_ROUTE_NOTE}`;
+        }
+        if (els.promotionState) {
+          els.promotionState.textContent = `${safeText(error.message, "Promotion/bonus visibility refresh failed.")} ${PROMOTION_BONUS_ROUTE_NOTE}`;
         }
         els.statusText.textContent = `${safeText(error.message, "Admin finance refresh failed.")} ${ADMIN_FINANCE_CONNECTED_ROUTE_NOTE}`;
       } finally {
@@ -1320,6 +1448,7 @@
       state.pendingDeposits = [];
       state.pendingWithdrawals = [];
       state.ledger = [];
+      state.promotions = [];
       state.codeCampaigns = [];
       state.codeRedeemLogs = [];
       state.audit = [];
@@ -1332,6 +1461,9 @@
       }
       if (els.codeRewardState) {
         els.codeRewardState.textContent = "Local admin session cleared. Code center and reward visibility stay read-only and local-safe.";
+      }
+      if (els.promotionState) {
+        els.promotionState.textContent = "Local admin session cleared. Promotion/bonus bridge stays read-only and local-safe.";
       }
       els.statusText.textContent = `Local admin session cleared. ${ADMIN_MEMBER_READ_ONLY_ROUTE_NOTE}`;
     }
@@ -1434,6 +1566,9 @@
     }
     if (els.codeRewardState) {
       els.codeRewardState.textContent = "Load a local-safe admin to read backend-connected code center and reward visibility.";
+    }
+    if (els.promotionState) {
+      els.promotionState.textContent = "Load a local-safe admin to read promotion/bonus relationship data.";
     }
     els.statusText.textContent =
       "Login with a local-safe admin to review pending finance requests. " + ADMIN_MEMBER_READ_ONLY_ROUTE_NOTE;

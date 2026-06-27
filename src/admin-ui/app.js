@@ -7,6 +7,8 @@
     "Backend-connected read-only local-safe dashboard/report surface uses GET /api/admin/reports/summary, GET /api/admin/reports/deposits, GET /api/admin/reports/withdrawals, GET /api/admin/reports/wallet-ledger, GET /api/admin/logs, and GET /api/admin/members.";
   const MEMBER_CODE_REWARD_CONNECTED_NOTE =
     "Member reward wallet and code center stay backend-connected/local-safe through POST /api/code-center/redeem, GET /api/code-center/redeem-logs, GET /api/member/rewards, GET /api/member/rewards/summary, and GET /api/member/rewards/history. Lucky Wheel rewards remain backend-selected via GET /api/admin/wheel/member-rewards and GET /api/member/wheel/my-rewards.";
+  const PROMOTION_BONUS_CONNECTED_NOTE =
+    "Promotion/bonus visibility stays backend-connected/read-only/local-safe through GET /api/promotions, GET /api/admin/reports/summary, GET /api/admin/reports/wallet-ledger, and existing member history promotion claim/turnover rows; POST /api/promotions/:id/claim is not surfaced in backoffice because it can create promotion_bonus ledger and turnover requirement rows.";
   const DAYS = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
   const SENSITIVE_WORDS = /\b(password|secret|authorization)\b/i;
   const TOKEN_SHAPED_VALUE = /\b[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\b/;

@@ -53,6 +53,7 @@
     "smoke:backoffice-member-money-connect": "node src/local-smoke-tests/backofficeMemberMoneyConnectSmoke.js",
     "smoke:backoffice-dashboard-reports-connect": "node src/local-smoke-tests/backofficeDashboardReportsConnectSmoke.js",
     "smoke:backoffice-code-reward-connect": "node src/local-smoke-tests/backofficeCodeRewardConnectSmoke.js",
+    "smoke:backoffice-promotion-bonus-connect": "node src/local-smoke-tests/backofficePromotionBonusConnectSmoke.js",
     "smoke:admin-browser-routes": "node src/local-smoke-tests/adminBrowserRoutesSmoke.js",
     "smoke:admin-member-history-read-only": "node src/local-smoke-tests/adminMemberHistoryReadOnlySmoke.js",
     "smoke:admin-backoffice-read-only-integration": "node src/local-smoke-tests/adminBackofficeReadOnlyIntegrationSmoke.js",
