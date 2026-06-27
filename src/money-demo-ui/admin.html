@@ -13,12 +13,28 @@
           <p class="eyebrow">PG77 Pilot 1</p>
           <h1>Admin Money Demo</h1>
           <p class="subcopy">
-            Local-only admin finance queue. Manual approve or reject only. No payout, no live rails, no production DB.
+            Backend-connected local-safe admin finance queue. Manual approve or reject only. No payout, no live rails, no production DB.
           </p>
         </div>
         <div class="hero-actions">
           <button id="admin-login" type="button">Admin Login</button>
           <button id="admin-refresh" type="button" class="secondary">Refresh Queues</button>
+        </div>
+      </section>
+
+      <section class="panel" data-backoffice-member-money-connect-marker="backend_connected_local_safe">
+        <div class="panel-heading">
+          <div>
+            <h2>Backend-connected Local-safe Surface</h2>
+            <p>Members stay read-only on the main backoffice. Finance queues here use the existing PG77 admin APIs.</p>
+          </div>
+          <span class="mode-pill">backend_connected_local_safe</span>
+        </div>
+        <div class="marker-list">
+          <p>Member list/detail/history: GET /api/admin/members, GET /api/admin/members/:id, GET /api/admin/members/:id/history on /admin/</p>
+          <p>Finance queues: GET /api/admin/bank-accounts/pending, GET /api/admin/deposits?status=pending, GET /api/admin/withdrawals?status=pending, GET /api/admin/reports/wallet-ledger, GET /api/admin/logs</p>
+          <p>Local-safe review only: POST /api/admin/bank-accounts/:id/approve, POST /api/admin/bank-accounts/:id/reject, POST /api/admin/deposits/:id/approve, POST /api/admin/deposits/:id/reject, POST /api/admin/withdrawals/:id/approve, POST /api/admin/withdrawals/:id/reject</p>
+          <p>No live payment provider. No real money movement. No production DB. No deploy. No live payment/bank/SMS/slip OCR.</p>
         </div>
       </section>
 
@@ -197,7 +213,10 @@
 
       <section class="footer-bar">
         <p id="admin-status-text">Preparing admin money demo...</p>
-        <a href="/member-money-demo/">Open Member Money Demo</a>
+        <div class="footer-links">
+          <a href="/admin/">Open Main Backoffice Members</a>
+          <a href="/member-money-demo/">Open Member Money Demo</a>
+        </div>
       </section>
     </main>
     <script src="/admin-money-demo/app.js"></script>

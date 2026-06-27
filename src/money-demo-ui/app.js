@@ -9,6 +9,10 @@
   const DEFAULT_MEMBER_PASSWORD = "localSmokeMember123";
   const DEFAULT_ADMIN_USERNAME = "local_money_flow_admin";
   const DEFAULT_ADMIN_PASSWORD = "local-demo-admin-code-not-real";
+  const ADMIN_MEMBER_READ_ONLY_ROUTE_NOTE =
+    "Members stay read-only on /admin/ via GET /api/admin/members, GET /api/admin/members/:id, and GET /api/admin/members/:id/history.";
+  const ADMIN_FINANCE_CONNECTED_ROUTE_NOTE =
+    "Backend-connected local-safe queues use GET /api/admin/bank-accounts/pending, GET /api/admin/deposits, GET /api/admin/withdrawals, GET /api/admin/reports/wallet-ledger, and GET /api/admin/logs.";
 
   const page = document.body && document.body.dataset ? document.body.dataset.page : "";
 
@@ -978,12 +982,12 @@
     async function refreshAdminData() {
       if (!state.token) {
         renderAll();
-        els.statusText.textContent = "Login an admin first.";
+        els.statusText.textContent = "Login an admin first. " + ADMIN_MEMBER_READ_ONLY_ROUTE_NOTE;
         return;
       }
 
       setBusy(true);
-      els.statusText.textContent = "Refreshing admin finance queues...";
+      els.statusText.textContent = `Refreshing admin finance queues... ${ADMIN_FINANCE_CONNECTED_ROUTE_NOTE}`;
       try {
         const [pendingBanks, pendingDeposits, pendingWithdrawals, ledger, audit] = await Promise.all([
           apiRequest("/admin/bank-accounts/pending", { token: state.token }),
@@ -999,9 +1003,9 @@
         state.ledger = Array.isArray(ledger) ? ledger : [];
         state.audit = Array.isArray(audit) ? audit : [];
         renderAll();
-        els.statusText.textContent = "Admin finance queues refreshed.";
+        els.statusText.textContent = `Admin finance queues refreshed. ${ADMIN_FINANCE_CONNECTED_ROUTE_NOTE}`;
       } catch (error) {
-        els.statusText.textContent = safeText(error.message, "Admin finance refresh failed.");
+        els.statusText.textContent = `${safeText(error.message, "Admin finance refresh failed.")} ${ADMIN_FINANCE_CONNECTED_ROUTE_NOTE}`;
       } finally {
         setBusy(false);
       }
@@ -1022,7 +1026,7 @@
         state.token = data.token || null;
         writeSavedAdmin(session);
         await refreshAdminData();
-        els.statusText.textContent = "Local admin login successful.";
+        els.statusText.textContent = `Local admin login successful. ${ADMIN_FINANCE_CONNECTED_ROUTE_NOTE}`;
       } catch (error) {
         els.statusText.textContent = safeText(error.message, "Local admin login failed.");
       } finally {
@@ -1041,7 +1045,7 @@
       els.username.value = DEFAULT_ADMIN_USERNAME;
       els.password.value = DEFAULT_ADMIN_PASSWORD;
       renderAll();
-      els.statusText.textContent = "Local admin session cleared.";
+      els.statusText.textContent = `Local admin session cleared. ${ADMIN_MEMBER_READ_ONLY_ROUTE_NOTE}`;
     }
 
     async function reviewBankAccount(id, action) {
@@ -1059,7 +1063,7 @@
           body: { reason: reason },
         });
         await refreshAdminData();
-        els.statusText.textContent = `Bank account ${safeText(action)}d.`;
+        els.statusText.textContent = `Bank account ${safeText(action)}d. Local-safe review only.`;
       } catch (error) {
         els.statusText.textContent = safeText(error.message, `Bank account ${action} failed.`);
       } finally {
@@ -1085,7 +1089,7 @@
           body: body,
         });
         await refreshAdminData();
-        els.statusText.textContent = `Deposit ${safeText(action)}d.`;
+        els.statusText.textContent = `Deposit ${safeText(action)}d. Local-safe review only.`;
       } catch (error) {
         els.statusText.textContent = safeText(error.message, `Deposit ${action} failed.`);
       } finally {
@@ -1111,7 +1115,7 @@
           body: body,
         });
         await refreshAdminData();
-        els.statusText.textContent = `Withdrawal ${safeText(action)}d.`;
+        els.statusText.textContent = `Withdrawal ${safeText(action)}d. Local-safe review only.`;
       } catch (error) {
         els.statusText.textContent = safeText(error.message, `Withdrawal ${action} failed.`);
       } finally {
@@ -1137,7 +1141,8 @@
     els.clear.addEventListener("click", clearAdminSession);
 
     renderAll();
-    els.statusText.textContent = "Login with a local-safe admin to review pending finance requests.";
+    els.statusText.textContent =
+      "Login with a local-safe admin to review pending finance requests. " + ADMIN_MEMBER_READ_ONLY_ROUTE_NOTE;
   }
 
   if (page === "member") {

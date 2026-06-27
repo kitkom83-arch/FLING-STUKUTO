@@ -5,7 +5,7 @@
 - Backend source of truth remains `PG77-real-core`.
 - `New project.zip` is a static UI/mock reference only, not a backend source.
 - Do not copy demo files over the real app, do not import the zip into this repo, and do not reuse frontend-only mock logic as backend behavior.
-- This phase is mapping-only: no runtime route/controller/service/UI changes, no production DB, no live provider, no live payment/bank/SMS/slip OCR path, and no deploy.
+- Phase 19 was mapping-only. Follow-up local-safe UI connection work may reuse this mapping, but backend route/controller/service ownership still stays in `PG77-real-core` with no production DB, no live provider, no live payment/bank/SMS/slip OCR path, and no deploy.
 
 ## Demo Reference Inspected
 
@@ -85,3 +85,9 @@ Static/mock-only traits explicitly found in the demo reference:
 3. Add a scoped real backoffice surface for Code Center and Member Reward Wallet using the existing backend endpoints.
 4. Design a proper admin promotion configuration backend/API because the current demo promotion suite is mock-only and the real repo only has member promotion claim routes.
 5. Build a minimal site/settings UI for existing site config, bank-account, game-provider, and payment-config endpoints, while leaving unsupported settings tabs clearly out of scope.
+
+## Implementation Follow-up
+
+- `src/admin-ui/app.js` remains the backend-connected read-only member surface for `GET /api/admin/members`, `GET /api/admin/members/:id`, `GET /api/admin/members/:id/history`, and `GET /api/admin/reports/wallet-ledger`.
+- `src/money-demo-ui/admin.html` and `src/money-demo-ui/app.js` now act as a backend-connected local-safe finance queue surface for `GET /api/admin/bank-accounts/pending`, `GET /api/admin/deposits`, `GET /api/admin/withdrawals`, `GET /api/admin/reports/wallet-ledger`, and `GET /api/admin/logs`, plus the existing guarded local-safe approve/reject routes.
+- This follow-up does not create new backend routes, does not change controller/service runtime behavior, and does not enable live payment/provider/bank execution.

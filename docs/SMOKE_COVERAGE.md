@@ -43,6 +43,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `adminMemberHistoryReadOnlySmoke.js` | `npm run smoke:admin-member-history-read-only` | No | No | No | Syntax check plus static/source contract | Admin Member Detail history read-only contract for `GET /api/admin/members/:id/history`, UI history tabs, empty-state markers, existing wallet/wheel permission guards, no member write endpoint, no member JWT endpoint, no live provider call, and no sensitive field selection. |
 | `adminBackofficeReadOnlyIntegrationSmoke.js` | `npm run smoke:admin-backoffice-read-only-integration` | No | No | No | Static contract plus unauth HTTP guard | Phase AK Admin Backoffice Read-only API Integration contract for dashboard/reports, member list/detail, wallet ledger, deposit/withdraw report, bank pending, and mock statement read-only UI/API wiring; no write action, no production DB, no real money, and no live integration. |
 | `adminGuardedBankAccountReviewSmoke.js` | `npm run smoke:admin-guarded-bank-account-review` | No | No | No | Static contract plus unauth HTTP guard | Phase AL Admin Guarded Bank Account Review contract for pending bank approve/reject guarded write foundation, reason/audit/permission guard, duplicate guard, safe errors, no production DB, no real money, and no live integration. |
+| `backofficeMemberMoneyConnectSmoke.js` | `npm run smoke:backoffice-member-money-connect` | No | No | No | Runs static contract | Backoffice member money connect contract for the existing member read-only backoffice surface plus the backend-connected local-safe admin money demo queues, real existing admin route markers, loading/empty/error states, fail-closed route guards, no fake primary source arrays, no production DB, no live provider/payment/bank/SMS/slip OCR, and no secret/token/session rendering or logging. |
 | `adminOperatorHandoffSmoke.js` | `npm run smoke:admin-operator-handoff` | No | No | No | Static contract plus unauth HTTP guard | Phase AM Admin Bank Account Review Audit & Operator Handoff contract for read-only review history, `admin.audit.view` permission/API guard, operator safety copy, response leak scan, duplicate reviewed safe `409`, reason required, audit required, no production DB, no real money, and no live integration. |
 | `adminBankAccountReviewReleasePackSmoke.js` | `npm run smoke:admin-bank-account-review-release-pack` | No | No | No | Static docs/release pack contract | Phase AN Admin Bank Account Review Release Pack / UAT Checklist contract for release pack docs, UAT checklist, operator runbook, Phase AL/AM/AN markers, permission markers, audit action markers, reason required, duplicate safe `409`, no production DB, no real money, no live provider/payment/bank/SMS/Slip OCR, and static safety scan. |
 | `oroplayProductionTransferSmoke.js` | `npm run smoke:oroplay-production-transfer` | No | No | Yes | Controlled production transfer smoke | OroPlay Transfer API production connector smoke for env-driven token, agent balance, vendor list, game list, player create, deposit, 5-6 game launches, user balance, betting history, withdraw all, masked summary, and local secret-shaped value scan. |
@@ -487,6 +488,18 @@ The Admin Wheel runtime smoke uses only local/staging/test PostgreSQL fixtures. 
 - New project.zip is a UI/mock reference only and not a backend source of truth.
 - Confirms the doc keeps phase safety boundaries for no production DB, no live provider, and no deploy.
 - Confirms package scripts include `smoke:backoffice-demo-api-mapping` and smoke coverage documents this check.
+- It does not use network, does not use DB, and does not call live API.
+
+## 17D. smoke:backoffice-member-money-connect Coverage
+
+- Reads `src/admin-ui/app.js`, `src/money-demo-ui/admin.html`, `src/money-demo-ui/app.js`, `src/routes/admin.routes.js`, `docs/BACKOFFICE_DEMO_API_MAPPING.md`, `docs/SMOKE_COVERAGE.md`, and `package.json`.
+- Confirms the main backoffice member surface still uses backend-connected read-only routes `GET /api/admin/members`, `GET /api/admin/members/:id`, `GET /api/admin/members/:id/history`, and `GET /api/admin/reports/wallet-ledger`.
+- Confirms the admin money demo uses existing backend-connected local-safe routes `GET /api/admin/bank-accounts/pending`, `GET /api/admin/deposits`, `GET /api/admin/withdrawals`, `GET /api/admin/reports/wallet-ledger`, `GET /api/admin/logs`, plus the existing guarded approve/reject routes for pending bank, deposit, and withdrawal review.
+- Confirms the connected UI surface includes explicit backend-connected local-safe markers plus loading, empty, and error-state copy.
+- Confirms the route source still follows fail-closed `protectedSite` and `can(...)` guards for members, finance queues, reports, logs, and pending-bank review.
+- Confirms the connected finance queue does not claim fake/mock arrays as the primary source of truth and does not render or log token/secret/password/session values.
+- Confirms there is no production DB, no deploy, no live provider/payment/bank/SMS/slip OCR, and no real-money activation wording.
+- Confirms package scripts include `smoke:backoffice-member-money-connect` and smoke coverage documents this check.
 - It does not use network, does not use DB, and does not call live API.
 
 ## 18. smoke:wheel Coverage
@@ -1685,6 +1698,38 @@ Coverage:
 - Confirms controller/service contracts require `reason`, write audit actions `member.bank.approve` and `member.bank.reject`, duplicate reviewed rows fail safely, and response leak scan passes.
 - Confirms package script and `runAllLocalSmoke.js` include `smoke:admin-guarded-bank-account-review`.
 - Confirms no forbidden controls for force credit, force debit, live payout, live transfer, provider live, real-money activation, approve withdrawal, mark paid real, or forced spin result.
+
+Boundary:
+
+- Local/staging/mock only.
+- No production DB.
+- No real money.
+- No live provider/payment/bank/SMS/Slip OCR.
+- No migration.
+- No deploy.
+
+## 50A. Phase AO Backoffice Member Money Connect
+
+Phase AO status: Backoffice member money connect using existing PG77 backend/admin APIs.
+
+Script:
+
+- `src/local-smoke-tests/backofficeMemberMoneyConnectSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:backoffice-member-money-connect
+```
+
+Coverage:
+
+- Confirms `src/admin-ui/app.js` remains the backend-connected read-only member surface for member list, member detail, member history, and wallet ledger reads.
+- Confirms `src/money-demo-ui/admin.html` and `src/money-demo-ui/app.js` expose a backend-connected local-safe finance queue for pending bank accounts, pending deposits, pending withdrawals, wallet ledger rows, and admin audit/log rows.
+- Confirms the admin money demo points to existing PG77 routes for `GET /api/admin/bank-accounts/pending`, `GET /api/admin/deposits`, `GET /api/admin/withdrawals`, `GET /api/admin/reports/wallet-ledger`, `GET /api/admin/logs`, and the existing approve/reject routes.
+- Confirms explicit local-safe boundary copy, loading/empty/error markers, and the handoff note to `/admin/` for member read-only surfaces.
+- Confirms route source still uses fail-closed auth/permission guards and that the connected money queue does not promote fake arrays, production DB, deploy, or live provider/payment/bank/SMS/slip OCR execution.
+- Runs a static secret-shaped value scan for tokens, passwords, session markers, literal bearer strings, `DATABASE_URL`, and token/session logging.
 
 Boundary:
 
