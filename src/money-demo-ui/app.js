@@ -25,6 +25,36 @@
     "Admin promotion config visibility uses GET /api/admin/promotions as backend-connected read-only/local-safe PARTIAL surface; permission guarded route guard evidence requires adminAuth, siteAccess, and settings.promotion.view; audit boundary, create/update/delete promotion actions, runtime credit action, and claim execution stay disabled/guarded hold.";
   const ADMIN_PROMOTION_WRITE_READINESS_NOTE =
     "Promotion admin write readiness is write locked and local-safe preflight only: future settings.promotion.write or settings.promotion.manage permission, audit reason required, before/after diff required, status transition guard, bonus/turnover risk acknowledgement, local-safe dry-run before runtime, no runtime credit action, and claim guarded hold.";
+  const PROMOTION_ADMIN_WRITE_DRY_RUN_CONTRACT = {
+    phase: "BACKOFFICE-PROMOTION-ADMIN-WRITE-DRY-RUN-28",
+    mode: "promotion admin write dry-run validate-only no DB write no runtime credit action no ledger creation no turnover creation dry-run before runtime write locked future permission boundary",
+    payloadShape: {
+      title: "string",
+      type: "string",
+      status: "string",
+      minDeposit: "non-negative number",
+      maxDeposit: "non-negative number",
+      bonusType: "string",
+      bonusValue: "non-negative number",
+      turnoverMultiplier: "non-negative number",
+      maxWithdraw: "non-negative number",
+      startAt: "date",
+      endAt: "date",
+      auditReason: "required string",
+      riskAcknowledgement: "required when bonus/turnover/maxWithdraw changes",
+    },
+    validationRules: {
+      auditReason: "audit reason required",
+      diff: "before/after diff required",
+      riskAcknowledgement: "risk acknowledgement required when bonus/turnover/maxWithdraw changes",
+      status: "status transition must be explicit",
+      numeric: "numeric fields must be non-negative",
+      dateWindow: "startAt <= endAt when both set",
+      claim: "no claim execution",
+      ledger: "no ledger creation",
+      turnover: "no turnover creation",
+    },
+  };
 
   const page = document.body && document.body.dataset ? document.body.dataset.page : "";
 

@@ -220,6 +220,58 @@
         </div>
       </section>
 
+      <section class="panel" data-promotion-admin-write-dry-run-panel="BACKOFFICE-PROMOTION-ADMIN-WRITE-DRY-RUN-28">
+        <div class="panel-heading">
+          <div>
+            <h2>Promotion Admin Write Dry-run</h2>
+            <p>Validate-only boundary for future promotion writes; write locked before runtime.</p>
+          </div>
+          <span class="mode-pill">validate_only</span>
+        </div>
+        <div class="marker-list">
+          <p>promotion admin write dry-run: validate-only, no DB write, no runtime credit action, no ledger creation, no turnover creation.</p>
+          <p>Dry-run before runtime: admin promotion write locked; no backend POST/PATCH/PUT/DELETE route is called from this UI.</p>
+          <p>Future permission boundary: settings.promotion.write or settings.promotion.manage must be approved before any runtime write route exists.</p>
+          <p>Validation rules: audit reason required, before/after diff required, status transition must be explicit, numeric fields must be non-negative, and startAt &lt;= endAt when both are set.</p>
+          <p>Risk rule: risk acknowledgement required when bonus, turnover, or maxWithdraw changes.</p>
+          <p>Claim execution remains blocked: no claim execution, no ledger creation, and no turnover creation from this dry-run boundary.</p>
+        </div>
+        <div class="readiness-grid" aria-label="Promotion admin write dry-run payload shape and validation visibility">
+          <article class="field-card">
+            <h3>title/type/status</h3>
+            <p>Payload fields require a before/after diff; status transition must be explicit.</p>
+          </article>
+          <article class="field-card">
+            <h3>minDeposit/maxDeposit</h3>
+            <p>Numeric fields must be non-negative before future write approval.</p>
+          </article>
+          <article class="field-card">
+            <h3>bonusType/bonusValue</h3>
+            <p>Bonus change requires risk acknowledgement and remains validate-only.</p>
+          </article>
+          <article class="field-card">
+            <h3>turnoverMultiplier</h3>
+            <p>Turnover change requires risk acknowledgement; no turnoverRequirement is created.</p>
+          </article>
+          <article class="field-card">
+            <h3>maxWithdraw</h3>
+            <p>Withdraw cap change requires risk acknowledgement; no real credit/debit runtime action.</p>
+          </article>
+          <article class="field-card">
+            <h3>startAt/endAt</h3>
+            <p>Date window validates startAt &lt;= endAt when both are set.</p>
+          </article>
+          <article class="field-card">
+            <h3>auditReason</h3>
+            <p>Audit reason required for every validate-only payload.</p>
+          </article>
+          <article class="field-card">
+            <h3>riskAcknowledgement</h3>
+            <p>Risk acknowledgement required for bonus/turnover/maxWithdraw changes.</p>
+          </article>
+        </div>
+      </section>
+
       <section class="panel">
         <div class="panel-heading">
           <div>
