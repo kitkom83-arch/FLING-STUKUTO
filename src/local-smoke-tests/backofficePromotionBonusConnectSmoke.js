@@ -110,7 +110,8 @@ function main() {
     "Promotion / Bonus Read-only Bridge",
     "Member-visible promotion campaign list: GET /api/promotions.",
     "Bonus/free-credit relationship visibility: GET /api/admin/reports/summary and GET /api/admin/reports/wallet-ledger.",
-    "Admin promotion CRUD/config backend is MISSING_BACKEND",
+    "Admin promotion config visibility: GET /api/admin/promotions is backend-connected, read-only/local-safe, and guarded by admin permission.",
+    "Admin promotion config is PARTIAL for read-only visibility only; create/update/delete remains out of scope.",
     "New project.zip remains a UI/mock reference only.",
     "No production DB. No deploy. No live provider/payment/bank/SMS/slip OCR. No real credit/debit runtime action.",
   ]);
@@ -121,11 +122,12 @@ function main() {
     "Loading backend-connected promotion/bonus visibility...",
     "Promotion/bonus visibility refreshed.",
     "Promotion/bonus visibility refresh failed.",
-    "Loading backend-connected promotion/bonus relationship data...",
-    "Promotion/bonus relationship data refreshed.",
-    "Promotion/bonus bridge stays read-only and local-safe.",
+    "Loading backend-connected admin promotion config read-only/local-safe visibility...",
+    "Admin promotion config visibility refreshed.",
+    "Admin promotion config visibility refresh failed.",
+    "Admin promotion config visibility stays read-only/local-safe",
     "read_only_hold",
-    "missing_backend",
+    "partial_read_only",
     "promotion_bonus",
   ]);
 
@@ -140,7 +142,9 @@ function main() {
   assertIncludes("mapping doc", mappingDoc, [
     "New project.zip` is a static UI/mock reference only, not a backend source.",
     "Promotions",
-    "`GET /api/promotions`, `POST /api/promotions/:id/claim`",
+    "`GET /api/promotions`",
+    "`POST /api/promotions/:id/claim`",
+    "`GET /api/admin/promotions`",
     "promotion_bonus ledger",
     "BACKOFFICE-PROMOTION-BONUS-CONNECT-23",
   ]);

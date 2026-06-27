@@ -8,6 +8,7 @@ const memberService = require("../services/member.service");
 const walletService = require("../services/wallet.service");
 const pointService = require("../services/point.service");
 const reportService = require("../services/report.service");
+const promotionService = require("../services/promotion.service");
 const { logAdminAction, listAdminLogs } = require("../services/adminLog.service");
 const {
   auditLoginBlockedOutsideSchedule,
@@ -318,6 +319,10 @@ async function reportWalletLedger(req, res) {
   return success(res, await reportService.walletLedger(req.query, req.siteId));
 }
 
+async function listPromotionConfigs(req, res) {
+  return success(res, await promotionService.listAdminPromotionConfigs(req.siteId));
+}
+
 async function logs(req, res) {
   return success(res, await listAdminLogs({ ...req.query, siteId: req.siteId }));
 }
@@ -338,5 +343,6 @@ module.exports = {
   reportDeposits,
   reportWithdrawals,
   reportWalletLedger,
+  listPromotionConfigs,
   logs,
 };

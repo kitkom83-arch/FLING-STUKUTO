@@ -41,6 +41,29 @@ async function listPromotions(siteId) {
   });
 }
 
+async function listAdminPromotionConfigs(siteId) {
+  return prisma.promotion.findMany({
+    where: { siteId },
+    select: {
+      id: true,
+      title: true,
+      type: true,
+      minDeposit: true,
+      maxDeposit: true,
+      bonusType: true,
+      bonusValue: true,
+      turnoverMultiplier: true,
+      maxWithdraw: true,
+      status: true,
+      startAt: true,
+      endAt: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+    orderBy: [{ status: "asc" }, { createdAt: "desc" }],
+  });
+}
+
 async function claimPromotion(userId, siteId, promotionId) {
   try {
     return await prisma.$transaction(async (tx) => {
@@ -114,5 +137,6 @@ async function claimPromotion(userId, siteId, promotionId) {
 
 module.exports = {
   listPromotions,
+  listAdminPromotionConfigs,
   claimPromotion,
 };
