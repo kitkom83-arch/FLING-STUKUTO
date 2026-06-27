@@ -29,6 +29,8 @@
     "Promotion admin write validator is a pure validator, validate-only, write locked, no DB write, no runtime credit action, no ledger creation, and no turnover creation.";
   const ADMIN_PROMOTION_DRY_RUN_API_CONTRACT_NOTE =
     "Promotion admin dry-run API contract is contract-only, not mounted, validate-only, write locked, and no DB write.";
+  const ADMIN_PROMOTION_DRY_RUN_API_STUB_NOTE =
+    "Promotion admin dry-run API stub is a pure stub, contract-only, not mounted, validate-only, no DB write, no runtime credit action, no ledger creation, no turnover creation, and write locked.";
   const PROMOTION_ADMIN_WRITE_DRY_RUN_CONTRACT = {
     phase: "BACKOFFICE-PROMOTION-ADMIN-WRITE-DRY-RUN-28",
     mode: "promotion admin write dry-run validate-only no DB write no runtime credit action no ledger creation no turnover creation dry-run before runtime write locked future permission boundary",
