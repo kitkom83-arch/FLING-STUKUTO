@@ -129,6 +129,7 @@
         class="panel"
         data-backoffice-promotion-bonus-connect-marker="backend_connected_promotion_bonus_read_only_local_safe"
         data-promotion-claim-guard-marker="promotion claim guard local-safe preflight only guarded hold fail-closed"
+        data-promotion-admin-write-readiness-marker="promotion admin write readiness write locked local-safe preflight only no runtime credit action claim guarded hold"
       >
         <div class="panel-heading">
           <div>
@@ -173,6 +174,50 @@
             <strong>guarded_hold</strong>
           </article>
         </section>
+      </section>
+
+      <section class="panel" data-promotion-admin-write-readiness-panel="BACKOFFICE-PROMOTION-ADMIN-WRITE-READINESS-27">
+        <div class="panel-heading">
+          <div>
+            <h2>Promotion Admin Write Readiness</h2>
+            <p>Write locked; local-safe preflight only for future create/update promotion work.</p>
+          </div>
+          <span class="mode-pill">write_locked</span>
+        </div>
+        <div class="marker-list">
+          <p>promotion admin write readiness: admin promotion write locked; local-safe preflight only; no runtime credit action; claim guarded hold.</p>
+          <p>No create/update/delete button is rendered for admin promotions, and no backend create/update/delete promotion route is called from this UI.</p>
+          <p>Future permission boundary: require settings.promotion.write or settings.promotion.manage in addition to the current settings.promotion.view read guard.</p>
+          <p>Future guard checklist: audit reason required, before/after diff required, status transition guard, bonus/turnover risk acknowledgement, and local-safe dry-run before runtime.</p>
+          <p>Claim route behavior is unchanged: POST /api/promotions/:id/claim stays outside admin UI execution because claim can create promotion_bonus ledger rows and turnoverRequirement records.</p>
+          <p>Backend runtime behavior remains unchanged: no production DB, no deploy, no live provider/payment/bank/SMS/slip OCR, and no real credit/debit runtime action.</p>
+        </div>
+        <div class="readiness-grid" aria-label="Promotion admin write field risk matrix">
+          <article class="field-card">
+            <h3>title/type/status</h3>
+            <p>Member eligibility, campaign visibility, and status transition guard risk.</p>
+          </article>
+          <article class="field-card">
+            <h3>minDeposit/maxDeposit</h3>
+            <p>Deposit qualification, bonus base calculation, and member eligibility risk.</p>
+          </article>
+          <article class="field-card">
+            <h3>bonusType/bonusValue</h3>
+            <p>Bonus/free-credit amount and promotion_bonus ledger amount risk.</p>
+          </article>
+          <article class="field-card">
+            <h3>turnoverMultiplier</h3>
+            <p>turnoverRequirement amount risk before withdrawal is allowed.</p>
+          </article>
+          <article class="field-card">
+            <h3>maxWithdraw</h3>
+            <p>Withdraw condition and member payout eligibility risk.</p>
+          </article>
+          <article class="field-card">
+            <h3>startAt/endAt</h3>
+            <p>Campaign window, claim eligibility, and status/readiness risk.</p>
+          </article>
+        </div>
       </section>
 
       <section class="panel">
