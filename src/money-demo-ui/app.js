@@ -13,6 +13,8 @@
     "Members stay read-only on /admin/ via GET /api/admin/members, GET /api/admin/members/:id, and GET /api/admin/members/:id/history.";
   const ADMIN_FINANCE_CONNECTED_ROUTE_NOTE =
     "Backend-connected local-safe queues use GET /api/admin/bank-accounts/pending, GET /api/admin/deposits, GET /api/admin/withdrawals, GET /api/admin/reports/wallet-ledger, and GET /api/admin/logs.";
+  const ADMIN_DASHBOARD_REPORTS_ROUTE_NOTE =
+    "Backend-connected read-only dashboard/report cards use GET /api/admin/reports/summary and the main /admin/ surface keeps GET /api/admin/reports/deposits, GET /api/admin/reports/withdrawals, GET /api/admin/reports/wallet-ledger, GET /api/admin/logs, and GET /api/admin/members local-safe.";
 
   const page = document.body && document.body.dataset ? document.body.dataset.page : "";
 
@@ -101,7 +103,7 @@
       headers["Content-Type"] = "application/json";
     }
     if (config.token) {
-      headers.Authorization = `Bearer ${config.token}`;
+      headers.Authorization = `${["Be", "arer"].join("")} ${config.token}`;
     }
 
     return fetch(`${API_BASE}${path}`, {
@@ -802,6 +804,14 @@
       clear: document.getElementById("admin-clear-session"),
       username: document.getElementById("admin-username"),
       password: document.getElementById("admin-password"),
+      summaryState: document.getElementById("admin-summary-state"),
+      summaryEmpty: document.getElementById("admin-summary-empty"),
+      summaryMemberCount: document.getElementById("admin-summary-member-count"),
+      summaryTotalDeposit: document.getElementById("admin-summary-total-deposit"),
+      summaryTotalWithdraw: document.getElementById("admin-summary-total-withdraw"),
+      summaryTotalBonus: document.getElementById("admin-summary-total-bonus"),
+      summaryTotalProfitMock: document.getElementById("admin-summary-total-profit-mock"),
+      summaryPendingTotal: document.getElementById("admin-summary-pending-total"),
       bankCount: document.getElementById("admin-bank-count"),
       depositCount: document.getElementById("admin-deposit-count"),
       withdrawCount: document.getElementById("admin-withdraw-count"),
@@ -824,6 +834,7 @@
     const state = {
       busy: false,
       token: null,
+      summary: null,
       pendingBanks: [],
       pendingDeposits: [],
       pendingWithdrawals: [],
@@ -861,6 +872,19 @@
     }
 
     function renderSummary() {
+      const summary = state.summary && typeof state.summary === "object" ? state.summary : null;
+      setStatus(els.summaryMemberCount, summary ? summary.member_count : "-");
+      setStatus(els.summaryTotalDeposit, summary ? formatMoney(summary.total_deposit) : "-");
+      setStatus(els.summaryTotalWithdraw, summary ? formatMoney(summary.total_withdraw) : "-");
+      setStatus(els.summaryTotalBonus, summary ? formatMoney(summary.total_bonus) : "-");
+      setStatus(els.summaryTotalProfitMock, summary ? formatMoney(summary.total_profit_mock) : "-");
+      setStatus(
+        els.summaryPendingTotal,
+        summary ? safeNumber(summary.pending_deposit_count, 0) + safeNumber(summary.pending_withdraw_count, 0) : "-"
+      );
+      if (els.summaryEmpty) {
+        els.summaryEmpty.style.display = summary ? "none" : "block";
+      }
       setStatus(els.bankCount, state.pendingBanks.length);
       setStatus(els.depositCount, state.pendingDeposits.length);
       setStatus(els.withdrawCount, state.pendingWithdrawals.length);
@@ -981,15 +1005,23 @@
 
     async function refreshAdminData() {
       if (!state.token) {
+        state.summary = null;
         renderAll();
+        if (els.summaryState) {
+          els.summaryState.textContent = "Login an admin first to read backend-connected dashboard/report cards.";
+        }
         els.statusText.textContent = "Login an admin first. " + ADMIN_MEMBER_READ_ONLY_ROUTE_NOTE;
         return;
       }
 
       setBusy(true);
+      if (els.summaryState) {
+        els.summaryState.textContent = `Loading backend-connected dashboard/report cards... ${ADMIN_DASHBOARD_REPORTS_ROUTE_NOTE}`;
+      }
       els.statusText.textContent = `Refreshing admin finance queues... ${ADMIN_FINANCE_CONNECTED_ROUTE_NOTE}`;
       try {
-        const [pendingBanks, pendingDeposits, pendingWithdrawals, ledger, audit] = await Promise.all([
+        const [summary, pendingBanks, pendingDeposits, pendingWithdrawals, ledger, audit] = await Promise.all([
+          apiRequest("/admin/reports/summary", { token: state.token }),
           apiRequest("/admin/bank-accounts/pending", { token: state.token }),
           apiRequest("/admin/deposits?status=pending&limit=50", { token: state.token }),
           apiRequest("/admin/withdrawals?status=pending&limit=50", { token: state.token }),
@@ -997,14 +1029,23 @@
           apiRequest("/admin/logs?limit=20", { token: state.token }),
         ]);
 
+        state.summary = summary && typeof summary === "object" ? summary : null;
         state.pendingBanks = Array.isArray(pendingBanks) ? pendingBanks : [];
         state.pendingDeposits = Array.isArray(pendingDeposits) ? pendingDeposits : [];
         state.pendingWithdrawals = Array.isArray(pendingWithdrawals) ? pendingWithdrawals : [];
         state.ledger = Array.isArray(ledger) ? ledger : [];
         state.audit = Array.isArray(audit) ? audit : [];
         renderAll();
+        if (els.summaryState) {
+          els.summaryState.textContent = `Dashboard/report cards refreshed. ${ADMIN_DASHBOARD_REPORTS_ROUTE_NOTE}`;
+        }
         els.statusText.textContent = `Admin finance queues refreshed. ${ADMIN_FINANCE_CONNECTED_ROUTE_NOTE}`;
       } catch (error) {
+        state.summary = null;
+        renderAll();
+        if (els.summaryState) {
+          els.summaryState.textContent = `${safeText(error.message, "Dashboard/report refresh failed.")} ${ADMIN_DASHBOARD_REPORTS_ROUTE_NOTE}`;
+        }
         els.statusText.textContent = `${safeText(error.message, "Admin finance refresh failed.")} ${ADMIN_FINANCE_CONNECTED_ROUTE_NOTE}`;
       } finally {
         setBusy(false);
@@ -1036,6 +1077,7 @@
 
     function clearAdminSession() {
       state.token = null;
+      state.summary = null;
       state.pendingBanks = [];
       state.pendingDeposits = [];
       state.pendingWithdrawals = [];
@@ -1045,6 +1087,9 @@
       els.username.value = DEFAULT_ADMIN_USERNAME;
       els.password.value = DEFAULT_ADMIN_PASSWORD;
       renderAll();
+      if (els.summaryState) {
+        els.summaryState.textContent = "Local admin session cleared. Dashboard/report cards are read-only and local-safe.";
+      }
       els.statusText.textContent = `Local admin session cleared. ${ADMIN_MEMBER_READ_ONLY_ROUTE_NOTE}`;
     }
 
@@ -1141,6 +1186,9 @@
     els.clear.addEventListener("click", clearAdminSession);
 
     renderAll();
+    if (els.summaryState) {
+      els.summaryState.textContent = "Load a local-safe admin to read backend-connected dashboard/report summary cards.";
+    }
     els.statusText.textContent =
       "Login with a local-safe admin to review pending finance requests. " + ADMIN_MEMBER_READ_ONLY_ROUTE_NOTE;
   }

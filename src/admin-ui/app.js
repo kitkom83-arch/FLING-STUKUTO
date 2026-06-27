@@ -3,6 +3,8 @@
 
   const API_BASE = "/api";
   const SITE_CODE = "PG77";
+  const DASHBOARD_REPORTS_CONNECTED_NOTE =
+    "Backend-connected read-only local-safe dashboard/report surface uses GET /api/admin/reports/summary, GET /api/admin/reports/deposits, GET /api/admin/reports/withdrawals, GET /api/admin/reports/wallet-ledger, GET /api/admin/logs, and GET /api/admin/members.";
   const DAYS = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
   const SENSITIVE_WORDS = /\b(password|secret|authorization)\b/i;
   const TOKEN_SHAPED_VALUE = /\b[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\b/;
@@ -928,7 +930,9 @@
   function renderDashboardSummary(summary, message) {
     const safeSummary = summary && typeof summary === "object" ? summary : null;
     state.dashboardSummary = safeSummary;
-    els.dashboardState.textContent = safeDisplay(message || (safeSummary ? "Dashboard summary loaded." : "No dashboard summary loaded."));
+    els.dashboardState.textContent = safeDisplay(
+      message || (safeSummary ? `Dashboard summary loaded. ${DASHBOARD_REPORTS_CONNECTED_NOTE}` : "No dashboard summary loaded.")
+    );
     if (!safeSummary) {
       resetDashboardCards();
       els.dashboardEmpty.classList.add("hidden");
@@ -2270,15 +2274,15 @@
 
   async function loadDashboardSummary() {
     if (!state.token) {
-      renderDashboardSummary(null, "Load an admin credential to read the summary.");
+      renderDashboardSummary(null, `Load an admin credential to read the summary. ${DASHBOARD_REPORTS_CONNECTED_NOTE}`);
       return;
     }
     if (!state.canViewReports) {
       renderDashboardSummary(null, "reports.view permission is required for dashboard summary.");
       return;
     }
-    els.dashboardState.textContent = "Loading dashboard summary...";
-    renderDashboardSummary(await adminFetchReadOnly("/admin/reports/summary"), "Dashboard summary loaded.");
+    els.dashboardState.textContent = `Loading dashboard summary... ${DASHBOARD_REPORTS_CONNECTED_NOTE}`;
+    renderDashboardSummary(await adminFetchReadOnly("/admin/reports/summary"), `Dashboard summary loaded. ${DASHBOARD_REPORTS_CONNECTED_NOTE}`);
   }
 
   async function refreshDashboardSummary() {

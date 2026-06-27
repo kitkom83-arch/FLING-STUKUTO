@@ -38,6 +38,50 @@
         </div>
       </section>
 
+      <section class="panel" data-backoffice-dashboard-reports-connect-marker="backend_connected_read_only_local_safe">
+        <div class="panel-heading">
+          <div>
+            <h2>Dashboard / Reports Bridge</h2>
+            <p>Backend-connected read-only local-safe summary cards. Main backoffice `/admin/` remains the primary dashboard and reports surface.</p>
+          </div>
+          <span class="mode-pill">read_only_local_safe</span>
+        </div>
+        <div class="marker-list">
+          <p>Summary cards below use GET /api/admin/reports/summary.</p>
+          <p>Main backoffice read-only routes: GET /api/admin/reports/deposits, GET /api/admin/reports/withdrawals, GET /api/admin/reports/wallet-ledger, GET /api/admin/logs, GET /api/admin/members.</p>
+          <p>Optional Lucky Wheel read-only routes already exist on the main backoffice surface: GET /api/admin/wheel/spins, GET /api/admin/wheel/member-rewards.</p>
+          <p>No live payment provider. No real money movement. No production DB. No deploy. No live payment/bank/SMS/slip OCR.</p>
+        </div>
+        <div id="admin-summary-state" class="notice">Load a local-safe admin to read backend-connected dashboard/report summary cards.</div>
+        <section class="status-grid compact-grid" id="admin-summary-cards" aria-label="Admin dashboard report summary cards">
+          <article class="status-card">
+            <span>Members</span>
+            <strong id="admin-summary-member-count">-</strong>
+          </article>
+          <article class="status-card">
+            <span>Total Deposit</span>
+            <strong id="admin-summary-total-deposit">-</strong>
+          </article>
+          <article class="status-card">
+            <span>Total Withdraw</span>
+            <strong id="admin-summary-total-withdraw">-</strong>
+          </article>
+          <article class="status-card">
+            <span>Total Bonus</span>
+            <strong id="admin-summary-total-bonus">-</strong>
+          </article>
+          <article class="status-card">
+            <span>Profit Mock</span>
+            <strong id="admin-summary-total-profit-mock">-</strong>
+          </article>
+          <article class="status-card">
+            <span>Pending Total</span>
+            <strong id="admin-summary-pending-total">-</strong>
+          </article>
+        </section>
+        <div id="admin-summary-empty" class="empty-state" style="display: none">No dashboard/report summary yet.</div>
+      </section>
+
       <section class="panel">
         <div class="panel-heading">
           <div>

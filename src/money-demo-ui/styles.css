@@ -190,6 +190,10 @@ label span {
   margin-bottom: 1rem;
 }
 
+.compact-grid {
+  margin-top: 1rem;
+}
+
 .status-card,
 .panel {
   border-radius: 24px;

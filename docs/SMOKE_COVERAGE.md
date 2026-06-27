@@ -44,6 +44,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `adminBackofficeReadOnlyIntegrationSmoke.js` | `npm run smoke:admin-backoffice-read-only-integration` | No | No | No | Static contract plus unauth HTTP guard | Phase AK Admin Backoffice Read-only API Integration contract for dashboard/reports, member list/detail, wallet ledger, deposit/withdraw report, bank pending, and mock statement read-only UI/API wiring; no write action, no production DB, no real money, and no live integration. |
 | `adminGuardedBankAccountReviewSmoke.js` | `npm run smoke:admin-guarded-bank-account-review` | No | No | No | Static contract plus unauth HTTP guard | Phase AL Admin Guarded Bank Account Review contract for pending bank approve/reject guarded write foundation, reason/audit/permission guard, duplicate guard, safe errors, no production DB, no real money, and no live integration. |
 | `backofficeMemberMoneyConnectSmoke.js` | `npm run smoke:backoffice-member-money-connect` | No | No | No | Runs static contract | Backoffice member money connect contract for the existing member read-only backoffice surface plus the backend-connected local-safe admin money demo queues, real existing admin route markers, loading/empty/error states, fail-closed route guards, no fake primary source arrays, no production DB, no live provider/payment/bank/SMS/slip OCR, and no secret/token/session rendering or logging. |
+| `backofficeDashboardReportsConnectSmoke.js` | `npm run smoke:backoffice-dashboard-reports-connect` | No | No | No | Runs static contract | Backoffice dashboard reports connect contract for the main backend-connected read-only admin dashboard/report surface plus the admin money demo summary bridge, real existing report/member/audit/wheel route markers, loading/empty/error states, no fake primary source arrays, no production DB, no live provider/payment/bank/SMS/slip OCR, and no secret/token/session rendering or logging. |
 | `adminOperatorHandoffSmoke.js` | `npm run smoke:admin-operator-handoff` | No | No | No | Static contract plus unauth HTTP guard | Phase AM Admin Bank Account Review Audit & Operator Handoff contract for read-only review history, `admin.audit.view` permission/API guard, operator safety copy, response leak scan, duplicate reviewed safe `409`, reason required, audit required, no production DB, no real money, and no live integration. |
 | `adminBankAccountReviewReleasePackSmoke.js` | `npm run smoke:admin-bank-account-review-release-pack` | No | No | No | Static docs/release pack contract | Phase AN Admin Bank Account Review Release Pack / UAT Checklist contract for release pack docs, UAT checklist, operator runbook, Phase AL/AM/AN markers, permission markers, audit action markers, reason required, duplicate safe `409`, no production DB, no real money, no live provider/payment/bank/SMS/Slip OCR, and static safety scan. |
 | `oroplayProductionTransferSmoke.js` | `npm run smoke:oroplay-production-transfer` | No | No | Yes | Controlled production transfer smoke | OroPlay Transfer API production connector smoke for env-driven token, agent balance, vendor list, game list, player create, deposit, 5-6 game launches, user balance, betting history, withdraw all, masked summary, and local secret-shaped value scan. |
@@ -500,6 +501,18 @@ The Admin Wheel runtime smoke uses only local/staging/test PostgreSQL fixtures. 
 - Confirms the connected finance queue does not claim fake/mock arrays as the primary source of truth and does not render or log token/secret/password/session values.
 - Confirms there is no production DB, no deploy, no live provider/payment/bank/SMS/slip OCR, and no real-money activation wording.
 - Confirms package scripts include `smoke:backoffice-member-money-connect` and smoke coverage documents this check.
+- It does not use network, does not use DB, and does not call live API.
+
+## 17E. smoke:backoffice-dashboard-reports-connect Coverage
+
+- Reads `src/admin-ui/app.js`, `src/admin-ui/index.html`, `src/money-demo-ui/admin.html`, `src/money-demo-ui/app.js`, `src/routes/admin.routes.js`, `docs/BACKOFFICE_DEMO_API_MAPPING.md`, `docs/SMOKE_COVERAGE.md`, and `package.json`.
+- Confirms the main `/admin/` surface stays backend-connected, read-only, and local-safe for `GET /api/admin/reports/summary`, `GET /api/admin/reports/deposits`, `GET /api/admin/reports/withdrawals`, `GET /api/admin/reports/wallet-ledger`, `GET /api/admin/logs`, and `GET /api/admin/members`.
+- Confirms the admin money demo exposes a backend-connected read-only dashboard/report bridge using `GET /api/admin/reports/summary` while keeping the existing local-safe finance queue reads for pending bank, pending deposit, pending withdrawal, ledger, and audit rows.
+- Confirms dashboard/report surfaces include loading, empty, and error-state markers plus explicit local-safe/read-only boundary copy.
+- Confirms existing optional Lucky Wheel read routes remain discoverable through `GET /api/admin/wheel/spins` and `GET /api/admin/wheel/member-rewards`, without introducing new backend routes.
+- Confirms UI source does not promote fake/mock arrays as the primary source of truth and does not render or log token/secret/password/session values.
+- Confirms there is no production DB, no deploy, no live provider/payment/bank/SMS/slip OCR, and no real-money activation wording.
+- Confirms package scripts include `smoke:backoffice-dashboard-reports-connect` and smoke coverage documents this check.
 - It does not use network, does not use DB, and does not call live API.
 
 ## 18. smoke:wheel Coverage
@@ -1741,6 +1754,39 @@ Boundary:
 - No deploy.
 - No credit/debit.
 - No payout.
+
+## 50B. Phase AP Backoffice Dashboard Reports Connect
+
+Phase AP status: Backoffice dashboard/reports connect using existing PG77 backend/admin read-only APIs.
+
+Script:
+
+- `src/local-smoke-tests/backofficeDashboardReportsConnectSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:backoffice-dashboard-reports-connect
+```
+
+Coverage:
+
+- Confirms `src/admin-ui/app.js` remains the primary backend-connected read-only dashboard/report surface for `GET /api/admin/reports/summary`, `GET /api/admin/reports/deposits`, `GET /api/admin/reports/withdrawals`, `GET /api/admin/reports/wallet-ledger`, `GET /api/admin/logs`, and member read-only visibility.
+- Confirms `src/money-demo-ui/admin.html` and `src/money-demo-ui/app.js` expose a backend-connected dashboard/report summary bridge backed by `GET /api/admin/reports/summary`, while preserving the existing local-safe finance queue reads for pending bank, pending deposit, pending withdrawal, ledger, and audit rows.
+- Confirms the dashboard/report bridge includes explicit backend-connected read-only local-safe copy, loading/empty/error markers, and route markers for report/member/audit surfaces that already exist in PG77.
+- Confirms optional Lucky Wheel summary discovery remains read-only through existing routes `GET /api/admin/wheel/spins` and `GET /api/admin/wheel/member-rewards`.
+- Confirms route source still uses fail-closed auth/permission guards and that the connected dashboard/report surfaces do not promote fake arrays, production DB, deploy, or live provider/payment/bank/SMS/slip OCR execution.
+- Runs a static secret-shaped value scan for tokens, passwords, session markers, literal bearer strings, database credential URLs, and token/session logging.
+
+Boundary:
+
+- Local/staging/mock only.
+- No production DB.
+- No real money.
+- No live provider/payment/bank/SMS/Slip OCR.
+- No migration.
+- No deploy.
+- Read-only/local-safe surface only.
 
 ## 51. Phase AM Admin Bank Account Review Audit & Operator Handoff
 
