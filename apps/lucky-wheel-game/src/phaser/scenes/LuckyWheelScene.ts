@@ -1,12 +1,10 @@
 import * as Phaser from 'phaser/dist/phaser.esm.js';
-import { REWARD_SEGMENTS } from '../../game/content/rewards';
 import { getMyRewards, getWheelApiErrorMessage, getWheelApiMode, getWheelConfig, getWheelHistory, spinWheel } from '../../game/services/wheelApi';
-import type { LuckyWheelState } from '../../game/simulation/store';
+import type { LuckyWheelState, WheelDisplaySegment } from '../../game/simulation/store';
 import { luckyWheelStore } from '../../game/simulation/store';
 
 const WHEEL_RADIUS = 154;
 const WHEEL_DIAMETER = WHEEL_RADIUS * 2 + 12;
-const SEGMENT_DEGREES = 360 / REWARD_SEGMENTS.length;
 
 export class LuckyWheelScene extends Phaser.Scene {
   private wheelContainer!: any;
@@ -16,6 +14,7 @@ export class LuckyWheelScene extends Phaser.Scene {
   private spinPulseTween?: any;
   private unsubscribe?: () => void;
   private currentState: LuckyWheelState = luckyWheelStore.getState();
+  private renderedSegmentsKey = '';
 
   constructor() {
     super('LuckyWheelScene');
@@ -24,13 +23,16 @@ export class LuckyWheelScene extends Phaser.Scene {
   create(): void {
     this.cameras.main.setBackgroundColor('#360506');
     this.createBackground();
-    this.createWheelTexture();
     this.createWheel();
     this.createPointer();
     this.createSpinButton();
     this.createAmbientFx();
 
     this.unsubscribe = luckyWheelStore.subscribe((state) => {
+      const nextSegmentsKey = segmentKey(state.wheelSegments);
+      if (nextSegmentsKey !== this.renderedSegmentsKey && !state.isSpinning) {
+        this.rebuildWheel(state.wheelSegments);
+      }
       this.currentState = state;
       this.syncSpinButton();
     });
@@ -98,19 +100,20 @@ export class LuckyWheelScene extends Phaser.Scene {
     }).setOrigin(0.5);
   }
 
-  private createWheelTexture(): void {
-    const textureKey = 'lucky-wheel-face';
+  private createWheelTexture(segments: WheelDisplaySegment[]): string {
+    const textureKey = `lucky-wheel-face-${hashSegmentKey(segmentKey(segments))}`;
     if (this.textures.exists(textureKey)) {
-      return;
+      return textureKey;
     }
 
     const graphics = this.make.graphics({ x: 0, y: 0 });
     const center = WHEEL_DIAMETER / 2;
+    const segmentDegrees = this.getSegmentDegrees(segments);
 
-    REWARD_SEGMENTS.forEach((segment, index) => {
-      const centerAngle = Phaser.Math.DegToRad(-90 + index * SEGMENT_DEGREES);
-      const startAngle = centerAngle - Phaser.Math.DegToRad(SEGMENT_DEGREES / 2);
-      const endAngle = centerAngle + Phaser.Math.DegToRad(SEGMENT_DEGREES / 2);
+    segments.forEach((segment, index) => {
+      const centerAngle = Phaser.Math.DegToRad(-90 + index * segmentDegrees);
+      const startAngle = centerAngle - Phaser.Math.DegToRad(segmentDegrees / 2);
+      const endAngle = centerAngle + Phaser.Math.DegToRad(segmentDegrees / 2);
 
       graphics.fillStyle(segment.color, 1);
       graphics.beginPath();
@@ -142,6 +145,7 @@ export class LuckyWheelScene extends Phaser.Scene {
 
     graphics.generateTexture(textureKey, WHEEL_DIAMETER, WHEEL_DIAMETER);
     graphics.destroy();
+    return textureKey;
   }
 
   private createWheel(): void {
@@ -160,16 +164,29 @@ export class LuckyWheelScene extends Phaser.Scene {
     }
 
     this.wheelContainer = this.add.container(180, 346);
-    const wheel = this.add.image(0, 0, 'lucky-wheel-face');
+    this.renderWheelSegments(this.currentState.wheelSegments);
+  }
+
+  private rebuildWheel(segments: WheelDisplaySegment[]): void {
+    this.renderedSegmentsKey = segmentKey(segments);
+    this.wheelContainer.removeAll(true);
+    this.wheelContainer.setRotation(0);
+    this.renderWheelSegments(segments);
+  }
+
+  private renderWheelSegments(segments: WheelDisplaySegment[]): void {
+    const segmentDegrees = this.getSegmentDegrees(segments);
+    const textureKey = this.createWheelTexture(segments);
+    const wheel = this.add.image(0, 0, textureKey);
     wheel.setDisplaySize(WHEEL_DIAMETER, WHEEL_DIAMETER);
     wheel.setTint(0xfff4df);
     this.wheelContainer.add(wheel);
 
-    REWARD_SEGMENTS.forEach((segment, index) => {
-      const angle = Phaser.Math.DegToRad(-90 + index * SEGMENT_DEGREES);
+    segments.forEach((segment, index) => {
+      const angle = Phaser.Math.DegToRad(-90 + index * segmentDegrees);
       const label = this.add.text(Math.cos(angle) * 94, Math.sin(angle) * 94, segment.shortLabel, {
         fontFamily: 'Arial, sans-serif',
-        fontSize: index === 6 ? '14px' : '12px',
+        fontSize: segment.shortLabel.length > 10 ? '10px' : segment.type === 'jackpot' ? '14px' : '12px',
         color: '#fff8d7',
         fontStyle: 'bold',
         stroke: '#561010',
@@ -184,6 +201,7 @@ export class LuckyWheelScene extends Phaser.Scene {
       marker.setStrokeStyle(1, 0x6a160e, 0.8);
       this.wheelContainer.add(marker);
     });
+    this.renderedSegmentsKey = segmentKey(segments);
   }
 
   private createPointer(): void {
@@ -254,6 +272,9 @@ export class LuckyWheelScene extends Phaser.Scene {
 
     try {
       const result = await spinWheel(this.currentState.campaignId);
+      if (result.prizeIndex >= this.currentState.wheelSegments.length) {
+        throw new Error('Prize index outside displayed wheel range.');
+      }
       const refreshPromise = isApiMode ? this.refreshApiData().catch((error: unknown) => error) : null;
       await this.spinToPrize(result.prizeIndex);
 
@@ -282,7 +303,8 @@ export class LuckyWheelScene extends Phaser.Scene {
     return new Promise((resolve) => {
       const currentDegrees = Phaser.Math.RadToDeg(this.wheelContainer.rotation);
       const normalizedCurrent = Phaser.Math.Angle.WrapDegrees(currentDegrees);
-      const targetModulo = Phaser.Math.Angle.WrapDegrees(-prizeIndex * SEGMENT_DEGREES);
+      const segmentDegrees = this.getSegmentDegrees(this.currentState.wheelSegments);
+      const targetModulo = Phaser.Math.Angle.WrapDegrees(-prizeIndex * segmentDegrees);
       const clockwiseDelta = (targetModulo - normalizedCurrent + 360) % 360;
       const fullRotations = 4 + (prizeIndex % 3);
       const targetRotation = currentDegrees + fullRotations * 360 + clockwiseDelta;
@@ -302,7 +324,8 @@ export class LuckyWheelScene extends Phaser.Scene {
   }
 
   private flashWinSegment(prizeIndex: number): void {
-    const angle = Phaser.Math.DegToRad(-90 + prizeIndex * SEGMENT_DEGREES + Phaser.Math.RadToDeg(this.wheelContainer.rotation));
+    const segmentDegrees = this.getSegmentDegrees(this.currentState.wheelSegments);
+    const angle = Phaser.Math.DegToRad(-90 + prizeIndex * segmentDegrees + Phaser.Math.RadToDeg(this.wheelContainer.rotation));
     const burst = this.add.particles(180 + Math.cos(angle) * 84, 346 + Math.sin(angle) * 84, 'ui-coin', {
       lifespan: 700,
       speed: { min: 60, max: 150 },
@@ -332,4 +355,20 @@ export class LuckyWheelScene extends Phaser.Scene {
       this.spinPulseTween.resume();
     }
   }
+
+  private getSegmentDegrees(segments: WheelDisplaySegment[]): number {
+    return 360 / Math.max(1, segments.length);
+  }
+}
+
+function segmentKey(segments: WheelDisplaySegment[]): string {
+  return segments.map((segment, index) => `${index}-${segment.id}-${segment.shortLabel}`).join('|') || 'empty';
+}
+
+function hashSegmentKey(value: string): string {
+  let hash = 0;
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
+  }
+  return hash.toString(36);
 }

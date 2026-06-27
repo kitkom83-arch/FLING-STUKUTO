@@ -273,15 +273,16 @@ function mapApiConfig(config: ApiWheelConfig): WheelConfig {
 
 function mapApiSpinResult(response: ApiSpinResponse): SpinResult {
   const prizeIndex = Number(response.prizeIndex);
-  if (!Number.isInteger(prizeIndex) || prizeIndex < 0 || prizeIndex >= REWARD_SEGMENTS.length) {
+  if (!Number.isInteger(prizeIndex) || prizeIndex < 0) {
     throw new WheelApiError();
   }
 
   const reward = response.reward || {};
+  const fallbackRewardLabel = REWARD_SEGMENTS[prizeIndex]?.label || `Reward ${prizeIndex + 1}`;
   return {
     prizeIndex,
     rewardId: nonEmptyString(response.rewardId, `reward-${prizeIndex}`),
-    rewardLabel: nonEmptyString(reward.label, REWARD_SEGMENTS[prizeIndex].label),
+    rewardLabel: nonEmptyString(reward.label, fallbackRewardLabel),
     rewardType: normalizeRewardType(reward.type, reward.label),
     amount: nonNegativeNumber(reward.amount, 0)
   };

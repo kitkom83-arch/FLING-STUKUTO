@@ -1,3 +1,5 @@
+import type { RewardType } from '../content/rewards';
+import { REWARD_SEGMENTS } from '../content/rewards';
 import type { SpinResult, WheelConfig, WheelHistoryRecord, WheelRewardRecord } from '../services/wheelApi';
 
 export type RewardStatus = 'pending' | 'claimed' | 'expired';
@@ -21,9 +23,20 @@ export type HistoryRecord = {
   createdAt: string;
 };
 
+export type WheelDisplaySegment = {
+  id: string;
+  label: string;
+  shortLabel: string;
+  type: RewardType;
+  color: number;
+  accent: number;
+};
+
 export type LuckyWheelState = {
   isLoading: boolean;
   campaignId: string;
+  campaignName: string;
+  rulesText: string;
   remainingSpins: number;
   creditBalance: number;
   pointsBalance: number;
@@ -32,6 +45,7 @@ export type LuckyWheelState = {
   screen: GameScreen;
   modalResult: SpinResult | null;
   errorMessage: string | null;
+  wheelSegments: WheelDisplaySegment[];
   rewards: RewardRecord[];
   history: HistoryRecord[];
 };
@@ -68,6 +82,8 @@ const initialRewards: RewardRecord[] = [
 const initialState: LuckyWheelState = {
   isLoading: true,
   campaignId: 'wheel_main',
+  campaignName: 'Lucky Wheel',
+  rulesText: '',
   remainingSpins: 3,
   creditBalance: 120,
   pointsBalance: 340,
@@ -76,9 +92,21 @@ const initialState: LuckyWheelState = {
   screen: 'main',
   modalResult: null,
   errorMessage: null,
+  wheelSegments: REWARD_SEGMENTS,
   rewards: initialRewards,
   history: []
 };
+
+const SEGMENT_COLORS = [
+  { color: 0xb71217, accent: 0xffec9d },
+  { color: 0x5c070b, accent: 0xf6bd49 },
+  { color: 0xd04520, accent: 0xffd66b },
+  { color: 0x8e1016, accent: 0xfff0b3 },
+  { color: 0xc98719, accent: 0xfff4bf },
+  { color: 0x3f0508, accent: 0xb8742d },
+  { color: 0xa91822, accent: 0xffc84d },
+  { color: 0x701013, accent: 0xffdf86 }
+];
 
 type CompleteSpinOptions = {
   updateLocalRecords?: boolean;
@@ -108,12 +136,16 @@ class LuckyWheelStore {
   }
 
   applyWheelConfig(config: WheelConfig): void {
+    const wheelSegments = config.rewards.length > 0 ? config.rewards.map(mapConfigRewardToSegment) : this.state.wheelSegments;
     this.patch({
       campaignId: config.campaignId,
+      campaignName: config.name,
+      rulesText: config.rulesText,
       remainingSpins: config.remainingSpins,
       creditBalance: config.balance.credit,
       pointsBalance: config.balance.points,
-      ticketBalance: config.balance.tickets
+      ticketBalance: config.balance.tickets,
+      wheelSegments
     });
   }
 
@@ -217,3 +249,33 @@ class LuckyWheelStore {
 }
 
 export const luckyWheelStore = new LuckyWheelStore();
+
+function mapConfigRewardToSegment(reward: WheelConfig['rewards'][number], index: number): WheelDisplaySegment {
+  const colors = SEGMENT_COLORS[index % SEGMENT_COLORS.length];
+  const label = reward.displayValue || reward.label;
+  return {
+    id: reward.id,
+    label,
+    shortLabel: compactSegmentLabel(label, reward.rewardType),
+    type: reward.rewardType,
+    color: colors.color,
+    accent: colors.accent
+  };
+}
+
+function compactSegmentLabel(label: string, type: RewardType): string {
+  const normalized = label.trim();
+  if (!normalized) return type.toUpperCase();
+  if (normalized.length <= 10) return normalized.toUpperCase();
+
+  const amount = normalized.match(/\d+[\d,.]*/)?.[0];
+  if (type === 'credit' && amount) return `CREDIT ${amount}`;
+  if (type === 'points' && amount) return `PTS ${amount}`;
+  if (type === 'ticket' && amount) return `TICKET ${amount}`;
+  if (type === 'none') return 'NO REWARD';
+  if (type === 'retry') return 'TRY AGAIN';
+  if (type === 'jackpot') return 'JACKPOT';
+
+  const words = normalized.split(/\s+/).filter(Boolean);
+  return words.slice(0, 2).join(' ').toUpperCase();
+}

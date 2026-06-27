@@ -12,9 +12,9 @@ export class LoadingScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor('#2b0305');
     this.createBackground();
 
-    this.add.text(180, 238, 'Demo_Yo', {
+    this.add.text(180, 232, 'PG77', {
       fontFamily: 'Georgia, serif',
-      fontSize: '48px',
+      fontSize: '56px',
       color: '#fff0b2',
       fontStyle: 'bold',
       stroke: '#7d0f11',
@@ -28,10 +28,17 @@ export class LoadingScene extends Phaser.Scene {
       }
     }).setOrigin(0.5);
 
-    this.add.text(180, 296, 'Lucky Wheel', {
+    this.add.text(180, 292, 'LUCKY WHEEL', {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '18px',
+      fontSize: '20px',
       color: '#fff2c4',
+      fontStyle: 'bold'
+    }).setOrigin(0.5);
+
+    this.add.text(180, 321, 'Demo rewards only - backend selected result', {
+      fontFamily: 'Arial, sans-serif',
+      fontSize: '11px',
+      color: '#e8c474',
       fontStyle: 'bold'
     }).setOrigin(0.5);
 

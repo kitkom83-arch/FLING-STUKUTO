@@ -226,6 +226,76 @@ button:focus-visible {
   z-index: 4;
 }
 
+.reward-preview {
+  pointer-events: auto;
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 143px;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  align-items: center;
+  gap: 10px;
+  padding: 10px 11px;
+  border: 1px solid rgba(255, 226, 145, 0.48);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(82, 9, 11, 0.9), rgba(21, 1, 4, 0.86)),
+    var(--glass);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 244, 203, 0.1),
+    0 14px 30px rgba(8, 0, 1, 0.38);
+  backdrop-filter: blur(5px);
+}
+
+.reward-preview > div:first-child {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.reward-preview span {
+  color: #dfbb70;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.reward-preview strong {
+  overflow: hidden;
+  color: #fff4c5;
+  font-family: Georgia, serif;
+  font-size: 16px;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-shadow: 0 0 16px rgba(255, 209, 90, 0.22);
+}
+
+.segment-chips {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.segment-chips span {
+  overflow: hidden;
+  padding: 5px 6px;
+  color: #3a0706;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border: 1px solid rgba(255, 244, 198, 0.38);
+  border-radius: 6px;
+  background: linear-gradient(180deg, #ffe89a, #c8811a);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.42),
+    0 5px 12px rgba(0, 0, 0, 0.22);
+}
+
 .bottom-nav button,
 .result-modal button {
   min-height: 44px;
@@ -621,6 +691,17 @@ button:focus-visible {
     0 8px 18px rgba(0, 0, 0, 0.14);
 }
 
+.featured-rule {
+  border-color: rgba(255, 231, 160, 0.54);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(255, 218, 112, 0.16), transparent 34%),
+    linear-gradient(180deg, #8f1515, #2a0305);
+}
+
+.featured-rule > span {
+  font-size: 10px;
+}
+
 .rule-card > span {
   display: grid;
   place-items: center;
@@ -673,8 +754,8 @@ button:focus-visible {
   width: min(100%, 304px);
   display: grid;
   justify-items: center;
-  gap: 11px;
-  padding: 24px 22px;
+  gap: 12px;
+  padding: 26px 22px 24px;
   text-align: center;
   border-radius: 8px;
   border: 1px solid rgba(255, 230, 153, 0.82);
@@ -685,8 +766,27 @@ button:focus-visible {
   box-shadow:
     inset 0 1px 0 rgba(255, 246, 204, 0.16),
     0 30px 70px rgba(0, 0, 0, 0.6),
-    0 0 42px rgba(255, 195, 62, 0.14);
+    0 0 42px rgba(255, 195, 62, 0.14),
+    0 0 0 6px rgba(95, 10, 12, 0.18);
   animation: modal-in 180ms cubic-bezier(0.2, 0.85, 0.24, 1.08);
+}
+
+.result-modal::before,
+.result-modal::after {
+  content: "";
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 235, 166, 0.7), transparent);
+}
+
+.result-modal::before {
+  top: 14px;
+}
+
+.result-modal::after {
+  bottom: 14px;
 }
 
 .modal-close {
@@ -709,6 +809,7 @@ button:focus-visible {
 .result-image {
   width: 92px;
   height: 92px;
+  animation: prize-pop 860ms ease-out both;
 }
 
 .result-kicker {
@@ -844,5 +945,19 @@ button:focus-visible {
   from {
     opacity: 0;
     transform: translateY(8px);
+  }
+}
+
+@keyframes prize-pop {
+  0% {
+    transform: scale(0.72) rotate(-8deg);
+  }
+
+  58% {
+    transform: scale(1.08) rotate(3deg);
+  }
+
+  100% {
+    transform: scale(1) rotate(0);
   }
 }

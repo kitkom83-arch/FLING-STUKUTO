@@ -58,7 +58,17 @@ function renderUi(state: LuckyWheelState): string {
 
 function renderMainControls(state: LuckyWheelState): string {
   const modeLabel = getWheelApiMode() === 'api' ? 'API backend' : 'mock backend';
+  const featuredSegments = state.wheelSegments.slice(0, 4);
   return `
+    <section class="reward-preview" aria-label="Current wheel rewards">
+      <div>
+        <span>Reward Lineup</span>
+        <strong>${escapeHtml(state.campaignName)}</strong>
+      </div>
+      <div class="segment-chips">
+        ${featuredSegments.map((segment) => `<span>${escapeHtml(segment.shortLabel)}</span>`).join('')}
+      </div>
+    </section>
     <nav class="bottom-nav" aria-label="Lucky Wheel navigation">
       <button type="button" data-screen="rewards"><span class="nav-glyph rewards"></span><span>My Rewards</span></button>
       <button type="button" data-screen="rules"><span class="nav-glyph rules"></span><span>Rules</span></button>
@@ -77,7 +87,7 @@ function renderScreen(state: LuckyWheelState): string {
         <h2>${title}</h2>
       </header>
       ${state.screen === 'rewards' ? renderRewards(state) : ''}
-      ${state.screen === 'rules' ? renderRules() : ''}
+      ${state.screen === 'rules' ? renderRules(state) : ''}
       ${state.screen === 'history' ? renderHistory(state) : ''}
     </section>
   `;
@@ -96,8 +106,8 @@ function renderRewards(state: LuckyWheelState): string {
             <article class="reward-row">
               <div class="reward-icon ${reward.type}"></div>
               <div>
-                <h3>${reward.label}</h3>
-                <p>${formatAmount(reward.amount, reward.type)} - ${reward.createdAt}</p>
+                <h3>${escapeHtml(reward.label)}</h3>
+                <p>${escapeHtml(formatAmount(reward.amount, reward.type))} - ${escapeHtml(reward.createdAt)}</p>
               </div>
               <span class="status ${reward.status}">${reward.status}</span>
             </article>
@@ -108,9 +118,20 @@ function renderRewards(state: LuckyWheelState): string {
   `;
 }
 
-function renderRules(): string {
+function renderRules(state: LuckyWheelState): string {
   return `
     <div class="rules-copy">
+      ${
+        state.rulesText
+          ? `<article class="rule-card featured-rule">
+              <span>PG</span>
+              <div>
+                <h3>Campaign Rules</h3>
+                <p>${escapeHtml(state.rulesText)}</p>
+              </div>
+            </article>`
+          : ''
+      }
       <article class="rule-card">
         <span>01</span>
         <div>
@@ -165,8 +186,8 @@ function renderHistory(state: LuckyWheelState): string {
             <article class="history-row">
               <span class="history-index">#${item.prizeIndex + 1}</span>
               <div>
-                <h3>${item.label}</h3>
-                <p>${formatAmount(item.amount, item.type)} - ${item.createdAt}</p>
+                <h3>${escapeHtml(item.label)}</h3>
+                <p>${escapeHtml(formatAmount(item.amount, item.type))} - ${escapeHtml(item.createdAt)}</p>
               </div>
             </article>
           `
@@ -183,8 +204,8 @@ function renderResultModal(result: SpinResult): string {
         <button type="button" class="modal-close" data-close-result aria-label="Close result">×</button>
         <div class="result-image ${result.rewardType}"></div>
         <span class="result-kicker">Prize Result</span>
-        <h2>${result.rewardLabel}</h2>
-        <p>${formatAmount(result.amount, result.rewardType)}</p>
+        <h2>${escapeHtml(result.rewardLabel)}</h2>
+        <p>${escapeHtml(formatAmount(result.amount, result.rewardType))}</p>
         <span class="result-meta">${formatRewardType(result.rewardType)}</span>
         <button type="button" data-close-result>OK</button>
       </section>
