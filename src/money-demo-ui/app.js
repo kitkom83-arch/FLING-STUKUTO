@@ -22,7 +22,7 @@
   const PROMOTION_BONUS_ROUTE_NOTE =
     "Backend-connected promotion/bonus visibility uses GET /api/promotions plus read-only ledger/report relationship markers; POST /api/promotions/:id/claim is on promotion claim guard, local-safe preflight only, guarded hold, and fail-closed because it can create promotion_bonus ledger rows and turnover requirements.";
   const ADMIN_PROMOTION_CONFIG_ROUTE_NOTE =
-    "Admin promotion config visibility uses GET /api/admin/promotions as backend-connected read-only/local-safe PARTIAL surface; create/update/delete promotion actions, runtime credit action, and claim execution stay disabled/guarded hold.";
+    "Admin promotion config visibility uses GET /api/admin/promotions as backend-connected read-only/local-safe PARTIAL surface; permission guarded route guard evidence requires adminAuth, siteAccess, and settings.promotion.view; audit boundary, create/update/delete promotion actions, runtime credit action, and claim execution stay disabled/guarded hold.";
 
   const page = document.body && document.body.dataset ? document.body.dataset.page : "";
 

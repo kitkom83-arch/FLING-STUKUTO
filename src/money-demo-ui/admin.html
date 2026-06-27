@@ -140,9 +140,12 @@
         <div class="marker-list">
           <p>Member-visible promotion campaign list: GET /api/promotions.</p>
           <p>Admin promotion config visibility: GET /api/admin/promotions is backend-connected, read-only/local-safe, and guarded by admin permission.</p>
+          <p>Admin promotion config route guard evidence: GET /api/admin/promotions is permission guarded by adminAuth, siteAccess, and settings.promotion.view.</p>
+          <p>Audit boundary marker: admin promotion config remains read-only/local-safe; route guard evidence requires adminAuth, siteAccess, and settings.promotion.view.</p>
           <p>Promotion claim route exists: POST /api/promotions/:id/claim, but admin UI does not call it because it can create promotion_bonus ledger rows and turnover requirements.</p>
           <p>Bonus/free-credit relationship visibility: GET /api/admin/reports/summary and GET /api/admin/reports/wallet-ledger.</p>
           <p>Promotion claim guard: admin sees guarded hold/fail-closed status only; claim must pass a future approved backend guard and cannot be triggered by frontend direct POST.</p>
+          <p>No runtime credit action: admin promotion config cannot create bonus credit, ledger rows, turnover requirements, or claim execution.</p>
           <p>Code Center / Reward Wallet relationship remains local-safe/read-only through GET /api/admin/code-center/campaigns, GET /api/admin/code-center/redeem-logs, and GET /api/admin/wheel/member-rewards.</p>
           <p>Admin promotion config is PARTIAL for read-only visibility only; create/update/delete remains out of scope. New project.zip remains a UI/mock reference only.</p>
           <p>No production DB. No deploy. No live provider/payment/bank/SMS/slip OCR. No real credit/debit runtime action.</p>
