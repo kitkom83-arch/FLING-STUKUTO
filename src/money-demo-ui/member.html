@@ -119,6 +119,169 @@
         </article>
       </section>
 
+      <section class="panel" data-backoffice-code-reward-connect-marker="backend_connected_reward_wallet_local_safe">
+        <div class="panel-heading">
+          <div>
+            <h2>Code Center / Reward Wallet Bridge</h2>
+            <p>Backend-connected local-safe reward wallet, redeem logs, and Lucky Wheel reward visibility for the current member session.</p>
+          </div>
+          <span class="mode-pill">reward_wallet_local_safe</span>
+        </div>
+        <div class="marker-list">
+          <p>Redeem and coupon flow: POST /api/code-center/redeem, GET /api/code-center/redeem-logs.</p>
+          <p>Reward wallet and history: GET /api/member/rewards, GET /api/member/rewards/summary, GET /api/member/rewards/history.</p>
+          <p>Lucky Wheel rewards remain backend-selected only: GET /api/member/wheel/my-rewards. Frontend must not choose reward results itself.</p>
+          <p>No production DB. No deploy. No live provider/payment/bank/SMS/slip OCR. No real money or real credit runtime action.</p>
+        </div>
+        <div id="member-reward-state" class="notice">Login a member first to read backend-connected reward wallet and redeem data.</div>
+      </section>
+
+      <section class="status-grid compact-grid" aria-label="Member reward wallet summary">
+        <article class="status-card">
+          <span>Coupons</span>
+          <strong id="member-reward-coupon-count">-</strong>
+        </article>
+        <article class="status-card">
+          <span>Boxes</span>
+          <strong id="member-reward-box-count">-</strong>
+        </article>
+        <article class="status-card">
+          <span>Diamonds</span>
+          <strong id="member-reward-diamond-balance">-</strong>
+        </article>
+        <article class="status-card">
+          <span>Pending Rewards</span>
+          <strong id="member-reward-pending-count">-</strong>
+        </article>
+        <article class="status-card">
+          <span>Redeem Logs</span>
+          <strong id="member-redeem-log-count">-</strong>
+        </article>
+        <article class="status-card">
+          <span>Wheel Rewards</span>
+          <strong id="member-wheel-reward-count">-</strong>
+        </article>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Redeem Code / Coupon</h2>
+            <p>Uses the existing backend code center route and writes only local-safe reward wallet entries.</p>
+          </div>
+        </div>
+        <div class="form-grid compact">
+          <label>
+            <span>Redeem Code</span>
+            <input id="member-redeem-code" type="text" autocomplete="off" placeholder="Enter local-safe code" />
+          </label>
+        </div>
+        <div class="button-row">
+          <button id="member-redeem-submit" type="button">Redeem Code</button>
+        </div>
+        <div id="member-reward-empty" class="empty-state">No reward wallet summary yet.</div>
+      </section>
+
+      <section class="two-up">
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Reward Wallet</h2>
+              <p>Current available reward wallet entries from GET /api/member/rewards.</p>
+            </div>
+          </div>
+          <div id="member-reward-list-empty" class="empty-state">No reward wallet entries yet.</div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Label</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Source</th>
+                </tr>
+              </thead>
+              <tbody id="member-reward-list-rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Redeem Logs</h2>
+              <p>Current member redeem history from GET /api/code-center/redeem-logs.</p>
+            </div>
+          </div>
+          <div id="member-redeem-log-empty" class="empty-state">No redeem logs yet.</div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Created</th>
+                  <th>Code</th>
+                  <th>Reward Type</th>
+                  <th>Status</th>
+                  <th>Result</th>
+                </tr>
+              </thead>
+              <tbody id="member-redeem-log-rows"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section class="two-up">
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Reward History</h2>
+              <p>Latest member reward wallet history from GET /api/member/rewards/history.</p>
+            </div>
+          </div>
+          <div id="member-reward-history-empty" class="empty-state">No reward history yet.</div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Created</th>
+                  <th>Type</th>
+                  <th>Label</th>
+                  <th>Status</th>
+                  <th>Source</th>
+                </tr>
+              </thead>
+              <tbody id="member-reward-history-rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Lucky Wheel Rewards</h2>
+              <p>Read-only member wheel rewards from GET /api/member/wheel/my-rewards. Backend remains the reward source-of-truth.</p>
+            </div>
+          </div>
+          <div id="member-wheel-reward-empty" class="empty-state">No Lucky Wheel rewards yet.</div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Created</th>
+                  <th>Reward</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Spin</th>
+                </tr>
+              </thead>
+              <tbody id="member-wheel-reward-rows"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
       <section class="two-up">
         <section class="panel">
           <div class="panel-heading">

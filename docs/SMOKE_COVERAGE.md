@@ -45,6 +45,7 @@ Do not paste raw command output if it contains secrets. Demo credentials must st
 | `adminGuardedBankAccountReviewSmoke.js` | `npm run smoke:admin-guarded-bank-account-review` | No | No | No | Static contract plus unauth HTTP guard | Phase AL Admin Guarded Bank Account Review contract for pending bank approve/reject guarded write foundation, reason/audit/permission guard, duplicate guard, safe errors, no production DB, no real money, and no live integration. |
 | `backofficeMemberMoneyConnectSmoke.js` | `npm run smoke:backoffice-member-money-connect` | No | No | No | Runs static contract | Backoffice member money connect contract for the existing member read-only backoffice surface plus the backend-connected local-safe admin money demo queues, real existing admin route markers, loading/empty/error states, fail-closed route guards, no fake primary source arrays, no production DB, no live provider/payment/bank/SMS/slip OCR, and no secret/token/session rendering or logging. |
 | `backofficeDashboardReportsConnectSmoke.js` | `npm run smoke:backoffice-dashboard-reports-connect` | No | No | No | Runs static contract | Backoffice dashboard reports connect contract for the main backend-connected read-only admin dashboard/report surface plus the admin money demo summary bridge, real existing report/member/audit/wheel route markers, loading/empty/error states, no fake primary source arrays, no production DB, no live provider/payment/bank/SMS/slip OCR, and no secret/token/session rendering or logging. |
+| `backofficeCodeRewardConnectSmoke.js` | `npm run smoke:backoffice-code-reward-connect` | No | No | No | Runs static contract | Backoffice code reward connect contract for backend-connected local-safe code center, coupon, reward wallet, redeem log, and Lucky Wheel reward visibility surfaces across the money demos and existing admin/member backoffice surfaces; verifies real existing route markers, loading/empty/error states, backend-selected wheel reward authority, no fake primary source arrays, no production DB, no live provider/payment/bank/SMS/slip OCR, and no secret/token/session rendering or logging. |
 | `adminOperatorHandoffSmoke.js` | `npm run smoke:admin-operator-handoff` | No | No | No | Static contract plus unauth HTTP guard | Phase AM Admin Bank Account Review Audit & Operator Handoff contract for read-only review history, `admin.audit.view` permission/API guard, operator safety copy, response leak scan, duplicate reviewed safe `409`, reason required, audit required, no production DB, no real money, and no live integration. |
 | `adminBankAccountReviewReleasePackSmoke.js` | `npm run smoke:admin-bank-account-review-release-pack` | No | No | No | Static docs/release pack contract | Phase AN Admin Bank Account Review Release Pack / UAT Checklist contract for release pack docs, UAT checklist, operator runbook, Phase AL/AM/AN markers, permission markers, audit action markers, reason required, duplicate safe `409`, no production DB, no real money, no live provider/payment/bank/SMS/Slip OCR, and static safety scan. |
 | `oroplayProductionTransferSmoke.js` | `npm run smoke:oroplay-production-transfer` | No | No | Yes | Controlled production transfer smoke | OroPlay Transfer API production connector smoke for env-driven token, agent balance, vendor list, game list, player create, deposit, 5-6 game launches, user balance, betting history, withdraw all, masked summary, and local secret-shaped value scan. |
@@ -513,6 +514,18 @@ The Admin Wheel runtime smoke uses only local/staging/test PostgreSQL fixtures. 
 - Confirms UI source does not promote fake/mock arrays as the primary source of truth and does not render or log token/secret/password/session values.
 - Confirms there is no production DB, no deploy, no live provider/payment/bank/SMS/slip OCR, and no real-money activation wording.
 - Confirms package scripts include `smoke:backoffice-dashboard-reports-connect` and smoke coverage documents this check.
+- It does not use network, does not use DB, and does not call live API.
+
+## 17F. smoke:backoffice-code-reward-connect Coverage
+
+- Reads `src/admin-ui/app.js`, `src/admin-wheel-ui/app.js`, `src/money-demo-ui/admin.html`, `src/money-demo-ui/member.html`, `src/money-demo-ui/app.js`, `src/routes/admin.routes.js`, `src/routes/codeCenter.routes.js`, `src/routes/memberReward.routes.js`, `src/routes/wheel.routes.js`, `docs/BACKOFFICE_DEMO_API_MAPPING.md`, `docs/SMOKE_COVERAGE.md`, and `package.json`.
+- Confirms member surfaces are backend-connected/local-safe for `POST /api/code-center/redeem`, `GET /api/code-center/redeem-logs`, `GET /api/member/rewards`, `GET /api/member/rewards/summary`, `GET /api/member/rewards/history`, and `GET /api/member/wheel/my-rewards`.
+- Confirms admin surfaces expose read-only local-safe visibility for `GET /api/admin/code-center/campaigns`, `GET /api/admin/code-center/redeem-logs`, and the existing Lucky Wheel claim visibility route `GET /api/admin/wheel/member-rewards`.
+- Confirms UI source includes loading, empty, and error markers plus explicit local-safe/read-only boundary copy for code, coupon, reward wallet, and wheel reward visibility.
+- Confirms Lucky Wheel reward flow still states that frontend does not choose reward results and backend remains the source of truth.
+- Confirms fail-closed auth/permission route guards remain referenced from the existing route files and that connected surfaces do not promote fake/mock arrays as primary data sources.
+- Confirms there is no production DB, no deploy, no live provider/payment/bank/SMS/slip OCR, no real money movement, and no token/secret/password/session rendering or logging.
+- Confirms package scripts include `smoke:backoffice-code-reward-connect` and smoke coverage documents this check.
 - It does not use network, does not use DB, and does not call live API.
 
 ## 18. smoke:wheel Coverage
@@ -1787,6 +1800,38 @@ Boundary:
 - No migration.
 - No deploy.
 - Read-only/local-safe surface only.
+
+## 50C. Phase AQ Backoffice Code Reward Connect
+
+Phase AQ status: Backoffice Code Center / coupon / reward wallet / Lucky Wheel reward visibility connected to existing PG77 backend routes only.
+
+Script:
+
+- `src/local-smoke-tests/backofficeCodeRewardConnectSmoke.js`
+
+Command:
+
+```powershell
+npm run smoke:backoffice-code-reward-connect
+```
+
+Coverage:
+
+- Confirms `src/money-demo-ui/member.html` and `src/money-demo-ui/app.js` expose a backend-connected local-safe member bridge for redeem code, reward wallet summary/history, redeem logs, and Lucky Wheel my-rewards visibility.
+- Confirms `src/money-demo-ui/admin.html` and `src/money-demo-ui/app.js` expose backend-connected read-only visibility for code center campaigns and redeem logs, while leaving guarded Lucky Wheel claim handling on the existing admin wheel surface.
+- Confirms `src/admin-ui/app.js` keeps the main backoffice member history surface read-only and explicitly references backend-connected member reward/code-center visibility markers.
+- Confirms route source still uses fail-closed auth/permission guards and that connected surfaces do not promote fake arrays, production DB, deploy, or live provider/payment/bank/SMS/slip OCR execution.
+- Runs a static secret-shaped value scan for tokens, passwords, session markers, literal bearer strings, database credential URLs, and token/session logging.
+
+Boundary:
+
+- Local/staging/mock only.
+- No production DB.
+- No deploy.
+- No live provider/payment/bank/SMS/Slip OCR.
+- No real money movement.
+- No real credit/debit runtime action.
+- Lucky Wheel reward selection remains backend-only.
 
 ## 51. Phase AM Admin Bank Account Review Audit & Operator Handoff
 

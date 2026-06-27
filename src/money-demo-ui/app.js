@@ -9,12 +9,16 @@
   const DEFAULT_MEMBER_PASSWORD = "localSmokeMember123";
   const DEFAULT_ADMIN_USERNAME = "local_money_flow_admin";
   const DEFAULT_ADMIN_PASSWORD = "local-demo-admin-code-not-real";
+  const MEMBER_CODE_REWARD_ROUTE_NOTE =
+    "Backend-connected local-safe reward wallet surfaces use POST /api/code-center/redeem, GET /api/code-center/redeem-logs, GET /api/member/rewards, GET /api/member/rewards/summary, GET /api/member/rewards/history, and GET /api/member/wheel/my-rewards.";
   const ADMIN_MEMBER_READ_ONLY_ROUTE_NOTE =
     "Members stay read-only on /admin/ via GET /api/admin/members, GET /api/admin/members/:id, and GET /api/admin/members/:id/history.";
   const ADMIN_FINANCE_CONNECTED_ROUTE_NOTE =
     "Backend-connected local-safe queues use GET /api/admin/bank-accounts/pending, GET /api/admin/deposits, GET /api/admin/withdrawals, GET /api/admin/reports/wallet-ledger, and GET /api/admin/logs.";
   const ADMIN_DASHBOARD_REPORTS_ROUTE_NOTE =
     "Backend-connected read-only dashboard/report cards use GET /api/admin/reports/summary and the main /admin/ surface keeps GET /api/admin/reports/deposits, GET /api/admin/reports/withdrawals, GET /api/admin/reports/wallet-ledger, GET /api/admin/logs, and GET /api/admin/members local-safe.";
+  const ADMIN_CODE_REWARD_ROUTE_NOTE =
+    "Backend-connected read-only code/reward visibility uses GET /api/admin/code-center/campaigns and GET /api/admin/code-center/redeem-logs, while Lucky Wheel claim visibility remains on GET /api/admin/wheel/member-rewards.";
 
   const page = document.body && document.body.dataset ? document.body.dataset.page : "";
 
@@ -198,6 +202,24 @@
       depositPendingCount: document.getElementById("deposit-pending-count"),
       withdrawPendingCount: document.getElementById("withdraw-pending-count"),
       sessionStatus: document.getElementById("member-session-status"),
+      rewardState: document.getElementById("member-reward-state"),
+      rewardCouponCount: document.getElementById("member-reward-coupon-count"),
+      rewardBoxCount: document.getElementById("member-reward-box-count"),
+      rewardDiamondBalance: document.getElementById("member-reward-diamond-balance"),
+      rewardPendingCount: document.getElementById("member-reward-pending-count"),
+      redeemLogCount: document.getElementById("member-redeem-log-count"),
+      wheelRewardCount: document.getElementById("member-wheel-reward-count"),
+      redeemCode: document.getElementById("member-redeem-code"),
+      redeemSubmit: document.getElementById("member-redeem-submit"),
+      rewardEmpty: document.getElementById("member-reward-empty"),
+      rewardListEmpty: document.getElementById("member-reward-list-empty"),
+      rewardListRows: document.getElementById("member-reward-list-rows"),
+      redeemLogEmpty: document.getElementById("member-redeem-log-empty"),
+      redeemLogRows: document.getElementById("member-redeem-log-rows"),
+      rewardHistoryEmpty: document.getElementById("member-reward-history-empty"),
+      rewardHistoryRows: document.getElementById("member-reward-history-rows"),
+      wheelRewardEmpty: document.getElementById("member-wheel-reward-empty"),
+      wheelRewardRows: document.getElementById("member-wheel-reward-rows"),
       depositAmount: document.getElementById("deposit-amount"),
       depositChannel: document.getElementById("deposit-channel"),
       depositBankAccount: document.getElementById("deposit-bank-account"),
@@ -229,6 +251,11 @@
       ledger: [],
       deposits: [],
       withdrawals: [],
+      rewardSummary: null,
+      rewardWallet: [],
+      rewardHistory: [],
+      redeemLogs: [],
+      wheelRewards: [],
     };
 
     function setBusy(nextBusy) {
@@ -239,6 +266,7 @@
         els.login,
         els.clear,
         els.openLuckyWheel,
+        els.redeemSubmit,
         els.createDeposit,
         els.createWithdrawal,
       ].forEach(function (button) {
@@ -277,6 +305,11 @@
         state.ledger = [];
         state.deposits = [];
         state.withdrawals = [];
+        state.rewardSummary = null;
+        state.rewardWallet = [];
+        state.rewardHistory = [];
+        state.redeemLogs = [];
+        state.wheelRewards = [];
       }
       setMemberSessionState("not_ready");
       persistMemberSession({ token: null, profile: null });
@@ -377,6 +410,18 @@
         }).length
       );
       setStatus(els.sessionStatus, state.sessionStatus);
+      setStatus(els.rewardCouponCount, state.rewardSummary ? safeNumber(state.rewardSummary.couponCount, 0) : "-");
+      setStatus(els.rewardBoxCount, state.rewardSummary ? safeNumber(state.rewardSummary.boxCount, 0) : "-");
+      setStatus(
+        els.rewardDiamondBalance,
+        state.rewardSummary ? formatMoney(safeNumber(state.rewardSummary.diamondBalance, 0)) : "-"
+      );
+      setStatus(els.rewardPendingCount, state.rewardSummary ? safeNumber(state.rewardSummary.pendingRewardCount, 0) : "-");
+      setStatus(els.redeemLogCount, state.redeemLogs.length);
+      setStatus(els.wheelRewardCount, state.wheelRewards.length);
+      if (els.rewardEmpty) {
+        els.rewardEmpty.style.display = state.rewardSummary ? "none" : "block";
+      }
     }
 
     function renderBankAccounts() {
@@ -430,12 +475,68 @@
       });
     }
 
+    function renderRewardWallet() {
+      renderEmptyState(els.rewardListRows, els.rewardListEmpty, state.rewardWallet);
+      state.rewardWallet.forEach(function (row) {
+        const tr = document.createElement("tr");
+        createCell(tr, safeText(row.type));
+        createCell(tr, safeText(row.label));
+        createCell(tr, formatMoney(row.amount));
+        createCell(tr, safeText(row.status), statusClass(row.status));
+        createCell(tr, safeText(row.source));
+        els.rewardListRows.appendChild(tr);
+      });
+    }
+
+    function renderRewardHistory() {
+      renderEmptyState(els.rewardHistoryRows, els.rewardHistoryEmpty, state.rewardHistory);
+      state.rewardHistory.forEach(function (row) {
+        const tr = document.createElement("tr");
+        createCell(tr, formatDate(row.createdAt));
+        createCell(tr, safeText(row.type));
+        createCell(tr, safeText(row.label));
+        createCell(tr, safeText(row.status), statusClass(row.status));
+        createCell(tr, safeText(row.source));
+        els.rewardHistoryRows.appendChild(tr);
+      });
+    }
+
+    function renderRedeemLogs() {
+      renderEmptyState(els.redeemLogRows, els.redeemLogEmpty, state.redeemLogs);
+      state.redeemLogs.forEach(function (row) {
+        const tr = document.createElement("tr");
+        createCell(tr, formatDate(row.createdAt));
+        createCell(tr, safeText(row.code));
+        createCell(tr, safeText(row.rewardType));
+        createCell(tr, safeText(row.status), statusClass(row.status));
+        createCell(tr, safeText(row.result));
+        els.redeemLogRows.appendChild(tr);
+      });
+    }
+
+    function renderWheelRewards() {
+      renderEmptyState(els.wheelRewardRows, els.wheelRewardEmpty, state.wheelRewards);
+      state.wheelRewards.forEach(function (row) {
+        const tr = document.createElement("tr");
+        createCell(tr, formatDate(row.createdAt));
+        createCell(tr, safeText(row.rewardLabel || row.label || row.reward && row.reward.label));
+        createCell(tr, safeText(row.rewardType || row.type || row.reward && row.reward.type));
+        createCell(tr, safeText(row.status), statusClass(row.status));
+        createCell(tr, safeText(row.spinId || row.reference && row.reference.spinId || "-"));
+        els.wheelRewardRows.appendChild(tr);
+      });
+    }
+
     function renderAll() {
       renderSummary();
       renderBankAccounts();
       renderLedger();
       renderDeposits();
       renderWithdrawals();
+      renderRewardWallet();
+      renderRewardHistory();
+      renderRedeemLogs();
+      renderWheelRewards();
       populateBankSelects();
     }
 
@@ -555,24 +656,40 @@
       if (!opts.silent && !opts.silentRestore) {
         els.statusText.textContent = "Refreshing member money data...";
       }
+      if (els.rewardState) {
+        els.rewardState.textContent = `Loading backend-connected reward wallet and redeem data... ${MEMBER_CODE_REWARD_ROUTE_NOTE}`;
+      }
 
       try {
-        const [wallet, ledger, bankAccounts, deposits, withdrawals] = await Promise.all([
+        const [wallet, ledger, bankAccounts, deposits, withdrawals, rewardSummary, rewardWallet, rewardHistory, redeemLogs, wheelRewards] = await Promise.all([
           apiRequest("/wallet", { token: state.token }),
           apiRequest("/wallet/ledger?limit=20", { token: state.token }),
           apiRequest("/bank-accounts", { token: state.token }),
           apiRequest("/deposits", { token: state.token }),
           apiRequest("/withdrawals", { token: state.token }),
+          apiRequest("/member/rewards/summary", { token: state.token }),
+          apiRequest("/member/rewards?limit=50", { token: state.token }),
+          apiRequest("/member/rewards/history?limit=50", { token: state.token }),
+          apiRequest("/code-center/redeem-logs?limit=50", { token: state.token }),
+          apiRequest("/member/wheel/my-rewards?limit=20", { token: state.token }),
         ]);
         state.wallet = wallet || null;
         state.ledger = Array.isArray(ledger) ? ledger : [];
         state.bankAccounts = Array.isArray(bankAccounts) ? bankAccounts : [];
         state.deposits = Array.isArray(deposits) ? deposits : [];
         state.withdrawals = Array.isArray(withdrawals) ? withdrawals : [];
+        state.rewardSummary = rewardSummary && typeof rewardSummary === "object" ? rewardSummary : null;
+        state.rewardWallet = Array.isArray(rewardWallet && rewardWallet.rewards) ? rewardWallet.rewards : [];
+        state.rewardHistory = Array.isArray(rewardHistory && rewardHistory.history) ? rewardHistory.history : [];
+        state.redeemLogs = Array.isArray(redeemLogs && redeemLogs.redeemLogs) ? redeemLogs.redeemLogs : [];
+        state.wheelRewards = Array.isArray(wheelRewards) ? wheelRewards : [];
         state.tokenVerified = true;
         setMemberSessionState("ready");
         persistMemberSession({ token: state.token, profile: state.profile });
         renderAll();
+        if (els.rewardState) {
+          els.rewardState.textContent = `Reward wallet and redeem data refreshed. ${MEMBER_CODE_REWARD_ROUTE_NOTE}`;
+        }
         if (!opts.silentRestore) {
           els.statusText.textContent = "Member money demo data refreshed.";
         }
@@ -586,6 +703,9 @@
         }
         setMemberSessionState("not_ready");
         renderAll();
+        if (els.rewardState) {
+          els.rewardState.textContent = `${describeError(error, "Reward wallet refresh failed.")} ${MEMBER_CODE_REWARD_ROUTE_NOTE}`;
+        }
         els.statusText.textContent = describeError(error, "Member money demo refresh failed.");
       } finally {
         if (!opts.skipBusy) {
@@ -678,7 +798,49 @@
       clearSavedMember();
       ensureMemberDraft();
       renderAll();
+      if (els.rewardState) {
+        els.rewardState.textContent = "Local member session cleared. Reward wallet and code center remain local-safe only.";
+      }
       els.statusText.textContent = "Local member session cleared.";
+    }
+
+    async function redeemMemberCode() {
+      const ready = await ensureMemberReady();
+      if (!ready) {
+        return;
+      }
+
+      const code = String(els.redeemCode.value || "").trim();
+      if (!code) {
+        els.statusText.textContent = "Redeem code is required.";
+        return;
+      }
+
+      setBusy(true);
+      if (els.rewardState) {
+        els.rewardState.textContent = `Redeeming local-safe code through backend source... ${MEMBER_CODE_REWARD_ROUTE_NOTE}`;
+      }
+      els.statusText.textContent = "Redeeming local-safe code...";
+      try {
+        await apiRequest("/code-center/redeem", {
+          method: "POST",
+          token: state.token,
+          body: { code: code },
+        });
+        els.redeemCode.value = "";
+        await refreshMemberData({ skipBusy: true, silent: true });
+        if (els.rewardState) {
+          els.rewardState.textContent = `Code redeemed into reward wallet. ${MEMBER_CODE_REWARD_ROUTE_NOTE}`;
+        }
+        els.statusText.textContent = "Redeem code completed. Reward wallet refreshed.";
+      } catch (error) {
+        if (els.rewardState) {
+          els.rewardState.textContent = `${safeText(error.message, "Redeem failed.")} ${MEMBER_CODE_REWARD_ROUTE_NOTE}`;
+        }
+        els.statusText.textContent = safeText(error.message, "Redeem code failed.");
+      } finally {
+        setBusy(false);
+      }
     }
 
     async function createDeposit() {
@@ -787,8 +949,16 @@
     els.createWithdrawal.addEventListener("click", function () {
       createWithdrawal().catch(function () {});
     });
+    if (els.redeemSubmit) {
+      els.redeemSubmit.addEventListener("click", function () {
+        redeemMemberCode().catch(function () {});
+      });
+    }
 
     renderAll();
+    if (els.rewardState) {
+      els.rewardState.textContent = "Login a member first to read backend-connected reward wallet and redeem data.";
+    }
     if (state.token) {
       refreshMemberData({ silentRestore: true }).catch(function () {});
       els.statusText.textContent = "Restoring local member money session...";
@@ -826,6 +996,15 @@
       withdrawRows: document.getElementById("admin-withdraw-rows"),
       ledgerEmpty: document.getElementById("admin-ledger-empty"),
       ledgerRows: document.getElementById("admin-ledger-rows"),
+      codeRewardState: document.getElementById("admin-code-reward-state"),
+      codeCampaignCount: document.getElementById("admin-code-campaign-count"),
+      codeRedeemCount: document.getElementById("admin-code-redeem-count"),
+      codeActiveCount: document.getElementById("admin-code-active-count"),
+      codeSessionStatus: document.getElementById("admin-code-session-status"),
+      codeCampaignEmpty: document.getElementById("admin-code-campaign-empty"),
+      codeCampaignRows: document.getElementById("admin-code-campaign-rows"),
+      codeRedeemEmpty: document.getElementById("admin-code-redeem-empty"),
+      codeRedeemRows: document.getElementById("admin-code-redeem-rows"),
       auditEmpty: document.getElementById("admin-audit-empty"),
       auditRows: document.getElementById("admin-audit-rows"),
       statusText: document.getElementById("admin-status-text"),
@@ -839,6 +1018,8 @@
       pendingDeposits: [],
       pendingWithdrawals: [],
       ledger: [],
+      codeCampaigns: [],
+      codeRedeemLogs: [],
       audit: [],
     };
 
@@ -889,6 +1070,15 @@
       setStatus(els.depositCount, state.pendingDeposits.length);
       setStatus(els.withdrawCount, state.pendingWithdrawals.length);
       setStatus(els.ledgerCount, state.ledger.length);
+      setStatus(els.codeCampaignCount, state.codeCampaigns.length);
+      setStatus(els.codeRedeemCount, state.codeRedeemLogs.length);
+      setStatus(
+        els.codeActiveCount,
+        state.codeCampaigns.filter(function (item) {
+          return String(item.status || "").toLowerCase() === "active";
+        }).length
+      );
+      setStatus(els.codeSessionStatus, state.token ? "ready" : "not_ready");
       setStatus(els.auditCount, state.audit.length);
       setStatus(els.sessionStatus, state.token ? "ready" : "not_ready");
     }
@@ -965,6 +1155,32 @@
       });
     }
 
+    function renderCodeCampaigns() {
+      renderEmptyState(els.codeCampaignRows, els.codeCampaignEmpty, state.codeCampaigns);
+      state.codeCampaigns.forEach(function (row) {
+        const tr = document.createElement("tr");
+        createCell(tr, safeText(row.name));
+        createCell(tr, safeText(row.status), statusClass(row.status));
+        createCell(tr, safeText(row.reward && row.reward.type));
+        createCell(tr, safeNumber(row.codeCount, 0));
+        createCell(tr, safeNumber(row.redeemedCount, 0));
+        els.codeCampaignRows.appendChild(tr);
+      });
+    }
+
+    function renderCodeRedeemLogs() {
+      renderEmptyState(els.codeRedeemRows, els.codeRedeemEmpty, state.codeRedeemLogs);
+      state.codeRedeemLogs.forEach(function (row) {
+        const tr = document.createElement("tr");
+        createCell(tr, formatDate(row.createdAt));
+        createCell(tr, safeText(row.code));
+        createCell(tr, safeText(row.rewardType));
+        createCell(tr, safeText(row.memberId));
+        createCell(tr, safeText(row.status), statusClass(row.status));
+        els.codeRedeemRows.appendChild(tr);
+      });
+    }
+
     function renderAudit() {
       renderEmptyState(els.auditRows, els.auditEmpty, state.audit);
       state.audit.forEach(function (row) {
@@ -984,6 +1200,8 @@
       renderDeposits();
       renderWithdrawals();
       renderLedger();
+      renderCodeCampaigns();
+      renderCodeRedeemLogs();
       renderAudit();
       setBusy(state.busy);
     }
@@ -1006,9 +1224,14 @@
     async function refreshAdminData() {
       if (!state.token) {
         state.summary = null;
+        state.codeCampaigns = [];
+        state.codeRedeemLogs = [];
         renderAll();
         if (els.summaryState) {
           els.summaryState.textContent = "Login an admin first to read backend-connected dashboard/report cards.";
+        }
+        if (els.codeRewardState) {
+          els.codeRewardState.textContent = "Login an admin first to read backend-connected code center and reward visibility.";
         }
         els.statusText.textContent = "Login an admin first. " + ADMIN_MEMBER_READ_ONLY_ROUTE_NOTE;
         return;
@@ -1018,14 +1241,19 @@
       if (els.summaryState) {
         els.summaryState.textContent = `Loading backend-connected dashboard/report cards... ${ADMIN_DASHBOARD_REPORTS_ROUTE_NOTE}`;
       }
+      if (els.codeRewardState) {
+        els.codeRewardState.textContent = `Loading backend-connected code center and reward visibility... ${ADMIN_CODE_REWARD_ROUTE_NOTE}`;
+      }
       els.statusText.textContent = `Refreshing admin finance queues... ${ADMIN_FINANCE_CONNECTED_ROUTE_NOTE}`;
       try {
-        const [summary, pendingBanks, pendingDeposits, pendingWithdrawals, ledger, audit] = await Promise.all([
+        const [summary, pendingBanks, pendingDeposits, pendingWithdrawals, ledger, codeCampaigns, codeRedeemLogs, audit] = await Promise.all([
           apiRequest("/admin/reports/summary", { token: state.token }),
           apiRequest("/admin/bank-accounts/pending", { token: state.token }),
           apiRequest("/admin/deposits?status=pending&limit=50", { token: state.token }),
           apiRequest("/admin/withdrawals?status=pending&limit=50", { token: state.token }),
           apiRequest("/admin/reports/wallet-ledger?limit=20", { token: state.token }),
+          apiRequest("/admin/code-center/campaigns", { token: state.token }),
+          apiRequest("/admin/code-center/redeem-logs?limit=50", { token: state.token }),
           apiRequest("/admin/logs?limit=20", { token: state.token }),
         ]);
 
@@ -1034,17 +1262,27 @@
         state.pendingDeposits = Array.isArray(pendingDeposits) ? pendingDeposits : [];
         state.pendingWithdrawals = Array.isArray(pendingWithdrawals) ? pendingWithdrawals : [];
         state.ledger = Array.isArray(ledger) ? ledger : [];
+        state.codeCampaigns = Array.isArray(codeCampaigns && codeCampaigns.campaigns) ? codeCampaigns.campaigns : [];
+        state.codeRedeemLogs = Array.isArray(codeRedeemLogs && codeRedeemLogs.redeemLogs) ? codeRedeemLogs.redeemLogs : [];
         state.audit = Array.isArray(audit) ? audit : [];
         renderAll();
         if (els.summaryState) {
           els.summaryState.textContent = `Dashboard/report cards refreshed. ${ADMIN_DASHBOARD_REPORTS_ROUTE_NOTE}`;
         }
+        if (els.codeRewardState) {
+          els.codeRewardState.textContent = `Code center and reward visibility refreshed. ${ADMIN_CODE_REWARD_ROUTE_NOTE}`;
+        }
         els.statusText.textContent = `Admin finance queues refreshed. ${ADMIN_FINANCE_CONNECTED_ROUTE_NOTE}`;
       } catch (error) {
         state.summary = null;
+        state.codeCampaigns = [];
+        state.codeRedeemLogs = [];
         renderAll();
         if (els.summaryState) {
           els.summaryState.textContent = `${safeText(error.message, "Dashboard/report refresh failed.")} ${ADMIN_DASHBOARD_REPORTS_ROUTE_NOTE}`;
+        }
+        if (els.codeRewardState) {
+          els.codeRewardState.textContent = `${safeText(error.message, "Code center visibility refresh failed.")} ${ADMIN_CODE_REWARD_ROUTE_NOTE}`;
         }
         els.statusText.textContent = `${safeText(error.message, "Admin finance refresh failed.")} ${ADMIN_FINANCE_CONNECTED_ROUTE_NOTE}`;
       } finally {
@@ -1082,6 +1320,8 @@
       state.pendingDeposits = [];
       state.pendingWithdrawals = [];
       state.ledger = [];
+      state.codeCampaigns = [];
+      state.codeRedeemLogs = [];
       state.audit = [];
       clearSavedAdmin();
       els.username.value = DEFAULT_ADMIN_USERNAME;
@@ -1089,6 +1329,9 @@
       renderAll();
       if (els.summaryState) {
         els.summaryState.textContent = "Local admin session cleared. Dashboard/report cards are read-only and local-safe.";
+      }
+      if (els.codeRewardState) {
+        els.codeRewardState.textContent = "Local admin session cleared. Code center and reward visibility stay read-only and local-safe.";
       }
       els.statusText.textContent = `Local admin session cleared. ${ADMIN_MEMBER_READ_ONLY_ROUTE_NOTE}`;
     }
@@ -1188,6 +1431,9 @@
     renderAll();
     if (els.summaryState) {
       els.summaryState.textContent = "Load a local-safe admin to read backend-connected dashboard/report summary cards.";
+    }
+    if (els.codeRewardState) {
+      els.codeRewardState.textContent = "Load a local-safe admin to read backend-connected code center and reward visibility.";
     }
     els.statusText.textContent =
       "Login with a local-safe admin to review pending finance requests. " + ADMIN_MEMBER_READ_ONLY_ROUTE_NOTE;

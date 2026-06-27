@@ -82,6 +82,49 @@
         <div id="admin-summary-empty" class="empty-state" style="display: none">No dashboard/report summary yet.</div>
       </section>
 
+      <section class="panel" data-backoffice-code-reward-connect-marker="backend_connected_code_reward_local_safe">
+        <div class="panel-heading">
+          <div>
+            <h2>Code Center / Rewards Visibility</h2>
+            <p>Backend-connected read-only local-safe visibility for code center campaigns and redeem logs. Lucky Wheel claims stay on the existing admin wheel surface.</p>
+          </div>
+          <span class="mode-pill">code_reward_local_safe</span>
+        </div>
+        <div class="marker-list">
+          <p>Read-only code center visibility: GET /api/admin/code-center/campaigns and GET /api/admin/code-center/redeem-logs.</p>
+          <p>Member reward wallet remains local-safe and member-scoped through POST /api/code-center/redeem, GET /api/code-center/redeem-logs, GET /api/member/rewards, GET /api/member/rewards/summary, and GET /api/member/rewards/history.</p>
+          <p>Lucky Wheel reward claim visibility already exists on /admin-wheel via GET /api/admin/wheel/member-rewards. Frontend must not choose reward results itself.</p>
+          <p>No production DB. No deploy. No live provider/payment/bank/SMS/slip OCR. No real money or real credit runtime action.</p>
+        </div>
+        <div id="admin-code-reward-state" class="notice">Load a local-safe admin to read backend-connected code center and reward visibility.</div>
+        <section class="status-grid compact-grid" aria-label="Admin code center reward visibility summary">
+          <article class="status-card">
+            <span>Code Campaigns</span>
+            <strong id="admin-code-campaign-count">-</strong>
+          </article>
+          <article class="status-card">
+            <span>Redeem Logs</span>
+            <strong id="admin-code-redeem-count">-</strong>
+          </article>
+          <article class="status-card">
+            <span>Campaigns Active</span>
+            <strong id="admin-code-active-count">-</strong>
+          </article>
+          <article class="status-card">
+            <span>Wheel Claims Route</span>
+            <strong id="admin-wheel-claim-route-count">1</strong>
+          </article>
+          <article class="status-card">
+            <span>Reward Wallet Routes</span>
+            <strong id="admin-reward-wallet-route-count">3</strong>
+          </article>
+          <article class="status-card">
+            <span>Session Status</span>
+            <strong id="admin-code-session-status">not_ready</strong>
+          </article>
+        </section>
+      </section>
+
       <section class="panel">
         <div class="panel-heading">
           <div>
@@ -226,6 +269,56 @@
                 </tr>
               </thead>
               <tbody id="admin-ledger-rows"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section class="two-up">
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Code Center Campaigns</h2>
+              <p>Read-only campaign visibility from GET /api/admin/code-center/campaigns.</p>
+            </div>
+          </div>
+          <div id="admin-code-campaign-empty" class="empty-state">No code center campaigns yet.</div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Campaign</th>
+                  <th>Status</th>
+                  <th>Reward</th>
+                  <th>Codes</th>
+                  <th>Redeemed</th>
+                </tr>
+              </thead>
+              <tbody id="admin-code-campaign-rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Code Redeem Logs</h2>
+              <p>Read-only redeem visibility from GET /api/admin/code-center/redeem-logs.</p>
+            </div>
+          </div>
+          <div id="admin-code-redeem-empty" class="empty-state">No code redeem logs yet.</div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Created</th>
+                  <th>Code</th>
+                  <th>Reward Type</th>
+                  <th>Member</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="admin-code-redeem-rows"></tbody>
             </table>
           </div>
         </section>
