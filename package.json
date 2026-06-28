@@ -71,6 +71,7 @@
     "smoke:backoffice-promotion-admin-dry-run-http-contract": "node src/local-smoke-tests/backofficePromotionAdminDryRunHttpContractSmoke.js",
     "smoke:backoffice-promotion-admin-dry-run-ui-action-wiring": "node src/local-smoke-tests/backofficePromotionAdminDryRunUiActionWiringSmoke.js",
     "smoke:backoffice-promotion-admin-dry-run-ui-runtime-e2e": "node src/local-smoke-tests/backofficePromotionAdminDryRunUiRuntimeE2eSmoke.js",
+    "smoke:backoffice-promotion-admin-dry-run-payload-form-wiring": "node src/local-smoke-tests/backofficePromotionAdminDryRunPayloadFormWiringSmoke.js",
     "smoke:backoffice-promotion-admin-dry-run-api-contract": "node src/local-smoke-tests/backofficePromotionAdminDryRunApiContractSmoke.js",
     "smoke:backoffice-promotion-admin-dry-run-api-stub": "node src/local-smoke-tests/backofficePromotionAdminDryRunApiStubSmoke.js",
     "smoke:backoffice-promotion-admin-dry-run-ui-preview": "node src/local-smoke-tests/backofficePromotionAdminDryRunUiPreviewSmoke.js",

@@ -92,7 +92,7 @@ function main() {
 
   assertIncludes("money demo source", moneyDemoSource, [
     "PROMOTION_ADMIN_DRY_RUN_UI_ACTION_WIRING_NOTE",
-    "`/admin/promotions/${encodeURIComponent(promotionId)}/dry-run`",
+    "`/admin/promotions/${encodeURIComponent(form.promotionId)}/dry-run`",
     'method: "POST"',
     "returnPayload: true",
     "Dry-run promotion",

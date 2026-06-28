@@ -679,6 +679,67 @@
           <p>Fail-closed on request error: no success copy is shown when the POST dry-run request fails validation, permission, auth, or route guard.</p>
           <p>No create/update/delete promotion runtime is opened here. No DB write, no promotion update, no audit row creation, no ledger creation, no turnover creation, no claim execution, no provider outbound, no production live mode, and no production deploy.</p>
         </div>
+        <div class="form-grid compact" aria-label="Promotion admin dry-run payload form">
+          <label>
+            <span>Promotion ID</span>
+            <input id="admin-promotion-dry-run-promotion-id" type="text" value="" />
+          </label>
+          <label>
+            <span>Title</span>
+            <input id="admin-promotion-dry-run-title" type="text" value="" />
+          </label>
+          <label>
+            <span>Type</span>
+            <input id="admin-promotion-dry-run-type" type="text" value="" />
+          </label>
+          <label>
+            <span>Status</span>
+            <input id="admin-promotion-dry-run-status" type="text" value="" />
+          </label>
+          <label>
+            <span>Min Deposit</span>
+            <input id="admin-promotion-dry-run-min-deposit" type="number" min="0" step="0.01" value="" />
+          </label>
+          <label>
+            <span>Max Deposit</span>
+            <input id="admin-promotion-dry-run-max-deposit" type="number" min="0" step="0.01" value="" />
+          </label>
+          <label>
+            <span>Bonus Type</span>
+            <input id="admin-promotion-dry-run-bonus-type" type="text" value="" />
+          </label>
+          <label>
+            <span>Bonus Value</span>
+            <input id="admin-promotion-dry-run-bonus-value" type="number" min="0" step="0.01" value="" />
+          </label>
+          <label>
+            <span>Turnover Multiplier</span>
+            <input id="admin-promotion-dry-run-turnover-multiplier" type="number" min="0" step="0.01" value="" />
+          </label>
+          <label>
+            <span>Max Withdraw</span>
+            <input id="admin-promotion-dry-run-max-withdraw" type="number" min="0" step="0.01" value="" />
+          </label>
+          <label>
+            <span>Start At</span>
+            <input id="admin-promotion-dry-run-start-at" type="text" value="" />
+          </label>
+          <label>
+            <span>End At</span>
+            <input id="admin-promotion-dry-run-end-at" type="text" value="" />
+          </label>
+          <label>
+            <span>Audit Reason</span>
+            <input id="admin-promotion-dry-run-audit-reason" type="text" value="" />
+          </label>
+          <label>
+            <span>Acknowledgement</span>
+            <input id="admin-promotion-dry-run-acknowledgement" type="checkbox" />
+          </label>
+        </div>
+        <div class="button-row">
+          <button id="admin-promotion-dry-run-submit" type="button">Dry-run promotion</button>
+        </div>
         <div id="admin-promotion-dry-run-state" class="notice">เลือก promotion แล้วกด Dry-run promotion เพื่อตรวจแบบ Dry-run เท่านั้น</div>
         <section class="status-grid compact-grid" aria-label="Promotion admin dry-run response flags">
           <article class="status-card">
@@ -758,6 +819,22 @@
           <article class="field-card">
             <h3>Status</h3>
             <p id="admin-promotion-dry-run-result-code">-</p>
+          </article>
+          <article class="field-card">
+            <h3>Validation Status</h3>
+            <p id="admin-promotion-dry-run-validation-status">-</p>
+          </article>
+          <article class="field-card">
+            <h3>Validation Errors</h3>
+            <p id="admin-promotion-dry-run-validation-errors">-</p>
+          </article>
+          <article class="field-card">
+            <h3>Diff Preview</h3>
+            <p id="admin-promotion-dry-run-diff-preview">-</p>
+          </article>
+          <article class="field-card">
+            <h3>Risk Warnings</h3>
+            <p id="admin-promotion-dry-run-warning-notes">-</p>
           </article>
         </div>
         <div class="table-scroll">

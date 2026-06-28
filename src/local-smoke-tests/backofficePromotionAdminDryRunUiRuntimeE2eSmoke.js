@@ -373,6 +373,27 @@ function findDryRunButton(promotionRows) {
   return button;
 }
 
+function invokePrimaryClick(element) {
+  const clickHandlers = element && element.listeners && Array.isArray(element.listeners.click) ? element.listeners.click : [];
+  assert(clickHandlers.length > 0, "element should have a click handler");
+  const event = {
+    type: "click",
+    target: element,
+    currentTarget: element,
+    defaultPrevented: false,
+    preventDefault() {
+      this.defaultPrevented = true;
+    },
+    stopPropagation() {},
+  };
+  return clickHandlers[0].call(element, event);
+}
+
+function setValue(harness, id, value) {
+  const element = getElement(harness, id);
+  element.value = value;
+}
+
 function assertCommonResponseFlags(body) {
   assert.strictEqual(body.mode, "staging_dry_run_only");
   assert.strictEqual(body.routeMounted, true);
@@ -514,7 +535,7 @@ async function main() {
     "productionLiveEnabled",
     "productionDeployEnabled",
     "fail-closed",
-    "/admin/promotions/${encodeURIComponent(promotionId)}/dry-run",
+    "/admin/promotions/${encodeURIComponent(form.promotionId)}/dry-run",
   ]);
 
   assertIncludes("route/controller/util wiring", adminRoutes + controllerSource + utilSource, [
@@ -602,15 +623,35 @@ async function main() {
   const resultCode = getElement(harness, "admin-promotion-dry-run-result-code");
   const safetyMessage = getElement(harness, "admin-promotion-dry-run-safety-message");
   const resultRows = getElement(harness, "admin-promotion-dry-run-result-rows");
+  const submitButton = getElement(harness, "admin-promotion-dry-run-submit");
 
-  adminLogin.click();
+  invokePrimaryClick(adminLogin);
   await waitFor(
     () => adminStatus.textContent.includes("Local admin login successful."),
     "login status"
   );
 
-  const promoButton = findDryRunButton(promotionRows);
-  promoButton.click();
+  await waitFor(
+    () => promotionRows.children.length > 0,
+    "promotion rows render"
+  );
+
+  findDryRunButton(promotionRows);
+  setValue(harness, "admin-promotion-dry-run-promotion-id", "local-smoke-promo-46");
+  setValue(harness, "admin-promotion-dry-run-title", "Spring Promo Updated");
+  setValue(harness, "admin-promotion-dry-run-type", "seasonal");
+  setValue(harness, "admin-promotion-dry-run-status", "active");
+  setValue(harness, "admin-promotion-dry-run-min-deposit", "120");
+  setValue(harness, "admin-promotion-dry-run-max-deposit", "600");
+  setValue(harness, "admin-promotion-dry-run-bonus-type", "fixed");
+  setValue(harness, "admin-promotion-dry-run-bonus-value", "35");
+  setValue(harness, "admin-promotion-dry-run-turnover-multiplier", "4");
+  setValue(harness, "admin-promotion-dry-run-max-withdraw", "250");
+  setValue(harness, "admin-promotion-dry-run-start-at", "2026-06-01T00:00");
+  setValue(harness, "admin-promotion-dry-run-end-at", "2026-06-30T23:59");
+  setValue(harness, "admin-promotion-dry-run-audit-reason", "ui runtime e2e smoke");
+  getElement(harness, "admin-promotion-dry-run-acknowledgement").checked = true;
+  invokePrimaryClick(submitButton);
 
   await waitFor(
     () => harness.fetchCalls.some((call) => call.pathname === "/api/admin/promotions/local-smoke-promo-46/dry-run"),
@@ -631,6 +672,19 @@ async function main() {
   assert.strictEqual(dryRunCall.pathname, "/api/admin/promotions/local-smoke-promo-46/dry-run");
   assert.strictEqual(dryRunCall.headers["X-Site-Code"], "PG77");
   assert.strictEqual(dryRunCall.headers[AUTH_HEADER_NAME], `${AUTH_SCHEME} ${WRITE_TOKEN}`);
+  assert.strictEqual(dryRunCall.body.after.title, "Spring Promo Updated");
+  assert.strictEqual(dryRunCall.body.after.type, "seasonal");
+  assert.strictEqual(dryRunCall.body.after.status, "active");
+  assert.strictEqual(dryRunCall.body.after.minDeposit, 120);
+  assert.strictEqual(dryRunCall.body.after.maxDeposit, 600);
+  assert.strictEqual(dryRunCall.body.after.bonusType, "fixed");
+  assert.strictEqual(dryRunCall.body.after.bonusValue, 35);
+  assert.strictEqual(dryRunCall.body.after.turnoverMultiplier, 4);
+  assert.strictEqual(dryRunCall.body.after.maxWithdraw, 250);
+  assert.strictEqual(dryRunCall.body.after.startAt, "2026-06-01T00:00");
+  assert.strictEqual(dryRunCall.body.after.endAt, "2026-06-30T23:59");
+  assert.strictEqual(dryRunCall.body.auditReason, "ui runtime e2e smoke");
+  assert.strictEqual(dryRunCall.body.riskAcknowledgement, true);
   assert.strictEqual(promotionRows.children[0].children.length >= 7, true);
   assert.strictEqual(resultRows.children.length, 1);
 
@@ -670,7 +724,7 @@ async function main() {
     productionDeployEnabled: "false",
   });
 
-  promoButton.click();
+  invokePrimaryClick(submitButton);
   await waitFor(
     () => harness.fetchCalls.filter((call) => call.pathname === "/api/admin/promotions/local-smoke-promo-46/dry-run").length === 2,
     "second dry-run request"
@@ -683,7 +737,7 @@ async function main() {
   assert.strictEqual(stateText.textContent.includes("Fail-closed."), true);
   assert.strictEqual(stateText.textContent.includes("Promotion admin dry-run is forbidden for the current actor.") || stateText.textContent.includes("Admin permission denied"), true);
   assert.strictEqual(safetyMessage.textContent.includes("fail-closed"), true);
-  assert.strictEqual(resultCode.textContent.includes("PROMOTION_DRY_RUN_FORBIDDEN"), true);
+  assert.strictEqual(resultCode.textContent.includes("HTTP_403"), true);
   assert.strictEqual(resultCode.textContent.includes("OK"), false);
   assert.strictEqual(
     harness.fetchCalls.filter((call) => call.pathname === "/api/admin/promotions/local-smoke-promo-46/dry-run").length,

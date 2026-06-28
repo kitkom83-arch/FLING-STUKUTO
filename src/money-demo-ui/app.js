@@ -1176,6 +1176,25 @@
       promotionDryRunValidator: document.getElementById("admin-promotion-dry-run-validator"),
       promotionDryRunResultCode: document.getElementById("admin-promotion-dry-run-result-code"),
       promotionDryRunResultRows: document.getElementById("admin-promotion-dry-run-result-rows"),
+      promotionDryRunPromotionIdInput: document.getElementById("admin-promotion-dry-run-promotion-id"),
+      promotionDryRunTitleInput: document.getElementById("admin-promotion-dry-run-title"),
+      promotionDryRunTypeInput: document.getElementById("admin-promotion-dry-run-type"),
+      promotionDryRunStatusInput: document.getElementById("admin-promotion-dry-run-status"),
+      promotionDryRunMinDepositInput: document.getElementById("admin-promotion-dry-run-min-deposit"),
+      promotionDryRunMaxDepositInput: document.getElementById("admin-promotion-dry-run-max-deposit"),
+      promotionDryRunBonusTypeInput: document.getElementById("admin-promotion-dry-run-bonus-type"),
+      promotionDryRunBonusValueInput: document.getElementById("admin-promotion-dry-run-bonus-value"),
+      promotionDryRunTurnoverMultiplierInput: document.getElementById("admin-promotion-dry-run-turnover-multiplier"),
+      promotionDryRunMaxWithdrawInput: document.getElementById("admin-promotion-dry-run-max-withdraw"),
+      promotionDryRunStartAtInput: document.getElementById("admin-promotion-dry-run-start-at"),
+      promotionDryRunEndAtInput: document.getElementById("admin-promotion-dry-run-end-at"),
+      promotionDryRunAuditReasonInput: document.getElementById("admin-promotion-dry-run-audit-reason"),
+      promotionDryRunAcknowledgementInput: document.getElementById("admin-promotion-dry-run-acknowledgement"),
+      promotionDryRunSubmit: document.getElementById("admin-promotion-dry-run-submit"),
+      promotionDryRunValidationStatus: document.getElementById("admin-promotion-dry-run-validation-status"),
+      promotionDryRunValidationErrors: document.getElementById("admin-promotion-dry-run-validation-errors"),
+      promotionDryRunDiffPreview: document.getElementById("admin-promotion-dry-run-diff-preview"),
+      promotionDryRunWarningNotes: document.getElementById("admin-promotion-dry-run-warning-notes"),
       codeRewardState: document.getElementById("admin-code-reward-state"),
       codeCampaignCount: document.getElementById("admin-code-campaign-count"),
       codeRedeemCount: document.getElementById("admin-code-redeem-count"),
@@ -1203,6 +1222,7 @@
       promotionDryRunError: null,
       promotionDryRunPromotionId: null,
       promotionDryRunPromotionLabel: "",
+      promotionDryRunPromotionRow: null,
       codeCampaigns: [],
       codeRedeemLogs: [],
       audit: [],
@@ -1352,6 +1372,22 @@
           ? [source.code || "OK", source.message || ""].filter(Boolean).join(" - ")
           : "-"
       );
+      setStatus(
+        els.promotionDryRunValidationStatus,
+        result ? "validated" : error ? "fail-closed" : "-"
+      );
+      setStatus(
+        els.promotionDryRunValidationErrors,
+        source ? createListText(source.errors, "no validation errors") : "-"
+      );
+      setStatus(
+        els.promotionDryRunDiffPreview,
+        source ? createListText(source.diff, "no diff") : "-"
+      );
+      setStatus(
+        els.promotionDryRunWarningNotes,
+        source ? createListText(source.warnings, "no warnings") : "-"
+      );
 
       if (els.promotionDryRunSafetyMessage) {
         els.promotionDryRunSafetyMessage.textContent = result
@@ -1482,72 +1518,255 @@
       return `${minDeposit}; ${maxWithdraw}`;
     }
 
-    function buildPromotionDryRunPayload(row) {
-      const before = {
-        title: safeText(row && (row.title || row.name), `Promotion ${safeText(row && row.id, "preview")}`),
-        type: safeText(row && row.type, "deposit"),
-        status: safeText(row && row.status, "active"),
-        minDeposit: safeNumber(row && row.minDeposit, 0),
-        maxDeposit: safeNumber(row && row.maxDeposit, 0),
-        bonusType: safeText(row && row.bonusType, "fixed"),
-        bonusValue: safeNumber(row && row.bonusValue, 0),
-        turnoverMultiplier: safeNumber(row && row.turnoverMultiplier, 0),
-        maxWithdraw: safeNumber(row && row.maxWithdraw, 0),
-        startAt: row && row.startAt ? String(row.startAt) : null,
-        endAt: row && row.endAt ? String(row.endAt) : null,
-      };
-      const after = Object.assign({}, before, {
-        title: `${before.title} [dry-run]`,
-      });
+    function promotionDryRunTextValue(element) {
+      return safeText(element && element.value, "").trim();
+    }
+
+    function promotionDryRunNumberValue(element, fieldName, errors) {
+      const raw = promotionDryRunTextValue(element);
+      if (!raw) return null;
+      const parsed = Number(raw);
+      if (!Number.isFinite(parsed) || parsed < 0) {
+        errors.push(`${fieldName} must be a non-negative number`);
+        return null;
+      }
+      return parsed;
+    }
+
+    function promotionDryRunDateValue(element) {
+      const raw = promotionDryRunTextValue(element);
+      return raw || null;
+    }
+
+    function promotionDryRunRowDraft(row) {
+      const source = row && typeof row === "object" ? row : {};
       return {
-        before: before,
-        after: after,
-        auditReason: `UI dry-run preview for ${safeText(row && row.id, "promotion")}`,
-        riskAcknowledgement: false,
+        id: safeText(source.id, ""),
+        title: safeText(source.title || source.name || source.id, ""),
+        type: safeText(source.type, ""),
+        status: safeText(source.status, ""),
+        minDeposit: source.minDeposit === undefined || source.minDeposit === null || source.minDeposit === "" ? null : safeNumber(source.minDeposit, null),
+        maxDeposit: source.maxDeposit === undefined || source.maxDeposit === null || source.maxDeposit === "" ? null : safeNumber(source.maxDeposit, null),
+        bonusType: safeText(source.bonusType, ""),
+        bonusValue: source.bonusValue === undefined || source.bonusValue === null || source.bonusValue === "" ? null : safeNumber(source.bonusValue, null),
+        turnoverMultiplier: source.turnoverMultiplier === undefined || source.turnoverMultiplier === null || source.turnoverMultiplier === "" ? null : safeNumber(source.turnoverMultiplier, null),
+        maxWithdraw: source.maxWithdraw === undefined || source.maxWithdraw === null || source.maxWithdraw === "" ? null : safeNumber(source.maxWithdraw, null),
+        startAt: source.startAt ? String(source.startAt) : "",
+        endAt: source.endAt ? String(source.endAt) : "",
       };
     }
 
-    async function dryRunPromotion(row) {
-      const promotionId = safeText(row && row.id, "");
+    function promotionDryRunSelectedRow() {
+      const promotionId = safeText(els.promotionDryRunPromotionIdInput && els.promotionDryRunPromotionIdInput.value, "").trim();
+      if (!promotionId) return null;
+      const row = state.promotions.find(function (item) {
+        return safeText(item && item.id, "") === promotionId;
+      });
+      return row || null;
+    }
+
+    function syncPromotionDryRunForm(row) {
+      const source = promotionDryRunRowDraft(row);
+      if (els.promotionDryRunPromotionIdInput) els.promotionDryRunPromotionIdInput.value = source.id;
+      if (els.promotionDryRunTitleInput) els.promotionDryRunTitleInput.value = source.title;
+      if (els.promotionDryRunTypeInput) els.promotionDryRunTypeInput.value = source.type;
+      if (els.promotionDryRunStatusInput) els.promotionDryRunStatusInput.value = source.status;
+      if (els.promotionDryRunMinDepositInput) els.promotionDryRunMinDepositInput.value = source.minDeposit === null ? "" : String(source.minDeposit);
+      if (els.promotionDryRunMaxDepositInput) els.promotionDryRunMaxDepositInput.value = source.maxDeposit === null ? "" : String(source.maxDeposit);
+      if (els.promotionDryRunBonusTypeInput) els.promotionDryRunBonusTypeInput.value = source.bonusType;
+      if (els.promotionDryRunBonusValueInput) els.promotionDryRunBonusValueInput.value = source.bonusValue === null ? "" : String(source.bonusValue);
+      if (els.promotionDryRunTurnoverMultiplierInput) els.promotionDryRunTurnoverMultiplierInput.value = source.turnoverMultiplier === null ? "" : String(source.turnoverMultiplier);
+      if (els.promotionDryRunMaxWithdrawInput) els.promotionDryRunMaxWithdrawInput.value = source.maxWithdraw === null ? "" : String(source.maxWithdraw);
+      if (els.promotionDryRunStartAtInput) els.promotionDryRunStartAtInput.value = source.startAt;
+      if (els.promotionDryRunEndAtInput) els.promotionDryRunEndAtInput.value = source.endAt;
+      if (els.promotionDryRunAuditReasonInput) {
+        els.promotionDryRunAuditReasonInput.value = source.id ? `UI dry-run preview for ${source.id}` : "";
+      }
+      if (els.promotionDryRunAcknowledgementInput) {
+        els.promotionDryRunAcknowledgementInput.checked = false;
+      }
+      state.promotionDryRunPromotionId = source.id || null;
+      state.promotionDryRunPromotionLabel = source.id ? safeText(source.title || source.id, source.id) : "";
+      state.promotionDryRunPromotionRow = row || null;
+      renderPromotionDryRunResult();
+    }
+
+    function readPromotionDryRunForm() {
+      const errors = [];
+      const promotionId = promotionDryRunTextValue(els.promotionDryRunPromotionIdInput);
+      if (!promotionId) {
+        errors.push("promotionId is required");
+      }
+
+      const promotionRow = promotionId
+        ? state.promotions.find(function (row) {
+            return safeText(row && row.id, "") === promotionId;
+          })
+        : null;
+      if (!promotionRow) {
+        errors.push("promotionId must reference a loaded promotion row");
+      }
+
+      const before = promotionDryRunRowDraft(promotionRow);
+      const after = {
+        title: promotionDryRunTextValue(els.promotionDryRunTitleInput),
+        type: promotionDryRunTextValue(els.promotionDryRunTypeInput),
+        status: promotionDryRunTextValue(els.promotionDryRunStatusInput),
+        minDeposit: promotionDryRunNumberValue(els.promotionDryRunMinDepositInput, "minDeposit", errors),
+        maxDeposit: promotionDryRunNumberValue(els.promotionDryRunMaxDepositInput, "maxDeposit", errors),
+        bonusType: promotionDryRunTextValue(els.promotionDryRunBonusTypeInput),
+        bonusValue: promotionDryRunNumberValue(els.promotionDryRunBonusValueInput, "bonusValue", errors),
+        turnoverMultiplier: promotionDryRunNumberValue(els.promotionDryRunTurnoverMultiplierInput, "turnoverMultiplier", errors),
+        maxWithdraw: promotionDryRunNumberValue(els.promotionDryRunMaxWithdrawInput, "maxWithdraw", errors),
+        startAt: promotionDryRunDateValue(els.promotionDryRunStartAtInput),
+        endAt: promotionDryRunDateValue(els.promotionDryRunEndAtInput),
+      };
+      const auditReason = promotionDryRunTextValue(els.promotionDryRunAuditReasonInput);
+      if (!auditReason) {
+        errors.push("auditReason is required");
+      }
+
+      const riskAcknowledgement = Boolean(els.promotionDryRunAcknowledgementInput && els.promotionDryRunAcknowledgementInput.checked);
+
+      if (after.minDeposit !== null && after.maxDeposit !== null && after.maxDeposit < after.minDeposit) {
+        errors.push("maxDeposit must be greater than or equal to minDeposit");
+      }
+
+      if (after.startAt && after.endAt && new Date(after.startAt).getTime() > new Date(after.endAt).getTime()) {
+        errors.push("startAt must not be later than endAt");
+      }
+
+      return {
+        ok: errors.length === 0,
+        errors: errors,
+        promotionId: promotionId,
+        promotionRow: promotionRow,
+        promotionLabel: promotionRow ? safeText(promotionRow.title || promotionRow.name || promotionRow.id, promotionId) : promotionId,
+        before: before,
+        after: after,
+        auditReason: auditReason,
+        riskAcknowledgement: riskAcknowledgement,
+      };
+    }
+
+    function buildPromotionDryRunPayloadFromForm() {
+      const form = readPromotionDryRunForm();
+      if (!form.ok) {
+        return {
+          ok: false,
+          error: {
+            code: "PROMOTION_DRY_RUN_FORM_VALIDATION_FAILED",
+            message: "Promotion dry-run form validation failed.",
+            errors: form.errors.slice(),
+            routeMounted: false,
+            apiCallEnabled: false,
+            dryRunOnly: true,
+            validateOnly: true,
+            writeLocked: true,
+            dbWriteEnabled: false,
+            walletWriteEnabled: false,
+            promotionUpdateEnabled: false,
+            auditWriteEnabled: false,
+            ledgerWriteEnabled: false,
+            turnoverCreationEnabled: false,
+            claimExecutionEnabled: false,
+            providerOutboundEnabled: false,
+            productionLiveEnabled: false,
+            productionDeployEnabled: false,
+          },
+        };
+      }
+
+      return {
+        ok: true,
+        promotionLabel: form.promotionLabel,
+        payload: {
+          before: form.before,
+          after: form.after,
+          auditReason: form.auditReason,
+          riskAcknowledgement: form.riskAcknowledgement,
+        },
+        promotionRow: form.promotionRow,
+        promotionId: form.promotionId,
+      };
+    }
+
+    function buildPromotionDryRunNetworkFailure(error) {
+      return {
+        code: error && error.status ? `HTTP_${error.status}` : "PROMOTION_DRY_RUN_FAILED",
+        message: safeText(error && error.message, "Promotion dry-run failed."),
+        errors: error && error.payload && Array.isArray(error.payload.errors) ? error.payload.errors.slice() : [],
+        routeMounted: error && error.payload && Object.prototype.hasOwnProperty.call(error.payload, "routeMounted") ? error.payload.routeMounted : false,
+        apiCallEnabled: error && error.payload && Object.prototype.hasOwnProperty.call(error.payload, "apiCallEnabled") ? error.payload.apiCallEnabled : false,
+        dryRunOnly: true,
+        validateOnly: true,
+        writeLocked: true,
+        dbWriteEnabled: false,
+        walletWriteEnabled: false,
+        promotionUpdateEnabled: false,
+        auditWriteEnabled: false,
+        ledgerWriteEnabled: false,
+        turnoverCreationEnabled: false,
+        claimExecutionEnabled: false,
+        providerOutboundEnabled: false,
+        productionLiveEnabled: false,
+        productionDeployEnabled: false,
+      };
+    }
+
+    async function submitPromotionDryRunFromForm() {
       if (!state.token) {
         state.promotionDryRunResult = null;
         state.promotionDryRunError = {
           code: "PROMOTION_DRY_RUN_LOGIN_REQUIRED",
           message: "Login an admin first before running promotion dry-run.",
+          routeMounted: false,
+          apiCallEnabled: false,
+          dryRunOnly: true,
+          validateOnly: true,
+          writeLocked: true,
+          dbWriteEnabled: false,
+          walletWriteEnabled: false,
+          promotionUpdateEnabled: false,
+          auditWriteEnabled: false,
+          ledgerWriteEnabled: false,
+          turnoverCreationEnabled: false,
+          claimExecutionEnabled: false,
+          providerOutboundEnabled: false,
+          productionLiveEnabled: false,
+          productionDeployEnabled: false,
+          errors: ["admin session is required"],
         };
-        state.promotionDryRunPromotionId = null;
-        state.promotionDryRunPromotionLabel = "";
         renderPromotionDryRunResult();
         els.statusText.textContent = "Promotion dry-run is fail-closed until an admin session is loaded.";
         return;
       }
-      if (!promotionId) {
+
+      const form = buildPromotionDryRunPayloadFromForm();
+      if (!form.ok) {
         state.promotionDryRunResult = null;
-        state.promotionDryRunError = {
-          code: "PROMOTION_DRY_RUN_VALIDATION_FAILED",
-          message: "Promotion dry-run requires a promotion id.",
-        };
-        state.promotionDryRunPromotionId = null;
-        state.promotionDryRunPromotionLabel = "";
+        state.promotionDryRunError = form.error;
+        state.promotionDryRunPromotionId = form.promotionId || null;
+        state.promotionDryRunPromotionLabel = form.promotionLabel || "";
+        state.promotionDryRunPromotionRow = form.promotionRow || null;
         renderPromotionDryRunResult();
-        els.statusText.textContent = "Promotion dry-run is fail-closed because the selected promotion id is missing.";
+        els.statusText.textContent = `${safeText(form.error.message, "Promotion dry-run form validation failed.")} Fail-closed.`;
         return;
       }
 
-      const promotionLabel = safeText(row && (row.title || row.name || row.id), promotionId);
-      const payload = buildPromotionDryRunPayload(row);
       setBusy(true);
-      state.promotionDryRunPromotionId = promotionId;
-      state.promotionDryRunPromotionLabel = promotionLabel;
+      state.promotionDryRunPromotionId = form.promotionId;
+      state.promotionDryRunPromotionLabel = form.promotionLabel;
+      state.promotionDryRunPromotionRow = form.promotionRow || null;
       state.promotionDryRunResult = null;
       state.promotionDryRunError = null;
       renderPromotionDryRunResult();
-      els.statusText.textContent = `Running promotion dry-run for ${promotionLabel}...`;
+      els.statusText.textContent = `Running promotion dry-run for ${form.promotionLabel}...`;
       try {
-        const response = await apiRequest(`/admin/promotions/${encodeURIComponent(promotionId)}/dry-run`, {
+        const response = await apiRequest(`/admin/promotions/${encodeURIComponent(form.promotionId)}/dry-run`, {
           method: "POST",
           token: state.token,
-          body: payload,
+          body: form.payload,
           returnPayload: true,
         });
         state.promotionDryRunResult = response;
@@ -1556,17 +1775,17 @@
         els.statusText.textContent = "Promotion dry-run completed. Dry-run เท่านั้น ไม่มีการบันทึกจริง ไม่แตะ wallet/claim/ledger/provider.";
       } catch (error) {
         state.promotionDryRunResult = null;
-        state.promotionDryRunError = error && error.payload && typeof error.payload === "object"
-          ? error.payload
-          : {
-              code: error && error.status ? `HTTP_${error.status}` : "PROMOTION_DRY_RUN_FAILED",
-              message: safeText(error && error.message, "Promotion dry-run failed."),
-            };
+        state.promotionDryRunError = buildPromotionDryRunNetworkFailure(error);
         renderPromotionDryRunResult();
         els.statusText.textContent = `${safeText(error && error.message, "Promotion dry-run failed.")} Fail-closed.`;
       } finally {
         setBusy(false);
       }
+    }
+
+    function dryRunPromotion(row) {
+      syncPromotionDryRunForm(row);
+      return submitPromotionDryRunFromForm();
     }
 
     function renderPromotions() {
@@ -1657,8 +1876,10 @@
         state.promotionDryRunError = null;
         state.promotionDryRunPromotionId = null;
         state.promotionDryRunPromotionLabel = "";
+        state.promotionDryRunPromotionRow = null;
         state.codeCampaigns = [];
         state.codeRedeemLogs = [];
+        syncPromotionDryRunForm(null);
         renderAll();
         if (els.summaryState) {
           els.summaryState.textContent = "Login an admin first to read backend-connected dashboard/report cards.";
@@ -1710,6 +1931,14 @@
         state.codeCampaigns = Array.isArray(codeCampaigns && codeCampaigns.campaigns) ? codeCampaigns.campaigns : [];
         state.codeRedeemLogs = Array.isArray(codeRedeemLogs && codeRedeemLogs.redeemLogs) ? codeRedeemLogs.redeemLogs : [];
         state.audit = Array.isArray(audit) ? audit : [];
+        const selectedPromotionRow = promotionDryRunSelectedRow();
+        if (selectedPromotionRow) {
+          syncPromotionDryRunForm(selectedPromotionRow);
+        } else if (state.promotions.length > 0) {
+          syncPromotionDryRunForm(state.promotions[0]);
+        } else {
+          syncPromotionDryRunForm(null);
+        }
         renderAll();
         if (els.summaryState) {
           els.summaryState.textContent = `Dashboard/report cards refreshed. ${ADMIN_DASHBOARD_REPORTS_ROUTE_NOTE}`;
@@ -1779,6 +2008,12 @@
       clearSavedAdmin();
       els.username.value = DEFAULT_ADMIN_USERNAME;
       els.password.value = DEFAULT_ADMIN_PASSWORD;
+      state.promotionDryRunResult = null;
+      state.promotionDryRunError = null;
+      state.promotionDryRunPromotionId = null;
+      state.promotionDryRunPromotionLabel = "";
+      state.promotionDryRunPromotionRow = null;
+      syncPromotionDryRunForm(null);
       renderAll();
       if (els.summaryState) {
         els.summaryState.textContent = "Local admin session cleared. Dashboard/report cards are read-only and local-safe.";
@@ -1789,11 +2024,6 @@
       if (els.promotionState) {
         els.promotionState.textContent = "Local admin session cleared. Admin promotion config visibility stays read-only/local-safe and claim guarded hold.";
       }
-      state.promotionDryRunResult = null;
-      state.promotionDryRunError = null;
-      state.promotionDryRunPromotionId = null;
-      state.promotionDryRunPromotionLabel = "";
-      renderPromotionDryRunResult();
       els.statusText.textContent = `Local admin session cleared. ${ADMIN_MEMBER_READ_ONLY_ROUTE_NOTE}`;
     }
 
@@ -1887,6 +2117,11 @@
     els.refresh.addEventListener("click", function () {
       refreshAdminData().catch(function () {});
     });
+    if (els.promotionDryRunSubmit) {
+      els.promotionDryRunSubmit.addEventListener("click", function () {
+        submitPromotionDryRunFromForm().catch(function () {});
+      });
+    }
     els.clear.addEventListener("click", clearAdminSession);
 
     renderAll();
