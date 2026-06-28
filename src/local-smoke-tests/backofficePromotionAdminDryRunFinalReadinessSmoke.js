@@ -290,7 +290,7 @@ function main() {
     "runtime not approved in phase 41",
     "separate runtime implementation phase required",
     "dry-run",
-    'router.post("/promotions"',
+    'router.post("/promotions",',
     'router.patch("/promotions"',
     'router.put("/promotions"',
     'router.delete("/promotions"',

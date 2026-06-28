@@ -165,8 +165,12 @@ function main() {
     "no production DB/deploy",
   ]);
 
-  assert.strictEqual(adminRoutes.includes("dry-run"), false, "admin routes must not mount dry-run route");
-  assert.strictEqual(adminRoutes.includes('router.post("/promotions"'), false, "admin routes must not mount promotion write route");
+  assert.strictEqual(
+    adminRoutes.includes('router.post("/promotions/:id/dry-run"'),
+    true,
+    "admin routes must mount dry-run route."
+  );
+  assert.strictEqual(adminRoutes.includes('router.post("/promotions",'), false, "admin routes must not mount promotion write route");
   assert.strictEqual(adminRoutes.includes('router.patch("/promotions"'), false, "admin routes must not mount promotion write route");
   assert.strictEqual(adminRoutes.includes('router.put("/promotions"'), false, "admin routes must not mount promotion write route");
   assert.strictEqual(adminRoutes.includes('router.delete("/promotions"'), false, "admin routes must not mount promotion write route");

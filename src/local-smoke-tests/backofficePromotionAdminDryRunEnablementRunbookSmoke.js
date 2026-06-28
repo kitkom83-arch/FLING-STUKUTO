@@ -335,7 +335,7 @@ function main() {
 
   assertNotIncludes("route lock", routeSource, [
     "dry-run",
-    'router.post("/promotions"',
+    'router.post("/promotions",',
     'router.patch("/promotions"',
     'router.put("/promotions"',
     'router.delete("/promotions"',

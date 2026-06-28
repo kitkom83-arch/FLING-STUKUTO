@@ -354,7 +354,7 @@ function main() {
     "runtime decision record only",
     "runtime decision gate",
     "dry-run",
-    'router.post("/promotions"',
+    'router.post("/promotions",',
     'router.patch("/promotions"',
     'router.put("/promotions"',
     'router.delete("/promotions"',

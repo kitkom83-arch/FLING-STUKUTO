@@ -10,6 +10,7 @@ const bankAccountController = require("../controllers/bankAccount.controller");
 const bankMockController = require("../controllers/bankMock.controller");
 const depositController = require("../controllers/deposit.controller");
 const withdrawController = require("../controllers/withdraw.controller");
+const promotionAdminDryRunController = require("../controllers/promotionAdminDryRun.controller");
 const wheelController = require("../controllers/wheel.controller");
 const codeCenterController = require("../controllers/codeCenter.controller");
 const { adminHasPermission } = require("../services/adminPermission.service");
@@ -211,6 +212,7 @@ router.get("/reports/deposits", protectedSite, can("reports.view"), asyncHandler
 router.get("/reports/withdrawals", protectedSite, can("reports.view"), asyncHandler(adminController.reportWithdrawals));
 router.get("/reports/wallet-ledger", protectedSite, can("reports.view"), asyncHandler(adminController.reportWalletLedger));
 router.get("/promotions", protectedSite, can("settings.promotion.view"), asyncHandler(adminController.listPromotionConfigs));
+router.post("/promotions/:id/dry-run", protectedSite, canAny(["settings.promotion.write", "settings.promotion.manage"]), asyncHandler(promotionAdminDryRunController.promotionAdminDryRun));
 
 router.get("/code-center/campaigns", protectedSite, can("code_center.view"), asyncHandler(codeCenterController.adminListCampaigns));
 router.post("/code-center/campaigns", protectedSite, can("code_center.manage"), asyncHandler(codeCenterController.adminCreateCampaign));

@@ -67,6 +67,7 @@
     "smoke:backoffice-promotion-admin-dry-run-runtime-decision": "node src/local-smoke-tests/backofficePromotionAdminDryRunRuntimeDecisionSmoke.js",
     "smoke:backoffice-promotion-admin-dry-run-runtime-preflight": "node src/local-smoke-tests/backofficePromotionAdminDryRunRuntimePreflightSmoke.js",
     "smoke:backoffice-promotion-admin-dry-run-mount-authorization": "node src/local-smoke-tests/backofficePromotionAdminDryRunMountAuthorizationSmoke.js",
+    "smoke:backoffice-promotion-admin-dry-run-staging-route-mount": "node src/local-smoke-tests/backofficePromotionAdminDryRunStagingRouteMountSmoke.js",
     "smoke:backoffice-promotion-admin-dry-run-api-contract": "node src/local-smoke-tests/backofficePromotionAdminDryRunApiContractSmoke.js",
     "smoke:backoffice-promotion-admin-dry-run-api-stub": "node src/local-smoke-tests/backofficePromotionAdminDryRunApiStubSmoke.js",
     "smoke:backoffice-promotion-admin-dry-run-ui-preview": "node src/local-smoke-tests/backofficePromotionAdminDryRunUiPreviewSmoke.js",

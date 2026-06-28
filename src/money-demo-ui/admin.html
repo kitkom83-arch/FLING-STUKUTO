@@ -650,6 +650,20 @@
           <p>No promotion update, no audit row creation, no ledger creation, no turnover creation, no claim execution, no runtime credit action, no provider outbound, and no production deploy are introduced here.</p>
         </div>
       </section>
+      <section class="panel" data-promotion-admin-dry-run-staging-route-mount-marker="BACKOFFICE-PROMOTION-ADMIN-DRY-RUN-STAGING-ROUTE-MOUNT-43">
+        <div class="panel-heading">
+          <div>
+            <h2>Promotion Admin Dry-Run Staging Route Mount</h2>
+            <p>Staging/local-safe dry-run only. Route mounted for dry-run only.</p>
+          </div>
+          <span class="mode-pill">staging_dry_run_only</span>
+        </div>
+        <div class="marker-list">
+          <p>promotion admin dry-run staging route mount: staging/local-safe dry-run only, route mounted for dry-run only, and POST /api/admin/promotions/:id/dry-run.</p>
+          <p>No DB write, no promotion update, no audit row creation, no ledger creation, no turnover creation, no claim execution, no runtime credit action, no provider outbound, and no production deploy.</p>
+          <p>Write locked, production disabled, routeMounted true, apiCallEnabled true, dryRunOnly true, dbWriteEnabled false, promotionUpdateEnabled false, auditWriteEnabled false, ledgerWriteEnabled false, turnoverCreationEnabled false, claimExecutionEnabled false, providerOutboundEnabled false, and productionDeployEnabled false.</p>
+        </div>
+      </section>
 
       <section class="panel">
         <div class="panel-heading">

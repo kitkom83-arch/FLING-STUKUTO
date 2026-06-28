@@ -270,7 +270,7 @@ function main() {
     'router.get("/promotions", protectedSite, can("settings.promotion.view"), asyncHandler(adminController.listPromotionConfigs))',
   ]);
   assertNotIncludes("route writes", adminRoutes, [
-    'router.post("/promotions"',
+    'router.post("/promotions",',
     'router.patch("/promotions"',
     'router.put("/promotions"',
     'router.delete("/promotions"',
