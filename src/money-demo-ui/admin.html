@@ -446,6 +446,44 @@
         </div>
       </section>
 
+      <section class="panel" data-promotion-admin-dry-run-audit-ledger-readiness-marker="BACKOFFICE-PROMOTION-ADMIN-DRY-RUN-AUDIT-LEDGER-READINESS-36">
+        <div class="panel-heading">
+          <div>
+            <h2>Promotion Admin Dry-run Audit Ledger Readiness</h2>
+            <p>Audit ledger readiness only. Audit mode plan only, ledger mode plan only, service not mounted, controller not mounted, and no Express mount.</p>
+          </div>
+          <span class="mode-pill">plan_only</span>
+        </div>
+        <div class="marker-list">
+          <p>promotion admin dry-run audit ledger readiness: audit ledger readiness only, audit mode plan only, ledger mode plan only, audit runtime not enabled, ledger runtime not enabled, audit row not created, ledger not created, turnover requirement not created, service not mounted, controller not mounted, no Express mount, no API call, not mounted, validate-only, write locked, no DB write, no promotion update, no runtime credit action, no ledger creation, no turnover creation, and no claim execution.</p>
+          <p>Required audit fields preview: planType, serviceOperation, controllerAction, request.method, request.path, request.params.id, request.body.before, request.body.after, request.body.auditReason, request.body.riskAcknowledgement, request.actor.id, and request.actor.permissions.</p>
+          <p>Required ledger fields preview: promotionId, before, after, diffSummary, riskSummary, and safetyFlags.</p>
+          <p>No audit row not created. No ledger not created. No turnover requirement not created. No DB write. No promotion update. No claim execution. No runtime credit action.</p>
+        </div>
+        <div class="readiness-grid" aria-label="Promotion admin dry-run audit ledger readiness sections">
+          <article class="field-card">
+            <h3>audit ledger readiness only</h3>
+            <p>Confirms audit mode plan only and ledger mode plan only without mounting runtime.</p>
+          </article>
+          <article class="field-card">
+            <h3>audit runtime not enabled</h3>
+            <p>Audit runtime stays disabled, with audit row not created and no DB write.</p>
+          </article>
+          <article class="field-card">
+            <h3>ledger runtime not enabled</h3>
+            <p>Ledger runtime stays disabled, with ledger not created and turnover requirement not created.</p>
+          </article>
+          <article class="field-card">
+            <h3>validate-only</h3>
+            <p>Validate-only preview keeps service not mounted, controller not mounted, and no API call.</p>
+          </article>
+          <article class="field-card">
+            <h3>write locked</h3>
+            <p>Write locked preview keeps no promotion update, no claim execution, and no runtime credit action.</p>
+          </article>
+        </div>
+      </section>
+
       <section class="panel">
         <div class="panel-heading">
           <div>

@@ -39,6 +39,8 @@
     "promotion admin dry-run controller readiness is controller readiness only, runtime handler not enabled, controller not mounted, no Express mount, no API call, not mounted, validate-only, write locked, no DB write, no promotion update, no runtime credit action, no ledger creation, no turnover creation, and no claim execution.";
   const ADMIN_PROMOTION_DRY_RUN_SERVICE_READINESS_NOTE =
     "promotion admin dry-run service readiness is service readiness only, service runtime not enabled, service not mounted, controller not mounted, no Express mount, no API call, not mounted, validate-only, write locked, no DB write, no promotion update, no runtime credit action, no ledger creation, no turnover creation, and no claim execution.";
+  const ADMIN_PROMOTION_DRY_RUN_AUDIT_LEDGER_READINESS_NOTE =
+    "promotion admin dry-run audit ledger readiness is audit ledger readiness only, audit mode plan only, ledger mode plan only, audit runtime not enabled, ledger runtime not enabled, audit row not created, ledger not created, turnover requirement not created, service not mounted, controller not mounted, no Express mount, no API call, not mounted, validate-only, write locked, no DB write, no promotion update, no runtime credit action, no ledger creation, no turnover creation, and no claim execution.";
   const PROMOTION_ADMIN_WRITE_DRY_RUN_CONTRACT = {
     phase: "BACKOFFICE-PROMOTION-ADMIN-WRITE-DRY-RUN-28",
     mode: "promotion admin write dry-run validate-only no DB write no runtime credit action no ledger creation no turnover creation dry-run before runtime write locked future permission boundary",
