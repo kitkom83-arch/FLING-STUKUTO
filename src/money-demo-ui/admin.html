@@ -592,8 +592,26 @@
           </article>
           <article class="field-card">
             <h3>safety boundary</h3>
-            <p>No provider outbound and no production deploy are allowed in readiness only mode.</p>
+          <p>No provider outbound and no production deploy are allowed in readiness only mode.</p>
           </article>
+        </div>
+      </section>
+
+      <section
+        class="panel"
+        data-promotion-admin-dry-run-housekeeping-marker="BACKOFFICE-PROMOTION-ADMIN-DRY-RUN-HOUSEKEEPING-40"
+      >
+        <div class="panel-heading">
+          <div>
+            <h2>Promotion Admin Dry-run Housekeeping</h2>
+            <p>Housekeeping only. No runtime behavior change, route not mounted, runtime not enabled, and write locked.</p>
+          </div>
+          <span class="mode-pill">housekeeping_only</span>
+        </div>
+        <div class="marker-list">
+          <p>promotion admin dry-run housekeeping: housekeeping only, no runtime behavior change, route not mounted, runtime not enabled, and write locked.</p>
+          <p>Safety boundaries remain explicit: no DB write, no promotion update, no audit row creation, no ledger creation, no turnover creation, and no claim execution.</p>
+          <p>No provider outbound, no production deploy, and no live provider/payment/bank/SMS/slip OCR marker is introduced here.</p>
         </div>
       </section>
 

@@ -78,4 +78,3 @@ This runbook captures the readiness-only approval checklist for the future promo
 - `noRuntimeCreditAction: true`
 - `noProviderOutbound: true`
 - `noProductionDeploy: true`
-
