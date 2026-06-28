@@ -1338,13 +1338,30 @@
     function renderPromotionDryRunResult() {
       const result = state.promotionDryRunResult && typeof state.promotionDryRunResult === "object" ? state.promotionDryRunResult : null;
       const error = state.promotionDryRunError && typeof state.promotionDryRunError === "object" ? state.promotionDryRunError : null;
-      const selectedLabel = state.promotionDryRunPromotionLabel || "-";
+      const selectedRow = state.promotionDryRunPromotionRow || null;
+      const selectedLabel = selectedRow ? promotionDryRunFieldSummary(selectedRow) : state.promotionDryRunPromotionLabel || "-";
+      const previewForm = selectedRow ? readPromotionDryRunForm() : null;
       const source = result || error;
+      const previewDiff = source && Array.isArray(source.diff) && source.diff.length
+        ? createListText(source.diff, "no diff")
+        : previewForm
+          ? previewForm.diffPreview
+          : promotionDryRunPreviewText(previewForm);
+      const previewWarnings = source
+        ? createListText(source.warnings, "no warnings")
+        : selectedRow
+          ? "Row selected. Edit the form to review the before/after diff before dry-run submit."
+          : "-";
+      const previewErrors = source
+        ? createListText(source.errors, "no validation errors")
+        : previewForm && Array.isArray(previewForm.errors) && previewForm.errors.length
+          ? createListText(previewForm.errors, "no validation errors")
+          : "-";
       const rows = source
         ? [
-            createListText(source.diff, "no diff"),
-            createListText(source.warnings, "no warnings"),
-            createListText(source.errors, "no errors"),
+            previewDiff,
+            previewWarnings,
+            previewErrors,
             riskSummaryText(source.riskSummary),
           ]
         : [];
@@ -1374,19 +1391,19 @@
       );
       setStatus(
         els.promotionDryRunValidationStatus,
-        result ? "validated" : error ? "fail-closed" : "-"
+        result ? "validated" : error ? "fail-closed" : selectedRow ? "preview" : "-"
       );
       setStatus(
         els.promotionDryRunValidationErrors,
-        source ? createListText(source.errors, "no validation errors") : "-"
+        previewErrors
       );
       setStatus(
         els.promotionDryRunDiffPreview,
-        source ? createListText(source.diff, "no diff") : "-"
+        previewDiff
       );
       setStatus(
         els.promotionDryRunWarningNotes,
-        source ? createListText(source.warnings, "no warnings") : "-"
+        previewWarnings
       );
 
       if (els.promotionDryRunSafetyMessage) {
@@ -1403,7 +1420,7 @@
         } else if (error) {
           els.promotionDryRunState.textContent = `${safeText(error.message, "Promotion dry-run failed.")} Fail-closed. ${PROMOTION_ADMIN_DRY_RUN_UI_ACTION_WIRING_NOTE}`;
         } else if (state.token) {
-          els.promotionDryRunState.textContent = `เลือก promotion แล้วกด Dry-run promotion เพื่อตรวจแบบ Dry-run เท่านั้น ${PROMOTION_ADMIN_DRY_RUN_UI_ACTION_WIRING_NOTE}`;
+          els.promotionDryRunState.textContent = `เลือก promotion จากรายการเพื่อ prefill form แล้วแก้ไขก่อนกด Dry-run promotion เพื่อตรวจแบบ Dry-run เท่านั้น ${PROMOTION_ADMIN_DRY_RUN_UI_ACTION_WIRING_NOTE}`;
         } else {
           els.promotionDryRunState.textContent = `Login an admin first to call POST /api/admin/promotions/:id/dry-run. ${PROMOTION_ADMIN_DRY_RUN_UI_ACTION_WIRING_NOTE}`;
         }
@@ -1556,6 +1573,57 @@
       };
     }
 
+    function promotionDryRunFieldSummary(row) {
+      const source = promotionDryRunRowDraft(row);
+      if (!source.id && !source.title) return "-";
+      const parts = [
+        source.id ? `id ${source.id}` : null,
+        source.title ? `title ${source.title}` : null,
+        source.status ? `status ${source.status}` : null,
+        source.type ? `type ${source.type}` : null,
+        source.minDeposit === null ? null : `min ${formatMoney(source.minDeposit)}`,
+        source.maxDeposit === null ? null : `max ${formatMoney(source.maxDeposit)}`,
+        source.bonusType ? `bonus ${source.bonusType}` : null,
+        source.bonusValue === null ? null : `bonus value ${formatMoney(source.bonusValue)}`,
+        source.turnoverMultiplier === null ? null : `turnover ${source.turnoverMultiplier}x`,
+        source.maxWithdraw === null ? null : `max withdraw ${formatMoney(source.maxWithdraw)}`,
+        source.startAt ? `start ${source.startAt}` : null,
+        source.endAt ? `end ${source.endAt}` : null,
+      ].filter(Boolean);
+      return parts.length ? parts.join(" | ") : "-";
+    }
+
+    function promotionDryRunDiffText(beforeRow, afterRow) {
+      const before = promotionDryRunRowDraft(beforeRow);
+      const after = promotionDryRunRowDraft(afterRow);
+      const fields = [
+        ["title", before.title, after.title],
+        ["type", before.type, after.type],
+        ["status", before.status, after.status],
+        ["minDeposit", before.minDeposit, after.minDeposit],
+        ["maxDeposit", before.maxDeposit, after.maxDeposit],
+        ["bonusType", before.bonusType, after.bonusType],
+        ["bonusValue", before.bonusValue, after.bonusValue],
+        ["turnoverMultiplier", before.turnoverMultiplier, after.turnoverMultiplier],
+        ["maxWithdraw", before.maxWithdraw, after.maxWithdraw],
+        ["startAt", before.startAt, after.startAt],
+        ["endAt", before.endAt, after.endAt],
+      ];
+      const diffs = fields
+        .filter(function (entry) {
+          return entry[1] !== entry[2];
+        })
+        .map(function (entry) {
+          return `${entry[0]}: ${safeText(entry[1], "-")} -> ${safeText(entry[2], "-")}`;
+        });
+      return diffs.length ? diffs.join(" | ") : "no diff";
+    }
+
+    function promotionDryRunPreviewText(form) {
+      if (!form || !form.promotionRow) return "Select a promotion row to preview before/after diff.";
+      return promotionDryRunDiffText(form.promotionRow, form.after);
+    }
+
     function promotionDryRunSelectedRow() {
       const promotionId = safeText(els.promotionDryRunPromotionIdInput && els.promotionDryRunPromotionIdInput.value, "").trim();
       if (!promotionId) return null;
@@ -1580,7 +1648,7 @@
       if (els.promotionDryRunStartAtInput) els.promotionDryRunStartAtInput.value = source.startAt;
       if (els.promotionDryRunEndAtInput) els.promotionDryRunEndAtInput.value = source.endAt;
       if (els.promotionDryRunAuditReasonInput) {
-        els.promotionDryRunAuditReasonInput.value = source.id ? `UI dry-run preview for ${source.id}` : "";
+        els.promotionDryRunAuditReasonInput.value = "";
       }
       if (els.promotionDryRunAcknowledgementInput) {
         els.promotionDryRunAcknowledgementInput.checked = false;
@@ -1589,6 +1657,14 @@
       state.promotionDryRunPromotionLabel = source.id ? safeText(source.title || source.id, source.id) : "";
       state.promotionDryRunPromotionRow = row || null;
       renderPromotionDryRunResult();
+    }
+
+    function selectPromotionForDryRun(row) {
+      syncPromotionDryRunForm(row);
+      if (els.statusText) {
+        const label = row ? safeText(row.title || row.name || row.id, safeText(row && row.id, "promotion")) : "promotion";
+        els.statusText.textContent = `Selected ${label} for dry-run prefill. Edit the form, then submit dry-run.`;
+      }
     }
 
     function readPromotionDryRunForm() {
@@ -1636,6 +1712,7 @@
         errors.push("startAt must not be later than endAt");
       }
 
+      const preview = promotionDryRunDiffText(before, after);
       return {
         ok: errors.length === 0,
         errors: errors,
@@ -1646,6 +1723,7 @@
         after: after,
         auditReason: auditReason,
         riskAcknowledgement: riskAcknowledgement,
+        diffPreview: preview,
       };
     }
 
@@ -1658,6 +1736,7 @@
             code: "PROMOTION_DRY_RUN_FORM_VALIDATION_FAILED",
             message: "Promotion dry-run form validation failed.",
             errors: form.errors.slice(),
+            diffPreview: form.diffPreview,
             routeMounted: false,
             apiCallEnabled: false,
             dryRunOnly: true,
@@ -1677,12 +1756,40 @@
         };
       }
 
+      const beforePayload = {
+        title: form.before.title,
+        type: form.before.type,
+        status: form.before.status,
+        minDeposit: form.before.minDeposit,
+        maxDeposit: form.before.maxDeposit,
+        bonusType: form.before.bonusType,
+        bonusValue: form.before.bonusValue,
+        turnoverMultiplier: form.before.turnoverMultiplier,
+        maxWithdraw: form.before.maxWithdraw,
+        startAt: form.before.startAt,
+        endAt: form.before.endAt,
+      };
+      const afterPayload = {
+        title: form.after.title,
+        type: form.after.type,
+        status: form.after.status,
+        minDeposit: form.after.minDeposit,
+        maxDeposit: form.after.maxDeposit,
+        bonusType: form.after.bonusType,
+        bonusValue: form.after.bonusValue,
+        turnoverMultiplier: form.after.turnoverMultiplier,
+        maxWithdraw: form.after.maxWithdraw,
+        startAt: form.after.startAt,
+        endAt: form.after.endAt,
+      };
+
       return {
         ok: true,
         promotionLabel: form.promotionLabel,
+        diffPreview: form.diffPreview,
         payload: {
-          before: form.before,
-          after: form.after,
+          before: beforePayload,
+          after: afterPayload,
           auditReason: form.auditReason,
           riskAcknowledgement: form.riskAcknowledgement,
         },
@@ -1784,7 +1891,7 @@
     }
 
     function dryRunPromotion(row) {
-      syncPromotionDryRunForm(row);
+      selectPromotionForDryRun(row);
       return submitPromotionDryRunFromForm();
     }
 
@@ -1804,9 +1911,14 @@
             dryRunPromotion(row).catch(function () {});
           })
         );
+        actionCell.appendChild(
+          makeActionButton("Select for dry-run", "secondary", function () {
+            selectPromotionForDryRun(row);
+          })
+        );
         const actionNote = document.createElement("p");
         actionNote.className = "status-note";
-        actionNote.textContent = "Dry-run เท่านั้น";
+        actionNote.textContent = "Select the row to prefill the form, or dry-run it immediately.";
         actionCell.appendChild(actionNote);
         tr.appendChild(actionCell);
         els.promotionRows.appendChild(tr);
@@ -2112,16 +2224,40 @@
     }
 
     els.login.addEventListener("click", function () {
-      loginAdmin().catch(function () {});
+      return loginAdmin().catch(function () {});
     });
     els.refresh.addEventListener("click", function () {
-      refreshAdminData().catch(function () {});
+      return refreshAdminData().catch(function () {});
     });
     if (els.promotionDryRunSubmit) {
       els.promotionDryRunSubmit.addEventListener("click", function () {
-        submitPromotionDryRunFromForm().catch(function () {});
+        return submitPromotionDryRunFromForm().catch(function () {});
       });
     }
+    [
+      els.promotionDryRunPromotionIdInput,
+      els.promotionDryRunTitleInput,
+      els.promotionDryRunTypeInput,
+      els.promotionDryRunStatusInput,
+      els.promotionDryRunMinDepositInput,
+      els.promotionDryRunMaxDepositInput,
+      els.promotionDryRunBonusTypeInput,
+      els.promotionDryRunBonusValueInput,
+      els.promotionDryRunTurnoverMultiplierInput,
+      els.promotionDryRunMaxWithdrawInput,
+      els.promotionDryRunStartAtInput,
+      els.promotionDryRunEndAtInput,
+      els.promotionDryRunAuditReasonInput,
+      els.promotionDryRunAcknowledgementInput,
+    ]
+      .filter(Boolean)
+      .forEach(function (input) {
+        const rerender = function () {
+          renderPromotionDryRunResult();
+        };
+        input.addEventListener("input", rerender);
+        input.addEventListener("change", rerender);
+      });
     els.clear.addEventListener("click", clearAdminSession);
 
     renderAll();
