@@ -93,14 +93,17 @@ function assertCommonResponseFlags(response) {
   assert.strictEqual(response.body.routeMounted, true);
   assert.strictEqual(response.body.apiCallEnabled, true);
   assert.strictEqual(response.body.dryRunOnly, true);
+  assert.strictEqual(response.body.validateOnly, true);
   assert.strictEqual(response.body.writeLocked, true);
   assert.strictEqual(response.body.dbWriteEnabled, false);
+  assert.strictEqual(response.body.walletWriteEnabled, false);
   assert.strictEqual(response.body.promotionUpdateEnabled, false);
   assert.strictEqual(response.body.auditWriteEnabled, false);
   assert.strictEqual(response.body.ledgerWriteEnabled, false);
   assert.strictEqual(response.body.turnoverCreationEnabled, false);
   assert.strictEqual(response.body.claimExecutionEnabled, false);
   assert.strictEqual(response.body.providerOutboundEnabled, false);
+  assert.strictEqual(response.body.productionLiveEnabled, false);
   assert.strictEqual(response.body.productionDeployEnabled, false);
   assert.strictEqual(response.body.mountedMethod, "POST");
   assert.strictEqual(response.body.mountedRoute, "/api/admin/promotions/:id/dry-run");
@@ -132,6 +135,8 @@ function main() {
     "routeMounted",
     "apiCallEnabled",
     "dbWriteEnabled",
+    "walletWriteEnabled",
+    "productionLiveEnabled",
     "productionDeployEnabled",
   ]);
 
@@ -180,8 +185,11 @@ function main() {
     "routeMounted: true",
     "apiCallEnabled: true",
     "dryRunOnly: true",
+    "validateOnly: true",
     "dbWriteEnabled: false",
+    "walletWriteEnabled: false",
     "productionDeployEnabled: false",
+    "productionLiveEnabled: false",
     "PROMOTION_DRY_RUN_FORBIDDEN",
     "PROMOTION_DRY_RUN_AUDIT_REASON_REQUIRED",
     "PROMOTION_DRY_RUN_RISK_ACK_REQUIRED",

@@ -4,22 +4,26 @@ const { validatePromotionAdminWriteDryRun } = require("./promotionAdminWriteVali
 
 const ROUTE_METHOD = "POST";
 const ROUTE_PATH = "/api/admin/promotions/:id/dry-run";
+const ROUTE_PATH_PATTERN = /^\/api\/admin\/promotions\/[^/]+\/dry-run$/;
 const MOUNT_MODE = "staging_dry_run_only";
 const CURRENT_READ_PERMISSION = "settings.promotion.view";
 const FUTURE_DRY_RUN_PERMISSIONS = Object.freeze(["settings.promotion.write", "settings.promotion.manage"]);
 
 const SAFETY_LOCKS = Object.freeze({
   dryRunOnly: true,
+  validateOnly: true,
   writeLocked: true,
   routeMounted: true,
   apiCallEnabled: true,
   dbWriteEnabled: false,
+  walletWriteEnabled: false,
   promotionUpdateEnabled: false,
   auditWriteEnabled: false,
   ledgerWriteEnabled: false,
   turnoverCreationEnabled: false,
   claimExecutionEnabled: false,
   providerOutboundEnabled: false,
+  productionLiveEnabled: false,
   productionDeployEnabled: false,
 });
 
@@ -32,6 +36,10 @@ function isPlainObject(value) {
 function normalizeString(value) {
   if (value === null || value === undefined) return "";
   return String(value).trim();
+}
+
+function isPromotionAdminDryRunPath(path) {
+  return path === ROUTE_PATH || ROUTE_PATH_PATTERN.test(path);
 }
 
 function cloneArray(value) {
@@ -108,14 +116,17 @@ function buildResponse(status, code, message, overrides) {
       routeMounted: true,
       apiCallEnabled: true,
       dryRunOnly: true,
+      validateOnly: true,
       writeLocked: true,
       dbWriteEnabled: false,
+      walletWriteEnabled: false,
       promotionUpdateEnabled: false,
       auditWriteEnabled: false,
       ledgerWriteEnabled: false,
       turnoverCreationEnabled: false,
       claimExecutionEnabled: false,
       providerOutboundEnabled: false,
+      productionLiveEnabled: false,
       productionDeployEnabled: false,
       mountedRoute: ROUTE_PATH,
       mountedMethod: ROUTE_METHOD,
@@ -134,14 +145,17 @@ function buildResponse(status, code, message, overrides) {
         routeMounted: true,
         apiCallEnabled: true,
         dryRunOnly: true,
+        validateOnly: true,
         writeLocked: true,
         dbWriteEnabled: false,
+        walletWriteEnabled: false,
         promotionUpdateEnabled: false,
         auditWriteEnabled: false,
         ledgerWriteEnabled: false,
         turnoverCreationEnabled: false,
         claimExecutionEnabled: false,
         providerOutboundEnabled: false,
+        productionLiveEnabled: false,
         productionDeployEnabled: false,
       },
       safetyLocks: Object.assign({}, SAFETY_LOCKS),
@@ -163,7 +177,7 @@ function simulatePromotionAdminDryRunStagingRouteMount(request) {
   const body = isPlainObject(input.body) ? input.body : {};
   const actor = isPlainObject(input.actor) ? input.actor : {};
   const promotionId = normalizeString(params.id);
-  const routeMatched = method === ROUTE_METHOD && path === ROUTE_PATH;
+  const routeMatched = method === ROUTE_METHOD && isPromotionAdminDryRunPath(path);
 
   if (!routeMatched) {
     return buildResponse(
@@ -177,6 +191,7 @@ function simulatePromotionAdminDryRunStagingRouteMount(request) {
         routeMounted: false,
         apiCallEnabled: false,
         dryRunOnly: false,
+        validateOnly: false,
         mountedRoute: ROUTE_PATH,
         mountedMethod: ROUTE_METHOD,
       }
@@ -190,6 +205,7 @@ function simulatePromotionAdminDryRunStagingRouteMount(request) {
       routeMounted: true,
       apiCallEnabled: true,
       dryRunOnly: true,
+      validateOnly: true,
       errors: ["params.id is required"],
     });
   }
@@ -201,6 +217,7 @@ function simulatePromotionAdminDryRunStagingRouteMount(request) {
       routeMounted: true,
       apiCallEnabled: true,
       dryRunOnly: true,
+      validateOnly: true,
       errors: ["settings.promotion.write or settings.promotion.manage is required"],
       actorId: Object.prototype.hasOwnProperty.call(actor, "id") ? actor.id : null,
     });
@@ -215,6 +232,7 @@ function simulatePromotionAdminDryRunStagingRouteMount(request) {
       routeMounted: true,
       apiCallEnabled: true,
       dryRunOnly: true,
+      validateOnly: true,
       validator: "validatePromotionAdminWriteDryRun",
       errors: cloneArray(validation.errors),
       warnings: cloneArray(validation.warnings),
@@ -230,6 +248,7 @@ function simulatePromotionAdminDryRunStagingRouteMount(request) {
     routeMounted: true,
     apiCallEnabled: true,
     dryRunOnly: true,
+    validateOnly: true,
     validator: "validatePromotionAdminWriteDryRun",
     errors: cloneArray(validation.errors),
     warnings: cloneArray(validation.warnings),

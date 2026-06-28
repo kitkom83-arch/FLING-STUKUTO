@@ -4,6 +4,8 @@ const { simulatePromotionAdminDryRunStagingRouteMount } = require("../utils/prom
 
 async function promotionAdminDryRun(req, res) {
   const response = simulatePromotionAdminDryRunStagingRouteMount({
+    method: req.method,
+    path: String(req.originalUrl || req.path || "").split("?")[0],
     params: req.params,
     body: req.body,
     actor: req.admin,
