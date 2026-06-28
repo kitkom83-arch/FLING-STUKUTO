@@ -376,6 +376,41 @@
         </div>
       </section>
 
+      <section class="panel" data-promotion-admin-dry-run-controller-readiness-marker="BACKOFFICE-PROMOTION-ADMIN-DRY-RUN-CONTROLLER-READINESS-34">
+        <div class="panel-heading">
+          <div>
+            <h2>Promotion Admin Dry-run Controller Readiness</h2>
+            <p>Controller readiness only. Runtime handler not enabled, controller not mounted, no Express mount, and no API call.</p>
+          </div>
+          <span class="mode-pill">controller_readiness_only</span>
+        </div>
+        <div class="marker-list">
+          <p>promotion admin dry-run controller readiness: controller readiness only, runtime handler not enabled, controller not mounted, no Express mount, no API call, not mounted, validate-only, and write locked.</p>
+          <p>Required guards preview: adminAuth, siteAccess, settings.promotion.write or settings.promotion.manage, auditReason required, and riskAcknowledgement required when risky fields change.</p>
+          <p>Status mapping preview: controller_readiness_only_not_mounted, 200 for valid POST, 400 missing id, 403 missing permission, 404 wrong path, 405 wrong method, and 422 validator failure.</p>
+          <p>JSON response shape preview: controllerAction, status, headers, body, controllerReadiness, and safetyFlags.</p>
+          <p>No DB write. No promotion update. No ledger creation. No turnover creation. No claim execution. No runtime credit action.</p>
+        </div>
+        <div class="readiness-grid" aria-label="Promotion admin dry-run controller readiness sections">
+          <article class="field-card">
+            <h3>required guards preview</h3>
+            <p>Shows adminAuth, siteAccess, permission, auditReason, and risk acknowledgement readiness markers.</p>
+          </article>
+          <article class="field-card">
+            <h3>status mapping preview</h3>
+            <p>Maps controller-ready simulations to 200, 400, 403, 404, 405, and 422 outcomes.</p>
+          </article>
+          <article class="field-card">
+            <h3>JSON response shape preview</h3>
+            <p>Shows the controller-like JSON envelope with headers, body, and controller readiness metadata.</p>
+          </article>
+          <article class="field-card">
+            <h3>safety flags</h3>
+            <p>Confirms no DB write, no promotion update, no ledger creation, no turnover creation, no claim execution, and no runtime credit action.</p>
+          </article>
+        </div>
+      </section>
+
       <section class="panel">
         <div class="panel-heading">
           <div>
