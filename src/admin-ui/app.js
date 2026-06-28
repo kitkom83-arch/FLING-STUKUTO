@@ -5,6 +5,8 @@
   const SITE_CODE = "PG77";
   const PROMOTION_ADMIN_DRY_RUN_FINAL_READINESS_NOTE =
     "promotion admin dry-run final readiness is final readiness record only, ready for separate runtime decision, runtime not approved in phase 41, separate runtime implementation phase required, route not mounted, runtime not enabled, can request runtime implementation false, can mount route false, can enable runtime false, write locked, no DB write, no promotion update, no audit row creation, no ledger creation, no turnover creation, no claim execution, no runtime credit action, and no production deploy.";
+  const PROMOTION_ADMIN_DRY_RUN_RUNTIME_DECISION_NOTE =
+    "promotion admin dry-run runtime decision is runtime decision record only, runtime decision gate, hold runtime, request staging-only runtime phase, request separate runtime implementation phase, reject runtime for now, runtime not enabled in phase 42, separate runtime phase required, route not mounted, runtime not enabled, can enable staging runtime false, can enable production runtime false, can mount route false, can enable runtime false, write locked, no DB write, no promotion update, no audit row creation, no ledger creation, no turnover creation, no claim execution, no runtime credit action, and no production deploy.";
   const DASHBOARD_REPORTS_CONNECTED_NOTE =
     "Backend-connected read-only local-safe dashboard/report surface uses GET /api/admin/reports/summary, GET /api/admin/reports/deposits, GET /api/admin/reports/withdrawals, GET /api/admin/reports/wallet-ledger, GET /api/admin/logs, and GET /api/admin/members.";
   const MEMBER_CODE_REWARD_CONNECTED_NOTE =
