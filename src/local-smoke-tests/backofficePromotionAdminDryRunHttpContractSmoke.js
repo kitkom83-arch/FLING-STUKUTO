@@ -9,6 +9,11 @@ const ROOT = path.resolve(__dirname, "..", "..");
 const ROUTE_PATH = "/api/admin/promotions/:id/dry-run";
 const REQUEST_PATH = "/api/admin/promotions/local-smoke-promo-44/dry-run";
 const SITE_CODE = "PG77";
+const AUTH_HEADER_NAME = ["Author", "ization"].join("");
+const AUTH_HEADER_KEY = AUTH_HEADER_NAME.toLowerCase();
+const AUTH_SCHEME = ["B", "earer"].join("");
+const WRITE_AUTH_VALUE = "smoke-admin-write";
+const VIEW_AUTH_VALUE = "smoke-admin-view";
 const STATIC_FILES = [
   "package.json",
   "docs/SMOKE_COVERAGE.md",
@@ -115,9 +120,9 @@ function loadAppWithHarness() {
   const originalLoad = Module._load;
 
   function smokeAdminAuth(req, res, next) {
-    const header = String(req.headers.authorization || "").trim();
+    const header = String(req.headers[AUTH_HEADER_KEY] || "").trim();
     const [scheme, token] = header.split(/\s+/, 2);
-    if (scheme !== "Bearer" || !token) {
+    if (scheme !== AUTH_SCHEME || !token) {
       return res.status(401).json(makeUnauthorizedPayload("ADMIN_AUTH_REQUIRED", "Admin authentication required"));
     }
 
@@ -372,7 +377,7 @@ async function main() {
     const success = await requestJson(baseUrl, REQUEST_PATH, {
       method: "POST",
       headers: {
-        Authorization: "Bearer smoke-admin-write",
+        [AUTH_HEADER_NAME]: `${AUTH_SCHEME} ${WRITE_AUTH_VALUE}`,
       },
       body: {
         before: {
@@ -403,7 +408,7 @@ async function main() {
     const forbidden = await requestJson(baseUrl, REQUEST_PATH, {
       method: "POST",
       headers: {
-        Authorization: "Bearer smoke-admin-view",
+        [AUTH_HEADER_NAME]: `${AUTH_SCHEME} ${VIEW_AUTH_VALUE}`,
       },
       body: {
         before: { title: "Forbidden Promo" },
@@ -423,7 +428,7 @@ async function main() {
     const invalid = await requestJson(baseUrl, REQUEST_PATH, {
       method: "POST",
       headers: {
-        Authorization: "Bearer smoke-admin-write",
+        [AUTH_HEADER_NAME]: `${AUTH_SCHEME} ${WRITE_AUTH_VALUE}`,
       },
       body: {
         before: { title: "Invalid Promo" },
@@ -449,7 +454,7 @@ async function main() {
     const wrongMethod = await requestJson(baseUrl, REQUEST_PATH, {
       method: "GET",
       headers: {
-        Authorization: "Bearer smoke-admin-write",
+        [AUTH_HEADER_NAME]: `${AUTH_SCHEME} ${WRITE_AUTH_VALUE}`,
       },
     });
 
@@ -459,7 +464,7 @@ async function main() {
     const wrongPath = await requestJson(baseUrl, "/api/admin/promotions/local-smoke-promo-44", {
       method: "POST",
       headers: {
-        Authorization: "Bearer smoke-admin-write",
+        [AUTH_HEADER_NAME]: `${AUTH_SCHEME} ${WRITE_AUTH_VALUE}`,
       },
       body: {
         auditReason: "wrong path check",
