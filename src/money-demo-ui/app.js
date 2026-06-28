@@ -1195,6 +1195,19 @@
       promotionDryRunValidationErrors: document.getElementById("admin-promotion-dry-run-validation-errors"),
       promotionDryRunDiffPreview: document.getElementById("admin-promotion-dry-run-diff-preview"),
       promotionDryRunWarningNotes: document.getElementById("admin-promotion-dry-run-warning-notes"),
+      promotionDryRunReviewPacketState: document.getElementById("admin-promotion-dry-run-review-packet-state"),
+      promotionDryRunReviewPacketStatus: document.getElementById("admin-promotion-dry-run-review-packet-status"),
+      promotionDryRunReviewPacketPromotionId: document.getElementById("admin-promotion-dry-run-review-packet-promotion-id"),
+      promotionDryRunReviewPacketGeneratedAt: document.getElementById("admin-promotion-dry-run-review-packet-generated-at"),
+      promotionDryRunReviewPacketSafety: document.getElementById("admin-promotion-dry-run-review-packet-safety"),
+      promotionDryRunReviewPacketChangedFields: document.getElementById("admin-promotion-dry-run-review-packet-changed-fields"),
+      promotionDryRunReviewPacketUnchangedFields: document.getElementById("admin-promotion-dry-run-review-packet-unchanged-fields"),
+      promotionDryRunReviewPacketRiskyFields: document.getElementById("admin-promotion-dry-run-review-packet-risky-fields"),
+      promotionDryRunReviewPacketValidationSummary: document.getElementById("admin-promotion-dry-run-review-packet-validation-summary"),
+      promotionDryRunReviewPacketWarningSummary: document.getElementById("admin-promotion-dry-run-review-packet-warning-summary"),
+      promotionDryRunReviewPacketSafetySummary: document.getElementById("admin-promotion-dry-run-review-packet-safety-summary"),
+      promotionDryRunReviewPacketCopy: document.getElementById("admin-promotion-dry-run-review-packet-copy"),
+      promotionDryRunReviewPacketExport: document.getElementById("admin-promotion-dry-run-review-packet-export"),
       codeRewardState: document.getElementById("admin-code-reward-state"),
       codeCampaignCount: document.getElementById("admin-code-campaign-count"),
       codeRedeemCount: document.getElementById("admin-code-redeem-count"),
@@ -1230,7 +1243,7 @@
 
     function setBusy(nextBusy) {
       state.busy = nextBusy;
-      [els.login, els.refresh, els.clear].forEach(function (button) {
+      [els.login, els.refresh, els.clear, els.promotionDryRunReviewPacketCopy].forEach(function (button) {
         if (button) button.disabled = nextBusy;
       });
       document.querySelectorAll(".inline-actions button").forEach(function (button) {
@@ -1335,6 +1348,207 @@
       return labels.length ? labels.join(", ") : "none";
     }
 
+    function promotionDryRunPacketClone(value) {
+      if (!value || typeof value !== "object") return value || null;
+      try {
+        return JSON.parse(JSON.stringify(value));
+      } catch (_error) {
+        return null;
+      }
+    }
+
+    function promotionDryRunFieldChanges(beforeRow, afterRow) {
+      const before = promotionDryRunRowDraft(beforeRow);
+      const after = promotionDryRunRowDraft(afterRow);
+      return [
+        ["title", before.title, after.title],
+        ["type", before.type, after.type],
+        ["status", before.status, after.status],
+        ["minDeposit", before.minDeposit, after.minDeposit],
+        ["maxDeposit", before.maxDeposit, after.maxDeposit],
+        ["bonusType", before.bonusType, after.bonusType],
+        ["bonusValue", before.bonusValue, after.bonusValue],
+        ["turnoverMultiplier", before.turnoverMultiplier, after.turnoverMultiplier],
+        ["maxWithdraw", before.maxWithdraw, after.maxWithdraw],
+        ["startAt", before.startAt, after.startAt],
+        ["endAt", before.endAt, after.endAt],
+      ].map(function (entry) {
+        return {
+          field: entry[0],
+          before: entry[1],
+          after: entry[2],
+          changed: entry[1] !== entry[2],
+        };
+      });
+    }
+
+    function promotionDryRunRiskyFields(changedFields, riskSummary) {
+      const risky = new Set();
+      changedFields.forEach(function (field) {
+        if (/bonus|turnover|maxWithdraw|minDeposit|maxDeposit|status/i.test(field)) {
+          risky.add(field);
+        }
+      });
+      const summary = riskSummary && typeof riskSummary === "object" ? riskSummary : null;
+      if (summary) {
+        if (summary.hasBonusRisk) risky.add("bonus");
+        if (summary.hasTurnoverRisk) risky.add("turnover");
+        if (summary.hasWithdrawRisk) risky.add("maxWithdraw");
+        if (summary.hasEligibilityRisk) risky.add("eligibility");
+        if (summary.hasStatusRisk) risky.add("status");
+      }
+      return Array.from(risky);
+    }
+
+    function promotionDryRunSafetyFlags(source) {
+      const flags = source && typeof source === "object" ? source : {};
+      return {
+        dryRunOnly: flags.dryRunOnly !== false,
+        validateOnly: flags.validateOnly !== false,
+        writeLocked: flags.writeLocked !== false,
+        routeMounted: flags.routeMounted === true,
+        apiCallEnabled: flags.apiCallEnabled === true,
+        dbWriteEnabled: flags.dbWriteEnabled === true,
+        walletWriteEnabled: flags.walletWriteEnabled === true,
+        promotionUpdateEnabled: flags.promotionUpdateEnabled === true,
+        auditWriteEnabled: flags.auditWriteEnabled === true,
+        ledgerWriteEnabled: flags.ledgerWriteEnabled === true,
+        turnoverCreationEnabled: flags.turnoverCreationEnabled === true,
+        claimExecutionEnabled: flags.claimExecutionEnabled === true,
+        providerOutboundEnabled: flags.providerOutboundEnabled === true,
+        productionLiveEnabled: flags.productionLiveEnabled === true,
+        productionDeployEnabled: flags.productionDeployEnabled === true,
+      };
+    }
+
+    function promotionDryRunLocalTimestamp() {
+      return new Date().toLocaleString();
+    }
+
+    function promotionDryRunPacketPayload(form) {
+      return promotionDryRunPacketClone({
+        before: form.before,
+        after: form.after,
+        auditReason: form.auditReason,
+        riskAcknowledgement: form.riskAcknowledgement,
+      });
+    }
+
+    function promotionDryRunPacketBase(form, selectedRow, source) {
+      const fieldChanges = promotionDryRunFieldChanges(form.before, form.after);
+      const changedFields = fieldChanges.filter(function (item) {
+        return item.changed;
+      });
+      const unchangedFields = fieldChanges
+        .filter(function (item) {
+          return !item.changed;
+        })
+        .map(function (item) {
+          return item.field;
+        });
+      const riskSummary = source && source.riskSummary ? source.riskSummary : null;
+
+      return {
+        promotionId: form.promotionId || state.promotionDryRunPromotionId || null,
+        originalSnapshot: promotionDryRunPacketClone(selectedRow),
+        formPayload: promotionDryRunPacketPayload(form),
+        beforeAfterDiff: source && Array.isArray(source.diff) ? promotionDryRunPacketClone(source.diff) : changedFields,
+        changedFields: changedFields,
+        unchangedFields: unchangedFields,
+        riskyFields: promotionDryRunRiskyFields(
+          changedFields.map(function (item) {
+            return item.field;
+          }),
+          riskSummary
+        ),
+        auditReason: form.auditReason,
+        riskAcknowledgement: form.riskAcknowledgement,
+        validationErrors: source && Array.isArray(source.errors) ? source.errors.slice() : form.errors.slice(),
+        warningNotes: source && Array.isArray(source.warnings) ? source.warnings.slice() : [],
+        safetyFlags: promotionDryRunSafetyFlags(source),
+        safetyConfirmation:
+          "dry-run only, local-only review packet, no DB write, no promotion update, no audit row, no ledger, no turnover, no claim, no wallet mutation, no provider outbound, no production deploy",
+        generatedAt: promotionDryRunLocalTimestamp(),
+      };
+    }
+
+    function buildPromotionDryRunReviewPacket() {
+      const result = state.promotionDryRunResult && typeof state.promotionDryRunResult === "object" ? state.promotionDryRunResult : null;
+      const error = state.promotionDryRunError && typeof state.promotionDryRunError === "object" ? state.promotionDryRunError : null;
+      const source = result || error;
+      const form = readPromotionDryRunForm();
+      const selectedRow = form.promotionRow || state.promotionDryRunPromotionRow || null;
+      const base = promotionDryRunPacketBase(form, selectedRow, source);
+
+      if (!selectedRow) {
+        return Object.assign(base, {
+          status: "fail-closed",
+          reason: "no_selected_promotion",
+          validationStatus: "fail-closed",
+          validationErrors: base.validationErrors.length ? base.validationErrors : ["promotionId must reference a loaded promotion row"],
+          warningNotes: ["Review packet blocked until a promotion row is selected."],
+        });
+      }
+
+      if (!source) {
+        return Object.assign(base, {
+          status: "fail-closed",
+          reason: "dry_run_required",
+          validationStatus: "fail-closed",
+          validationErrors: ["dry-run response is required before a success review packet can be generated"].concat(form.errors),
+          warningNotes: ["Complete dry-run before reviewing a packet."],
+        });
+      }
+
+      const validationStatus = result ? "validated" : "fail-closed";
+
+      return Object.assign(base, {
+        status: result ? "ready_for_review" : "fail-closed",
+        reason: result ? "dry_run_completed" : "dry_run_failed",
+        validationStatus: validationStatus,
+      });
+    }
+
+    function renderPromotionDryRunReviewPacket() {
+      const packet = buildPromotionDryRunReviewPacket();
+      const changedFields = Array.isArray(packet.changedFields)
+        ? packet.changedFields.map(function (item) {
+            return item && item.field ? `${item.field}: ${safeText(item.before, "-")} -> ${safeText(item.after, "-")}` : safeText(item, "");
+          }).filter(Boolean)
+        : [];
+      const unchangedFields = Array.isArray(packet.unchangedFields) ? packet.unchangedFields : [];
+      const riskyFields = Array.isArray(packet.riskyFields) ? packet.riskyFields : [];
+      const validationErrors = Array.isArray(packet.validationErrors) ? packet.validationErrors : [];
+      const warningNotes = Array.isArray(packet.warningNotes) ? packet.warningNotes : [];
+
+      setStatus(els.promotionDryRunReviewPacketStatus, packet.status);
+      setStatus(els.promotionDryRunReviewPacketPromotionId, packet.promotionId || "-");
+      setStatus(els.promotionDryRunReviewPacketGeneratedAt, packet.generatedAt || "-");
+      setStatus(els.promotionDryRunReviewPacketSafety, "dry_run_only_local_only");
+      setStatus(els.promotionDryRunReviewPacketChangedFields, changedFields.length ? changedFields.join(" | ") : "no changed fields");
+      setStatus(els.promotionDryRunReviewPacketUnchangedFields, unchangedFields.length ? unchangedFields.join(", ") : "-");
+      setStatus(els.promotionDryRunReviewPacketRiskyFields, riskyFields.length ? riskyFields.join(", ") : "none");
+      setStatus(
+        els.promotionDryRunReviewPacketValidationSummary,
+        `${safeText(packet.validationStatus, "fail-closed")} | ${validationErrors.length ? validationErrors.join(", ") : "no validation errors"}`
+      );
+      setStatus(els.promotionDryRunReviewPacketWarningSummary, warningNotes.length ? warningNotes.join(", ") : "no warnings");
+      setStatus(els.promotionDryRunReviewPacketSafetySummary, packet.safetyConfirmation || "Dry-run only. No write path is available.");
+      if (els.promotionDryRunReviewPacketState) {
+        els.promotionDryRunReviewPacketState.textContent =
+          packet.status === "ready_for_review"
+            ? "Review packet generated from selected snapshot, form payload, and dry-run response. Local-only copy/export is available."
+            : `${safeText(packet.reason, "fail-closed")} - review packet remains fail-closed until selection and dry-run are complete.`;
+      }
+      if (els.promotionDryRunReviewPacketExport) {
+        els.promotionDryRunReviewPacketExport.value = JSON.stringify(packet, null, 2);
+      }
+      if (els.promotionDryRunReviewPacketCopy) {
+        els.promotionDryRunReviewPacketCopy.disabled = state.busy;
+      }
+      return packet;
+    }
+
     function renderPromotionDryRunResult() {
       const result = state.promotionDryRunResult && typeof state.promotionDryRunResult === "object" ? state.promotionDryRunResult : null;
       const error = state.promotionDryRunError && typeof state.promotionDryRunError === "object" ? state.promotionDryRunError : null;
@@ -1436,6 +1650,8 @@
           els.promotionDryRunResultRows.appendChild(tr);
         }
       }
+
+      renderPromotionDryRunReviewPacket();
     }
 
     function renderBankAccounts() {
@@ -1895,6 +2111,26 @@
       return submitPromotionDryRunFromForm();
     }
 
+    function copyPromotionDryRunReviewPacket() {
+      const packet = renderPromotionDryRunReviewPacket();
+      const text = JSON.stringify(packet, null, 2);
+      if (els.promotionDryRunReviewPacketExport) {
+        els.promotionDryRunReviewPacketExport.value = text;
+        if (typeof els.promotionDryRunReviewPacketExport.focus === "function") {
+          els.promotionDryRunReviewPacketExport.focus();
+        }
+        if (typeof els.promotionDryRunReviewPacketExport.select === "function") {
+          els.promotionDryRunReviewPacketExport.select();
+        }
+      }
+      if (window.navigator && window.navigator.clipboard && typeof window.navigator.clipboard.writeText === "function") {
+        window.navigator.clipboard.writeText(text).catch(function () {});
+      }
+      if (els.statusText) {
+        els.statusText.textContent = "Promotion dry-run review packet copied/exported locally. No API call was made.";
+      }
+    }
+
     function renderPromotions() {
       renderEmptyState(els.promotionRows, els.promotionEmpty, state.promotions);
       state.promotions.forEach(function (row) {
@@ -2233,6 +2469,9 @@
       els.promotionDryRunSubmit.addEventListener("click", function () {
         return submitPromotionDryRunFromForm().catch(function () {});
       });
+    }
+    if (els.promotionDryRunReviewPacketCopy) {
+      els.promotionDryRunReviewPacketCopy.addEventListener("click", copyPromotionDryRunReviewPacket);
     }
     [
       els.promotionDryRunPromotionIdInput,

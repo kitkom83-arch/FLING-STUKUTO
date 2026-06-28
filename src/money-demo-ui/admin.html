@@ -850,6 +850,79 @@
             <tbody id="admin-promotion-dry-run-result-rows"></tbody>
           </table>
         </div>
+        <section
+          class="panel"
+          data-promotion-admin-dry-run-review-packet-marker="BACKOFFICE-PROMOTION-ADMIN-DRY-RUN-REVIEW-PACKET-50"
+          aria-label="Promotion admin dry-run review packet"
+        >
+          <div class="panel-heading">
+            <div>
+              <h2>Review Packet / Change Summary</h2>
+              <p>Local-only dry-run review packet for admin inspection before any future write phase.</p>
+            </div>
+            <span class="mode-pill">local_only_review_packet</span>
+          </div>
+          <div class="marker-list">
+            <p>Review packet is generated only from the selected/original promotion snapshot, current form payload, and dry-run response.</p>
+            <p>Copy/export is local-only JSON text. It does not call another API and does not save, apply, confirm, create, update, or delete promotions.</p>
+            <p>Fail-closed when no promotion is selected, no dry-run has completed, validation fails, or the dry-run API fails.</p>
+            <p>No DB write, no promotion update, no audit row creation, no ledger creation, no turnover creation, no claim execution, no wallet mutation, no provider outbound, no production live mode, and no production deploy.</p>
+          </div>
+          <div id="admin-promotion-dry-run-review-packet-state" class="notice">Select a promotion and complete dry-run before a success review packet is available.</div>
+          <section class="status-grid compact-grid" aria-label="Promotion dry-run review packet summary">
+            <article class="status-card">
+              <span>Packet Status</span>
+              <strong id="admin-promotion-dry-run-review-packet-status">fail-closed</strong>
+            </article>
+            <article class="status-card">
+              <span>Promotion ID</span>
+              <strong id="admin-promotion-dry-run-review-packet-promotion-id">-</strong>
+            </article>
+            <article class="status-card">
+              <span>Generated At</span>
+              <strong id="admin-promotion-dry-run-review-packet-generated-at">-</strong>
+            </article>
+            <article class="status-card">
+              <span>Safety</span>
+              <strong id="admin-promotion-dry-run-review-packet-safety">dry_run_only</strong>
+            </article>
+          </section>
+          <div class="readiness-grid" aria-label="Promotion dry-run review packet details">
+            <article class="field-card">
+              <h3>Changed fields</h3>
+              <p id="admin-promotion-dry-run-review-packet-changed-fields">-</p>
+            </article>
+            <article class="field-card">
+              <h3>Unchanged fields</h3>
+              <p id="admin-promotion-dry-run-review-packet-unchanged-fields">-</p>
+            </article>
+            <article class="field-card">
+              <h3>Risky changes</h3>
+              <p id="admin-promotion-dry-run-review-packet-risky-fields">-</p>
+            </article>
+            <article class="field-card">
+              <h3>Validation summary</h3>
+              <p id="admin-promotion-dry-run-review-packet-validation-summary">-</p>
+            </article>
+            <article class="field-card">
+              <h3>Warnings</h3>
+              <p id="admin-promotion-dry-run-review-packet-warning-summary">-</p>
+            </article>
+            <article class="field-card">
+              <h3>Safety confirmation</h3>
+              <p id="admin-promotion-dry-run-review-packet-safety-summary">Dry-run only. No write path is available.</p>
+            </article>
+          </div>
+          <div class="button-row">
+            <button id="admin-promotion-dry-run-review-packet-copy" type="button" class="secondary">Copy packet JSON</button>
+          </div>
+          <textarea
+            id="admin-promotion-dry-run-review-packet-export"
+            aria-label="Local-only promotion dry-run review packet JSON"
+            rows="8"
+            readonly
+          ></textarea>
+        </section>
       </section>
 
       <section class="panel">
