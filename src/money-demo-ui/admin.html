@@ -411,6 +411,41 @@
         </div>
       </section>
 
+      <section class="panel" data-promotion-admin-dry-run-service-readiness-marker="BACKOFFICE-PROMOTION-ADMIN-DRY-RUN-SERVICE-READINESS-35">
+        <div class="panel-heading">
+          <div>
+            <h2>Promotion Admin Dry-run Service Readiness</h2>
+            <p>Service readiness only. Service runtime not enabled, service not mounted, controller not mounted, and no Express mount.</p>
+          </div>
+          <span class="mode-pill">service_readiness_only</span>
+        </div>
+        <div class="marker-list">
+          <p>promotion admin dry-run service readiness: service readiness only, service runtime not enabled, service not mounted, controller not mounted, no Express mount, no API call, not mounted, validate-only, and write locked.</p>
+          <p>Required guards preview: adminAuth, siteAccess, settings.promotion.write or settings.promotion.manage, auditReason required, and riskAcknowledgement required when risky fields change.</p>
+          <p>Status mapping preview: service_readiness_only_not_mounted, 200 for valid POST, 400 missing id, 403 missing permission, 404 wrong operation or wrong controller action, 405 wrong method, and 422 validator failure.</p>
+          <p>JSON response shape preview: serviceOperation, serviceMode, status, body, serviceReadiness, and safetyFlags.</p>
+          <p>No DB write. No promotion update. No ledger creation. No turnover creation. No claim execution. No runtime credit action.</p>
+        </div>
+        <div class="readiness-grid" aria-label="Promotion admin dry-run service readiness sections">
+          <article class="field-card">
+            <h3>required guards preview</h3>
+            <p>Shows adminAuth, siteAccess, permission, auditReason, and risk acknowledgement readiness markers.</p>
+          </article>
+          <article class="field-card">
+            <h3>status mapping preview</h3>
+            <p>Maps service-ready simulations to 200, 400, 403, 404, 405, and 422 outcomes.</p>
+          </article>
+          <article class="field-card">
+            <h3>JSON response shape preview</h3>
+            <p>Shows the service-like JSON envelope with body and service readiness metadata.</p>
+          </article>
+          <article class="field-card">
+            <h3>safety flags</h3>
+            <p>Confirms no DB write, no promotion update, no ledger creation, no turnover creation, no claim execution, and no runtime credit action.</p>
+          </article>
+        </div>
+      </section>
+
       <section class="panel">
         <div class="panel-heading">
           <div>
