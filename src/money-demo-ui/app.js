@@ -15,6 +15,8 @@
     "promotion admin dry-run runtime decision is runtime decision record only, runtime decision gate, hold runtime, request staging-only runtime phase, request separate runtime implementation phase, reject runtime for now, runtime not enabled in phase 42, separate runtime phase required, route not mounted, runtime not enabled, can enable staging runtime false, can enable production runtime false, can mount route false, can enable runtime false, write locked, no DB write, no promotion update, no audit row creation, no ledger creation, no turnover creation, no claim execution, no runtime credit action, no provider outbound, and no production deploy.";
   const PROMOTION_ADMIN_DRY_RUN_STAGING_ROUTE_MOUNT_NOTE =
     "promotion admin dry-run staging route mount is staging/local-safe dry-run only, POST /api/admin/promotions/:id/dry-run, route mounted for dry-run only, no DB write, no promotion update, no audit row creation, no ledger creation, no turnover creation, no claim execution, no runtime credit action, no provider outbound, no production deploy, write locked, and production disabled.";
+  const PROMOTION_ADMIN_DRY_RUN_UI_ACTION_WIRING_NOTE =
+    "promotion admin dry-run UI action wiring uses POST /api/admin/promotions/:id/dry-run through the existing admin auth flow only, dry-run only, validate-only, write locked, Dry-run เท่านั้น, ไม่มีการบันทึกจริง, ไม่แตะ wallet/claim/ledger/provider, no DB write, no wallet write, no promotion update, no audit row creation, no ledger creation, no turnover creation, no claim execution, no provider outbound, no production live mode, no production deploy, and fail-closed on error.";
   const MEMBER_CODE_REWARD_ROUTE_NOTE =
     "Backend-connected local-safe reward wallet surfaces use POST /api/code-center/redeem, GET /api/code-center/redeem-logs, GET /api/member/rewards, GET /api/member/rewards/summary, GET /api/member/rewards/history, and GET /api/member/wheel/my-rewards.";
   const ADMIN_MEMBER_READ_ONLY_ROUTE_NOTE =
@@ -198,7 +200,7 @@
           throw error;
         }
 
-        return payload.data;
+        return config.returnPayload ? payload : payload.data;
       });
   }
 
@@ -1153,6 +1155,27 @@
       promotionCrudStatus: document.getElementById("admin-promotion-crud-status"),
       promotionEmpty: document.getElementById("admin-promotion-empty"),
       promotionRows: document.getElementById("admin-promotion-rows"),
+      promotionDryRunState: document.getElementById("admin-promotion-dry-run-state"),
+      promotionDryRunRouteMounted: document.getElementById("admin-promotion-dry-run-route-mounted"),
+      promotionDryRunApiEnabled: document.getElementById("admin-promotion-dry-run-api-enabled"),
+      promotionDryRunOnly: document.getElementById("admin-promotion-dry-run-only"),
+      promotionDryRunValidateOnly: document.getElementById("admin-promotion-dry-run-validate-only"),
+      promotionDryRunWriteLocked: document.getElementById("admin-promotion-dry-run-write-locked"),
+      promotionDryRunDbWriteEnabled: document.getElementById("admin-promotion-dry-run-db-write-enabled"),
+      promotionDryRunWalletWriteEnabled: document.getElementById("admin-promotion-dry-run-wallet-write-enabled"),
+      promotionDryRunPromotionUpdateEnabled: document.getElementById("admin-promotion-dry-run-promotion-update-enabled"),
+      promotionDryRunAuditWriteEnabled: document.getElementById("admin-promotion-dry-run-audit-write-enabled"),
+      promotionDryRunLedgerWriteEnabled: document.getElementById("admin-promotion-dry-run-ledger-write-enabled"),
+      promotionDryRunTurnoverEnabled: document.getElementById("admin-promotion-dry-run-turnover-enabled"),
+      promotionDryRunClaimEnabled: document.getElementById("admin-promotion-dry-run-claim-enabled"),
+      promotionDryRunProviderEnabled: document.getElementById("admin-promotion-dry-run-provider-enabled"),
+      promotionDryRunProductionLiveEnabled: document.getElementById("admin-promotion-dry-run-production-live-enabled"),
+      promotionDryRunProductionDeployEnabled: document.getElementById("admin-promotion-dry-run-production-deploy-enabled"),
+      promotionDryRunSafetyMessage: document.getElementById("admin-promotion-dry-run-safety-message"),
+      promotionDryRunSelected: document.getElementById("admin-promotion-dry-run-selected"),
+      promotionDryRunValidator: document.getElementById("admin-promotion-dry-run-validator"),
+      promotionDryRunResultCode: document.getElementById("admin-promotion-dry-run-result-code"),
+      promotionDryRunResultRows: document.getElementById("admin-promotion-dry-run-result-rows"),
       codeRewardState: document.getElementById("admin-code-reward-state"),
       codeCampaignCount: document.getElementById("admin-code-campaign-count"),
       codeRedeemCount: document.getElementById("admin-code-redeem-count"),
@@ -1176,6 +1199,10 @@
       pendingWithdrawals: [],
       ledger: [],
       promotions: [],
+      promotionDryRunResult: null,
+      promotionDryRunError: null,
+      promotionDryRunPromotionId: null,
+      promotionDryRunPromotionLabel: "",
       codeCampaigns: [],
       codeRedeemLogs: [],
       audit: [],
@@ -1248,6 +1275,114 @@
       setStatus(els.codeSessionStatus, state.token ? "ready" : "not_ready");
       setStatus(els.auditCount, state.audit.length);
       setStatus(els.sessionStatus, state.token ? "ready" : "not_ready");
+    }
+
+    function createListText(value, fallback) {
+      if (!Array.isArray(value) || value.length === 0) return fallback;
+      return value
+        .map(function (item) {
+          if (item === null || item === undefined || item === "") return null;
+          if (typeof item === "string") return item;
+          if (typeof item === "object") {
+            const field = safeText(item.field || item.key || item.type, "");
+            const before = safeText(item.before, "");
+            const after = safeText(item.after, "");
+            if (field && (before || after)) return `${field}: ${before} -> ${after}`;
+            if (field) return field;
+          }
+          return safeText(item, "");
+        })
+        .filter(Boolean)
+        .join(", ");
+    }
+
+    function riskSummaryText(riskSummary) {
+      const summary = riskSummary && typeof riskSummary === "object" ? riskSummary : null;
+      if (!summary) return "-";
+      const labels = [
+        ["hasBonusRisk", "bonus"],
+        ["hasTurnoverRisk", "turnover"],
+        ["hasWithdrawRisk", "withdraw"],
+        ["hasEligibilityRisk", "eligibility"],
+        ["hasStatusRisk", "status"],
+      ]
+        .filter(function (entry) {
+          return summary[entry[0]] === true;
+        })
+        .map(function (entry) {
+          return entry[1];
+        });
+      return labels.length ? labels.join(", ") : "none";
+    }
+
+    function renderPromotionDryRunResult() {
+      const result = state.promotionDryRunResult && typeof state.promotionDryRunResult === "object" ? state.promotionDryRunResult : null;
+      const error = state.promotionDryRunError && typeof state.promotionDryRunError === "object" ? state.promotionDryRunError : null;
+      const selectedLabel = state.promotionDryRunPromotionLabel || "-";
+      const source = result || error;
+      const rows = source
+        ? [
+            createListText(source.diff, "no diff"),
+            createListText(source.warnings, "no warnings"),
+            createListText(source.errors, "no errors"),
+            riskSummaryText(source.riskSummary),
+          ]
+        : [];
+
+      setStatus(els.promotionDryRunRouteMounted, source && Object.prototype.hasOwnProperty.call(source, "routeMounted") ? String(source.routeMounted) : "-");
+      setStatus(els.promotionDryRunApiEnabled, source && Object.prototype.hasOwnProperty.call(source, "apiCallEnabled") ? String(source.apiCallEnabled) : "-");
+      setStatus(els.promotionDryRunOnly, source && Object.prototype.hasOwnProperty.call(source, "dryRunOnly") ? String(source.dryRunOnly) : "-");
+      setStatus(els.promotionDryRunValidateOnly, source && Object.prototype.hasOwnProperty.call(source, "validateOnly") ? String(source.validateOnly) : "-");
+      setStatus(els.promotionDryRunWriteLocked, source && Object.prototype.hasOwnProperty.call(source, "writeLocked") ? String(source.writeLocked) : "-");
+      setStatus(els.promotionDryRunDbWriteEnabled, source && Object.prototype.hasOwnProperty.call(source, "dbWriteEnabled") ? String(source.dbWriteEnabled) : "-");
+      setStatus(els.promotionDryRunWalletWriteEnabled, source && Object.prototype.hasOwnProperty.call(source, "walletWriteEnabled") ? String(source.walletWriteEnabled) : "-");
+      setStatus(els.promotionDryRunPromotionUpdateEnabled, source && Object.prototype.hasOwnProperty.call(source, "promotionUpdateEnabled") ? String(source.promotionUpdateEnabled) : "-");
+      setStatus(els.promotionDryRunAuditWriteEnabled, source && Object.prototype.hasOwnProperty.call(source, "auditWriteEnabled") ? String(source.auditWriteEnabled) : "-");
+      setStatus(els.promotionDryRunLedgerWriteEnabled, source && Object.prototype.hasOwnProperty.call(source, "ledgerWriteEnabled") ? String(source.ledgerWriteEnabled) : "-");
+      setStatus(els.promotionDryRunTurnoverEnabled, source && Object.prototype.hasOwnProperty.call(source, "turnoverCreationEnabled") ? String(source.turnoverCreationEnabled) : "-");
+      setStatus(els.promotionDryRunClaimEnabled, source && Object.prototype.hasOwnProperty.call(source, "claimExecutionEnabled") ? String(source.claimExecutionEnabled) : "-");
+      setStatus(els.promotionDryRunProviderEnabled, source && Object.prototype.hasOwnProperty.call(source, "providerOutboundEnabled") ? String(source.providerOutboundEnabled) : "-");
+      setStatus(els.promotionDryRunProductionLiveEnabled, source && Object.prototype.hasOwnProperty.call(source, "productionLiveEnabled") ? String(source.productionLiveEnabled) : "-");
+      setStatus(els.promotionDryRunProductionDeployEnabled, source && Object.prototype.hasOwnProperty.call(source, "productionDeployEnabled") ? String(source.productionDeployEnabled) : "-");
+      setStatus(els.promotionDryRunSelected, selectedLabel);
+      setStatus(els.promotionDryRunValidator, source && source.validator ? source.validator : "-");
+      setStatus(
+        els.promotionDryRunResultCode,
+        source
+          ? [source.code || "OK", source.message || ""].filter(Boolean).join(" - ")
+          : "-"
+      );
+
+      if (els.promotionDryRunSafetyMessage) {
+        els.promotionDryRunSafetyMessage.textContent = result
+          ? "Dry-run เท่านั้น ไม่มีการบันทึกจริง ไม่แตะ wallet/claim/ledger/provider"
+          : error
+            ? "Dry-run เท่านั้น และ fail-closed เมื่อ request ไม่ผ่าน ไม่มีการบันทึกจริง ไม่แตะ wallet/claim/ledger/provider"
+            : "Dry-run เท่านั้น ไม่มีการบันทึกจริง ไม่แตะ wallet/claim/ledger/provider";
+      }
+
+      if (els.promotionDryRunState) {
+        if (result) {
+          els.promotionDryRunState.textContent = `Dry-run response loaded for ${selectedLabel}. ${PROMOTION_ADMIN_DRY_RUN_UI_ACTION_WIRING_NOTE}`;
+        } else if (error) {
+          els.promotionDryRunState.textContent = `${safeText(error.message, "Promotion dry-run failed.")} Fail-closed. ${PROMOTION_ADMIN_DRY_RUN_UI_ACTION_WIRING_NOTE}`;
+        } else if (state.token) {
+          els.promotionDryRunState.textContent = `เลือก promotion แล้วกด Dry-run promotion เพื่อตรวจแบบ Dry-run เท่านั้น ${PROMOTION_ADMIN_DRY_RUN_UI_ACTION_WIRING_NOTE}`;
+        } else {
+          els.promotionDryRunState.textContent = `Login an admin first to call POST /api/admin/promotions/:id/dry-run. ${PROMOTION_ADMIN_DRY_RUN_UI_ACTION_WIRING_NOTE}`;
+        }
+      }
+
+      if (els.promotionDryRunResultRows) {
+        els.promotionDryRunResultRows.innerHTML = "";
+        if (rows.length) {
+          const tr = document.createElement("tr");
+          rows.forEach(function (value) {
+            createCell(tr, value);
+          });
+          els.promotionDryRunResultRows.appendChild(tr);
+        }
+      }
     }
 
     function renderBankAccounts() {
@@ -1347,6 +1482,93 @@
       return `${minDeposit}; ${maxWithdraw}`;
     }
 
+    function buildPromotionDryRunPayload(row) {
+      const before = {
+        title: safeText(row && (row.title || row.name), `Promotion ${safeText(row && row.id, "preview")}`),
+        type: safeText(row && row.type, "deposit"),
+        status: safeText(row && row.status, "active"),
+        minDeposit: safeNumber(row && row.minDeposit, 0),
+        maxDeposit: safeNumber(row && row.maxDeposit, 0),
+        bonusType: safeText(row && row.bonusType, "fixed"),
+        bonusValue: safeNumber(row && row.bonusValue, 0),
+        turnoverMultiplier: safeNumber(row && row.turnoverMultiplier, 0),
+        maxWithdraw: safeNumber(row && row.maxWithdraw, 0),
+        startAt: row && row.startAt ? String(row.startAt) : null,
+        endAt: row && row.endAt ? String(row.endAt) : null,
+      };
+      const after = Object.assign({}, before, {
+        title: `${before.title} [dry-run]`,
+      });
+      return {
+        before: before,
+        after: after,
+        auditReason: `UI dry-run preview for ${safeText(row && row.id, "promotion")}`,
+        riskAcknowledgement: false,
+      };
+    }
+
+    async function dryRunPromotion(row) {
+      const promotionId = safeText(row && row.id, "");
+      if (!state.token) {
+        state.promotionDryRunResult = null;
+        state.promotionDryRunError = {
+          code: "PROMOTION_DRY_RUN_LOGIN_REQUIRED",
+          message: "Login an admin first before running promotion dry-run.",
+        };
+        state.promotionDryRunPromotionId = null;
+        state.promotionDryRunPromotionLabel = "";
+        renderPromotionDryRunResult();
+        els.statusText.textContent = "Promotion dry-run is fail-closed until an admin session is loaded.";
+        return;
+      }
+      if (!promotionId) {
+        state.promotionDryRunResult = null;
+        state.promotionDryRunError = {
+          code: "PROMOTION_DRY_RUN_VALIDATION_FAILED",
+          message: "Promotion dry-run requires a promotion id.",
+        };
+        state.promotionDryRunPromotionId = null;
+        state.promotionDryRunPromotionLabel = "";
+        renderPromotionDryRunResult();
+        els.statusText.textContent = "Promotion dry-run is fail-closed because the selected promotion id is missing.";
+        return;
+      }
+
+      const promotionLabel = safeText(row && (row.title || row.name || row.id), promotionId);
+      const payload = buildPromotionDryRunPayload(row);
+      setBusy(true);
+      state.promotionDryRunPromotionId = promotionId;
+      state.promotionDryRunPromotionLabel = promotionLabel;
+      state.promotionDryRunResult = null;
+      state.promotionDryRunError = null;
+      renderPromotionDryRunResult();
+      els.statusText.textContent = `Running promotion dry-run for ${promotionLabel}...`;
+      try {
+        const response = await apiRequest(`/admin/promotions/${encodeURIComponent(promotionId)}/dry-run`, {
+          method: "POST",
+          token: state.token,
+          body: payload,
+          returnPayload: true,
+        });
+        state.promotionDryRunResult = response;
+        state.promotionDryRunError = null;
+        renderPromotionDryRunResult();
+        els.statusText.textContent = "Promotion dry-run completed. Dry-run เท่านั้น ไม่มีการบันทึกจริง ไม่แตะ wallet/claim/ledger/provider.";
+      } catch (error) {
+        state.promotionDryRunResult = null;
+        state.promotionDryRunError = error && error.payload && typeof error.payload === "object"
+          ? error.payload
+          : {
+              code: error && error.status ? `HTTP_${error.status}` : "PROMOTION_DRY_RUN_FAILED",
+              message: safeText(error && error.message, "Promotion dry-run failed."),
+            };
+        renderPromotionDryRunResult();
+        els.statusText.textContent = `${safeText(error && error.message, "Promotion dry-run failed.")} Fail-closed.`;
+      } finally {
+        setBusy(false);
+      }
+    }
+
     function renderPromotions() {
       renderEmptyState(els.promotionRows, els.promotionEmpty, state.promotions);
       state.promotions.forEach(function (row) {
@@ -1357,6 +1579,17 @@
         createCell(tr, `${formatMoney(row.turnoverMultiplier)}x`);
         createCell(tr, adminPromotionWithdrawCondition(row));
         createCell(tr, "guarded_hold_fail_closed", "status-pending");
+        const actionCell = document.createElement("td");
+        actionCell.appendChild(
+          makeActionButton("Dry-run promotion", "secondary", function () {
+            dryRunPromotion(row).catch(function () {});
+          })
+        );
+        const actionNote = document.createElement("p");
+        actionNote.className = "status-note";
+        actionNote.textContent = "Dry-run เท่านั้น";
+        actionCell.appendChild(actionNote);
+        tr.appendChild(actionCell);
         els.promotionRows.appendChild(tr);
       });
     }
@@ -1394,6 +1627,7 @@
       renderWithdrawals();
       renderLedger();
       renderPromotions();
+      renderPromotionDryRunResult();
       renderCodeCampaigns();
       renderCodeRedeemLogs();
       renderAudit();
@@ -1419,6 +1653,10 @@
       if (!state.token) {
         state.summary = null;
         state.promotions = [];
+        state.promotionDryRunResult = null;
+        state.promotionDryRunError = null;
+        state.promotionDryRunPromotionId = null;
+        state.promotionDryRunPromotionLabel = "";
         state.codeCampaigns = [];
         state.codeRedeemLogs = [];
         renderAll();
@@ -1551,6 +1789,11 @@
       if (els.promotionState) {
         els.promotionState.textContent = "Local admin session cleared. Admin promotion config visibility stays read-only/local-safe and claim guarded hold.";
       }
+      state.promotionDryRunResult = null;
+      state.promotionDryRunError = null;
+      state.promotionDryRunPromotionId = null;
+      state.promotionDryRunPromotionLabel = "";
+      renderPromotionDryRunResult();
       els.statusText.textContent = `Local admin session cleared. ${ADMIN_MEMBER_READ_ONLY_ROUTE_NOTE}`;
     }
 
@@ -1656,6 +1899,7 @@
     if (els.promotionState) {
       els.promotionState.textContent = "Load a local-safe admin to read admin promotion config visibility.";
     }
+    renderPromotionDryRunResult();
     els.statusText.textContent =
       "Login with a local-safe admin to review pending finance requests. " + ADMIN_MEMBER_READ_ONLY_ROUTE_NOTE;
   }
