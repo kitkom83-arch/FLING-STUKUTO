@@ -552,6 +552,51 @@
         </div>
       </section>
 
+      <section
+        class="panel"
+        data-promotion-admin-dry-run-enablement-runbook-marker="BACKOFFICE-PROMOTION-ADMIN-DRY-RUN-ENABLEMENT-RUNBOOK-39"
+      >
+        <div class="panel-heading">
+          <div>
+            <h2>Promotion Admin Dry-run Enablement Runbook</h2>
+            <p>Enablement runbook readiness only. Runtime not enabled, mount not granted, and mount denied by default.</p>
+          </div>
+          <span class="mode-pill">enablement_runbook_readiness_only_not_enabled</span>
+        </div>
+        <div class="marker-list">
+          <p>promotion admin dry-run enablement runbook: readiness only, runtime not enabled, mount not granted, and mount denied by default.</p>
+          <p>approval checklist required: product owner, technical lead, security, rollback plan, monitoring plan, staging UAT, and production window approval.</p>
+          <p>rollback plan required, monitoring plan required, staging UAT required, production window approval required, can mount route false, and can enable runtime false.</p>
+          <p>Safety lock remains explicit: no DB write, no promotion update, no audit row creation, no ledger creation, no turnover creation, no claim execution, no runtime credit action, no provider outbound, and no production deploy.</p>
+        </div>
+        <div class="readiness-grid" aria-label="Promotion admin dry-run enablement runbook sections">
+          <article class="field-card">
+            <h3>enablement runbook readiness only</h3>
+            <p>The runbook stays readiness only and never mounts runtime.</p>
+          </article>
+          <article class="field-card">
+            <h3>mount not granted by default</h3>
+            <p>Mount not granted, mount denied by default, and route remains unmounted.</p>
+          </article>
+          <article class="field-card">
+            <h3>approval checklist required</h3>
+            <p>Product owner, technical lead, security, rollback, monitoring, staging UAT, and production window approvals are required.</p>
+          </article>
+          <article class="field-card">
+            <h3>write locked</h3>
+            <p>No DB write, no promotion update, no audit row creation, no ledger creation, no turnover creation, and no claim execution.</p>
+          </article>
+          <article class="field-card">
+            <h3>runtime not enabled</h3>
+            <p>Can mount route false, can enable runtime false, and no runtime credit action.</p>
+          </article>
+          <article class="field-card">
+            <h3>safety boundary</h3>
+            <p>No provider outbound and no production deploy are allowed in readiness only mode.</p>
+          </article>
+        </div>
+      </section>
+
       <section class="panel">
         <div class="panel-heading">
           <div>
