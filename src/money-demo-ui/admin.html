@@ -484,6 +484,40 @@
         </div>
       </section>
 
+      <section class="panel" data-promotion-admin-dry-run-runtime-preflight-marker="BACKOFFICE-PROMOTION-ADMIN-DRY-RUN-RUNTIME-PREFLIGHT-37">
+        <div class="panel-heading">
+          <div>
+            <h2>Promotion Admin Dry-run Runtime Preflight</h2>
+            <p>Runtime preflight readiness only. Not mounted, read-only/readiness-only, and write locked before any runtime enablement.</p>
+          </div>
+          <span class="mode-pill">runtime_preflight_readiness_only_not_mounted</span>
+        </div>
+        <div class="marker-list">
+          <p>promotion admin dry-run runtime preflight: runtime preflight readiness only, not mounted, read-only/readiness-only, validate-only, and write locked.</p>
+          <p>Runtime blockers remain explicit: no DB write, no promotion update, no audit row creation, no ledger creation, no turnover creation, no claim execution, no runtime credit action, no provider outbound, and no production deploy.</p>
+          <p>Runtime enablement stays disabled: no route mount, no Express mount, no controller runtime, no service runtime, no audit runtime, and no ledger runtime.</p>
+          <p>Readiness wrapper stays anchored to the audit ledger readiness phase and surfaces blocking reasons for any requested runtime checks.</p>
+        </div>
+        <div class="readiness-grid" aria-label="Promotion admin dry-run runtime preflight sections">
+          <article class="field-card">
+            <h3>runtime preflight readiness only</h3>
+            <p>Confirms the runtime preflight wrapper stays not mounted and readiness-only.</p>
+          </article>
+          <article class="field-card">
+            <h3>runtime blockers</h3>
+            <p>Shows no DB write, no provider outbound, and no production deploy for any requested runtime check.</p>
+          </article>
+          <article class="field-card">
+            <h3>disabled runtime</h3>
+            <p>Confirms route, controller, service, audit, and ledger runtime all remain disabled.</p>
+          </article>
+          <article class="field-card">
+            <h3>write locked</h3>
+            <p>Write locked preview keeps no promotion update, no audit row creation, no ledger creation, and no claim execution.</p>
+          </article>
+        </div>
+      </section>
+
       <section class="panel">
         <div class="panel-heading">
           <div>
