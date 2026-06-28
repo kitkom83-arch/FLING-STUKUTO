@@ -9,6 +9,8 @@
   const DEFAULT_MEMBER_PASSWORD = "localSmokeMember123";
   const DEFAULT_ADMIN_USERNAME = "local_money_flow_admin";
   const DEFAULT_ADMIN_PASSWORD = "local-demo-admin-code-not-real";
+  const PROMOTION_ADMIN_DRY_RUN_FINAL_READINESS_NOTE =
+    "promotion admin dry-run final readiness is final readiness record only, ready for separate runtime decision, runtime not approved in phase 41, separate runtime implementation phase required, route not mounted, runtime not enabled, can request runtime implementation false, can mount route false, can enable runtime false, write locked, no DB write, no promotion update, no audit row creation, no ledger creation, no turnover creation, no claim execution, no runtime credit action, no provider outbound, and no production deploy.";
   const MEMBER_CODE_REWARD_ROUTE_NOTE =
     "Backend-connected local-safe reward wallet surfaces use POST /api/code-center/redeem, GET /api/code-center/redeem-logs, GET /api/member/rewards, GET /api/member/rewards/summary, GET /api/member/rewards/history, and GET /api/member/wheel/my-rewards.";
   const ADMIN_MEMBER_READ_ONLY_ROUTE_NOTE =
