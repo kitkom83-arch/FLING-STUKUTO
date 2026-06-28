@@ -518,6 +518,40 @@
         </div>
       </section>
 
+      <section class="panel" data-promotion-admin-dry-run-mount-authorization-marker="BACKOFFICE-PROMOTION-ADMIN-DRY-RUN-MOUNT-AUTHORIZATION-38">
+        <div class="panel-heading">
+          <div>
+            <h2>Promotion Admin Dry-run Mount Authorization</h2>
+            <p>Mount authorization gate only. Mount not granted, mount denied by default, route not mounted, and runtime not enabled.</p>
+          </div>
+          <span class="mode-pill">mount_authorization_gate_only_not_granted</span>
+        </div>
+        <div class="marker-list">
+          <p>promotion admin dry-run mount authorization: mount authorization gate only, mount not granted, mount denied by default, route not mounted, and runtime not enabled.</p>
+          <p>Mount authorization remains blocked: can mount route false, can enable runtime false, controller runtime not enabled, service runtime not enabled, audit runtime not enabled, and ledger runtime not enabled.</p>
+          <p>Safety boundaries remain explicit: DB write not enabled, provider outbound not enabled, production deploy not enabled, no DB write, no promotion update, no audit row creation, no ledger creation, no turnover creation, no claim execution, and no runtime credit action.</p>
+          <p>The gate stays read-only and unmounted even when runtime checks or operator approval are requested.</p>
+        </div>
+        <div class="readiness-grid" aria-label="Promotion admin dry-run mount authorization sections">
+          <article class="field-card">
+            <h3>mount authorization gate only</h3>
+            <p>Confirms mount not granted and mount denied by default for the phase 38 boundary.</p>
+          </article>
+          <article class="field-card">
+            <h3>route and runtime disabled</h3>
+            <p>Shows route not mounted, runtime not enabled, can mount route false, and can enable runtime false.</p>
+          </article>
+          <article class="field-card">
+            <h3>runtime handlers not enabled</h3>
+            <p>Confirms controller runtime not enabled, service runtime not enabled, audit runtime not enabled, and ledger runtime not enabled.</p>
+          </article>
+          <article class="field-card">
+            <h3>safety lock</h3>
+            <p>Shows DB write not enabled, provider outbound not enabled, production deploy not enabled, no promotion update, no ledger creation, no turnover creation, and no claim execution.</p>
+          </article>
+        </div>
+      </section>
+
       <section class="panel">
         <div class="panel-heading">
           <div>
