@@ -741,6 +741,49 @@
           <button id="admin-promotion-dry-run-submit" type="button">Dry-run promotion</button>
         </div>
         <div id="admin-promotion-dry-run-state" class="notice">เลือก promotion จากรายการเพื่อ prefill form จากนั้นแก้ไขและกด Dry-run promotion เพื่อตรวจแบบ Dry-run เท่านั้น</div>
+        <section
+          class="panel"
+          data-promotion-admin-dry-run-client-preflight-guard-marker="BACKOFFICE-PROMOTION-ADMIN-DRY-RUN-CLIENT-PREFLIGHT-GUARD-51"
+          aria-label="Promotion admin dry-run client preflight guard"
+        >
+          <div class="panel-heading">
+            <div>
+              <h3>Client Preflight Guard</h3>
+              <p>ตรวจหน้า form ก่อนยิง API แบบ fail-closed และบอกชัดเจนเมื่อยังไม่ยิง API เพราะตรวจหน้า form ไม่ผ่าน</p>
+            </div>
+            <span class="mode-pill">client_fail_closed</span>
+          </div>
+          <div class="marker-list">
+            <p>BACKOFFICE-PROMOTION-ADMIN-DRY-RUN-CLIENT-PREFLIGHT-GUARD-51: client-side preflight guard checks selected promotion, promotionId, auditReason, numeric fields, min/max order, date order, risky field acknowledgement, and selected snapshot match before POST /api/admin/promotions/:id/dry-run.</p>
+            <p>ยังไม่ยิง API เพราะตรวจหน้า form ไม่ผ่าน</p>
+            <p>No create/update/delete promotion runtime. No claim/payment/wallet/provider call. No DB write.</p>
+          </div>
+          <section class="status-grid compact-grid" aria-label="Promotion admin dry-run client preflight summary">
+            <article class="status-card">
+              <span>Preflight Status</span>
+              <strong id="admin-promotion-dry-run-preflight-status">-</strong>
+            </article>
+            <article class="status-card">
+              <span>API Block</span>
+              <strong id="admin-promotion-dry-run-preflight-api-blocked">-</strong>
+            </article>
+            <article class="status-card">
+              <span>Selected Snapshot Match</span>
+              <strong id="admin-promotion-dry-run-preflight-selected-match">-</strong>
+            </article>
+          </section>
+          <div id="admin-promotion-dry-run-preflight-state" class="notice">Preflight preview will update from the current form before any API call.</div>
+          <div class="readiness-grid" aria-label="Promotion admin dry-run client preflight details">
+            <article class="field-card">
+              <h3>Preflight errors</h3>
+              <p id="admin-promotion-dry-run-preflight-errors">-</p>
+            </article>
+            <article class="field-card">
+              <h3>Risky fields</h3>
+              <p id="admin-promotion-dry-run-preflight-risky-fields">-</p>
+            </article>
+          </div>
+        </section>
         <section class="status-grid compact-grid" aria-label="Promotion admin dry-run response flags">
           <article class="status-card">
             <span>Route Mounted</span>

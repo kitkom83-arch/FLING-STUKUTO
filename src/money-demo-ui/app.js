@@ -17,6 +17,16 @@
     "promotion admin dry-run staging route mount is staging/local-safe dry-run only, POST /api/admin/promotions/:id/dry-run, route mounted for dry-run only, no DB write, no promotion update, no audit row creation, no ledger creation, no turnover creation, no claim execution, no runtime credit action, no provider outbound, no production deploy, write locked, and production disabled.";
   const PROMOTION_ADMIN_DRY_RUN_UI_ACTION_WIRING_NOTE =
     "promotion admin dry-run UI action wiring uses POST /api/admin/promotions/:id/dry-run through the existing admin auth flow only, dry-run only, validate-only, write locked, Dry-run เท่านั้น, ไม่มีการบันทึกจริง, ไม่แตะ wallet/claim/ledger/provider, no DB write, no wallet write, no promotion update, no audit row creation, no ledger creation, no turnover creation, no claim execution, no provider outbound, no production live mode, no production deploy, and fail-closed on error.";
+  const PROMOTION_ADMIN_DRY_RUN_CLIENT_PREFLIGHT_BLOCK_NOTE =
+    "ยังไม่ยิง API เพราะตรวจหน้า form ไม่ผ่าน";
+  const PROMOTION_ADMIN_DRY_RUN_CLIENT_PREFLIGHT_RISKY_FIELDS = [
+    "bonusValue",
+    "turnoverMultiplier",
+    "maxWithdraw",
+    "minDeposit",
+    "maxDeposit",
+    "status",
+  ];
   const MEMBER_CODE_REWARD_ROUTE_NOTE =
     "Backend-connected local-safe reward wallet surfaces use POST /api/code-center/redeem, GET /api/code-center/redeem-logs, GET /api/member/rewards, GET /api/member/rewards/summary, GET /api/member/rewards/history, and GET /api/member/wheel/my-rewards.";
   const ADMIN_MEMBER_READ_ONLY_ROUTE_NOTE =
@@ -1195,6 +1205,12 @@
       promotionDryRunValidationErrors: document.getElementById("admin-promotion-dry-run-validation-errors"),
       promotionDryRunDiffPreview: document.getElementById("admin-promotion-dry-run-diff-preview"),
       promotionDryRunWarningNotes: document.getElementById("admin-promotion-dry-run-warning-notes"),
+      promotionDryRunPreflightStatus: document.getElementById("admin-promotion-dry-run-preflight-status"),
+      promotionDryRunPreflightApiBlocked: document.getElementById("admin-promotion-dry-run-preflight-api-blocked"),
+      promotionDryRunPreflightSelectedMatch: document.getElementById("admin-promotion-dry-run-preflight-selected-match"),
+      promotionDryRunPreflightState: document.getElementById("admin-promotion-dry-run-preflight-state"),
+      promotionDryRunPreflightErrors: document.getElementById("admin-promotion-dry-run-preflight-errors"),
+      promotionDryRunPreflightRiskyFields: document.getElementById("admin-promotion-dry-run-preflight-risky-fields"),
       promotionDryRunReviewPacketState: document.getElementById("admin-promotion-dry-run-review-packet-state"),
       promotionDryRunReviewPacketStatus: document.getElementById("admin-promotion-dry-run-review-packet-status"),
       promotionDryRunReviewPacketPromotionId: document.getElementById("admin-promotion-dry-run-review-packet-promotion-id"),
@@ -1243,7 +1259,7 @@
 
     function setBusy(nextBusy) {
       state.busy = nextBusy;
-      [els.login, els.refresh, els.clear, els.promotionDryRunReviewPacketCopy].forEach(function (button) {
+      [els.login, els.refresh, els.clear, els.promotionDryRunSubmit, els.promotionDryRunReviewPacketCopy].forEach(function (button) {
         if (button) button.disabled = nextBusy;
       });
       document.querySelectorAll(".inline-actions button").forEach(function (button) {
@@ -1500,6 +1516,16 @@
         });
       }
 
+      if (error && error.code === "PROMOTION_DRY_RUN_CLIENT_PREFLIGHT_FAILED") {
+        return Object.assign(base, {
+          status: "fail-closed",
+          reason: "client_preflight_failed",
+          validationStatus: "fail-closed",
+          validationErrors: Array.isArray(error.errors) && error.errors.length ? error.errors.slice() : base.validationErrors,
+          warningNotes: [PROMOTION_ADMIN_DRY_RUN_CLIENT_PREFLIGHT_BLOCK_NOTE],
+        });
+      }
+
       const validationStatus = result ? "validated" : "fail-closed";
 
       return Object.assign(base, {
@@ -1554,7 +1580,8 @@
       const error = state.promotionDryRunError && typeof state.promotionDryRunError === "object" ? state.promotionDryRunError : null;
       const selectedRow = state.promotionDryRunPromotionRow || null;
       const selectedLabel = selectedRow ? promotionDryRunFieldSummary(selectedRow) : state.promotionDryRunPromotionLabel || "-";
-      const previewForm = selectedRow ? readPromotionDryRunForm() : null;
+      const previewForm = readPromotionDryRunForm();
+      const preflight = buildPromotionDryRunClientPreflight(previewForm);
       const source = result || error;
       const previewDiff = source && Array.isArray(source.diff) && source.diff.length
         ? createListText(source.diff, "no diff")
@@ -1563,13 +1590,15 @@
           : promotionDryRunPreviewText(previewForm);
       const previewWarnings = source
         ? createListText(source.warnings, "no warnings")
-        : selectedRow
-          ? "Row selected. Edit the form to review the before/after diff before dry-run submit."
-          : "-";
+        : !preflight.ok
+          ? PROMOTION_ADMIN_DRY_RUN_CLIENT_PREFLIGHT_BLOCK_NOTE
+          : selectedRow
+            ? "Row selected. Edit the form to review the before/after diff before dry-run submit."
+            : "-";
       const previewErrors = source
         ? createListText(source.errors, "no validation errors")
-        : previewForm && Array.isArray(previewForm.errors) && previewForm.errors.length
-          ? createListText(previewForm.errors, "no validation errors")
+        : Array.isArray(preflight.errors) && preflight.errors.length
+          ? createListText(preflight.errors, "no validation errors")
           : "-";
       const rows = source
         ? [
@@ -1605,7 +1634,7 @@
       );
       setStatus(
         els.promotionDryRunValidationStatus,
-        result ? "validated" : error ? "fail-closed" : selectedRow ? "preview" : "-"
+        result ? "validated" : !preflight.ok || error ? "fail-closed" : selectedRow ? "preview" : "-"
       );
       setStatus(
         els.promotionDryRunValidationErrors,
@@ -1619,6 +1648,17 @@
         els.promotionDryRunWarningNotes,
         previewWarnings
       );
+      setStatus(els.promotionDryRunPreflightStatus, result ? "passed" : preflight.ok ? "ready" : "fail-closed");
+      setStatus(els.promotionDryRunPreflightApiBlocked, String(result ? false : preflight.apiBlocked));
+      setStatus(els.promotionDryRunPreflightSelectedMatch, String(preflight.selectedSnapshotMatch));
+      setStatus(
+        els.promotionDryRunPreflightErrors,
+        preflight.errors.length ? preflight.errors.join(" | ") : "no preflight errors"
+      );
+      setStatus(
+        els.promotionDryRunPreflightRiskyFields,
+        preflight.riskyFields.length ? preflight.riskyFields.join(", ") : "none"
+      );
 
       if (els.promotionDryRunSafetyMessage) {
         els.promotionDryRunSafetyMessage.textContent = result
@@ -1628,9 +1668,21 @@
             : "Dry-run เท่านั้น ไม่มีการบันทึกจริง ไม่แตะ wallet/claim/ledger/provider";
       }
 
+      if (els.promotionDryRunPreflightState) {
+        els.promotionDryRunPreflightState.textContent = result
+          ? "Client preflight passed before POST /api/admin/promotions/:id/dry-run. Review packet remains local-only."
+          : preflight.ok
+            ? "Client preflight passed. POST /api/admin/promotions/:id/dry-run stays dry-run only and write locked."
+            : `${PROMOTION_ADMIN_DRY_RUN_CLIENT_PREFLIGHT_BLOCK_NOTE}.`;
+      }
+
       if (els.promotionDryRunState) {
         if (result) {
           els.promotionDryRunState.textContent = `Dry-run response loaded for ${selectedLabel}. ${PROMOTION_ADMIN_DRY_RUN_UI_ACTION_WIRING_NOTE}`;
+        } else if (error && error.code === "PROMOTION_DRY_RUN_CLIENT_PREFLIGHT_FAILED") {
+          els.promotionDryRunState.textContent = `${safeText(error.message, "Promotion dry-run failed.")} Fail-closed. ${PROMOTION_ADMIN_DRY_RUN_UI_ACTION_WIRING_NOTE}`;
+        } else if (!preflight.ok) {
+          els.promotionDryRunState.textContent = `${PROMOTION_ADMIN_DRY_RUN_CLIENT_PREFLIGHT_BLOCK_NOTE}. ${PROMOTION_ADMIN_DRY_RUN_UI_ACTION_WIRING_NOTE}`;
         } else if (error) {
           els.promotionDryRunState.textContent = `${safeText(error.message, "Promotion dry-run failed.")} Fail-closed. ${PROMOTION_ADMIN_DRY_RUN_UI_ACTION_WIRING_NOTE}`;
         } else if (state.token) {
@@ -1752,7 +1804,8 @@
     }
 
     function promotionDryRunTextValue(element) {
-      return safeText(element && element.value, "").trim();
+      if (!element || element.value === null || element.value === undefined) return "";
+      return String(element.value).trim();
     }
 
     function promotionDryRunNumberValue(element, fieldName, errors) {
@@ -1838,6 +1891,26 @@
     function promotionDryRunPreviewText(form) {
       if (!form || !form.promotionRow) return "Select a promotion row to preview before/after diff.";
       return promotionDryRunDiffText(form.promotionRow, form.after);
+    }
+
+    function promotionDryRunChangedFields(beforeRow, afterRow) {
+      const before = promotionDryRunRowDraft(beforeRow);
+      const after = promotionDryRunRowDraft(afterRow);
+      return [
+        "title",
+        "type",
+        "status",
+        "minDeposit",
+        "maxDeposit",
+        "bonusType",
+        "bonusValue",
+        "turnoverMultiplier",
+        "maxWithdraw",
+        "startAt",
+        "endAt",
+      ].filter(function (field) {
+        return before[field] !== after[field];
+      });
     }
 
     function promotionDryRunSelectedRow() {
@@ -1943,16 +2016,54 @@
       };
     }
 
+    function buildPromotionDryRunClientPreflight(form) {
+      const previewForm = form || readPromotionDryRunForm();
+      const errors = Array.isArray(previewForm.errors) ? previewForm.errors.slice() : [];
+      const selectedSnapshot = state.promotionDryRunPromotionRow || null;
+      const selectedSnapshotId = safeText(selectedSnapshot && selectedSnapshot.id, "").trim();
+      const promotionRowId = safeText(previewForm.promotionRow && previewForm.promotionRow.id, "").trim();
+      const selectedSnapshotMatch = selectedSnapshotId
+        ? previewForm.promotionId === selectedSnapshotId && promotionRowId === selectedSnapshotId
+        : Boolean(previewForm.promotionId) && promotionRowId === previewForm.promotionId;
+      const riskyFields = promotionDryRunChangedFields(previewForm.before, previewForm.after).filter(function (field) {
+        return PROMOTION_ADMIN_DRY_RUN_CLIENT_PREFLIGHT_RISKY_FIELDS.includes(field);
+      });
+
+      if (!previewForm.promotionRow) {
+        errors.push("selected promotion is required before dry-run submit");
+      }
+      if (selectedSnapshotId && !selectedSnapshotMatch) {
+        errors.push("promotionId must match the currently selected promotion snapshot");
+      }
+      if (riskyFields.length && previewForm.riskAcknowledgement !== true) {
+        errors.push(`riskAcknowledgement must be true when risky fields change: ${riskyFields.join(", ")}`);
+      }
+
+      return {
+        ok: errors.length === 0,
+        errors: Array.from(new Set(errors)),
+        riskyFields: riskyFields,
+        selectedSnapshotMatch: selectedSnapshotMatch,
+        apiBlocked: errors.length > 0,
+      };
+    }
+
     function buildPromotionDryRunPayloadFromForm() {
       const form = readPromotionDryRunForm();
-      if (!form.ok) {
+      const preflight = buildPromotionDryRunClientPreflight(form);
+      if (!preflight.ok) {
         return {
           ok: false,
+          promotionId: form.promotionId || null,
+          promotionLabel: form.promotionLabel || "",
+          promotionRow: form.promotionRow || null,
           error: {
-            code: "PROMOTION_DRY_RUN_FORM_VALIDATION_FAILED",
-            message: "Promotion dry-run form validation failed.",
-            errors: form.errors.slice(),
+            code: "PROMOTION_DRY_RUN_CLIENT_PREFLIGHT_FAILED",
+            message: `Promotion dry-run client preflight failed. ${PROMOTION_ADMIN_DRY_RUN_CLIENT_PREFLIGHT_BLOCK_NOTE}.`,
+            errors: preflight.errors.slice(),
+            warnings: [PROMOTION_ADMIN_DRY_RUN_CLIENT_PREFLIGHT_BLOCK_NOTE],
             diffPreview: form.diffPreview,
+            validator: "buildPromotionDryRunClientPreflight",
             routeMounted: false,
             apiCallEnabled: false,
             dryRunOnly: true,
@@ -1968,6 +2079,10 @@
             providerOutboundEnabled: false,
             productionLiveEnabled: false,
             productionDeployEnabled: false,
+            preflightStatus: "fail-closed",
+            preflightApiBlocked: true,
+            selectedSnapshotMatch: preflight.selectedSnapshotMatch,
+            riskyFields: preflight.riskyFields.slice(),
           },
         };
       }
@@ -2492,6 +2607,12 @@
       .filter(Boolean)
       .forEach(function (input) {
         const rerender = function () {
+          if (
+            state.promotionDryRunError &&
+            state.promotionDryRunError.code === "PROMOTION_DRY_RUN_CLIENT_PREFLIGHT_FAILED"
+          ) {
+            state.promotionDryRunError = null;
+          }
           renderPromotionDryRunResult();
         };
         input.addEventListener("input", rerender);

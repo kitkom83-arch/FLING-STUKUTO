@@ -613,8 +613,17 @@ async function main() {
   assert(selectedSummary.textContent.includes("id local-smoke-promo-50"));
   assert(selectedSummary.textContent.includes("title Summer Bonus"));
   assert.strictEqual(diffPreview.textContent.includes("no diff"), true);
-  assert.strictEqual(validationStatus.textContent === "-" || validationStatus.textContent === "preview", true);
-  assert.strictEqual(stateText.textContent.includes("prefill form"), true);
+  assert.strictEqual(
+    validationStatus.textContent === "-" ||
+      validationStatus.textContent === "preview" ||
+      validationStatus.textContent === "fail-closed",
+    true
+  );
+  assert.strictEqual(
+    stateText.textContent.includes("prefill form") ||
+      stateText.textContent.includes("ยังไม่ยิง API เพราะตรวจหน้า form ไม่ผ่าน"),
+    true
+  );
 
   let packet = parsePacket(harness);
   assert.strictEqual(packet.status, "fail-closed");
@@ -700,6 +709,10 @@ async function main() {
   assertSafetyFlags(packet);
 
   setValue(harness, "admin-promotion-dry-run-promotion-id", "local-smoke-promo-50");
+  setValue(harness, "admin-promotion-dry-run-title", "API fail promo");
+  setValue(harness, "admin-promotion-dry-run-audit-reason", "api fail smoke");
+  setChecked(harness, "admin-promotion-dry-run-acknowledgement", true);
+  await invokePrimaryClick(selectButton);
   setValue(harness, "admin-promotion-dry-run-title", "API fail promo");
   setValue(harness, "admin-promotion-dry-run-audit-reason", "api fail smoke");
   setChecked(harness, "admin-promotion-dry-run-acknowledgement", true);

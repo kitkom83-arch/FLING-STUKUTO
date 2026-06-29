@@ -526,8 +526,17 @@ async function main() {
   assert(selectedSummary.textContent.includes("id local-smoke-promo-49"));
   assert(selectedSummary.textContent.includes("title Summer Bonus"));
   assert.strictEqual(diffPreview.textContent.includes("no diff"), true);
-  assert.strictEqual(validationStatus.textContent === "-" || validationStatus.textContent === "preview", true);
-  assert.strictEqual(stateText.textContent.includes("prefill form"), true);
+  assert.strictEqual(
+    validationStatus.textContent === "-" ||
+      validationStatus.textContent === "preview" ||
+      validationStatus.textContent === "fail-closed",
+    true
+  );
+  assert.strictEqual(
+    stateText.textContent.includes("prefill form") ||
+      stateText.textContent.includes("ยังไม่ยิง API เพราะตรวจหน้า form ไม่ผ่าน"),
+    true
+  );
 
   setValue(harness, "admin-promotion-dry-run-title", "Summer Bonus Prefill UX");
   setValue(harness, "admin-promotion-dry-run-bonus-value", "300");
@@ -581,6 +590,10 @@ async function main() {
   assert.strictEqual(resultCode.textContent.includes("OK"), false);
 
   setValue(harness, "admin-promotion-dry-run-promotion-id", "local-smoke-promo-49");
+  setValue(harness, "admin-promotion-dry-run-title", "API fail promo");
+  setValue(harness, "admin-promotion-dry-run-audit-reason", "api fail smoke");
+  setChecked(harness, "admin-promotion-dry-run-acknowledgement", true);
+  await invokePrimaryClick(selectButton);
   setValue(harness, "admin-promotion-dry-run-title", "API fail promo");
   setValue(harness, "admin-promotion-dry-run-audit-reason", "api fail smoke");
   setChecked(harness, "admin-promotion-dry-run-acknowledgement", true);
