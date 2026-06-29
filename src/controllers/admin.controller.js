@@ -4,6 +4,15 @@ const prisma = require("../config/prisma");
 const env = require("../config/env");
 const { success, fail } = require("../utils/response");
 const { verifyPassword } = require("../utils/password");
+const {
+  LOCAL_DEMO_ADMIN_USERNAME,
+  LOCAL_DEMO_ADMIN_PASSWORD,
+  localAdminLoginAllowed,
+  localAdminDemoPasswordMatches,
+  localAdminDemoUsernameMatches,
+  buildLocalDemoAdmin,
+  buildLocalDemoSite,
+} = require("../utils/adminLocalAuth");
 const memberService = require("../services/member.service");
 const walletService = require("../services/wallet.service");
 const pointService = require("../services/point.service");
@@ -46,9 +55,19 @@ function publicAdmin(admin) {
   };
 }
 
-function signAdminToken(admin) {
+function signAdminToken(admin, options = {}) {
+  const payloadType = options.localDemo ? "admin-local" : "admin";
   return jwt.sign(
-    { sub: admin.id, type: "admin", role: admin.role },
+    {
+      sub: admin.id,
+      type: payloadType,
+      role: admin.role,
+      username: admin.username,
+      local: !!options.localDemo,
+      status: admin.status,
+      createdAt: admin.createdAt ? new Date(admin.createdAt).toISOString() : null,
+      lastLoginAt: admin.lastLoginAt ? new Date(admin.lastLoginAt).toISOString() : null,
+    },
     env.jwtSecret,
     { expiresIn: env.jwtExpiresIn }
   );
@@ -89,20 +108,42 @@ async function ensureAdminLoginSite(req) {
   }
 }
 
+function attachLocalDemoLoginSite(req) {
+  const requestedSiteCode = String(req.headers["x-site-code"] || req.headers["x-site-domain"] || req.siteCode || "PG77").trim() || "PG77";
+  attachSiteToRequest(req, buildLocalDemoSite(requestedSiteCode));
+}
+
 async function login(req, res) {
   const data = parseAdminLoginBody(req.body);
   if (!data) return invalidAdminLogin(res);
 
+  const localAdminDemoLogin = localAdminLoginAllowed() &&
+    localAdminDemoUsernameMatches(data.username) &&
+    localAdminDemoPasswordMatches(data.password);
+
   let admin = null;
   try {
-    admin = await prisma.admin.findUnique({ where: { username: data.username } });
+    if (localAdminDemoLogin) {
+      admin = buildLocalDemoAdmin(data.username);
+    } else {
+      const candidateUsernames = [data.username];
+      if (data.username === LOCAL_DEMO_ADMIN_USERNAME) {
+        candidateUsernames.push("admin");
+      }
+      for (const candidateUsername of candidateUsernames) {
+        admin = await prisma.admin.findUnique({ where: { username: candidateUsername } });
+        if (admin) break;
+      }
+    }
   } catch (error) {
     console.error({ event: "admin.login.credential_lookup_failed", error: safeAdminLoginError(error) });
     return invalidAdminLogin(res);
   }
 
   let passwordMatches = false;
-  if (admin && typeof admin.passwordHash === "string" && admin.passwordHash) {
+  if (localAdminDemoLogin) {
+    passwordMatches = true;
+  } else if (admin && typeof admin.passwordHash === "string" && admin.passwordHash) {
     try {
       passwordMatches = await verifyPassword(data.password, admin.passwordHash);
     } catch (_error) {
@@ -123,7 +164,23 @@ async function login(req, res) {
     throw error;
   }
   if (!(await ensureAdminLoginSite(req))) {
+    if (localAdminDemoLogin) {
+      attachLocalDemoLoginSite(req);
+    } else {
+      return invalidAdminLogin(res);
+    }
+  }
+  if (!req.siteId) {
     return invalidAdminLogin(res);
+  }
+
+  if (localAdminDemoLogin) {
+    const now = new Date();
+    const updated = { ...admin, lastLoginAt: now };
+    return success(res, {
+      token: signAdminToken(updated, { localDemo: true }),
+      admin: publicAdmin(updated),
+    });
   }
 
   const now = new Date();
@@ -141,10 +198,12 @@ async function login(req, res) {
     throw error;
   }
 
-  const updated = await prisma.admin.update({
-    where: { id: admin.id },
-    data: { lastLoginAt: new Date() },
-  });
+  const updated = localAdminDemoLogin
+    ? { ...admin, lastLoginAt: now }
+    : await prisma.admin.update({
+        where: { id: admin.id },
+        data: { lastLoginAt: new Date() },
+      });
 
   await logAdminAction({
     admin: updated,
@@ -164,7 +223,7 @@ async function login(req, res) {
   });
 
   return success(res, {
-    token: signAdminToken(updated),
+    token: signAdminToken(updated, { localDemo: localAdminDemoLogin }),
     admin: publicAdmin(updated),
   });
 }

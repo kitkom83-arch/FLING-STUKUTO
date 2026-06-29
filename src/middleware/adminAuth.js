@@ -2,6 +2,11 @@ const jwt = require("jsonwebtoken");
 const env = require("../config/env");
 const prisma = require("../config/prisma");
 const { fail } = require("../utils/response");
+const {
+  localAdminLoginAllowed,
+  isLocalDemoAdminTokenAllowed,
+  buildLocalDemoAdminFromToken,
+} = require("../utils/adminLocalAuth");
 
 async function adminAuth(req, res, next) {
   try {
@@ -12,6 +17,17 @@ async function adminAuth(req, res, next) {
     }
 
     const payload = jwt.verify(token, env.jwtSecret);
+    if (isLocalDemoAdminTokenAllowed(payload)) {
+      const admin = buildLocalDemoAdminFromToken(payload);
+      if (!admin) return fail(res, "Admin authentication required", 401);
+      req.admin = admin;
+      return next();
+    }
+
+    if (!localAdminLoginAllowed() && payload.type === "admin-local") {
+      return fail(res, "Admin authentication required", 401);
+    }
+
     if (payload.type !== "admin") {
       return fail(res, "Admin authentication required", 401);
     }

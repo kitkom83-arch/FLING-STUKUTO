@@ -590,6 +590,11 @@ async function main() {
 
   await invokePrimaryClick(adminLogin);
   await waitFor(() => adminStatus.textContent.includes("Local admin login successful."), "admin login");
+  const adminLoginCall = harness.fetchCalls.find((call) => call.pathname === "/api/admin/auth/login");
+  assert(adminLoginCall, "admin login request missing");
+  assert.strictEqual(adminLoginCall.method, "POST");
+  assert.strictEqual(adminLoginCall.body.username, "local_money_flow_admin");
+  assert.strictEqual(adminLoginCall.body.password, "local-demo-admin-code-not-real");
   await waitFor(() => promotionRows.children.length > 0, "promotion rows");
 
   const firstRow = promotionRows.children[0];

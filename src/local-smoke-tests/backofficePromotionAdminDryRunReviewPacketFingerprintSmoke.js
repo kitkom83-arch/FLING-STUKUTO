@@ -520,6 +520,14 @@ function setValidForm(harness) {
   setChecked(harness, "admin-promotion-dry-run-acknowledgement", true);
 }
 
+function assertLocalAdminLoginRequest(fetchCalls, label) {
+  const loginCall = fetchCalls.find((call) => call.pathname === "/api/admin/auth/login");
+  assert(loginCall, `${label} login request missing`);
+  assert.strictEqual(loginCall.method, "POST", `${label} login request must use POST`);
+  assert.strictEqual(loginCall.body.username, "local_money_flow_admin", `${label} login username must stay local demo only`);
+  assert.strictEqual(loginCall.body.password, "local-demo-admin-code-not-real", `${label} login password must stay local demo only`);
+}
+
 async function main() {
   const adminHtml = read("src/money-demo-ui/admin.html");
   const appJs = read("src/money-demo-ui/app.js");
@@ -617,6 +625,7 @@ async function main() {
 
   await invokePrimaryClick(adminLogin);
   await waitFor(() => adminStatus.textContent.includes("Local admin login successful."), "admin login");
+  assertLocalAdminLoginRequest(harness.fetchCalls, "admin");
   await waitFor(() => promotionRows.children.length > 1, "promotion rows");
 
   const firstRow = promotionRows.children[0];
@@ -766,6 +775,7 @@ async function main() {
   const noSelectionFingerprintStatus = getElement(noSelectionHarness, "admin-promotion-dry-run-review-packet-fingerprint-status");
   await invokePrimaryClick(noSelectionLogin);
   await waitFor(() => noSelectionStatus.textContent.includes("Local admin login successful."), "no-selection login");
+  assertLocalAdminLoginRequest(noSelectionHarness.fetchCalls, "no-selection");
   const noSelectionCallsBefore = dryRunCallCount(noSelectionHarness.fetchCalls);
   await invokePrimaryClick(noSelectionSubmit);
   await waitFor(() => noSelectionReviewPacketState.textContent.includes("fail-closed"), "no selection fail-closed");
@@ -793,6 +803,7 @@ async function main() {
   const preflightPacketErrors = getElement(preflightHarness, "admin-promotion-dry-run-preflight-errors");
   await invokePrimaryClick(preflightLogin);
   await waitFor(() => preflightStatus.textContent.includes("Local admin login successful."), "preflight login");
+  assertLocalAdminLoginRequest(preflightHarness.fetchCalls, "preflight");
   await waitFor(() => preflightRows.children.length > 0, "preflight rows");
   await invokePrimaryClick(findButtonByText(preflightRows.children[0], "Select for dry-run"));
   await waitFor(() => getElement(preflightHarness, "admin-promotion-dry-run-promotion-id").value === "local-smoke-promo-52-a", "preflight prefill");
