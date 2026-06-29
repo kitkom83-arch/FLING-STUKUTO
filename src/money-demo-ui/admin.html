@@ -909,9 +909,12 @@
             <p>Review packet is generated only from the selected/original promotion snapshot, current form payload, and dry-run response.</p>
             <p>Copy/export is local-only JSON text. It does not call another API and does not save, apply, confirm, create, update, or delete promotions.</p>
             <p>Fail-closed when no promotion is selected, no dry-run has completed, validation fails, or the dry-run API fails.</p>
+            <p>When the form changes after a successful dry-run, the packet becomes stale and copy/export must fail closed until a new dry-run completes.</p>
+            <p>BACKOFFICE-PROMOTION-ADMIN-DRY-RUN-STALE-PACKET-GUARD-52 keeps stale review packets fail-closed until a fresh dry-run succeeds.</p>
             <p>No DB write, no promotion update, no audit row creation, no ledger creation, no turnover creation, no claim execution, no wallet mutation, no provider outbound, no production live mode, and no production deploy.</p>
           </div>
           <div id="admin-promotion-dry-run-review-packet-state" class="notice">Select a promotion and complete dry-run before a success review packet is available.</div>
+          <div id="admin-promotion-dry-run-review-packet-freshness-state" class="notice">Packet freshness is fail-closed until a dry-run succeeds.</div>
           <section class="status-grid compact-grid" aria-label="Promotion dry-run review packet summary">
             <article class="status-card">
               <span>Packet Status</span>
@@ -928,6 +931,10 @@
             <article class="status-card">
               <span>Safety</span>
               <strong id="admin-promotion-dry-run-review-packet-safety">dry_run_only</strong>
+            </article>
+            <article class="status-card">
+              <span>Freshness</span>
+              <strong id="admin-promotion-dry-run-review-packet-freshness">fail-closed</strong>
             </article>
           </section>
           <div class="readiness-grid" aria-label="Promotion dry-run review packet details">
