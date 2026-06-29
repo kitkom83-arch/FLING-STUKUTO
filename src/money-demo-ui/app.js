@@ -19,6 +19,8 @@
     "promotion admin dry-run UI action wiring uses POST /api/admin/promotions/:id/dry-run through the existing admin auth flow only, dry-run only, validate-only, write locked, Dry-run เท่านั้น, ไม่มีการบันทึกจริง, ไม่แตะ wallet/claim/ledger/provider, no DB write, no wallet write, no promotion update, no audit row creation, no ledger creation, no turnover creation, no claim execution, no provider outbound, no production live mode, no production deploy, and fail-closed on error.";
   const PROMOTION_ADMIN_DRY_RUN_CLIENT_PREFLIGHT_BLOCK_NOTE =
     "ยังไม่ยิง API เพราะตรวจหน้า form ไม่ผ่าน";
+  const PROMOTION_DRY_RUN_REVIEW_PACKET_FINGERPRINT_SOURCE_VERSION =
+    "promotion-dry-run-review-packet-v1";
   const PROMOTION_ADMIN_DRY_RUN_CLIENT_PREFLIGHT_RISKY_FIELDS = [
     "bonusValue",
     "turnoverMultiplier",
@@ -128,6 +130,52 @@
     } catch (_error) {
       return fallback;
     }
+  }
+
+  function normalizeForFingerprint(value) {
+    if (value === null || value === undefined) return null;
+    if (value instanceof Date) return value.toISOString();
+    if (Array.isArray(value)) {
+      return value.map(function (item) {
+        return normalizeForFingerprint(item);
+      });
+    }
+    if (typeof value === "object") {
+      const normalized = {};
+      Object.keys(value)
+        .sort()
+        .forEach(function (key) {
+          const nextValue = normalizeForFingerprint(value[key]);
+          if (nextValue !== undefined) {
+            normalized[key] = nextValue;
+          }
+        });
+      return normalized;
+    }
+    if (typeof value === "number" && !Number.isFinite(value)) return null;
+    if (typeof value === "function" || typeof value === "symbol") return undefined;
+    return value;
+  }
+
+  function stableStringify(value) {
+    return JSON.stringify(normalizeForFingerprint(value));
+  }
+
+  function fingerprintHash(text) {
+    const input = String(text || "");
+    let hash = 0x811c9dc5;
+    for (let index = 0; index < input.length; index += 1) {
+      hash ^= input.charCodeAt(index);
+      hash = Math.imul(hash, 0x01000193);
+    }
+    return (hash >>> 0).toString(16).padStart(8, "0");
+  }
+
+  function buildLocalFingerprint(source, salt) {
+    const normalized = stableStringify(source);
+    const left = fingerprintHash(`${salt || "fingerprint"}|${normalized}`);
+    const right = fingerprintHash(`${normalized}|${salt || "fingerprint"}`);
+    return `${left}${right}`;
   }
 
   function storageKey(name) {
@@ -1218,6 +1266,13 @@
       promotionDryRunReviewPacketGeneratedAt: document.getElementById("admin-promotion-dry-run-review-packet-generated-at"),
       promotionDryRunReviewPacketSafety: document.getElementById("admin-promotion-dry-run-review-packet-safety"),
       promotionDryRunReviewPacketFreshness: document.getElementById("admin-promotion-dry-run-review-packet-freshness"),
+      promotionDryRunReviewPacketFingerprintState: document.getElementById("admin-promotion-dry-run-review-packet-fingerprint-state"),
+      promotionDryRunReviewPacketFingerprintStatus: document.getElementById("admin-promotion-dry-run-review-packet-fingerprint-status"),
+      promotionDryRunReviewPacketFingerprint: document.getElementById("admin-promotion-dry-run-review-packet-fingerprint"),
+      promotionDryRunReviewPacketPayloadFingerprint: document.getElementById("admin-promotion-dry-run-review-packet-payload-fingerprint"),
+      promotionDryRunReviewPacketDiffFingerprint: document.getElementById("admin-promotion-dry-run-review-packet-diff-fingerprint"),
+      promotionDryRunReviewPacketSafetyFingerprint: document.getElementById("admin-promotion-dry-run-review-packet-safety-fingerprint"),
+      promotionDryRunReviewPacketFingerprintSourceVersion: document.getElementById("admin-promotion-dry-run-review-packet-fingerprint-source-version"),
       promotionDryRunReviewPacketChangedFields: document.getElementById("admin-promotion-dry-run-review-packet-changed-fields"),
       promotionDryRunReviewPacketUnchangedFields: document.getElementById("admin-promotion-dry-run-review-packet-unchanged-fields"),
       promotionDryRunReviewPacketRiskyFields: document.getElementById("admin-promotion-dry-run-review-packet-risky-fields"),
@@ -1528,6 +1583,87 @@
       };
     }
 
+    function promotionDryRunReviewPacketFingerprints(packet) {
+      const currentPacket = packet && typeof packet === "object" ? packet : {};
+      const isFresh = currentPacket.status === "ready_for_review" && currentPacket.freshness === "fresh";
+      const isStale = currentPacket.reason === "stale_review_packet" && currentPacket.freshness === "stale";
+
+      if (!isFresh && !isStale) {
+        return {
+          fingerprintSourceVersion: PROMOTION_DRY_RUN_REVIEW_PACKET_FINGERPRINT_SOURCE_VERSION,
+          fingerprintStatus: "unavailable",
+          packetFingerprint: null,
+          payloadFingerprint: null,
+          diffFingerprint: null,
+          safetyFingerprint: null,
+        };
+      }
+
+      const fingerprintSourceVersion = PROMOTION_DRY_RUN_REVIEW_PACKET_FINGERPRINT_SOURCE_VERSION;
+      const payloadFingerprint = buildLocalFingerprint(
+        {
+          before: currentPacket.formPayload && currentPacket.formPayload.before,
+          after: currentPacket.formPayload && currentPacket.formPayload.after,
+          auditReason: currentPacket.formPayload && currentPacket.formPayload.auditReason,
+          riskAcknowledgement: currentPacket.formPayload && currentPacket.formPayload.riskAcknowledgement,
+        },
+        `${fingerprintSourceVersion}:payload`
+      );
+      const diffFingerprint = buildLocalFingerprint(
+        {
+          beforeAfterDiff: currentPacket.beforeAfterDiff,
+          changedFields: currentPacket.changedFields,
+          unchangedFields: currentPacket.unchangedFields,
+          riskyFields: currentPacket.riskyFields,
+          validationErrors: currentPacket.validationErrors,
+          warningNotes: currentPacket.warningNotes,
+          validationStatus: currentPacket.validationStatus,
+        },
+        `${fingerprintSourceVersion}:diff`
+      );
+      const safetyFingerprint = buildLocalFingerprint(
+        {
+          safetyFlags: currentPacket.safetyFlags,
+          safetyConfirmation: currentPacket.safetyConfirmation,
+        },
+        `${fingerprintSourceVersion}:safety`
+      );
+      const packetFingerprint = buildLocalFingerprint(
+        {
+          fingerprintSourceVersion: fingerprintSourceVersion,
+          promotionId: currentPacket.promotionId,
+          status: currentPacket.status,
+          reason: currentPacket.reason,
+          freshness: currentPacket.freshness,
+          isStale: currentPacket.isStale,
+          validationStatus: currentPacket.validationStatus,
+          payloadFingerprint: payloadFingerprint,
+          diffFingerprint: diffFingerprint,
+          safetyFingerprint: safetyFingerprint,
+          originalSnapshot: currentPacket.originalSnapshot,
+          formPayload: currentPacket.formPayload,
+          beforeAfterDiff: currentPacket.beforeAfterDiff,
+          changedFields: currentPacket.changedFields,
+          unchangedFields: currentPacket.unchangedFields,
+          riskyFields: currentPacket.riskyFields,
+          validationErrors: currentPacket.validationErrors,
+          warningNotes: currentPacket.warningNotes,
+          safetyFlags: currentPacket.safetyFlags,
+          safetyConfirmation: currentPacket.safetyConfirmation,
+        },
+        `${fingerprintSourceVersion}:packet`
+      );
+
+      return {
+        fingerprintSourceVersion: fingerprintSourceVersion,
+        fingerprintStatus: isFresh ? "fresh" : "stale",
+        packetFingerprint: packetFingerprint,
+        payloadFingerprint: payloadFingerprint,
+        diffFingerprint: diffFingerprint,
+        safetyFingerprint: safetyFingerprint,
+      };
+    }
+
     function buildPromotionDryRunReviewPacket() {
       const result = state.promotionDryRunResult && typeof state.promotionDryRunResult === "object" ? state.promotionDryRunResult : null;
       const error = state.promotionDryRunError && typeof state.promotionDryRunError === "object" ? state.promotionDryRunError : null;
@@ -1538,62 +1674,121 @@
       const base = promotionDryRunPacketBase(form, selectedRow, source);
 
       if (!selectedRow) {
-        return Object.assign(base, {
-          status: "fail-closed",
-          reason: "no_selected_promotion",
-          freshness: freshness.freshness,
-          isStale: freshness.isStale,
-          validationStatus: "fail-closed",
-          validationErrors: base.validationErrors.length ? base.validationErrors : ["promotionId must reference a loaded promotion row"],
-          warningNotes: ["Review packet blocked until a promotion row is selected."],
-        });
+        return Object.assign(
+          base,
+          {
+            status: "fail-closed",
+            reason: "no_selected_promotion",
+            freshness: freshness.freshness,
+            isStale: freshness.isStale,
+            validationStatus: "fail-closed",
+            validationErrors: base.validationErrors.length ? base.validationErrors : ["promotionId must reference a loaded promotion row"],
+            warningNotes: ["Review packet blocked until a promotion row is selected."],
+          },
+          promotionDryRunReviewPacketFingerprints(
+            Object.assign({}, base, {
+              status: "fail-closed",
+              reason: "no_selected_promotion",
+              freshness: freshness.freshness,
+              isStale: freshness.isStale,
+              validationStatus: "fail-closed",
+            })
+          )
+        );
       }
 
       if (freshness.isStale) {
-        return Object.assign(base, {
-          status: "fail-closed",
-          reason: "stale_review_packet",
-          freshness: "stale",
-          isStale: true,
-          validationStatus: "fail-closed",
-          validationErrors: ["Review Packet นี้ไม่ตรงกับ form ปัจจุบันแล้ว กรุณา dry-run ใหม่ก่อน copy/export."].concat(base.validationErrors),
-          warningNotes: ["Review Packet นี้ไม่ตรงกับ form ปัจจุบันแล้ว กรุณา dry-run ใหม่ก่อน copy/export."],
-        });
+        return Object.assign(
+          base,
+          {
+            status: "fail-closed",
+            reason: "stale_review_packet",
+            freshness: "stale",
+            isStale: true,
+            validationStatus: "fail-closed",
+            validationErrors: ["Review Packet นี้ไม่ตรงกับ form ปัจจุบันแล้ว กรุณา dry-run ใหม่ก่อน copy/export."].concat(base.validationErrors),
+            warningNotes: ["Review Packet นี้ไม่ตรงกับ form ปัจจุบันแล้ว กรุณา dry-run ใหม่ก่อน copy/export."],
+          },
+          promotionDryRunReviewPacketFingerprints(
+            Object.assign({}, base, {
+              status: "fail-closed",
+              reason: "stale_review_packet",
+              freshness: "stale",
+              isStale: true,
+              validationStatus: "fail-closed",
+            })
+          )
+        );
       }
 
       if (!source) {
-        return Object.assign(base, {
-          status: "fail-closed",
-          reason: "dry_run_required",
-          freshness: freshness.freshness,
-          isStale: freshness.isStale,
-          validationStatus: "fail-closed",
-          validationErrors: ["dry-run response is required before a success review packet can be generated"].concat(form.errors),
-          warningNotes: ["Complete dry-run before reviewing a packet."],
-        });
+        return Object.assign(
+          base,
+          {
+            status: "fail-closed",
+            reason: "dry_run_required",
+            freshness: freshness.freshness,
+            isStale: freshness.isStale,
+            validationStatus: "fail-closed",
+            validationErrors: ["dry-run response is required before a success review packet can be generated"].concat(form.errors),
+            warningNotes: ["Complete dry-run before reviewing a packet."],
+          },
+          promotionDryRunReviewPacketFingerprints(
+            Object.assign({}, base, {
+              status: "fail-closed",
+              reason: "dry_run_required",
+              freshness: freshness.freshness,
+              isStale: freshness.isStale,
+              validationStatus: "fail-closed",
+            })
+          )
+        );
       }
 
       if (error && error.code === "PROMOTION_DRY_RUN_CLIENT_PREFLIGHT_FAILED") {
-        return Object.assign(base, {
-          status: "fail-closed",
-          reason: "client_preflight_failed",
-          freshness: freshness.freshness,
-          isStale: freshness.isStale,
-          validationStatus: "fail-closed",
-          validationErrors: Array.isArray(error.errors) && error.errors.length ? error.errors.slice() : base.validationErrors,
-          warningNotes: [PROMOTION_ADMIN_DRY_RUN_CLIENT_PREFLIGHT_BLOCK_NOTE],
-        });
+        return Object.assign(
+          base,
+          {
+            status: "fail-closed",
+            reason: "client_preflight_failed",
+            freshness: freshness.freshness,
+            isStale: freshness.isStale,
+            validationStatus: "fail-closed",
+            validationErrors: Array.isArray(error.errors) && error.errors.length ? error.errors.slice() : base.validationErrors,
+            warningNotes: [PROMOTION_ADMIN_DRY_RUN_CLIENT_PREFLIGHT_BLOCK_NOTE],
+          },
+          promotionDryRunReviewPacketFingerprints(
+            Object.assign({}, base, {
+              status: "fail-closed",
+              reason: "client_preflight_failed",
+              freshness: freshness.freshness,
+              isStale: freshness.isStale,
+              validationStatus: "fail-closed",
+            })
+          )
+        );
       }
 
       const validationStatus = result ? "validated" : "fail-closed";
-
-      return Object.assign(base, {
-        status: result ? "ready_for_review" : "fail-closed",
-        reason: result ? "dry_run_completed" : "dry_run_failed",
-        freshness: freshness.freshness,
-        isStale: freshness.isStale,
-        validationStatus: validationStatus,
-      });
+      return Object.assign(
+        base,
+        {
+          status: result ? "ready_for_review" : "fail-closed",
+          reason: result ? "dry_run_completed" : "dry_run_failed",
+          freshness: freshness.freshness,
+          isStale: freshness.isStale,
+          validationStatus: validationStatus,
+        },
+        promotionDryRunReviewPacketFingerprints(
+          Object.assign({}, base, {
+            status: result ? "ready_for_review" : "fail-closed",
+            reason: result ? "dry_run_completed" : "dry_run_failed",
+            freshness: freshness.freshness,
+            isStale: freshness.isStale,
+            validationStatus: validationStatus,
+          })
+        )
+      );
     }
 
     function renderPromotionDryRunReviewPacket() {
@@ -1612,6 +1807,12 @@
       setStatus(els.promotionDryRunReviewPacketPromotionId, packet.promotionId || "-");
       setStatus(els.promotionDryRunReviewPacketGeneratedAt, packet.generatedAt || "-");
       setStatus(els.promotionDryRunReviewPacketSafety, "dry_run_only_local_only");
+      setStatus(els.promotionDryRunReviewPacketFingerprintStatus, packet.fingerprintStatus || "unavailable");
+      setStatus(els.promotionDryRunReviewPacketFingerprint, packet.packetFingerprint || "-");
+      setStatus(els.promotionDryRunReviewPacketPayloadFingerprint, packet.payloadFingerprint || "-");
+      setStatus(els.promotionDryRunReviewPacketDiffFingerprint, packet.diffFingerprint || "-");
+      setStatus(els.promotionDryRunReviewPacketSafetyFingerprint, packet.safetyFingerprint || "-");
+      setStatus(els.promotionDryRunReviewPacketFingerprintSourceVersion, packet.fingerprintSourceVersion || PROMOTION_DRY_RUN_REVIEW_PACKET_FINGERPRINT_SOURCE_VERSION);
       setStatus(els.promotionDryRunReviewPacketChangedFields, changedFields.length ? changedFields.join(" | ") : "no changed fields");
       setStatus(els.promotionDryRunReviewPacketUnchangedFields, unchangedFields.length ? unchangedFields.join(", ") : "-");
       setStatus(els.promotionDryRunReviewPacketRiskyFields, riskyFields.length ? riskyFields.join(", ") : "none");
@@ -1627,8 +1828,8 @@
           packet.status === "ready_for_review" && packet.freshness === "fresh"
             ? "Review packet generated from selected snapshot, form payload, and dry-run response. Local-only copy/export is available."
             : packet.freshness === "stale"
-              ? "Review Packet นี้ไม่ตรงกับ form ปัจจุบันแล้ว กรุณา dry-run ใหม่ก่อน copy/export."
-            : `${safeText(packet.reason, "fail-closed")} - review packet remains fail-closed until selection and dry-run are complete.`;
+              ? "Review Packet นี้ไม่ตรงกับ form ปัจจุบันแล้ว กรุณา dry-run ใหม่ก่อน copy/export. Fingerprint is stale/invalid until refresh."
+              : `${safeText(packet.reason, "fail-closed")} - review packet remains fail-closed until selection and dry-run are complete.`;
       }
       if (els.promotionDryRunReviewPacketFreshnessState) {
         els.promotionDryRunReviewPacketFreshnessState.textContent =
@@ -1637,6 +1838,14 @@
             : packet.freshness === "stale"
               ? "Packet freshness is stale because the current form no longer matches the last successful dry-run snapshot."
               : "Packet freshness is fail-closed until a dry-run succeeds.";
+      }
+      if (els.promotionDryRunReviewPacketFingerprintState) {
+        els.promotionDryRunReviewPacketFingerprintState.textContent =
+          packet.fingerprintStatus === "fresh"
+            ? "Fingerprint status is fresh and deterministic for this review packet."
+            : packet.fingerprintStatus === "stale"
+              ? "Fingerprint status is stale/invalid until the next successful dry-run refreshes the packet."
+              : "Fingerprint status is unavailable until a successful dry-run creates a fresh review packet.";
       }
       if (els.promotionDryRunReviewPacketExport) {
         els.promotionDryRunReviewPacketExport.value = JSON.stringify(packet, null, 2);
