@@ -286,6 +286,7 @@ function makeRunId() {
 async function ensureLocalFixtures() {
   const prisma = require("../config/prisma");
   const { hashPassword } = require("../utils/password");
+  const { buildLocalDemoSite } = require("../utils/adminLocalAuth");
 
   const existingSite = await prisma.site.findUnique({ where: { code: SITE_CODE } });
   if (!existingSite) {
@@ -299,6 +300,22 @@ async function ensureLocalFixtures() {
     });
   } else if (existingSite.status !== "active") {
     throw new Error(`Site ${SITE_CODE} exists but is not active.`);
+  }
+
+  const localDemoSiteId = buildLocalDemoSite(SITE_CODE).id;
+  const existingLocalDemoSite = await prisma.site.findUnique({ where: { id: localDemoSiteId } });
+  if (!existingLocalDemoSite) {
+    await prisma.site.create({
+      data: {
+        id: localDemoSiteId,
+        code: `${SITE_CODE}-LOCAL-DEMO`,
+        name: `${SITE_CODE} Local Demo`,
+        brandName: SITE_CODE,
+        status: "active",
+      },
+    });
+  } else if (existingLocalDemoSite.status !== "active") {
+    throw new Error(`Local demo site ${localDemoSiteId} exists but is not active.`);
   }
 
   const passwordHash = await hashPassword(process.env.LOCAL_ADMIN_PASSWORD);
