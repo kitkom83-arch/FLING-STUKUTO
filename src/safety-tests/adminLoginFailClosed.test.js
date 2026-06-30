@@ -306,8 +306,53 @@ async function main() {
   });
   assert.strictEqual(localDemoRouteLogin.statusCode, 200, "local demo route login must return 200");
   assert(localDemoRouteLogin.payload.data && typeof localDemoRouteLogin.payload.data.token === "string", "local demo route login must return token");
+  assert.strictEqual(localDemoRouteLogin.payload.data.localDemo, true, "local demo route login must mark localDemo true");
   assert.strictEqual(localDemoLookupCalls, 0, "local demo route login must not query the admin table");
-  assert(siteFindUniqueCalls >= 1, "local demo route login must attempt safe site resolution");
+  assert.strictEqual(siteFindUniqueCalls, 0, "local demo route login must short-circuit site resolution in local-safe mode");
+
+  const localDemoDryRun = await postJson(
+    app,
+    "/api/admin/promotions/local-smoke-promo-49/dry-run",
+    {
+      before: {
+        title: "Summer Bonus",
+        type: "bonus-plus",
+        status: "active",
+        minDeposit: 100,
+        maxDeposit: 5000,
+        bonusType: "cash",
+        bonusValue: 250,
+        turnoverMultiplier: 4,
+        maxWithdraw: 1000,
+        startAt: "2026-08-01T00:00",
+        endAt: "2026-08-31T23:59",
+      },
+      after: {
+        title: "Summer Bonus Prefill UX",
+        type: "bonus-plus",
+        status: "active",
+        minDeposit: 100,
+        maxDeposit: 5000,
+        bonusType: "cash",
+        bonusValue: 300,
+        turnoverMultiplier: 4,
+        maxWithdraw: 1200,
+        startAt: "2026-08-01T00:00",
+        endAt: "2026-08-31T23:59",
+      },
+      auditReason: "local demo browser verify",
+      riskAcknowledgement: true,
+    },
+    {
+      "X-Site-Code": "PG77",
+      Authorization: `Bearer ${localDemoRouteLogin.payload.data.token}`,
+    }
+  );
+  assert.strictEqual(localDemoDryRun.statusCode, 200, "local demo dry-run route must return 200");
+  assert.strictEqual(localDemoDryRun.payload.success, true, "local demo dry-run route must succeed");
+  assert.strictEqual(localDemoDryRun.payload.validator, "validatePromotionAdminWriteDryRun");
+  assert.strictEqual(localDemoDryRun.payload.promotionId, "local-smoke-promo-49");
+  assert(Array.isArray(localDemoDryRun.payload.diff), "local demo dry-run must return diff array");
 
   await runLocalDemoLoginCase("local demo login literal password", {
     username: "local_money_flow_admin",

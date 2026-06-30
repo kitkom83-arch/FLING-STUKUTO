@@ -9,6 +9,20 @@
   const DEFAULT_MEMBER_PASSWORD = "localSmokeMember123";
   const DEFAULT_ADMIN_USERNAME = "local_money_flow_admin";
   const DEFAULT_ADMIN_PASSWORD = "local-demo-admin-code-not-real";
+  const LOCAL_DEMO_PROMOTION = Object.freeze({
+    id: "local-smoke-promo-49",
+    title: "Summer Bonus",
+    type: "bonus-plus",
+    status: "active",
+    minDeposit: 100,
+    maxDeposit: 5000,
+    bonusType: "cash",
+    bonusValue: 250,
+    turnoverMultiplier: 4,
+    maxWithdraw: 1000,
+    startAt: "2026-08-01T00:00",
+    endAt: "2026-08-31T23:59",
+  });
   const PROMOTION_ADMIN_DRY_RUN_FINAL_READINESS_NOTE =
     "promotion admin dry-run final readiness is final readiness record only, ready for separate runtime decision, runtime not approved in phase 41, separate runtime implementation phase required, route not mounted, runtime not enabled, can request runtime implementation false, can mount route false, can enable runtime false, write locked, no DB write, no promotion update, no audit row creation, no ledger creation, no turnover creation, no claim execution, no runtime credit action, no provider outbound, and no production deploy.";
   const PROMOTION_ADMIN_DRY_RUN_RUNTIME_DECISION_NOTE =
@@ -221,6 +235,10 @@
 
   function syncLuckyWheelMemberToken(token) {
     writeRawStorage(WHEEL_AUTH_STORAGE_KEY, token || "");
+  }
+
+  function buildLocalDemoPromotion() {
+    return { ...LOCAL_DEMO_PROMOTION };
   }
 
   function apiRequest(path, options) {
@@ -554,7 +572,7 @@
       setStatus(els.rewardPendingCount, state.rewardSummary ? safeNumber(state.rewardSummary.pendingRewardCount, 0) : "-");
       setStatus(els.redeemLogCount, state.redeemLogs.length);
       setStatus(els.wheelRewardCount, state.wheelRewards.length);
-      setStatus(els.promotionCount, state.promotions.length);
+      setStatus(els.promotionCount, adminPromotionRows().length);
       setStatus(
         els.promotionActiveCount,
         state.promotions.filter(function (item) {
@@ -1298,6 +1316,7 @@
     const state = {
       busy: false,
       token: null,
+      localDemoSession: false,
       summary: null,
       pendingBanks: [],
       pendingDeposits: [],
@@ -2143,6 +2162,13 @@
       return parts.length ? parts.join(" | ") : "-";
     }
 
+    function adminPromotionRows() {
+      if (state.localDemoSession && state.promotions.length === 0) {
+        return [buildLocalDemoPromotion()];
+      }
+      return state.promotions;
+    }
+
     function promotionDryRunDiffText(beforeRow, afterRow) {
       const before = promotionDryRunRowDraft(beforeRow);
       const after = promotionDryRunRowDraft(afterRow);
@@ -2197,7 +2223,7 @@
     function promotionDryRunSelectedRow() {
       const promotionId = safeText(els.promotionDryRunPromotionIdInput && els.promotionDryRunPromotionIdInput.value, "").trim();
       if (!promotionId) return null;
-      const row = state.promotions.find(function (item) {
+      const row = adminPromotionRows().find(function (item) {
         return safeText(item && item.id, "") === promotionId;
       });
       return row || null;
@@ -2248,8 +2274,9 @@
         errors.push("promotionId is required");
       }
 
+      const promotionRows = adminPromotionRows();
       const promotionRow = promotionId
-        ? state.promotions.find(function (row) {
+        ? promotionRows.find(function (row) {
             return safeText(row && row.id, "") === promotionId;
           })
         : null;
@@ -2547,8 +2574,9 @@
     }
 
     function renderPromotions() {
-      renderEmptyState(els.promotionRows, els.promotionEmpty, state.promotions);
-      state.promotions.forEach(function (row) {
+      const promotions = adminPromotionRows();
+      renderEmptyState(els.promotionRows, els.promotionEmpty, promotions);
+      promotions.forEach(function (row) {
         const tr = document.createElement("tr");
         createCell(tr, safeText(row.title || row.name || row.id));
         createCell(tr, safeText(row.status), statusClass(row.status));
@@ -2691,14 +2719,15 @@
           : Array.isArray(promotions && promotions.promotions)
             ? promotions.promotions
             : [];
+        if (state.localDemoSession && state.promotions.length === 0) {
+          state.promotions = [buildLocalDemoPromotion()];
+        }
         state.codeCampaigns = Array.isArray(codeCampaigns && codeCampaigns.campaigns) ? codeCampaigns.campaigns : [];
         state.codeRedeemLogs = Array.isArray(codeRedeemLogs && codeRedeemLogs.redeemLogs) ? codeRedeemLogs.redeemLogs : [];
         state.audit = Array.isArray(audit) ? audit : [];
         const selectedPromotionRow = promotionDryRunSelectedRow();
         if (selectedPromotionRow) {
           syncPromotionDryRunForm(selectedPromotionRow);
-        } else if (state.promotions.length > 0) {
-          syncPromotionDryRunForm(state.promotions[0]);
         } else {
           syncPromotionDryRunForm(null);
         }
@@ -2747,6 +2776,10 @@
           },
         });
         state.token = data.token || null;
+        state.localDemoSession = data && data.localDemo === true;
+        if (!state.localDemoSession) {
+          state.localDemoSession = session.username === DEFAULT_ADMIN_USERNAME && session.password === DEFAULT_ADMIN_PASSWORD;
+        }
         writeSavedAdmin(session);
         await refreshAdminData();
         els.statusText.textContent = `Local admin login successful. ${ADMIN_FINANCE_CONNECTED_ROUTE_NOTE}`;
@@ -2759,6 +2792,7 @@
 
     function clearAdminSession() {
       state.token = null;
+      state.localDemoSession = false;
       state.summary = null;
       state.pendingBanks = [];
       state.pendingDeposits = [];

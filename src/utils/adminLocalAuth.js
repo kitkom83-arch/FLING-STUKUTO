@@ -5,6 +5,18 @@ const LOCAL_DEMO_ADMIN_PASSWORD = "local-demo-admin-code-not-real";
 const LOCAL_DEMO_ADMIN_ID_PREFIX = "local-demo-admin";
 const LOCAL_DEMO_SITE_ID_PREFIX = "local-demo-site";
 const LOCAL_DEMO_ADMIN_CREATED_AT = new Date("2026-01-01T00:00:00.000Z");
+const LOCAL_DEMO_ADMIN_PERMISSIONS = Object.freeze([
+  "admin.manage",
+  "reports.view",
+  "settings.website.view",
+  "settings.promotion.view",
+  "settings.promotion.write",
+  "settings.promotion.manage",
+  "members.view",
+  "members.update",
+  "wheel.view",
+  "code_center.view",
+]);
 
 function localAdminLoginAllowed() {
   const nodeEnv = String(process.env.NODE_ENV || "").trim().toLowerCase();
@@ -28,6 +40,7 @@ function buildLocalDemoAdmin(username, extra = {}) {
     username: resolvedUsername,
     role: "super_admin",
     status: "active",
+    permissions: [...LOCAL_DEMO_ADMIN_PERMISSIONS],
     createdAt: LOCAL_DEMO_ADMIN_CREATED_AT,
     lastLoginAt: null,
     ...extra,
@@ -44,6 +57,9 @@ function buildLocalDemoAdminFromToken(payload) {
     id: String(payload.sub),
     role: payload.role || "super_admin",
     status: payload.status || "active",
+    permissions: Array.isArray(payload.permissions) && payload.permissions.length > 0
+      ? payload.permissions.slice()
+      : [...LOCAL_DEMO_ADMIN_PERMISSIONS],
     createdAt: payload.createdAt ? new Date(payload.createdAt) : LOCAL_DEMO_ADMIN_CREATED_AT,
     lastLoginAt: payload.lastLoginAt ? new Date(payload.lastLoginAt) : null,
   });
@@ -65,6 +81,7 @@ function buildLocalDemoSite(siteCode = "PG77") {
 module.exports = {
   LOCAL_DEMO_ADMIN_USERNAME,
   LOCAL_DEMO_ADMIN_PASSWORD,
+  LOCAL_DEMO_ADMIN_PERMISSIONS,
   SAFE_LOCAL_ADMIN_NODE_ENVS,
   SAFE_LOCAL_ADMIN_APP_ENV,
   localAdminLoginAllowed,

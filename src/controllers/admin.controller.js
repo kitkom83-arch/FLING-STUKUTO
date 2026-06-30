@@ -163,12 +163,10 @@ async function login(req, res) {
     error.statusCode = 403;
     throw error;
   }
-  if (!(await ensureAdminLoginSite(req))) {
-    if (localAdminDemoLogin) {
-      attachLocalDemoLoginSite(req);
-    } else {
-      return invalidAdminLogin(res);
-    }
+  if (localAdminDemoLogin) {
+    attachLocalDemoLoginSite(req);
+  } else if (!(await ensureAdminLoginSite(req))) {
+    return invalidAdminLogin(res);
   }
   if (!req.siteId) {
     return invalidAdminLogin(res);
@@ -180,6 +178,7 @@ async function login(req, res) {
     return success(res, {
       token: signAdminToken(updated, { localDemo: true }),
       admin: publicAdmin(updated),
+      localDemo: true,
     });
   }
 
@@ -225,6 +224,7 @@ async function login(req, res) {
   return success(res, {
     token: signAdminToken(updated, { localDemo: localAdminDemoLogin }),
     admin: publicAdmin(updated),
+    localDemo: false,
   });
 }
 
