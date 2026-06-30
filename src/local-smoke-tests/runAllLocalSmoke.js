@@ -2080,6 +2080,7 @@ const summary = [
   { key: "adminWheelRuntime", label: "admin-wheel-runtime", status: "PENDING" },
   { key: "adminBrowserRoutes", label: "admin-browser-routes", status: "PENDING" },
   { key: "adminBackofficeReadOnlyIntegration", label: "admin-backoffice-read-only-integration", status: "PENDING" },
+  { key: "browserRegression", label: "browser-regression", status: "PENDING" },
   { key: "adminGuardedBankAccountReview", label: "admin-guarded-bank-account-review", status: "PENDING" },
   { key: "adminOperatorHandoff", label: "admin-operator-handoff", status: "PENDING" },
   { key: "adminBankAccountReviewReleasePack", label: "admin-bank-account-review-release-pack", status: "PENDING" },
@@ -2545,6 +2546,12 @@ const steps = [
     command: nodeCommand,
     args: ["--check", "src/local-smoke-tests/adminBackofficeReadOnlyIntegrationSmoke.js"],
     summaryKey: "syntax",
+  },
+  {
+    name: "node --check backofficePromotionAdminDryRunBrowserRegressionSmoke",
+    command: nodeCommand,
+    args: ["--check", "src/local-smoke-tests/backofficePromotionAdminDryRunBrowserRegressionSmoke.js"],
+    summaryKey: "browserRegression",
   },
   {
     name: "node --check adminGuardedBankAccountReviewSmoke",
@@ -4906,6 +4913,12 @@ const steps = [
     command: npmCommand,
     args: npmArgs(["run", "smoke:admin-backoffice-read-only-integration"]),
     summaryKey: "adminBackofficeReadOnlyIntegration",
+  },
+  {
+    name: "npm run smoke:backoffice-promotion-admin-dry-run-browser-regression",
+    command: npmCommand,
+    args: npmArgs(["run", "smoke:backoffice-promotion-admin-dry-run-browser-regression"]),
+    summaryKey: "browserRegression",
   },
   {
     name: "npm run smoke:admin-guarded-bank-account-review",
