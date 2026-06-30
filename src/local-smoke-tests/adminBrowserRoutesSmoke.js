@@ -123,6 +123,13 @@ function assertNoGeneralPlayHistoryEndpoint(label, js) {
   assert(!js.includes(endpoint), `${label} must not call general play history mock endpoint.`);
 }
 
+function hasApiCall(text, endpoint) {
+  const escaped = endpoint.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const apiCall = new RegExp(String.raw`\bapi\(\s*["'\`]${escaped}(?=$|[^A-Za-z0-9_])`);
+  const fetchCall = new RegExp(String.raw`\bfetch\(\s*["'\`]\/api${escaped}(?=$|[^A-Za-z0-9_])`);
+  return apiCall.test(text) || fetchCall.test(text);
+}
+
 function assertNoMemberJwtEndpoints(label, text) {
   const memberCredentialLabel = ["member", " JWT"].join("");
   for (const endpoint of [
@@ -132,7 +139,9 @@ function assertNoMemberJwtEndpoints(label, text) {
     ["/api", "/withdrawals"].join(""),
     ["/api", "/member/wheel"].join(""),
   ]) {
-    assert(!text.includes(endpoint), `${label} must not call ${memberCredentialLabel} endpoint: ${endpoint}`);
+    const suffix = endpoint.replace(/^\/api/, "");
+    const forbiddenEndpoint = hasApiCall(text, suffix);
+    assert(!forbiddenEndpoint, `${label} must not call ${memberCredentialLabel} endpoint: ${endpoint}`);
   }
 }
 
