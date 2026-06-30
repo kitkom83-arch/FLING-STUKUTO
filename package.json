@@ -78,6 +78,7 @@
     "smoke:backoffice-promotion-admin-dry-run-review-packet-fingerprint": "node src/local-smoke-tests/backofficePromotionAdminDryRunReviewPacketFingerprintSmoke.js",
     "smoke:backoffice-promotion-admin-dry-run-client-preflight-guard": "node src/local-smoke-tests/backofficePromotionAdminDryRunClientPreflightGuardSmoke.js",
     "smoke:backoffice-promotion-admin-dry-run-stale-packet-guard": "node src/local-smoke-tests/backofficePromotionAdminDryRunStalePacketGuardSmoke.js",
+    "smoke:backoffice-promotion-admin-dry-run-browser-regression": "node src/local-smoke-tests/backofficePromotionAdminDryRunBrowserRegressionSmoke.js",
     "smoke:backoffice-promotion-admin-dry-run-api-contract": "node src/local-smoke-tests/backofficePromotionAdminDryRunApiContractSmoke.js",
     "smoke:backoffice-promotion-admin-dry-run-api-stub": "node src/local-smoke-tests/backofficePromotionAdminDryRunApiStubSmoke.js",
     "smoke:backoffice-promotion-admin-dry-run-ui-preview": "node src/local-smoke-tests/backofficePromotionAdminDryRunUiPreviewSmoke.js",
