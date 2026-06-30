@@ -18,15 +18,9 @@ async function adminAuth(req, res, next) {
 
     const payload = jwt.verify(token, env.jwtSecret);
     if (isLocalDemoAdminTokenAllowed(payload)) {
-      const admin = payload.username
-        ? await prisma.admin.findUnique({
-            where: { username: payload.username },
-            select: { id: true, username: true, role: true, status: true, createdAt: true, lastLoginAt: true },
-          })
-        : null;
-      const resolvedAdmin = admin && admin.status === "active" ? admin : buildLocalDemoAdminFromToken(payload);
-      if (!resolvedAdmin) return fail(res, "Admin authentication required", 401);
-      req.admin = resolvedAdmin;
+      const admin = buildLocalDemoAdminFromToken(payload);
+      if (!admin) return fail(res, "Admin authentication required", 401);
+      req.admin = admin;
       return next();
     }
 
