@@ -14,6 +14,7 @@ const SAFE_TARGET_MARKERS = ["local", "test", "testing", "stage", "staging", "sa
 const PRODUCTION_MARKERS = ["prod", "production", "live", "primary", "main", "master"];
 const DEFAULT_BASE_URL = "http://localhost:4000/api";
 const SITE_CODE = process.env.LOCAL_SMOKE_SITE_CODE || "PG77";
+const LOCAL_DEMO_SITE_ID = `local-demo-site:${SITE_CODE}`;
 const PROMOTION_ID = "local_mock_promotion_claim_smoke";
 const issuedAuthValues = new Set();
 
@@ -331,9 +332,24 @@ async function ensureLocalFixtures(runId) {
   const prisma = require("../config/prisma");
   const { hashPassword } = require("../utils/password");
 
-  const site = await prisma.site.upsert({
+  const existingSite = await prisma.site.findUnique({
     where: { code: SITE_CODE },
+    select: { id: true },
+  });
+
+  if (existingSite && existingSite.id !== LOCAL_DEMO_SITE_ID) {
+    await prisma.site.update({
+      where: { id: existingSite.id },
+      data: {
+        code: `${SITE_CODE}-legacy-${runId}`,
+      },
+    });
+  }
+
+  const site = await prisma.site.upsert({
+    where: { id: LOCAL_DEMO_SITE_ID },
     update: {
+      code: SITE_CODE,
       name: `${SITE_CODE} Local Smoke`,
       brandName: SITE_CODE,
       status: "active",
@@ -342,6 +358,7 @@ async function ensureLocalFixtures(runId) {
       timezone: "Asia/Bangkok",
     },
     create: {
+      id: LOCAL_DEMO_SITE_ID,
       code: SITE_CODE,
       name: `${SITE_CODE} Local Smoke`,
       brandName: SITE_CODE,
