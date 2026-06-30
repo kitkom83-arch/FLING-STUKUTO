@@ -2,6 +2,10 @@ const assert = require("assert");
 const http = require("http");
 
 const controllerPath = require.resolve("../controllers/admin.controller");
+const appPath = require.resolve("../app");
+const envPath = require.resolve("../config/env");
+const adminAuthPath = require.resolve("../middleware/adminAuth");
+const siteResolverPath = require.resolve("../middleware/siteResolver");
 const prismaPath = require.resolve("../config/prisma");
 const passwordPath = require.resolve("../utils/password");
 
@@ -94,6 +98,40 @@ function createRequest(body, extra = {}) {
   };
 }
 
+async function withEnv(overrides, fn) {
+  const keys = ["NODE_ENV", "APP_ENV", "LOCAL_ADMIN_PASSWORD", "JWT_SECRET"];
+  const saved = {};
+  for (const key of keys) {
+    saved[key] = process.env[key];
+  }
+  try {
+    for (const [key, value] of Object.entries(overrides || {})) {
+      if (value === undefined || value === null) {
+        delete process.env[key];
+      } else {
+        process.env[key] = String(value);
+      }
+    }
+    return await fn();
+  } finally {
+    for (const key of keys) {
+      if (saved[key] === undefined) {
+        delete process.env[key];
+      } else {
+        process.env[key] = saved[key];
+      }
+    }
+  }
+}
+
+function clearRouteModuleCache() {
+  delete require.cache[appPath];
+  delete require.cache[envPath];
+  delete require.cache[controllerPath];
+  delete require.cache[adminAuthPath];
+  delete require.cache[siteResolverPath];
+}
+
 function assertSafeFailure(label, res) {
   assert.notStrictEqual(res.statusCode, 500, `${label} must not return 500`);
   assert.strictEqual(res.statusCode, 400, `${label} must return 400`);
@@ -139,37 +177,44 @@ async function runCase(label, body, setup) {
 }
 
 async function runLocalDemoLoginCase(label, body, setup) {
-  const logs = [];
-  const originalError = console.error;
-  prismaMock.admin.findUnique = async () => null;
-  prismaMock.site.findUnique = async () => {
-    siteFindUniqueCalls += 1;
-    return {
-      id: "test_site",
-      code: "PG77",
-      status: "active",
-      setting: null,
-      theme: null,
+  return withEnv({
+    NODE_ENV: "development-local",
+    APP_ENV: "local-test",
+    LOCAL_ADMIN_PASSWORD: "local-test-password",
+    JWT_SECRET: "admin-login-failclosed-test-secret",
+  }, async () => {
+    const logs = [];
+    const originalError = console.error;
+    prismaMock.admin.findUnique = async () => null;
+    prismaMock.site.findUnique = async () => {
+      siteFindUniqueCalls += 1;
+      return {
+        id: "test_site",
+        code: "PG77",
+        status: "active",
+        setting: null,
+        theme: null,
+      };
     };
-  };
-  siteFindUniqueCalls = 0;
-  passwordMock.impl = async () => false;
-  if (setup) setup();
-  console.error = (...args) => logs.push(args);
-  try {
-    const res = createResponse();
-    await adminController.login(createRequest(body), res);
-    assert.strictEqual(res.statusCode, 200, `${label} must return 200`);
-    assert(res.payload.data && typeof res.payload.data.token === "string", `${label} must return token`);
-    assert.strictEqual(siteFindUniqueCalls, 0, `${label} must not re-resolve site context when already attached`);
-  } finally {
-    console.error = originalError;
-  }
+    siteFindUniqueCalls = 0;
+    passwordMock.impl = async () => false;
+    if (setup) setup();
+    console.error = (...args) => logs.push(args);
+    try {
+      const res = createResponse();
+      await adminController.login(createRequest(body), res);
+      assert.strictEqual(res.statusCode, 200, `${label} must return 200`);
+      assert(res.payload.data && typeof res.payload.data.token === "string", `${label} must return token`);
+      assert.strictEqual(siteFindUniqueCalls, 0, `${label} must not re-resolve site context when already attached`);
+    } finally {
+      console.error = originalError;
+    }
 
-  const serializedLogs = JSON.stringify(logs).toLowerCase();
-  assert(!serializedLogs.includes("admin-test-password"), `${label} log must not include submitted password`);
-  assert(!serializedLogs.includes("bearer"), `${label} log must not include auth scheme`);
-  assert(!serializedLogs.includes("database_url"), `${label} log must not include database URL key`);
+    const serializedLogs = JSON.stringify(logs).toLowerCase();
+    assert(!serializedLogs.includes("admin-test-password"), `${label} log must not include submitted password`);
+    assert(!serializedLogs.includes("bearer"), `${label} log must not include auth scheme`);
+    assert(!serializedLogs.includes("database_url"), `${label} log must not include database URL key`);
+  });
 }
 
 async function postJson(app, path, body, headers = {}) {
@@ -238,121 +283,135 @@ async function main() {
 
   await runCase("email login alias invalid credentials", { email: "admin@example.test", password: "admin-test-password" });
 
-  const app = require("../app");
-  prismaMock.admin.findUnique = async () => null;
-  prismaMock.site.findUnique = async () => {
-    siteFindUniqueCalls += 1;
-    throw Object.assign(new Error("mock site lookup failed"), { code: "P1001" });
-  };
-  siteFindUniqueCalls = 0;
-  const routeRes = await postJson(app, "/api/admin/auth/login", {
-    username: "missing_admin",
-    password: "admin-test-password",
-  }, {
-    "X-Site-Code": "PG77",
-  });
-  assertSafeFailure("route unknown admin before site lookup", routeRes);
-  assert.strictEqual(siteFindUniqueCalls, 0, "unknown admin route must not query site before failing closed");
-
-  prismaMock.admin.findUnique = async () => ({
-    id: "admin_1",
-    username: "admin",
-    status: "active",
-    role: "super_admin",
-    passwordHash: "hash-present",
-    createdAt: new Date("2026-01-01T00:00:00.000Z"),
-  });
-  prismaMock.site.findUnique = async () => {
-    siteFindUniqueCalls += 1;
-    return {
-      id: "test_site",
-      code: "PG77",
-      status: "active",
-      setting: null,
-      theme: null,
+  await withEnv({
+    NODE_ENV: "production",
+    APP_ENV: "production",
+    LOCAL_ADMIN_PASSWORD: "",
+    JWT_SECRET: "admin-login-failclosed-test-secret",
+  }, async () => {
+    clearRouteModuleCache();
+    const app = require("../app");
+    prismaMock.admin.findUnique = async () => null;
+    prismaMock.site.findUnique = async () => {
+      siteFindUniqueCalls += 1;
+      throw Object.assign(new Error("mock site lookup failed"), { code: "P1001" });
     };
-  };
-  passwordMock.impl = async () => true;
-  siteFindUniqueCalls = 0;
-  const successRes = await postJson(app, "/api/admin/auth/login", {
-    username: "admin",
-    password: "admin-test-password",
-  }, {
-    "X-Site-Code": "PG77",
-  });
-  assert.strictEqual(successRes.statusCode, 200, "valid admin login must still return 200");
-  assert(successRes.payload.data && typeof successRes.payload.data.token === "string", "valid admin login must return token");
-  assert.strictEqual(siteFindUniqueCalls, 1, "valid admin login must resolve site context");
-
-  process.env.NODE_ENV = "development-local";
-  process.env.APP_ENV = "local-test";
-  process.env.LOCAL_ADMIN_PASSWORD = "local-test-password";
-  let localDemoLookupCalls = 0;
-  prismaMock.admin.findUnique = async () => {
-    localDemoLookupCalls += 1;
-    return null;
-  };
-  prismaMock.site.findUnique = async () => {
-    siteFindUniqueCalls += 1;
-    throw Object.assign(new Error("mock site lookup failed"), { code: "P1001" });
-  };
-  siteFindUniqueCalls = 0;
-  passwordMock.impl = async () => false;
-  const localDemoRouteLogin = await postJson(app, "/api/admin/auth/login", {
-    username: "local_money_flow_admin",
-    password: "local-demo-admin-code-not-real",
-  }, {
-    "X-Site-Code": "PG77",
-  });
-  assert.strictEqual(localDemoRouteLogin.statusCode, 200, "local demo route login must return 200");
-  assert(localDemoRouteLogin.payload.data && typeof localDemoRouteLogin.payload.data.token === "string", "local demo route login must return token");
-  assert.strictEqual(localDemoRouteLogin.payload.data.localDemo, true, "local demo route login must mark localDemo true");
-  assert.strictEqual(localDemoLookupCalls, 0, "local demo route login must not query the admin table");
-  assert.strictEqual(siteFindUniqueCalls, 0, "local demo route login must short-circuit site resolution in local-safe mode");
-
-  const localDemoDryRun = await postJson(
-    app,
-    "/api/admin/promotions/local-smoke-promo-49/dry-run",
-    {
-      before: {
-        title: "Summer Bonus",
-        type: "bonus-plus",
-        status: "active",
-        minDeposit: 100,
-        maxDeposit: 5000,
-        bonusType: "cash",
-        bonusValue: 250,
-        turnoverMultiplier: 4,
-        maxWithdraw: 1000,
-        startAt: "2026-08-01T00:00",
-        endAt: "2026-08-31T23:59",
-      },
-      after: {
-        title: "Summer Bonus Prefill UX",
-        type: "bonus-plus",
-        status: "active",
-        minDeposit: 100,
-        maxDeposit: 5000,
-        bonusType: "cash",
-        bonusValue: 300,
-        turnoverMultiplier: 4,
-        maxWithdraw: 1200,
-        startAt: "2026-08-01T00:00",
-        endAt: "2026-08-31T23:59",
-      },
-      auditReason: "local demo browser verify",
-      riskAcknowledgement: true,
-    },
-    {
+    siteFindUniqueCalls = 0;
+    const routeRes = await postJson(app, "/api/admin/auth/login", {
+      username: "missing_admin",
+      password: "admin-test-password",
+    }, {
       "X-Site-Code": "PG77",
-      Authorization: `Bearer ${localDemoRouteLogin.payload.data.token}`,
-    }
-  );
-  assert.strictEqual(localDemoDryRun.statusCode, 200, "local demo dry-run route must return 200");
-  assert.strictEqual(localDemoDryRun.payload.success, true, "local demo dry-run route must succeed");
-  assert.strictEqual(localDemoDryRun.payload.validator, "validatePromotionAdminWriteDryRun");
-  assert.strictEqual(localDemoDryRun.payload.promotionId, "local-smoke-promo-49");
-  assert(Array.isArray(localDemoDryRun.payload.diff), "local demo dry-run must return diff array");
+    });
+    assertSafeFailure("route unknown admin before site lookup", routeRes);
+    assert.strictEqual(siteFindUniqueCalls, 0, "unknown admin route must not query site before failing closed");
+
+    prismaMock.admin.findUnique = async () => ({
+      id: "admin_1",
+      username: "admin",
+      status: "active",
+      role: "super_admin",
+      passwordHash: "hash-present",
+      createdAt: new Date("2026-01-01T00:00:00.000Z"),
+    });
+    prismaMock.site.findUnique = async () => {
+      siteFindUniqueCalls += 1;
+      return {
+        id: "test_site",
+        code: "PG77",
+        status: "active",
+        setting: null,
+        theme: null,
+      };
+    };
+    passwordMock.impl = async () => true;
+    siteFindUniqueCalls = 0;
+    const successRes = await postJson(app, "/api/admin/auth/login", {
+      username: "admin",
+      password: "admin-test-password",
+    }, {
+      "X-Site-Code": "PG77",
+    });
+    assert.strictEqual(successRes.statusCode, 200, "valid admin login must still return 200");
+    assert(successRes.payload.data && typeof successRes.payload.data.token === "string", "valid admin login must return token");
+    assert.strictEqual(siteFindUniqueCalls, 1, "valid admin login must resolve site context");
+  });
+
+  await withEnv({
+    NODE_ENV: "development-local",
+    APP_ENV: "local-test",
+    LOCAL_ADMIN_PASSWORD: "local-test-password",
+    JWT_SECRET: "admin-login-failclosed-test-secret",
+  }, async () => {
+    clearRouteModuleCache();
+    const app = require("../app");
+    let localDemoLookupCalls = 0;
+    prismaMock.admin.findUnique = async () => {
+      localDemoLookupCalls += 1;
+      return null;
+    };
+    prismaMock.site.findUnique = async () => {
+      siteFindUniqueCalls += 1;
+      throw Object.assign(new Error("mock site lookup failed"), { code: "P1001" });
+    };
+    siteFindUniqueCalls = 0;
+    passwordMock.impl = async () => false;
+    const localDemoRouteLogin = await postJson(app, "/api/admin/auth/login", {
+      username: "local_money_flow_admin",
+      password: "local-demo-admin-code-not-real",
+    }, {
+      "X-Site-Code": "PG77",
+    });
+    assert.strictEqual(localDemoRouteLogin.statusCode, 200, "local demo route login must return 200");
+    assert(localDemoRouteLogin.payload.data && typeof localDemoRouteLogin.payload.data.token === "string", "local demo route login must return token");
+    assert.strictEqual(localDemoRouteLogin.payload.data.localDemo, true, "local demo route login must mark localDemo true");
+    assert.strictEqual(localDemoLookupCalls, 0, "local demo route login must not query the admin table");
+    assert.strictEqual(siteFindUniqueCalls, 0, "local demo route login must short-circuit site resolution in local-safe mode");
+
+    const localDemoDryRun = await postJson(
+      app,
+      "/api/admin/promotions/local-smoke-promo-49/dry-run",
+      {
+        before: {
+          title: "Summer Bonus",
+          type: "bonus-plus",
+          status: "active",
+          minDeposit: 100,
+          maxDeposit: 5000,
+          bonusType: "cash",
+          bonusValue: 250,
+          turnoverMultiplier: 4,
+          maxWithdraw: 1000,
+          startAt: "2026-08-01T00:00",
+          endAt: "2026-08-31T23:59",
+        },
+        after: {
+          title: "Summer Bonus Prefill UX",
+          type: "bonus-plus",
+          status: "active",
+          minDeposit: 100,
+          maxDeposit: 5000,
+          bonusType: "cash",
+          bonusValue: 300,
+          turnoverMultiplier: 4,
+          maxWithdraw: 1200,
+          startAt: "2026-08-01T00:00",
+          endAt: "2026-08-31T23:59",
+        },
+        auditReason: "local demo browser verify",
+        riskAcknowledgement: true,
+      },
+      {
+        "X-Site-Code": "PG77",
+        Authorization: `Bearer ${localDemoRouteLogin.payload.data.token}`,
+      }
+    );
+    assert.strictEqual(localDemoDryRun.statusCode, 200, "local demo dry-run route must return 200");
+    assert.strictEqual(localDemoDryRun.payload.success, true, "local demo dry-run route must succeed");
+    assert.strictEqual(localDemoDryRun.payload.validator, "validatePromotionAdminWriteDryRun");
+    assert.strictEqual(localDemoDryRun.payload.promotionId, "local-smoke-promo-49");
+    assert(Array.isArray(localDemoDryRun.payload.diff), "local demo dry-run must return diff array");
+  });
 
   await runLocalDemoLoginCase("local demo login literal password", {
     username: "local_money_flow_admin",

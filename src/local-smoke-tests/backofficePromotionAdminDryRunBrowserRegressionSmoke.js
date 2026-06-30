@@ -93,7 +93,7 @@ function runNodeSmoke(relativePath) {
   });
 }
 
-function withEnv(overrides, fn) {
+async function withEnv(overrides, fn) {
   const keys = ["NODE_ENV", "APP_ENV", "JWT_SECRET", "LOCAL_ADMIN_PASSWORD"];
   const saved = {};
   for (const key of keys) saved[key] = process.env[key];
@@ -372,6 +372,7 @@ async function main() {
       NODE_ENV: "production",
       APP_ENV: "production",
       JWT_SECRET: LOCAL_SECRET,
+      LOCAL_ADMIN_PASSWORD: "",
     },
     {
       admin: {
